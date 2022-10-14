@@ -1,0 +1,22 @@
+{
+    "short_name": "BAL Analytics",
+    "name": "Balancer Analytics",
+    "icons": [
+        {
+            "src": "https://balancer.fi/_nuxt/img/pool-bal-weth.c1c79eb.jpg",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "https://balancer.fi/_nuxt/img/pool-bal-weth.c1c79eb.jpg",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "orientation": "portrait",
+    "display": "standalone",
+    "theme_color": "#3E3F40",
+    "background_color": "#fff"
+}
