@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 import BalancerLogoWhite from '../src/assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../src/assets/svg/logo-dark.svg'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -23,17 +23,18 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import CoingeckoColor from './assets/svg/coingecko-color.svg'
+import MoonIcon from './assets/svg/MoonIcon.svg';
+import SunIcon from './assets/svg/SunIcon.svg';
 import { getThemeDesignTokens } from './assets/theme';
 import Home from './pages/Home';
+import NetworkSelector from './components/NetworkSelector';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
 
-const drawerWidth = 300;
+const drawerWidth = 240;
 
 //Color mode
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
@@ -114,7 +115,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open} sx={{ background: "rgba(255, 255, 255, 0.2)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", backdropFilter: "blur(5px)" }}>
+          <AppBar position="fixed" open={open} enableColorOnDark sx={{ background: "rgba(255, 255, 255, 0.2)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", backdropFilter: "blur(5px)" }}>
             <Toolbar>
               <IconButton
                 aria-label="open drawer"
@@ -124,30 +125,44 @@ function App() {
               >
                 <MenuIcon />
               </IconButton>
-              <Box display="flex" alignItems="center" justifyContent='flex-end'>
-              <Box
-                sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} >
-                <img src={(mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
-              </Box>
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                sx={{
-                  mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                }}
-              >
-                Analytics
-              </Typography>
-              <Box position="absolute" right="0px">
-                <IconButton sx={{ ml: 1, animationDuration: 2 }} onClick={colorMode.toggleColorMode}>
-                  {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-              </Box>
+              <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
+                <Box
+                  sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} >
+                  <img src={(mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
+                </Box>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  href="/"
+                  sx={{
+                    mr: 2,
+                    display: { xs: 'none', md: 'flex' },
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    color: (mode === 'dark') ? 'white' : 'black',
+                  }}
+                >
+                  Analytics
+                </Typography>
+                <Box position="absolute" right="5px" >
+                  <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
+                  <IconButton
+                    sx={{
+                      mr: 1,
+                      animationDuration: 2,
+                      width: 40,
+                      height: 35,
+                      borderRadius: 2,
+                      backgroundColor: "background.paper",
+                      boxShadow: 2,
+                    }}
+                    onClick={colorMode.toggleColorMode}>
+                    <img src={(mode === 'dark') ? MoonIcon : SunIcon} alt="Theme Icon" width="25" />
+                  </IconButton>
+                  <NetworkSelector />
+                  </Box>
+                </Box>
               </Box>
             </Toolbar>
           </AppBar>

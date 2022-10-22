@@ -24,6 +24,15 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
                 default: '#162031',
               },
           }),
+          overrides: {
+            MuiCssBaseline: {
+              '@global': {
+                body: {
+                  transition: 'all 2s linear',
+                },
+              },
+            },
+          },
     },
   });
   
