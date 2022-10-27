@@ -1,5 +1,5 @@
-import { GetCoingeckoData } from "utils/getCoingecoSimpleTokenPrices";
-import { useActiveNetworkVersion } from "state/application/hooks";
+import { GetCoingeckoData } from "../../utils/getCoingecoSimpleTokenPrices";
+import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 
 export function useCoinGeckoSimpleTokenPrices(tokenAddresses: string[]){

@@ -4,7 +4,7 @@ import { BalancerSwapFragment, useGetProtocolDataLazyQuery } from '../../apollo/
 import { useEffect } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem } from './balancerTypes';
-import { useActiveNetworkVersion } from 'state/application/hooks';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 interface ProtocolData {
     volume24?: number;

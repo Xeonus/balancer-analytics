@@ -1,6 +1,4 @@
-import { MKR } from "constants/index";
-import { SWAPR } from "constants/index";
-import { TokenData, AssetData, PoolData, PoolDataUser } from "data/balancer/balancerTypes";
+import { TokenData, AssetData, PoolDataUser } from "../data/balancer/balancerTypes";
 import { getShortPoolName } from "./getShortPoolName";
 
 

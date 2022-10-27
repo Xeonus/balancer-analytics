@@ -4,8 +4,8 @@ import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import {
     useGetUserWalletPoolDataLazyQuery
 } from '../../apollo/generated/graphql-codegen-generated';
-import { useActiveNetworkVersion } from 'state/application/hooks';
-import { useDeltaTimestamps } from 'utils/queries';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
+import { useDeltaTimestamps } from '../../utils/queries';
 
 export interface UserPoolData {
     share: number,

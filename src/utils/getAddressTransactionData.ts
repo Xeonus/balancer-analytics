@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useActiveNetworkVersion } from "state/application/hooks";
+import { useActiveNetworkVersion } from "../state/application/hooks";
 
 //Define wallet TokenData interface
 export interface Param {

@@ -1,4 +1,4 @@
-import { TokenData } from "data/balancer/balancerTypes";
+import { TokenData } from "../balancer/balancerTypes";
 
 //Coingecko Interface
 export interface CoingeckoRawData {

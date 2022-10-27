@@ -1,4 +1,4 @@
-import { TokenData } from "data/balancer/balancerTypes";
+import { TokenData } from "../data/balancer/balancerTypes";
 import { WalletTokenData } from "./getAddressTokenBalances";
 import { ERC20TokenData } from "./getAddressTokenBalances";
 

@@ -6,7 +6,7 @@ import {
     useBalancerPoolSwapFeeSnapshotQuery,
     PoolSnapshot,
 } from '../../apollo/generated/graphql-codegen-generated';
-import { useActiveNetworkVersion } from 'state/application/hooks';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useDeltaTimestamps } from '../../utils/queries';
 import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import { useEffect, useState } from 'react';
@@ -260,12 +260,14 @@ export function useBalancerPoolPageData(poolId: string): {
                     let timestamp = snapshot.timestamp * 1000;
                     if (poolSnapshots.length < 90) {
                         const rawData = coingeckoSnapshotData[i].coingeckoRawData.prices;
+                        if ( rawData && rawData.length > 0) {
                         const match = rawData.reduce(function(prev, curr) {
                             return (Math.abs(curr[0] - timestamp) < Math.abs(prev[0] - timestamp) ? curr : prev);
                           });
                           if (match) {
                             timestamp = match[0];
                           }
+                        }
                     }
                     const price = coingeckoSnapshotData[i].coingeckoRawData.prices.find(s => s[0] === timestamp);
                 if (price && snapshotTokenIndex !== null) {

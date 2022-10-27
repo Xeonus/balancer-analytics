@@ -9,7 +9,7 @@ import {
 import { useEffect } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, TokenData } from './balancerTypes';
-import { useActiveNetworkVersion } from 'state/application/hooks';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useState } from 'react';
 
 //Coingecko Token price Interface

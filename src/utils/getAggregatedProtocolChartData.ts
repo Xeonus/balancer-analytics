@@ -1,4 +1,4 @@
-import { BalancerChartDataItem } from "data/balancer/balancerTypes";
+import { BalancerChartDataItem } from "../data/balancer/balancerTypes";
 
 //TODO: remove hard-coded chain redundancy via passable variable?
 export default function getAggregatedProtocolChartData(
