@@ -153,7 +153,7 @@ function App() {
                 </Typography>
                 <Box position="absolute" right="5px" >
                   <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
-                  <Polling/>
+                  
                   <IconButton
                     sx={{
                       mr: 1,
@@ -218,18 +218,32 @@ function App() {
               ))}
             </List>
             <Divider />
-            <Grid position="absolute" alignItems="center" justifyContent="center" direction="column" bottom="2px">
+            <Divider />
+            <Box m={1}>
+            <Polling/>
+            </Box>
+            <Grid position="absolute" alignItems="center" justifyContent="center" direction="column" bottom="10px">
+            <IconButton
+                    sx={{
+                      mr: 1,
+                      animationDuration: 2,
+                      height: 30,
+                      borderRadius: 1,
+                      backgroundColor: "background.paper",
+                      boxShadow: 2,
+                    }}>
+            <Box display="flex" alignItems="center" alignContent="center">
               <Typography>Powered by</Typography>
               <Box
                 sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} >
-                <img src={CoingeckoColor} alt="Balancer Logo" width="30" />
+                <img src={CoingeckoColor} alt="Balancer Logo" width="20" />
               </Box>
+              </Box>
+              </ IconButton>
             </Grid>
           </Drawer>
           <MainContent open={open}>
             <DrawerHeader />
-            <Container maxWidth="xl">
-            </Container>
             <Home />
           </MainContent>
         </Box>

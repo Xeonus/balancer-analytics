@@ -5,7 +5,6 @@ import { useActiveNetworkVersion, useSubgraphStatus } from '../../state/applicat
 import { getEtherscanLink } from '../../utils'
 import { EthereumNetworkInfo } from '../../constants/networks'
 import { Link, Typography, CircularProgress, Box, IconButton } from '@mui/material'
-import { fontSize, fontWeight } from '@mui/system';
 
 
 export default function Polling() {
@@ -37,11 +36,16 @@ export default function Polling() {
                     sx={{
                       mr: 1,
                       animationDuration: 2,
-                      height: 30,
-                      borderRadius: 2,
+                      height: 20,
+                      borderRadius: 1,
                       backgroundColor: "background.paper",
                       boxShadow: 2,
                     }}>
+   
+    <Link color={mode === 'dark'? 'white' : 'black'} variant="caption" display="block" underline="none" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
+         Synced block: {isMounted ? latestBlock : ' '}
+    </Link>
+    <Box mr={0.5}></Box>
     <CircularProgress 
       size={12} 
       thickness={isMounted ? 22: 10}
@@ -51,9 +55,6 @@ export default function Polling() {
         color: isMounted ? green[500] : orange[500]
       }}
       /> 
-    <Link color={mode === 'dark'? 'white' : 'black'} variant="caption" display="block" underline="none" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
-          {latestBlock}
-    </Link>
     </IconButton>
     </Box>
 
