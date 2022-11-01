@@ -1,90 +1,197 @@
-/**
- * Created by hao.cheng on 2017/4/17.
- */
- import React from 'react';
- import ReactEcharts from 'echarts-for-react';
+import React from 'react';
+import ReactEcharts from 'echarts-for-react';
+import { graphic } from 'echarts'
 
- 
- let base = +new Date(1968, 9, 3);
- let oneDay = 24 * 3600 * 1000;
- let date = [];
- 
- let data = [Math.random() * 300];
- 
- for (var i = 1; i < 20000; i++) {
-     var now = new Date(base += oneDay);
-     date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-     data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
- }
- 
- const option = {
-     title: {
-         left: 'center',
-         text: 'doing',
-     },
-     toolbox: {
-         feature: {
-             dataZoom: {
-                 yAxisIndex: 'none'
-             },
-             restore: {},
-             saveAsImage: {}
-         }
-     },
-     xAxis: {
-         type: 'category',
-         boundaryGap: false,
-         data: date
-     },
-     yAxis: {
-         type: 'value',
-         boundaryGap: [0, '100%']
-     },
-     dataZoom: [{
-         type: 'inside',
-         start: 0,
-         end: 10
-     }, {
-         start: 0,
-         end: 10,
-         handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-         handleSize: '80%',
-         handleStyle: {
-             color: '#fff',
-             shadowBlur: 3,
-             shadowColor: 'rgba(0, 0, 0, 0.6)',
-             shadowOffsetX: 2,
-             shadowOffsetY: 2
-         }
-     }],
-     series: [
-         {
-             name:'ratataa',
-             type:'line',
-             smooth:true,
-             symbol: 'none',
-             sampling: 'average',
-             itemStyle: {
-                 normal: {
-                     color: 'rgb(255, 70, 131)'
-                 }
-             },
-             
-             data: data
-         }
-     ]
- };
- 
- class EchartsArea extends React.Component {
-     render() {
-         return (
-             <ReactEcharts
-                 option={option}
-                 style={{height: '300px', width: '100%'}}
-                 className={'react_for_echarts'}
-             />
-         )
-     }
- }
- 
- export default EchartsArea;
+const option = {
+    color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+    title: {
+        text: 'Gradient Stacked Area Chart',
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
+    legend: {
+        data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']
+    },
+    toolbox: {
+        feature: {
+            saveAsImage: {}
+        }
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: [
+        {
+            type: 'category',
+            boundaryGap: false,
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        }
+    ],
+    yAxis: [
+        {
+            type: 'value'
+        }
+    ],
+    series: [
+        {
+            name: 'Line 1',
+            type: 'line',
+            stack: 'Total',
+            smooth: true,
+            lineStyle: {
+                width: 0
+            },
+            showSymbol: false,
+            areaStyle: {
+                opacity: 0.8,
+                color: new graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgb(128, 255, 165)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgb(1, 191, 236)'
+                    }
+                ])
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [140, 232, 101, 264, 90, 340, 250]
+        },
+        {
+            name: 'Line 2',
+            type: 'line',
+            stack: 'Total',
+            smooth: true,
+            lineStyle: {
+                width: 0
+            },
+            showSymbol: false,
+            areaStyle: {
+                opacity: 0.8,
+                color: new graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgb(0, 221, 255)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgb(77, 119, 255)'
+                    }
+                ])
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [120, 282, 111, 234, 220, 340, 310]
+        },
+        {
+            name: 'Line 3',
+            type: 'line',
+            stack: 'Total',
+            smooth: true,
+            lineStyle: {
+                width: 0
+            },
+            showSymbol: false,
+            areaStyle: {
+                opacity: 0.8,
+                color: new graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgb(55, 162, 255)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgb(116, 21, 219)'
+                    }
+                ])
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [320, 132, 201, 334, 190, 130, 220]
+        },
+        {
+            name: 'Line 4',
+            type: 'line',
+            stack: 'Total',
+            smooth: true,
+            lineStyle: {
+                width: 0
+            },
+            showSymbol: false,
+            areaStyle: {
+                opacity: 0.8,
+                color: new graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgb(255, 0, 135)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgb(135, 0, 157)'
+                    }
+                ])
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [220, 402, 231, 134, 190, 230, 120]
+        },
+        {
+            name: 'Line 5',
+            type: 'line',
+            stack: 'Total',
+            smooth: true,
+            lineStyle: {
+                width: 0
+            },
+            showSymbol: false,
+            label: {
+                show: true,
+                position: 'top'
+            },
+            areaStyle: {
+                opacity: 0.8,
+                color: new graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgb(255, 191, 0)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgb(224, 62, 76)'
+                    }
+                ])
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [220, 302, 181, 234, 210, 290, 150]
+        }
+    ]
+};
+
+
+export default function EchartsArea() {
+        return (
+            <ReactEcharts
+                option={option}
+                style={{ height: '400px', width: '100%' }}
+                className={'react_for_echarts'}
+            />
+        )
+}

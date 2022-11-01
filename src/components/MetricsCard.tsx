@@ -1,8 +1,17 @@
 import { Avatar, Box, Card, CardContent, Grid, SxProps, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoneyIcon from '@mui/icons-material/Money';
+import { useTheme } from '@mui/material/styles'
+import BalancerLogoWhite from '../assets/svg/logo-light.svg'
+import BalancerLogoBlack from '../assets/svg/logo-dark.svg'
+import { grey } from '@mui/material/colors';
 
-export const Budget = () => (
+
+
+
+export function Budget() {
+  const theme = useTheme();
+  return (
   <Card
     sx={{ height: '100%' }}
   >
@@ -18,24 +27,24 @@ export const Budget = () => (
             gutterBottom
             variant="overline"
           >
-            BUDGET
+            BAL
           </Typography>
           <Typography
             color="textPrimary"
             variant="h4"
           >
-            $24k
+            $6.75
           </Typography>
         </Grid>
         <Grid item>
           <Avatar
             sx={{
-              backgroundColor: 'error.main',
+              backgroundColor: grey[400],
               height: 56,
               width: 56
             }}
           >
-            <MoneyIcon />
+            <img src={(theme.palette.mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
           </Avatar>
         </Grid>
       </Grid>
@@ -66,3 +75,4 @@ export const Budget = () => (
     </CardContent>
   </Card>
 );
+}

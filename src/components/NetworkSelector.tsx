@@ -1,12 +1,27 @@
-import { FormControl, Select, MenuItem, Avatar, Divider } from "@mui/material"
+
+import { FormControl, Select, MenuItem, Avatar, Divider, SelectChangeEvent } from "@mui/material"
 import { Box } from "@mui/system"
+import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../constants/networks"
+import { useActiveNetworkVersion } from "../state/application/hooks"
 import ArbitrumLogo from './../assets/svg/arbitrum.svg'
 import EtherLogo from './../assets/svg/ethereum.svg'
 import PolygonLogo from './../assets/svg/polygon.svg'
 
-const networkId = 'ethereum';
 
 export default function NetworkSelector() {
+
+    const [activeNetwork, update] = useActiveNetworkVersion();
+
+    const handleNetworkChange = (evt: SelectChangeEvent) => {
+        const chainId = evt.target.value as string;
+        if (chainId === EthereumNetworkInfo.chainId) {
+            update(EthereumNetworkInfo)
+        } else if (chainId === PolygonNetworkInfo.chainId) {
+            update(PolygonNetworkInfo)
+        } else if (chainId === ArbitrumNetworkInfo.chainId) {
+            update(ArbitrumNetworkInfo)
+        }
+    };
 
     return (
         <FormControl size="small" >
@@ -20,8 +35,8 @@ export default function NetworkSelector() {
                 color="primary"
                 labelId="networkSelectLabel"
                 id="chainSelect"
-                value={networkId}
-                //onChange={handleNetworkChange}
+                onChange={handleNetworkChange}
+                value={activeNetwork.chainId ? activeNetwork.chainId : ' '}
                 inputProps={{
                     name: 'chainId',
                     id: 'chainId-native-simple',
@@ -29,7 +44,7 @@ export default function NetworkSelector() {
             >
                 <MenuItem disabled={true} dense={true}>Network selection:</MenuItem>
                 <Divider/>
-                <MenuItem value={'ethereum'} key="eth">
+                <MenuItem value={EthereumNetworkInfo.chainId} key="eth">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
                             <Avatar
@@ -45,7 +60,7 @@ export default function NetworkSelector() {
                         </Box>
                     </Box>
                 </MenuItem>
-                <MenuItem value={'polygon'} key="poly">
+                <MenuItem value={PolygonNetworkInfo.chainId} key="poly">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
                             <Avatar
@@ -61,7 +76,7 @@ export default function NetworkSelector() {
                         </Box>
                     </Box>
                 </MenuItem>
-                <MenuItem value={'arbitrum'} key="arb">
+                <MenuItem value={ArbitrumNetworkInfo.chainId} key="arb">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
                             <Avatar
