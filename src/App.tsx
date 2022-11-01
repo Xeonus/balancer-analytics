@@ -29,6 +29,10 @@ import SunIcon from './assets/svg/SunIcon.svg';
 import { getThemeDesignTokens } from './assets/theme';
 import Home from './pages/Home';
 import NetworkSelector from './components/NetworkSelector';
+import Polling from './components/Header/Polling'
+
+
+
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -115,8 +119,10 @@ function App() {
       <ThemeProvider theme={theme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
+          
           <AppBar position="fixed" open={open} enableColorOnDark sx={{ background: "rgba(255, 255, 255, 0.2)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", backdropFilter: "blur(5px)" }}>
             <Toolbar>
+            
               <IconButton
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
@@ -147,6 +153,7 @@ function App() {
                 </Typography>
                 <Box position="absolute" right="5px" >
                   <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
+                  <Polling/>
                   <IconButton
                     sx={{
                       mr: 1,

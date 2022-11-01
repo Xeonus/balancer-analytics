@@ -1,4 +1,4 @@
-import { EthereumNetworkInfo, NetworkInfo } from 'constants/networks';
+import { EthereumNetworkInfo, NetworkInfo } from './../constants/networks';
 
 export function networkPrefix(activeNewtork: NetworkInfo) {
     const isEthereum = activeNewtork === EthereumNetworkInfo;

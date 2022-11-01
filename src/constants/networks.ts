@@ -1,7 +1,7 @@
 
-import ARBITRUM_LOGO_URL from '../assets/images/arbitrum.svg'
-import ETHEREUM_LOGO_URL from '../assets/images/ethereum-logo.png'
-import POLYGON_LOGO_URL from '../assets/images/polygon-logo.png'
+import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
+import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
+import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
 import { BALANCER_PRIMARY_COLOR, BALANCER_SECONDARY_COLOR } from '../data/balancer/constants';
 
 export enum SupportedNetwork {

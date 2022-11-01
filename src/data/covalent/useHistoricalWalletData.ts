@@ -3,8 +3,8 @@ import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import { BalancerSwapFragment, useGetProtocolDataLazyQuery } from '../../apollo/generated/graphql-codegen-generated';
 import { useEffect } from 'react';
 import { unixToDate } from '../../utils/date';
-import { BalancerChartDataItem } from 'data/balancer/balancerTypes';
-import { useActiveNetworkVersion } from 'state/application/hooks';
+import { BalancerChartDataItem } from '../balancer/balancerTypes';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { GetAddressHistoricalTokenData, WalletHistoryData } from '../../utils/getAddressHistoricalTokenData';
 import { COVALENT_TOKEN_BLACKLIST } from './tokenBlackList';
 

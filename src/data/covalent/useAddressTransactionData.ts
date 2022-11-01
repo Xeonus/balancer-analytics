@@ -1,9 +1,9 @@
 
-import { BalancerChartDataItem } from 'data/balancer/balancerTypes';
+import { BalancerChartDataItem } from '../balancer/balancerTypes';
 import { BalancerDateChartItem } from './useHistoricalWalletData';
-import { GetAddressTransactionData } from 'utils/getAddressTransactionData';
-import { WalletTransactiondata } from 'utils/getAddressTransactionData';
-import {  DAO_FEE_MULTISIG } from 'constants/wallets';
+import { GetAddressTransactionData } from '../../utils/getAddressTransactionData';
+import { WalletTransactiondata } from '../../utils/getAddressTransactionData';
+import {  DAO_FEE_MULTISIG } from '../../constants/wallets';
 import dayjs from 'dayjs';
 
 export interface AddressTransactionData {
