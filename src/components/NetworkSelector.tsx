@@ -6,20 +6,26 @@ import { useActiveNetworkVersion } from "../state/application/hooks"
 import ArbitrumLogo from './../assets/svg/arbitrum.svg'
 import EtherLogo from './../assets/svg/ethereum.svg'
 import PolygonLogo from './../assets/svg/polygon.svg'
+import { useNavigate } from "react-router-dom";
 
 
 export default function NetworkSelector() {
 
     const [activeNetwork, update] = useActiveNetworkVersion();
+    const navigate = useNavigate();
 
     const handleNetworkChange = (evt: SelectChangeEvent) => {
         const chainId = evt.target.value as string;
         if (chainId === EthereumNetworkInfo.chainId) {
             update(EthereumNetworkInfo)
+            navigate('/')
+
         } else if (chainId === PolygonNetworkInfo.chainId) {
             update(PolygonNetworkInfo)
+            navigate('/polygon/chain');
         } else if (chainId === ArbitrumNetworkInfo.chainId) {
             update(ArbitrumNetworkInfo)
+            navigate('/arbitrum/chain');
         }
     };
 

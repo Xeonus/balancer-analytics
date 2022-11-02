@@ -1,34 +1,28 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import BalancerLogoWhite from '../../assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
 import MoonIcon from '../../assets/svg/MoonIcon.svg';
 import SunIcon from '../../assets/svg/SunIcon.svg';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import MenuIcon from '@mui/icons-material/Menu';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
-import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import { getThemeDesignTokens } from '../../assets/theme';
-import Home from '../../pages/Home';
+import { useActiveNetworkVersion } from '../../state/application/hooks';
+import { SUPPORTED_NETWORK_VERSIONS, EthereumNetworkInfo, SupportedNetwork } from '../../constants/networks';
 import NetworkSelector from '../NetworkSelector';
-import Polling from '../Header/Polling';
+import MenuDrawer from '../MenuDrawer'
+import Home from '../../pages/Home';
+import Protocol from '../../pages/Protocol';
+import Chain from '../../pages/Chain';
+import Tokens from '../../pages/Tokens';
+import { networkPrefix } from '../../utils/networkPrefix'
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -88,160 +82,120 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 function Dashboard() {
 
+    //Drawer logic
+    const [open, setOpen] = React.useState(true);
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
 
-  //Drawer logic
-  const [open, setOpen] = React.useState(true);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+    //Color mode handler
+    const [mode, setMode] = React.useState<'light' | 'dark'>('light');
+    const colorMode = React.useMemo(
+        () => ({
+            toggleColorMode: () => {
+                setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+            },
+        }),
+        [],
+    );
 
-  //Color mode handler
-  const [mode, setMode] = React.useState<'light' | 'dark'>('light');
-  const colorMode = React.useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-      },
-    }),
-    [],
-  );
+    //Theme
+    const theme = React.useMemo(() => createTheme(getThemeDesignTokens(mode)), [mode]);
 
-  const theme = React.useMemo(() => createTheme(getThemeDesignTokens(mode)), [mode]);
+    //Network hook
+    const location = useLocation();
+    const [activeNetwork, setActiveNetwork] = useActiveNetworkVersion();
+    React.useEffect(() => {
+        if (location.pathname === '/') {
+            setActiveNetwork(EthereumNetworkInfo);
+        } else {
+            SUPPORTED_NETWORK_VERSIONS.map((n) => {
+                if (location.pathname.includes(n.route.toLocaleLowerCase())) {
+                    setActiveNetwork(n);
+                }
+            });
+        }
+    }, [location.pathname, setActiveNetwork]);
 
     return (
         <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
-            <AppBar position="fixed" open={open} enableColorOnDark sx={{ background: "rgba(255, 255, 255, 0.2)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", backdropFilter: "blur(5px)" }}>
-                <Toolbar>
-                    <IconButton
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
-                        <Box
-                            sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} >
-                            <img src={(mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
-                        </Box>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="a"
-                            href="/"
-                            sx={{
-                                mr: 2,
-                                display: { xs: 'none', md: 'flex' },
-                                fontWeight: 700,
-                                textDecoration: 'none',
-                                color: (mode === 'dark') ? 'white' : 'black',
-                            }}
-                        >
-                            Analytics
-                        </Typography>
-                        <Box position="absolute" right="5px" >
+            <ThemeProvider theme={theme}>
+                <Box sx={{ display: 'flex' }}>
+                    <CssBaseline />
+                    <AppBar position="fixed" open={open} enableColorOnDark sx={{ background: "rgba(255, 255, 255, 0.2)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", backdropFilter: "blur(5px)" }}>
+                        <Toolbar>
+                            <IconButton
+                                aria-label="open drawer"
+                                onClick={handleDrawerOpen}
+                                edge="start"
+                                sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                            >
+                                <MenuIcon />
+                            </IconButton>
                             <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
-
-                                <IconButton
+                                <Box
+                                    sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} >
+                                    <img src={(mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
+                                </Box>
+                                <Typography
+                                    variant="h6"
+                                    noWrap
+                                    component="a"
+                                    href="/"
                                     sx={{
-                                        mr: 1,
-                                        animationDuration: 2,
-                                        width: 40,
-                                        height: 35,
-                                        borderRadius: 2,
-                                        backgroundColor: "background.paper",
-                                        boxShadow: 2,
+                                        mr: 2,
+                                        display: { xs: 'none', md: 'flex' },
+                                        fontWeight: 700,
+                                        textDecoration: 'none',
+                                        color: (mode === 'dark') ? 'white' : 'black',
                                     }}
-                                    onClick={colorMode.toggleColorMode}>
-                                    <img src={(mode === 'dark') ? MoonIcon : SunIcon} alt="Theme Icon" width="25" />
-                                </IconButton>
-                                <NetworkSelector />
+                                >
+                                    Analytics
+                                </Typography>
+                                <Box position="absolute" right="5px" >
+                                    <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
+
+                                        <IconButton
+                                            sx={{
+                                                mr: 1,
+                                                animationDuration: 2,
+                                                width: 40,
+                                                height: 35,
+                                                borderRadius: 2,
+                                                backgroundColor: "background.paper",
+                                                boxShadow: 2,
+                                            }}
+                                            onClick={colorMode.toggleColorMode}>
+                                            <img src={(mode === 'dark') ? MoonIcon : SunIcon} alt="Theme Icon" width="25" />
+                                        </IconButton>
+                                        <NetworkSelector />
+                                    </Box>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['Pool', 'Token', 'Fees', 'Treasury'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {['Service Providers', 'BAL', 'veBAL'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <Divider />
-                <Box m={1}>
-                    <Polling />
+                        </Toolbar>
+                    </AppBar>
+                    <MenuDrawer
+                        open={open}
+                        drawerWidth={drawerWidth}
+                        handleDrawerClose={handleDrawerClose}
+                        activeNetwork = {activeNetwork}
+                    />
+                    <MainContent open={open}>
+                        <DrawerHeader />
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/" element={<Protocol />} />
+                            <Route path={networkPrefix(activeNetwork) + 'chain'} element={<Chain />} />
+                            <Route path={networkPrefix(activeNetwork) + 'tokens'} element={<Tokens />} />
+                            
+                        </Routes>
+                    </MainContent>
                 </Box>
-                <Grid position="absolute" alignItems="center" justifyContent="center" direction="column" bottom="10px">
-                    <IconButton
-                        sx={{
-                            ml: 1,
-                            animationDuration: 2,
-                            height: 30,
-                            borderRadius: 1,
-                        }}>
-                        <Box display="flex" alignItems="center" alignContent="center">
-                            <Typography>Powered by</Typography>
-                            <Box
-                                sx={{ display: { xs: 'none', md: 'flex' }, ml: 1 }} >
-                                <img src={CoingeckoColor} alt="Coingecko Logo" width="20" />
-                            </Box>
-                        </Box>
-                    </ IconButton>
-                </Grid>
-            </Drawer>
-            <MainContent open={open}>
-                <DrawerHeader />
-                <Home />
-            </MainContent>
-        </Box>
-        </ThemeProvider>
-    </ColorModeContext.Provider>
+            </ThemeProvider>
+        </ColorModeContext.Provider>
     );
 }
 export default Dashboard;

@@ -5,15 +5,16 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { HashRouter } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client/react';
 import { client } from './apollo/client';
 import store from './state';
 
 function Updaters() {
   return (
-      <>
-          <ApplicationUpdater />
-      </>
+    <>
+      <ApplicationUpdater />
+    </>
   );
 }
 
@@ -23,9 +24,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-    <Provider store={store}>
-                <Updaters />
-      <App />
+      <Provider store={store}>
+        <Updaters />
+        <HashRouter>
+        <App />
+        </HashRouter>
       </Provider>
     </ApolloProvider>
   </React.StrictMode>

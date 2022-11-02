@@ -8,7 +8,7 @@ import { BalancerChartDataItem } from '../data/balancer/balancerTypes';
 
 function unixToType(unix: number, type: 'month' | 'week') {
     dayjs.extend(isoWeek);
-  const date = dayjs.unix(unix).utc()
+  const date = dayjs.unix(unix)
 
   switch (type) {
     case 'month':

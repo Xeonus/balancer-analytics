@@ -30,32 +30,32 @@ export default function Polling() {
   )
 
   return (
-    
+
     <Box display="flex" alignItems="center" alignContent="center">
       <IconButton
-                    sx={{
-                      mr: 1,
-                      animationDuration: 2,
-                      height: 20,
-                      borderRadius: 1,
-                      backgroundColor: "background.paper",
-                      boxShadow: 2,
-                    }}>
-   
-    <Link color={mode === 'dark'? 'white' : 'black'} variant="caption" display="block" underline="none" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
-         Synced block: {isMounted ? latestBlock : ' '}
-    </Link>
-    <Box mr={0.5}></Box>
-    <CircularProgress 
-      size={12} 
-      thickness={isMounted ? 22: 10}
-      variant={isMounted ? "determinate": "indeterminate"}
-      value={100}
-      sx={{
-        color: isMounted ? green[500] : orange[500]
-      }}
-      /> 
-    </IconButton>
+        sx={{
+          mr: 1,
+          animationDuration: 2,
+          height: 20,
+          borderRadius: 1,
+          backgroundColor: "background.paper",
+          boxShadow: 2,
+        }}>
+
+        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
+          Synced block: {isMounted ? latestBlock : ' '}
+        </Link>
+        <Box mr={0.5}></Box>
+        <CircularProgress
+          size={12}
+          thickness={isMounted ? 22 : 10}
+          variant={isMounted ? "determinate" : "indeterminate"}
+          value={100}
+          sx={{
+            color: isMounted ? green[500] : orange[500]
+          }}
+        />
+      </IconButton>
     </Box>
 
   )

@@ -1,14 +1,11 @@
-import * as React from 'react';
-import { Grid } from '@mui/material';
+import { Card, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Budget } from '../../components/MetricsCard';
 import EchartsArea from '../../components/echarts/EchartsArea';
 
 
 function Home() {
-
     return (
         <Box
             component="main"
@@ -65,7 +62,10 @@ function Home() {
                         xl={9}
                         xs={12}
                     >
+                        <Card>
+                            TVL
                         <EchartsArea/>
+                        </Card>
                     </Grid>
                     <Grid
                         item
