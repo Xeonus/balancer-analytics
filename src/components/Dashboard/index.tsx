@@ -18,7 +18,7 @@ import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { SUPPORTED_NETWORK_VERSIONS, EthereumNetworkInfo, SupportedNetwork } from '../../constants/networks';
 import NetworkSelector from '../NetworkSelector';
 import MenuDrawer from '../MenuDrawer'
-import Home from '../../pages/Home';
+import PoolsOverview from '../../pages/Pool/PoolsOverview';
 import Protocol from '../../pages/Protocol';
 import Chain from '../../pages/Chain';
 import Tokens from '../../pages/Tokens';
@@ -156,7 +156,7 @@ function Dashboard() {
                                 >
                                     Analytics
                                 </Typography>
-                                <Box position="absolute" right="5px" >
+                                <Box position="absolute" right="10px" >
                                     <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
 
                                         <IconButton
@@ -187,9 +187,9 @@ function Dashboard() {
                     <MainContent open={open}>
                         <DrawerHeader />
                         <Routes>
-                            <Route path="/" element={<Home />} />
                             <Route path="/" element={<Protocol />} />
                             <Route path={networkPrefix(activeNetwork) + 'chain'} element={<Chain />} />
+                            <Route path={networkPrefix(activeNetwork) + 'pools'} element={<PoolsOverview />} />
                             <Route path={networkPrefix(activeNetwork) + 'tokens'} element={<Tokens />} />
                             
                         </Routes>

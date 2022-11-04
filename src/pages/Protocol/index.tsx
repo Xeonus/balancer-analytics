@@ -1,108 +1,145 @@
 import { useTheme } from '@mui/material/styles'
-import { useBalancerChainProtocolData } from '../../data/balancer/useAggregatedProtocolData';
-import { EthereumNetworkInfo, ArbitrumNetworkInfo,  PolygonNetworkInfo } from '../../constants/networks';
-import { arbitrumBlockClient, arbitrumClient, polygonBlockClient, polygonClient } from '../../apollo/client';
-import getAggregatedProtocolChartData  from '../../utils/getAggregatedProtocolChartData';
-import { useTransformedVolumeData } from '../../hooks/chart';
-import { Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import { Card, Grid, CircularProgress, Typography } from '@mui/material';
+import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
+import { Budget } from '../../components/MetricsCard';
+import EchartsArea from '../../components/echarts/EchartsArea';
+import CoinCard from '../../components/Cards/CoinCard';
+import MetricsCard from '../../components/Cards/MetricsCard';
+import useAggregatedProtocolData from '../../data/balancer/useAggregatedProtocolData';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+
 
 
 export default function Protocol() {
 
     const theme = useTheme();
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
-    const protocolArbitrumData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
-    const protocolPolygonData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
-
-
-    //---Aggregated TVL Data---
-    let aggregatedTVL:any[] = [];
-    let  protocolTVL = 0;
-    let protocolTVLChange = 0;
-    //Create aggregate / stitched together TVL test:
-    if (protocolData.tvlData && protocolArbitrumData.tvlData && protocolPolygonData.tvlData) {
-        aggregatedTVL = getAggregatedProtocolChartData(protocolData.tvlData, protocolArbitrumData.tvlData, protocolPolygonData.tvlData, NaN)
-        if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl) {
-            protocolTVL = protocolData.tvl + protocolArbitrumData.tvl + protocolPolygonData.tvl;
-        }
-        if (protocolData.tvlChange && protocolArbitrumData.tvlChange && protocolPolygonData.tvlChange) {
-            protocolTVLChange = protocolData.tvlChange + protocolArbitrumData.tvlChange + protocolPolygonData.tvlChange;
-        }
-    }
-
-    //---Aggregated Trading volume data---
-    let aggregatedVolume:any[] = [];
-    let  protocolVolume = 0;
-    let protocolVolumeChange = 0
-    if (protocolData.volumeData && protocolArbitrumData.volumeData && protocolPolygonData.volumeData) {
-        aggregatedVolume = getAggregatedProtocolChartData(protocolData.volumeData, protocolArbitrumData.volumeData, protocolPolygonData.volumeData, 0)
-        if (protocolData.volume24 && protocolArbitrumData.volume24 && protocolPolygonData.volume24) {
-            protocolVolume = protocolData.volume24 + protocolArbitrumData.volume24 + protocolPolygonData.volume24;
-        }
-        if (protocolData.volumeChange && protocolArbitrumData.volumeChange && protocolPolygonData.volumeChange) {
-            protocolVolumeChange = protocolData.volumeChange + protocolArbitrumData.volumeChange + protocolPolygonData.volumeChange;
-        }
-    }
-    let aggregatedWeeklyVolume:any[] = [];
-    const weeklyVolumeData = useTransformedVolumeData(protocolData?.volumeData, 'week');
-    const weeklyArbitrumVolumeData = useTransformedVolumeData(protocolArbitrumData?.volumeData, 'week');
-    const weeklyPolygonVolumeData = useTransformedVolumeData(protocolPolygonData?.volumeData, 'week');
-
-    if (weeklyVolumeData && weeklyArbitrumVolumeData && weeklyPolygonVolumeData) {
-        //time, value, chainId
-        aggregatedWeeklyVolume = getAggregatedProtocolChartData(weeklyVolumeData, weeklyArbitrumVolumeData, weeklyPolygonVolumeData, 0)
-    }
-
-    //---Aggregated Swaps data---
-    let aggregatedSwaps:any[] = [];
-    let  protocolSwaps = 0;
-    if (protocolData.swapData && protocolArbitrumData.swapData && protocolPolygonData.swapData) {
-        aggregatedSwaps = getAggregatedProtocolChartData(protocolData.swapData, protocolArbitrumData.swapData, protocolPolygonData.swapData, 0)
-        if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24) {
-            protocolSwaps = protocolData.swaps24 + protocolArbitrumData.swaps24 + protocolPolygonData.swaps24;
-        }
-        if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24) {
-            protocolSwaps = protocolData.swaps24 + protocolArbitrumData.swaps24 + protocolPolygonData.swaps24;
-        }
-    }
-    let aggregatedWeeklySwaps:any[] = [];
-    const weeklySwapData = useTransformedVolumeData(protocolData?.swapData, 'week');
-    const weeklyArbitrumSwapData = useTransformedVolumeData(protocolArbitrumData?.swapData, 'week');
-    const weeklyPolygonSwapData = useTransformedVolumeData(protocolPolygonData?.swapData, 'week');
-
-    if (weeklySwapData && weeklyArbitrumSwapData && weeklyPolygonSwapData) {
-        //time, value, chainId
-        aggregatedWeeklySwaps = getAggregatedProtocolChartData(weeklySwapData, weeklyArbitrumSwapData, weeklyPolygonSwapData, 0)
-    }
-
-    //---Aggregated fee data
-        //---Aggregated Swaps data---
-        let aggregatedFees:any[] = [];
-        let  protocolFees = 0;
-        let protocolFeesChange = 0;
-        if (protocolData.feeData && protocolArbitrumData.feeData && protocolPolygonData.feeData) {
-            aggregatedFees = getAggregatedProtocolChartData(protocolData.feeData, protocolArbitrumData.feeData, protocolPolygonData.feeData, 0)
-            if (protocolData.fees24 && protocolArbitrumData.fees24 && protocolPolygonData.fees24) {
-                protocolFees = protocolData.fees24 + protocolArbitrumData.fees24 + protocolPolygonData.fees24;
-            }
-            if (protocolData.feesChange && protocolArbitrumData.feesChange && protocolPolygonData.feesChange) {
-                protocolFeesChange = protocolData.feesChange + protocolArbitrumData.feesChange + protocolPolygonData.feesChange;
-            }
-        }
-        let aggregatedWeeklyFees:any[] = [];
-        const weeklyFeeData = useTransformedVolumeData(protocolData?.feeData, 'week');
-        const weeklyArbitrumFeeData = useTransformedVolumeData(protocolArbitrumData?.feeData, 'week');
-        const weeklyPolygonFeeData = useTransformedVolumeData(protocolPolygonData?.feeData, 'week');
-    
-        if (weeklySwapData && weeklyArbitrumSwapData && weeklyPolygonSwapData) {
-            //time, value, chainId
-            aggregatedWeeklyFees = getAggregatedProtocolChartData(weeklyFeeData, weeklyArbitrumFeeData, weeklyPolygonFeeData, 0)
-        }
-    
-
-
+    //TODO: obtain form contants
+    const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
+    //Data
+    const aggregatedProtocolData = useAggregatedProtocolData();
+    const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
 
     return (
-        <Typography>Loaded</Typography>
+        <Box
+            component="main"
+            sx={{
+                flexGrow: 1,
+                py: 2
+            }}
+        >
+            <Container maxWidth={false}>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{ justifyContent: 'space-between' }}
+                >
+                    <Grid
+                        item
+                        lg={3}
+                        sm={6}
+                        xl={3}
+                        xs={12}
+                    >
+                        { coinData && coinData[balAddress] ?
+                        <CoinCard 
+                            tokenAddress={balAddress}
+                            tokenName='BAL'
+                            tokenPrice={coinData[balAddress].usd}
+                            tokenPriceChange={coinData[balAddress].usd_24h_change}
+                            
+                         />
+                        : <CircularProgress /> }
+                    </Grid>
+                    <Grid
+                        item
+                        xl={3}
+                        lg={3}
+                        sm={6}
+                        xs={12}
+                    >
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.volume? aggregatedProtocolData.volume : 0}
+                            metricName='Protocol Volume'
+                            mainMetricChange={aggregatedProtocolData.volumeChange}
+                            MetricIcon={EqualizerIcon}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xl={3}
+                        lg={3}
+                        sm={6}
+                        xs={12}
+                    >
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.tvl}
+                            metricName='Protocol TVL'
+                            mainMetricChange={aggregatedProtocolData.tvlChange}
+                            MetricIcon={MonetizationOnIcon}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xl={3}
+                        lg={3}
+                        sm={6}
+                        xs={12}
+                    >
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.fees24}
+                            metricName='Protocol Fees'
+                            mainMetricChange={aggregatedProtocolData.feesChange}
+                            MetricIcon={CurrencyExchangeIcon}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        lg={12}
+                        md={12}
+                        xl={6}
+                        xs={12}
+                    >
+                        <Card>
+                            <Box justifyContent={"center"} ml={2}>
+                        <Typography variant='h6'>Historical TVL</Typography>
+                        </Box>
+                        <EchartsArea/>
+                        </Card>
+                    </Grid>
+                    <Grid
+                        item
+                        lg={6}
+                        md={6}
+                        xl={3}
+                        xs={12}
+                    >
+                        
+                    </Grid>
+                    <Grid
+                        item
+                        lg={4}
+                        md={6}
+                        xl={6}
+                        xs={12}
+                    >
+                        
+                    </Grid>
+                    <Grid
+                        item
+                        lg={8}
+                        md={12}
+                        xl={9}
+                        xs={12}
+                    >
+                        
+                    </Grid>
+                </Grid>
+            </Container>
+        </Box>
+
     );
 }

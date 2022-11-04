@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { graphic } from 'echarts'
-import { useBalancerChainProtocolData } from '../../data/balancer/useAggregatedProtocolData';
+import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
 import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -111,15 +111,15 @@ export default function EchartsArea() {
                 },
                 showSymbol: false,
                 areaStyle: {
-                    opacity: 0.8,
+                    opacity: 0.95,
                     color: new graphic.LinearGradient(0, 0, 0, 1, [
                         {
                             offset: 0,
-                            color: 'rgb(0, 221, 255)'
+                            color: 'rgb(77, 119, 255)'
                         },
                         {
                             offset: 1,
-                            color: 'rgb(77, 119, 255)'
+                            color: 'rgb(0, 221, 255)'
                         }
                     ])
                 },
@@ -138,15 +138,15 @@ export default function EchartsArea() {
                 },
                 showSymbol: false,
                 areaStyle: {
-                    opacity: 0.8,
+                    opacity: 0.95,
                     color: new graphic.LinearGradient(0, 0, 0, 1, [
                         {
                             offset: 0,
-                            color: 'rgb(128, 255, 165)'
+                            color: 'rgb(1, 191, 236)'
                         },
                         {
                             offset: 1,
-                            color: 'rgb(1, 191, 236)'
+                            color: 'rgb(128, 255, 165)'
                         }
                     ])
                 },
@@ -165,15 +165,15 @@ export default function EchartsArea() {
                 },
                 showSymbol: false,
                 areaStyle: {
-                    opacity: 0.8,
+                    opacity: 0.95,
                     color: new graphic.LinearGradient(0, 0, 0, 1, [
                         {
                             offset: 0,
-                            color: 'rgb(55, 162, 255)'
+                            color: 'rgb(116, 21, 219)'
                         },
                         {
                             offset: 1,
-                            color: 'rgb(116, 21, 219)'
+                            color: 'rgb(55, 162, 255)'
                         }
                     ])
                 },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useActiveNetworkVersion } from "../state/application/hooks";
+import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 //Coingecko Interface
 export interface CoingeckoRawData {
@@ -8,7 +8,8 @@ export interface CoingeckoRawData {
 
 export interface FiatPrice {
     usd: number,
-    usd_24h_change: number
+    usd_24h_change: number,
+    usd_24h_vol: number
 }
 
 //Get historical Coingecko price data based on specific time-range (-> aligned to subgraph snapshots)
@@ -17,7 +18,7 @@ export function GetCoingeckoData (addresses: string[], network: string) {
     addresses.forEach(el => {
        addressesString = addressesString + el + ','})
     const baseURI = 'https://api.coingecko.com/api/v3/simple/token_price/';
-    const queryParams = network + '?contract_addresses=' + addressesString + '&vs_currencies=usd&include_24hr_change=true';
+    const queryParams = network + '?contract_addresses=' + addressesString + '&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true';
         const [jsonData, setJsonData] = useState<CoingeckoRawData>();
         useEffect(() => {
             const fetchData = async () => {

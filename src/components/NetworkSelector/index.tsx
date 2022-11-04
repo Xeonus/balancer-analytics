@@ -1,13 +1,12 @@
 
 import { FormControl, Select, MenuItem, Avatar, Divider, SelectChangeEvent } from "@mui/material"
 import { Box } from "@mui/system"
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../constants/networks"
-import { useActiveNetworkVersion } from "../state/application/hooks"
-import ArbitrumLogo from './../assets/svg/arbitrum.svg'
-import EtherLogo from './../assets/svg/ethereum.svg'
-import PolygonLogo from './../assets/svg/polygon.svg'
+import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../../constants/networks"
+import { useActiveNetworkVersion } from "../../state/application/hooks"
+import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
+import EtherLogo from '../../assets/svg/ethereum.svg'
+import PolygonLogo from '../../assets/svg/polygon.svg'
 import { useNavigate } from "react-router-dom";
-import { alpha } from "@mui/system"
 
 export default function NetworkSelector() {
 

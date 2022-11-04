@@ -1,23 +1,24 @@
-import { Box, Card, CardContent, Grid, SxProps, Typography } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useTheme } from '@mui/material/styles'
-import CurrencyLogo from '../../CurrencyLogo';
 import { formatDollarAmount } from '../../../utils/numbers';
 import { green } from '@mui/material/colors';
+import { OverridableComponent } from '@mui/material/OverridableComponent';
+import { SvgIconTypeMap } from '@mui/material';
 
 export type CoinCardProps = {
-  tokenPrice: number,
-  tokenPriceChange: number,
-  tokenName: string,
-  tokenAddress: string,
+  mainMetric: number,
+  mainMetricChange: number,
+  metricName: string,
+  MetricIcon: OverridableComponent<SvgIconTypeMap<{}, "svg">>
 }
 
-const CoinCard = ({
-  tokenPrice,
-  tokenPriceChange,
-  tokenName,
-  tokenAddress }: CoinCardProps) => {
+const MetricsCard = ({
+  mainMetric,
+  mainMetricChange,
+  metricName,
+  MetricIcon }: CoinCardProps) => {
 
   const theme = useTheme();
 
@@ -37,17 +38,17 @@ const CoinCard = ({
               gutterBottom
               variant="h5"
             >
-              {tokenName}
+              {metricName}
             </Typography>
             <Typography
               color="textPrimary"
               variant="h6"
             >
-              {formatDollarAmount(tokenPrice)}
+              {formatDollarAmount(mainMetric)}
             </Typography>
           </Grid>
           <Grid item>
-            <CurrencyLogo address={tokenAddress} size='40px' />
+           <MetricIcon />
           </Grid>
         </Grid>
         <Box
@@ -56,18 +57,18 @@ const CoinCard = ({
             alignItems: 'center'
           }}
         >
-          {tokenPriceChange > 0 ? 
+          {mainMetricChange > 0 ? 
             <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} /> 
             : 
             <ArrowDownwardIcon fontSize="small" color="error" />}
           <Typography
-            color={tokenPriceChange > 0 ? 'green' : 'error'}
+            color={mainMetricChange > 0 ? 'green' : 'error'}
             sx={{
               mr: 1
             }}
             variant="body2"
           >
-            {Number(tokenPriceChange).toFixed(2)} %
+            {Number(mainMetricChange).toFixed(2)} %
           </Typography>
           <Typography
             color="textSecondary"
@@ -80,4 +81,4 @@ const CoinCard = ({
     </Card>
   );
 }
-export default CoinCard;
+export default MetricsCard;

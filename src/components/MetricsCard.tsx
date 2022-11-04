@@ -4,12 +4,14 @@ import { useTheme } from '@mui/material/styles'
 import BalancerLogoWhite from '../assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../assets/svg/logo-dark.svg'
 import { grey } from '@mui/material/colors';
+import CurrencyLogo from './CurrencyLogo';
 
 
 
 
 export function Budget() {
   const theme = useTheme();
+  const bal = '0xba100000625a3754423978a60c9317c58a424e3D';
   return (
   <Card
     sx={{ height: '100%' }}
@@ -36,15 +38,7 @@ export function Budget() {
           </Typography>
         </Grid>
         <Grid item>
-          <Avatar
-            sx={{
-              backgroundColor: grey[500],
-              height: 40,
-              width: 40
-            }}
-          >
-            <img src={(theme.palette.mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
-          </Avatar>
+         <CurrencyLogo address={bal} size='30px'/>
         </Grid>
       </Grid>
       <Box

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useActiveNetworkVersion } from "../state/application/hooks";
+import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 //Coingecko Historical Interface
 export interface CoingeckoRawData {
@@ -9,7 +9,7 @@ export interface CoingeckoRawData {
 }
 
 //Get historical Coingecko price data based on specific time-range (-> aligned to subgraph snapshots)
-export function GetCoingeckoData (address: string, network: string, fromTimestamp: number, toTimestamp: number) {
+export function GetCoingeckoSingleTokenData (address: string, network: string, fromTimestamp: number, toTimestamp: number) {
     const [activeNetwork] = useActiveNetworkVersion();
     const baseURI = 'https://api.coingecko.com/api/v3/coins/';
     const queryParams = network + '/contract/' + address + '/market_cart/range?vs_currency=usd&from=' + fromTimestamp.toString() + '&to=' + toTimestamp.toString();

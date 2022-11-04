@@ -13,6 +13,8 @@ import TokenIcon from '@mui/icons-material/Token';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import DiscordIconLight from '../../assets/svg/discord-light.svg'
+import DiscordIconDark from '../../assets/svg/discord-dark.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
@@ -52,7 +54,7 @@ const MenuDrawer = ({
         justifyContent: 'flex-end',
     }));
 
-    const route = activeNetwork === EthereumNetworkInfo ? '' : activeNetwork.route + '/'
+    const route = activeNetwork === EthereumNetworkInfo ? '' : activeNetwork.route + '/';
 
     return (
         <Drawer
@@ -94,7 +96,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'Chain Metrics'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem button key={'Liquidity Pools'} disablePadding>
+                <ListItem button key={'Liquidity Pools'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'pools'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <WavesIcon />
@@ -140,11 +142,11 @@ const MenuDrawer = ({
             </List>
             <Divider />
             <Divider />
-            <Box position={"fixed"} bottom="0">
-            <Box m={1}>
+            <Box position={"fixed"} bottom="0" maxWidth={drawerWidth}>
+            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'}>
                 <Polling />
             </Box>
-            <Box display="flex" justifyContent="space-between" paddingX="40px" paddingY="10px">
+            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
                 <Link href="https://github.com/Xeonus" target="_blank" rel="noopener noreferrer">
                     <GitHubIcon />
                 </Link>
@@ -152,10 +154,10 @@ const MenuDrawer = ({
                     <TwitterIcon />
                 </Link>
                 <Link href="https://discord.balancer.fi" target="_blank" rel="noopener noreferrer">
-                    <HandshakeIcon  />
+                    <img src={DiscordIconLight} alt="Discord Icon" width="25" />
                 </Link>
             </Box>
-            <Box display="flex" justifyContent="space-between" paddingX="40px" paddingY="10px">
+            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
                 <IconButton
                     sx={{
                         ml: 1,

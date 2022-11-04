@@ -7,7 +7,7 @@ import { EthereumNetworkInfo } from '../../constants/networks'
 import { Link, CircularProgress, Box, IconButton } from '@mui/material'
 
 
-export default function Polling() {
+export default function Polling () {
   const theme = useTheme()
   const mode = theme.palette.mode;
   const [activeNetwork] = useActiveNetworkVersion()
@@ -31,7 +31,7 @@ export default function Polling() {
 
   return (
 
-    <Box display="flex" justifyContent="space-between" paddingX="20px" paddingY="20px">
+    <Box display="flex" justifyContent="space-between" paddingY="20px">
       <IconButton
         sx={{
           mr: 1,
