@@ -5,11 +5,19 @@ import BalancerLogoWhite from '../assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../assets/svg/logo-dark.svg'
 import { grey } from '@mui/material/colors';
 
+export type CoinCardProps = {
+    tokenPrice: number,
+    tokenName: string,
+    tokenData: any
+}
 
+const CoinCard = ({
+    tokenPrice,
+    tokenName,
+    tokenData }: CoinCardProps) => {
 
-
-export function Budget() {
   const theme = useTheme();
+  
   return (
   <Card
     sx={{ height: '100%' }}
@@ -17,14 +25,14 @@ export function Budget() {
     <CardContent>
       <Grid
         container
-        spacing={1}
+        spacing={3}
         sx={{ justifyContent: 'space-between' }}
       >
         <Grid item>
           <Typography
             color="textSecondary"
             gutterBottom
-            variant="h5"
+            variant="overline"
           >
             BAL
           </Typography>
@@ -38,9 +46,9 @@ export function Budget() {
         <Grid item>
           <Avatar
             sx={{
-              backgroundColor: grey[500],
-              height: 40,
-              width: 40
+              backgroundColor: grey[400],
+              height: 56,
+              width: 56
             }}
           >
             <img src={(theme.palette.mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite} alt="Balancer Logo" width="30" />
@@ -75,3 +83,4 @@ export function Budget() {
   </Card>
 );
 }
+export default CoinCard;

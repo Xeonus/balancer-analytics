@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTheme } from '@mui/material/styles'
 import { green, orange } from '@mui/material/colors';
 import { useActiveNetworkVersion, useSubgraphStatus } from '../../state/application/hooks'
 import { getEtherscanLink } from '../../utils'
 import { EthereumNetworkInfo } from '../../constants/networks'
-import { Link, Typography, CircularProgress, Box, IconButton } from '@mui/material'
+import { Link, CircularProgress, Box, IconButton } from '@mui/material'
 
 
 export default function Polling() {
@@ -31,7 +31,7 @@ export default function Polling() {
 
   return (
 
-    <Box display="flex" alignItems="center" alignContent="center">
+    <Box display="flex" justifyContent="space-between" paddingX="20px" paddingY="20px">
       <IconButton
         sx={{
           mr: 1,
@@ -42,7 +42,7 @@ export default function Polling() {
           boxShadow: 2,
         }}>
 
-        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
+        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
           Synced block: {isMounted ? latestBlock : ' '}
         </Link>
         <Box mr={0.5}></Box>

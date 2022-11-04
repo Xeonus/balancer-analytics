@@ -23,14 +23,14 @@ function Home() {
                         item
                         lg={3}
                         sm={6}
-                        xl={3}
+                        xl={2}
                         xs={12}
                     >
                         <Budget/>
                     </Grid>
                     <Grid
                         item
-                        xl={3}
+                        xl={2}
                         lg={3}
                         sm={6}
                         xs={12}
@@ -39,7 +39,7 @@ function Home() {
                     </Grid>
                     <Grid
                         item
-                        xl={3}
+                        xl={2}
                         lg={3}
                         sm={6}
                         xs={12}
@@ -48,7 +48,7 @@ function Home() {
                     </Grid>
                     <Grid
                         item
-                        xl={3}
+                        xl={2}
                         lg={3}
                         sm={6}
                         xs={12}

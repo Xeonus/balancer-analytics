@@ -7,7 +7,7 @@ import ArbitrumLogo from './../assets/svg/arbitrum.svg'
 import EtherLogo from './../assets/svg/ethereum.svg'
 import PolygonLogo from './../assets/svg/polygon.svg'
 import { useNavigate } from "react-router-dom";
-
+import { alpha } from "@mui/system"
 
 export default function NetworkSelector() {
 
@@ -30,14 +30,14 @@ export default function NetworkSelector() {
     };
 
     return (
-        <FormControl size="small" >
+        <FormControl size="small">
             <Select
-                    sx={{
-                        backgroundColor: "background.paper",
-                        boxShadow: 2,
-                        borderRadius: 2,
-                        borderColor: 0,
-                        }}
+                sx={{
+                    backgroundColor: "background.paper",
+                    boxShadow: 2,
+                    borderRadius: 2,
+                    borderColor: 0,
+                }}
                 color="primary"
                 labelId="networkSelectLabel"
                 id="chainSelect"

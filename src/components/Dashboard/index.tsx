@@ -24,6 +24,7 @@ import Chain from '../../pages/Chain';
 import Tokens from '../../pages/Tokens';
 import { networkPrefix } from '../../utils/networkPrefix'
 
+
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }

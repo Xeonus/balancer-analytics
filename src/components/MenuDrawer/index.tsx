@@ -13,6 +13,8 @@ import TokenIcon from '@mui/icons-material/Token';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -50,7 +52,7 @@ const MenuDrawer = ({
         justifyContent: 'flex-end',
     }));
 
-    const route = activeNetwork === EthereumNetworkInfo ? '' :  activeNetwork.route + '/'
+    const route = activeNetwork === EthereumNetworkInfo ? '' : activeNetwork.route + '/'
 
     return (
         <Drawer
@@ -61,6 +63,9 @@ const MenuDrawer = ({
                     width: drawerWidth,
                     boxSizing: 'border-box',
                 },
+                //backgroundColor: {
+                //    opacity: 0.5,
+               // }
             }}
             variant="persistent"
             anchor="left"
@@ -73,7 +78,7 @@ const MenuDrawer = ({
             </DrawerHeader>
             <Divider />
             <List>
-                <ListItem key={'Protocol Metrics'} disablePadding component={NavLink} to={'/'}>
+                <ListItem button key={'Protocol Metrics'} disablePadding component={NavLink} to={'/'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <AccountBalanceIcon />
@@ -81,7 +86,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'Protocol Metrics'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key={'Chain Metrics'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'chain'}>
+                <ListItem button key={'Chain Metrics'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'chain'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <LinkIcon />
@@ -89,7 +94,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'Chain Metrics'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key={'Liquidity Pools'} disablePadding>
+                <ListItem button key={'Liquidity Pools'} disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
                             <WavesIcon />
@@ -97,7 +102,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'Liquidity Pools'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key={'Tokens'} disablePadding component={NavLink} to={'/' + route + 'tokens'}>
+                <ListItem button key={'Tokens'} disablePadding component={NavLink} to={'/' + route + 'tokens'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <TokenIcon />
@@ -105,7 +110,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'Tokens'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key={'Protocol Fees'} disablePadding>
+                <ListItem button key={'Protocol Fees'} disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
                             <MonetizationOnIcon />
@@ -135,10 +140,22 @@ const MenuDrawer = ({
             </List>
             <Divider />
             <Divider />
+            <Box position={"fixed"} bottom="0">
             <Box m={1}>
                 <Polling />
             </Box>
-            <Grid position="absolute" alignItems="center" justifyContent="center" bottom="10px">
+            <Box display="flex" justifyContent="space-between" paddingX="40px" paddingY="10px">
+                <Link href="https://github.com/Xeonus" target="_blank" rel="noopener noreferrer">
+                    <GitHubIcon />
+                </Link>
+                <Link href="https://twitter.com/Xeonusify" target="_blank" rel="noopener noreferrer">
+                    <TwitterIcon />
+                </Link>
+                <Link href="https://discord.balancer.fi" target="_blank" rel="noopener noreferrer">
+                    <HandshakeIcon  />
+                </Link>
+            </Box>
+            <Box display="flex" justifyContent="space-between" paddingX="40px" paddingY="10px">
                 <IconButton
                     sx={{
                         ml: 1,
@@ -146,9 +163,9 @@ const MenuDrawer = ({
                         height: 30,
                         borderRadius: 1,
                     }}>
-                    <Link color={theme.palette.mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" href="https://coingecko.com">
+                    <Link color={theme.palette.mode === 'dark' ? 'white' : 'black'} target="_blank" rel="noopener noreferrer" variant="caption" display="block" underline="none" href="https://coingecko.com">
                         <Box display="flex" alignItems="center" alignContent="center">
-                            <Typography>Powered by</Typography>
+                            <Typography variant="caption" >Powered by</Typography>
                             <Box
                                 sx={{ display: { xs: 'none', md: 'flex' }, ml: 1 }} >
                                 <img src={CoingeckoColor} alt="Coingecko Logo" width="20" />
@@ -156,7 +173,8 @@ const MenuDrawer = ({
                         </Box>
                     </Link>
                 </ IconButton>
-            </Grid>
+            </Box>
+            </Box>
         </Drawer>
     );
 }
