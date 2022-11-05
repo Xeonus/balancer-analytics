@@ -8,13 +8,10 @@ export default function PoolsOverview() {
     const poolData = useBalancerPools();
     const [ activeNetwork ] = useActiveNetworkVersion();
     
-    console.log("poolData", poolData);
-
-
     return (
         <Box>
         <Typography variant="h5" mb={1}>Liquidity Pools Overview ({activeNetwork.name})</Typography>
-        <PoolTable />
+        <PoolTable poolDatas={poolData}/>
         </Box>
     );
 }

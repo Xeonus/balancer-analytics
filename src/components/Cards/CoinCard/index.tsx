@@ -23,7 +23,10 @@ const CoinCard = ({
 
   return (
     <Card
-    sx={{maxWidth: '275px'}}
+    sx={{
+        maxWidth: '275px',
+        minWidth: '275px'
+    }}
     >
       <CardContent>
         <Grid

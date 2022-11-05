@@ -10,58 +10,50 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Grid } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { PoolData } from '../../../data/balancer/balancerTypes';
+import { PoolData, PoolTokenData } from '../../../data/balancer/balancerTypes';
 import { getShortPoolName } from '../../../utils/getShortPoolName';
+import { CircularProgress } from '@mui/material';
+import { formatDollarAmount } from '../../../utils/numbers';
+import PoolCurrencyLogo from '../../PoolCurrencyLogo';
+import ControlPointDuplicateIcon from '@mui/icons-material/ControlPointDuplicate';
+import { POOL_HIDE } from '../../../constants/index'
 
 interface Data {
-  calories: number;
-  carbs: number;
-  fat: number;
+  number: number;
+  poolTokens: PoolTokenData[];
   name: string;
-  protein: number;
+  volume24: number;
+  volume7: number;
+  fees: number,
+  tvl: number;
 }
 
 function createData(
+  number: number,
+  poolTokens: PoolTokenData[],
   name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
+  volume24: number,
+  volume7: number,
+  fees: number,
+  tvl: number,
 ): Data {
   return {
+    number, 
+    poolTokens,
     name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    volume24,
+    volume7,
+    fees,
+    tvl,
   };
 }
-
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -79,8 +71,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  a: { [key in Key]: number | string | PoolTokenData[]},
+  b: { [key in Key]: number | string | PoolTokenData[]},
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -110,34 +102,46 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'name',
+    id: 'number',
+    numeric: false,
+    disablePadding: false,
+    label: '#',
+  },
+  {
+    id: 'poolTokens',
     numeric: false,
     disablePadding: true,
-    label: 'Dessert (100g serving)',
+    label: '',
   },
   {
-    id: 'calories',
-    numeric: true,
+    id: 'name',
+    numeric: false,
     disablePadding: false,
-    label: 'Calories',
+    label: 'Pool Name',
   },
   {
-    id: 'fat',
+    id: 'volume24',
     numeric: true,
     disablePadding: false,
-    label: 'Fat (g)',
+    label: 'Volume 24h',
   },
   {
-    id: 'carbs',
+    id: 'volume7',
     numeric: true,
     disablePadding: false,
-    label: 'Carbs (g)',
+    label: 'Volume 7d',
   },
   {
-    id: 'protein',
+    id: 'fees',
     numeric: true,
     disablePadding: false,
-    label: 'Protein (g)',
+    label: 'Trading Fees 24h',
+  },
+  {
+    id: 'tvl',
+    numeric: true,
+    disablePadding: false,
+    label: 'TVL',
   },
 ];
 
@@ -161,17 +165,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -184,7 +177,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {headCell.label === '' ? < ControlPointDuplicateIcon />: headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -198,21 +191,36 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
 export default function PoolTable({
-    poolData
+    poolDatas
 }: {
-    poolData?: PoolData
+    poolDatas?: PoolData[]
 }) {
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
+  const [order, setOrder] = React.useState<Order>('desc');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  if(!poolDatas) {
+    return <CircularProgress />;
+  }
+
+  if (poolDatas.length < 10) {
+    return (
+      <Grid>
+      <CircularProgress />
+      </Grid>
+    );
+  }
+
+  const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 0)
+
+  const rows = filteredPoolDatas.map(el =>
+    createData(filteredPoolDatas.indexOf(el) +1, el.tokens, getShortPoolName(el), el.volumeUSD, el.volumeUSDWeek, el.feesUSD, el.tvlUSD)
+
+  )
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -271,6 +279,9 @@ export default function PoolTable({
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+
+  //Table generation
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -301,21 +312,18 @@ export default function PoolTable({
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
+                      role="number"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
+                      <TableCell 
+                      align="left"
+                      >
+                        {row.number}
                       </TableCell>
+                      <TableCell component="th"><PoolCurrencyLogo tokens={row.poolTokens} /> </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
@@ -324,10 +332,10 @@ export default function PoolTable({
                       >
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
+                      <TableCell align="right">{formatDollarAmount(row.volume7)}</TableCell>
+                      <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>
+                      <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -355,7 +363,7 @@ export default function PoolTable({
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label="Dense view"
       />
     </Box>
   );

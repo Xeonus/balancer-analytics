@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { EthereumNetworkInfo, SupportedNetwork } from "../../constants/networks";
-import useHttpLocations from "../../hooks/useHttpLocations";
 import { isAddress } from '../../utils';
 import { Avatar } from '@mui/material';
 
@@ -54,21 +53,35 @@ export default function CurrencyLogo({
     //Token image sources
     const srcs: string[] = useMemo(() => {
         const checkSummed = isAddress(address)
-    
-    
+
+
         if (checkSummed && address) {
-          const override = tempSources[address]
-          return [getTokenLogoURL(checkSummed, activeNetwork.id), override]
+            const override = tempSources[address]
+            return [getTokenLogoURL(checkSummed, activeNetwork.id), override]
         }
         return []
-      }, [address, tempSources])
+    }, [address, tempSources])
 
-      return <Avatar
-      sx={{
-          height: size,
-          width: size
-      }}
-      src={srcs[0] ? srcs[0] : srcs[1]}
-  />
+    //Return an avatar for the default source, or an avatar as a child if default source is empty!
+    return <Avatar
+        sx={{
+            height: size,
+            width: size,
+            backgroundColor: 'white',
+        }}
+        src={srcs[1]}
+        children={
+            <Avatar
+                sx={{
+                    height: size,
+                    width: size,
+                    backgroundColor: 'white',
+                }}
+                src={srcs[0]}
+                alt={'?'}
+                />
+        }
+        alt={'?'}
+    />
 
 }
