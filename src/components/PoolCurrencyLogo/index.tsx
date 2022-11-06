@@ -1,19 +1,21 @@
 
 
-import { styled } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import CurrencyLogo from '../CurrencyLogo';
 import AvatarGroup from '@mui/material/AvatarGroup';
 
 interface PoolCurrencyLogoProps {
     margin?: boolean;
-    size?: number;
+    size?: string;
     tokens: { address: string }[];
 }
 
-export default function PoolCurrencyLogo({ tokens, size = 20, margin = true }: PoolCurrencyLogoProps) {
+export default function PoolCurrencyLogo({ tokens, size = '25px'}: PoolCurrencyLogoProps) {
     return(
-        <AvatarGroup sx={{alignItems:"left"}}>
-            {tokens.map((token) => <CurrencyLogo address={token.address}/> )}
+        <Box position={"relative"} display="flex">
+        <AvatarGroup max={8}>
+            {tokens.map((token) => <CurrencyLogo key={token.address + Math.random()*10} address={token.address} size={size} /> )}
         </AvatarGroup>
+        </Box>
     );
 }

@@ -10,10 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid } from '@mui/material';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Checkbox from '@mui/material/Checkbox';
+import { Grid, Link } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
@@ -22,13 +19,22 @@ import { getShortPoolName } from '../../../utils/getShortPoolName';
 import { CircularProgress } from '@mui/material';
 import { formatDollarAmount } from '../../../utils/numbers';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
-import ControlPointDuplicateIcon from '@mui/icons-material/ControlPointDuplicate';
 import { POOL_HIDE } from '../../../constants/index'
+import TokensWhite from '../../../assets/svg/tokens_white.svg';
+import TokensBlack from '../../../assets/svg/tokens_black.svg';
+import { useTheme } from '@mui/material/styles'
+import PoolComposition from '../../PoolComposition'
+import { useNavigate } from 'react-router-dom';
+import { networkPrefix } from '../../../utils/networkPrefix';
+import { useActiveNetworkVersion } from '../../../state/application/hooks';
+import { NetworkInfo } from '../../../constants/networks';
+
 
 interface Data {
   number: number;
-  poolTokens: PoolTokenData[];
   name: string;
+  poolTokens: PoolTokenData[];
+  poolData: PoolData,
   volume24: number;
   volume7: number;
   fees: number,
@@ -37,8 +43,9 @@ interface Data {
 
 function createData(
   number: number,
-  poolTokens: PoolTokenData[],
   name: string,
+  poolTokens: PoolTokenData[],
+  poolData: PoolData,
   volume24: number,
   volume7: number,
   fees: number,
@@ -48,6 +55,7 @@ function createData(
     number, 
     poolTokens,
     name,
+    poolData,
     volume24,
     volume7,
     fees,
@@ -71,8 +79,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string | PoolTokenData[]},
-  b: { [key in Key]: number | string | PoolTokenData[]},
+  a: { [key in Key]: number | string | PoolTokenData[] | PoolData},
+  b: { [key in Key]: number | string | PoolTokenData[] | PoolData},
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -110,14 +118,14 @@ const headCells: readonly HeadCell[] = [
   {
     id: 'poolTokens',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: '',
   },
   {
     id: 'name',
     numeric: false,
-    disablePadding: false,
-    label: 'Pool Name',
+    disablePadding: true,
+    label: 'Pool Composition',
   },
   {
     id: 'volume24',
@@ -146,22 +154,22 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const { order, orderBy, rowCount, onRequestSort } =
     props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
+    const theme = useTheme()
+    
   return (
     <TableHead>
       <TableRow>
@@ -177,7 +185,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label === '' ? < ControlPointDuplicateIcon />: headCell.label}
+              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -198,10 +206,11 @@ export default function PoolTable({
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [activeNetwork] = useActiveNetworkVersion();
+  let navigate = useNavigate();
 
   if(!poolDatas) {
     return <CircularProgress />;
@@ -214,11 +223,11 @@ export default function PoolTable({
       </Grid>
     );
   }
-
-  const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 0)
+  
+  const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   const rows = filteredPoolDatas.map(el =>
-    createData(filteredPoolDatas.indexOf(el) +1, el.tokens, getShortPoolName(el), el.volumeUSD, el.volumeUSDWeek, el.feesUSD, el.tvlUSD)
+    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.volumeUSD, el.volumeUSDWeek, el.feesUSD, el.tvlUSD)
 
   )
 
@@ -231,34 +240,9 @@ export default function PoolTable({
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: readonly string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-
-    setSelected(newSelected);
-  };
+    //TODO?
+  }
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -273,11 +257,14 @@ export default function PoolTable({
     setDense(event.target.checked);
   };
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  const getLink = (activeNetwork: NetworkInfo, id: string) => {
+    return networkPrefix(activeNetwork) + 'pools/' + id;
+  }
 
 
   //Table generation
@@ -292,10 +279,8 @@ export default function PoolTable({
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
@@ -305,32 +290,28 @@ export default function PoolTable({
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={() => { navigate(`${getLink(activeNetwork, row.poolData.id)}/`); }}
                       role="number"
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
-                      selected={isItemSelected}
                     >
                       <TableCell 
                       align="left"
                       >
                         {row.number}
                       </TableCell>
-                      <TableCell component="th"><PoolCurrencyLogo tokens={row.poolTokens} /> </TableCell>
+                      <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
-                        padding="none"
                       >
-                        {row.name}
+                        <PoolComposition key={row.poolData.id} poolData={row.poolData} size={30} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume7)}</TableCell>
@@ -352,7 +333,7 @@ export default function PoolTable({
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

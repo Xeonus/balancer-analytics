@@ -19,6 +19,7 @@ import { SUPPORTED_NETWORK_VERSIONS, EthereumNetworkInfo, SupportedNetwork } fro
 import NetworkSelector from '../NetworkSelector';
 import MenuDrawer from '../MenuDrawer'
 import PoolsOverview from '../../pages/Pool/PoolsOverview';
+import PoolPage from '../../pages/Pool/PoolPage';
 import Protocol from '../../pages/Protocol';
 import Chain from '../../pages/Chain';
 import Tokens from '../../pages/Tokens';
@@ -191,6 +192,8 @@ function Dashboard() {
                             <Route path={networkPrefix(activeNetwork) + 'chain'} element={<Chain />} />
                             <Route path={networkPrefix(activeNetwork) + 'pools'} element={<PoolsOverview />} />
                             <Route path={networkPrefix(activeNetwork) + 'tokens'} element={<Tokens />} />
+                            <Route path={"/:networkID/pools/:poolId"} element={<PoolPage />} />
+                            <Route path={"/pools/:poolId"} element={<PoolPage />} />
                             
                         </Routes>
                     </MainContent>
