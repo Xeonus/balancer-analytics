@@ -126,6 +126,11 @@ export default function EchartsArea() {
                 emphasis: {
                     focus: 'series'
                 },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
                 data: mainnetData
             },
             {
@@ -153,6 +158,11 @@ export default function EchartsArea() {
                 emphasis: {
                     focus: 'series'
                 },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
                 data: arbitrumData
             },
             {
@@ -179,6 +189,11 @@ export default function EchartsArea() {
                 },
                 emphasis: {
                     focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
                 },
                 data: polygonData
             },

@@ -2,7 +2,7 @@
 import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
-import { BALANCER_PRIMARY_COLOR, BALANCER_SECONDARY_COLOR } from '../data/balancer/constants';
+import { BALANCER_PRIMARY_COLOR, BALANCER_SECONDARY_COLOR, PERSONAL_GRAPH_KEY } from '../data/balancer/constants';
 
 export enum SupportedNetwork {
   ETHEREUM,
@@ -14,6 +14,7 @@ export type NetworkInfo = {
   id: SupportedNetwork
   chainId: string
   coingeckoId: string
+  decentralicedClientUri: string
   route: string
   name: string
   startTimeStamp: number
@@ -35,6 +36,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
     startTimeStamp: 1619874000,
     appUri: 'https://app.balancer.fi/',
     clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
+    decentralicedClientUri: 'https://gateway.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/GAWNgiGrA9eRce5gha9tWc7q5DPvN3fs5rSJ6tEULFNM',
     bgColor: BALANCER_PRIMARY_COLOR,
     primaryColor: BALANCER_PRIMARY_COLOR,
     secondaryColor: BALANCER_SECONDARY_COLOR,
@@ -50,6 +52,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   startTimeStamp: 1619874000,
   appUri: 'https://arbitrum.balancer.fi/',
   clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2',
+  decentralicedClientUri: '',
   imageURL: ARBITRUM_LOGO_URL,
   bgColor: '#0A294B',
   primaryColor: '#0490ED',
@@ -66,6 +69,7 @@ export const PolygonNetworkInfo: NetworkInfo = {
   startTimeStamp: 1619874000,
   appUri: 'https://polygon.balancer.fi/',
   clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
+  decentralicedClientUri: '',
   bgColor: '#8247e5',
   primaryColor: '#8247e5',
   secondaryColor: '#FB7876',

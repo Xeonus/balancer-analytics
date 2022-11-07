@@ -4,15 +4,14 @@ import {
     useGetPoolChartDataQuery,
     useGetPoolDataLazyQuery,
     useBalancerPoolSwapFeeSnapshotQuery,
-    PoolSnapshot,
 } from '../../apollo/generated/graphql-codegen-generated';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useDeltaTimestamps } from '../../utils/queries';
 import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import { useEffect, useState } from 'react';
 import { unixToDate } from '../../utils/date';
-import { BalancerChartDataItem, PoolData, PoolTokenData } from './balancerTypes';
-import { CoingeckoRawData, CoingeckoSnapshotPriceData } from './useTokens';
+import { BalancerChartDataItem, PoolData } from './balancerTypes';
+import { CoingeckoSnapshotPriceData } from './useTokens';
 
 function getPoolValues(
     poolId: string,

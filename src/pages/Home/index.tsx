@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Typography } from '@mui/material';
 import { Budget } from '../../components/MetricsCard';
-import EchartsArea from '../../components/echarts/EchartsArea';
+import EchartsArea from '../../components/Echarts/ProtocolEchartsArea';
 import CoinCard from '../../components/Cards/CoinCard';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 

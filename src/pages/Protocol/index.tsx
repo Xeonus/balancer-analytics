@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import { Card, Grid, CircularProgress, Typography } from '@mui/material';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 import { Budget } from '../../components/MetricsCard';
-import EchartsArea from '../../components/echarts/EchartsArea';
+import EchartsArea from '../../components/Echarts/ProtocolEchartsArea';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import useAggregatedProtocolData from '../../data/balancer/useAggregatedProtocolData';

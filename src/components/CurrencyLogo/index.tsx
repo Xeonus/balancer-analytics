@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
+import { useTheme } from '@mui/material/styles'
 import { EthereumNetworkInfo, SupportedNetwork } from "../../constants/networks";
 import { isAddress } from '../../utils';
 import { Avatar } from '@mui/material';
@@ -34,7 +35,8 @@ export default function CurrencyLogo({
     size?: string
 }) {
 
-    const [activeNetwork] = useActiveNetworkVersion()
+    const [activeNetwork] = useActiveNetworkVersion();
+    const theme = useTheme();
 
     //Balancer coin repository asset location
     let assetLoc = 'master';
@@ -67,7 +69,9 @@ export default function CurrencyLogo({
         sx={{
             height: size,
             width: size,
-            backgroundColor: 'white',
+            backgroundColor: theme.palette.mode === 'dark' ? 'white' : 'rgb(226, 232, 240)',
+            color: theme.palette.mode === 'dark' ? 'white' : 'black',
+            fontSize: '15px',
         }}
         src={srcs[1]}
         children={
@@ -75,7 +79,9 @@ export default function CurrencyLogo({
                 sx={{
                     height: size,
                     width: size,
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? 'white' : 'rgb(226, 232, 240)',
+                    color: 'black',
+                    fontSize: '15px',
                 }}
                 src={srcs[0]}
                 alt={'?'}
