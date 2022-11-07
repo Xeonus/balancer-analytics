@@ -124,7 +124,7 @@ const headCells: readonly HeadCell[] = [
   {
     id: 'name',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: 'Pool Composition',
   },
   {
@@ -311,7 +311,7 @@ export default function PoolTable({
                         id={labelId}
                         scope="row"
                       >
-                        <PoolComposition key={row.poolData.id} poolData={row.poolData} size={30} />
+                        <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume7)}</TableCell>
