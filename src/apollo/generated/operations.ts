@@ -243,7 +243,7 @@ export const GetProtocolData = gql`
   ${BalancerSwap}
 `;
 export const GetTokenData = gql`
-  query GetTokenData($block24: Block_height!, $blockWeek: Block_height!) {
+  query GetTokenData($block24: Block_height!) {
     tokens: tokens(
       first: 1000
       orderBy: totalBalanceUSD
@@ -263,17 +263,6 @@ export const GetTokenData = gql`
       ...BalancerToken
     }
     prices24: latestPrices(first: 1000, block: $block24) {
-      ...LatestPrice
-    }
-    tokensWeek: tokens(
-      first: 1000
-      orderBy: totalBalanceUSD
-      orderDirection: desc
-      block: $blockWeek
-    ) {
-      ...BalancerToken
-    }
-    pricesWeek: latestPrices(first: 1000, block: $blockWeek) {
       ...LatestPrice
     }
   }
@@ -336,11 +325,7 @@ export const GetTransactionData = gql`
   ${BalancerJoinExit}
 `;
 export const GetPoolData = gql`
-  query GetPoolData(
-    $block24: Block_height!
-    $block48: Block_height!
-    $blockWeek: Block_height!
-  ) {
+  query GetPoolData($block24: Block_height!, $block48: Block_height!) {
     pools(first: 1000, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
@@ -357,15 +342,6 @@ export const GetPoolData = gql`
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block48
-    ) {
-      ...BalancerPool
-    }
-    poolsWeek: pools(
-      first: 1000
-      orderBy: totalLiquidity
-      orderDirection: desc
-      where: { totalLiquidity_gt: "0.01" }
-      block: $blockWeek
     ) {
       ...BalancerPool
     }

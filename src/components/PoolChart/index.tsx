@@ -59,7 +59,7 @@ export default function PoolChart({tvlData, volumeData, feesData} : PoolChartPro
         if (tvlData.length < Number(timeRange) || timeRange == '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
-            setRangedFeesData(volumeData);
+            setRangedFeesData(feesData);
         } else {
             setRangedTvlData(tvlData.slice(tvlData.length - Number(timeRange)))
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(timeRange)))

@@ -36,7 +36,6 @@ interface Data {
   poolTokens: PoolTokenData[];
   poolData: PoolData,
   volume24: number;
-  volume7: number;
   fees: number,
   tvl: number;
 }
@@ -47,7 +46,6 @@ function createData(
   poolTokens: PoolTokenData[],
   poolData: PoolData,
   volume24: number,
-  volume7: number,
   fees: number,
   tvl: number,
 ): Data {
@@ -57,7 +55,6 @@ function createData(
     name,
     poolData,
     volume24,
-    volume7,
     fees,
     tvl,
   };
@@ -132,12 +129,6 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Volume 24h',
-  },
-  {
-    id: 'volume7',
-    numeric: true,
-    disablePadding: false,
-    label: 'Volume 7d',
   },
   {
     id: 'fees',
@@ -227,7 +218,7 @@ export default function PoolTable({
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   const rows = filteredPoolDatas.map(el =>
-    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.volumeUSD, el.volumeUSDWeek, el.feesUSD, el.tvlUSD)
+    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.volumeUSD, el.feesUSD, el.tvlUSD)
 
   )
 
@@ -314,7 +305,6 @@ export default function PoolTable({
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.volume7)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                     </TableRow>

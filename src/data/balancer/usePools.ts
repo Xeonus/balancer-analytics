@@ -96,7 +96,6 @@ export function useBalancerPools(): PoolData[] {
                 variables: {
                     block24: { number: parseInt(block24.number) },
                     block48: { number: parseInt(block48.number) },
-                    blockWeek: { number: parseInt(blockWeek.number) }, 
                 },
                 context: {
                     uri: activeNetwork.clientUri,
@@ -109,13 +108,12 @@ export function useBalancerPools(): PoolData[] {
         return [];
     }
 
-    const { pools, pools24, pools48, poolsWeek, prices } = data;
+    const { pools, pools24, pools48, prices } = data;
 
     return pools.map((pool) => {
         const poolData = getPoolValues(pool.id, pools, feeData);
         const poolData24 = getPoolValues(pool.id, pools24);
         const poolData48 = getPoolValues(pool.id, pools48);
-        const poolDataWeek = getPoolValues(pool.id, poolsWeek);
 
         
 
@@ -148,7 +146,6 @@ export function useBalancerPools(): PoolData[] {
             volumeUSDChange:
                 (poolData.volume - poolData24.volume - (poolData24.volume - poolData48.volume)) /
                 (poolData24.volume - poolData48.volume),
-            volumeUSDWeek: poolData.volume - poolDataWeek.volume,
             feesUSD: poolData.fees - poolData24.fees,
             feesEpochUSD: poolData.feesEpoch,
             tvlUSD: poolData.tvl,

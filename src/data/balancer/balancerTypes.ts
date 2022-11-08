@@ -15,7 +15,6 @@ export type TokenData = {
     // volume
     volumeUSD: number;
     volumeUSDChange: number;
-    volumeUSDWeek: number;
     txCount: number;
 
     //fees
@@ -26,9 +25,9 @@ export type TokenData = {
     tvlUSD: number;
     tvlUSDChange: number;
 
+    // price
     priceUSD: number;
     priceUSDChange: number;
-    priceUSDChangeWeek: number;
 
     //protocol collector info
     valueUSDCollected: number;
@@ -66,7 +65,6 @@ export interface PoolData {
     // volume
     volumeUSD: number;
     volumeUSDChange: number;
-    volumeUSDWeek: number;
 
     // liquidity
     tvlUSD: number;

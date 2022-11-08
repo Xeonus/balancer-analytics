@@ -75,8 +75,6 @@ export function useBalancerTokens(): TokenData[] {
             getTokenData({
                 variables: {
                     block24: { number: parseInt(block24.number) },
-                    //block48: { number: parseInt(block48.number) },
-                    blockWeek: { number: parseInt(blockWeek.number) },
                 },
                 context: {
                     uri: activeNetwork.clientUri,
@@ -132,26 +130,21 @@ export function useBalancerTokens(): TokenData[] {
         return [];
     }
 
-    const { tokens, prices, tokens24, prices24, tokensWeek, pricesWeek } = data;
+    const { tokens, prices, tokens24, prices24} = data;
 
     return tokens.map((token) => {
         let tokenData = getTokenValues(token.address, tokens);
         let tokenData24 = getTokenValues(token.address, tokens24);
-        //const tokenData48 = getTokenValues(token.address, tokens48);
-        let tokenDataWeek = getTokenValues(token.address, tokensWeek);
+
         let priceData = getTokenPriceValues(token.address, prices);
         let priceData24 = getTokenPriceValues(token.address, prices24);
-        //const priceData48 = getTokenPriceValues(token.address, prices48);
-        let priceDataWeek = getTokenPriceValues(token.address, pricesWeek);
         //override:
         let priceChange = 0
         if (coingeckoData && coingeckoData[token.address]) {
             tokenData = getTokenValues(token.address, tokens, coingeckoData);
             tokenData24 = getTokenValues(token.address, tokens24, coingeckoData);
-            tokenDataWeek = getTokenValues(token.address, tokensWeek, coingeckoData);
             priceData = getTokenPriceValues(token.address, prices, coingeckoData);
             priceData24 = getTokenPriceValues(token.address, prices24, coingeckoData);
-            priceDataWeek = getTokenPriceValues(token.address, pricesWeek, coingeckoData);
             priceChange = coingeckoData[token.address].usd_24h_change
         }
         
@@ -166,7 +159,6 @@ export function useBalancerTokens(): TokenData[] {
             exists: true,
             volumeUSD: tokenData.volume - tokenData24.volume,
             volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
-            volumeUSDWeek: tokenData.volume - tokenDataWeek.volume,
             txCount: parseFloat(token.totalSwapCount),
             feesUSD: 0,
             tvlToken: tokenData.tvlToken,
@@ -175,10 +167,6 @@ export function useBalancerTokens(): TokenData[] {
             tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
             priceUSD: priceData.price,
             priceUSDChange: priceChange,
-            priceUSDChangeWeek:
-                priceData.price && priceDataWeek.price
-                    ? ((priceData.price - priceDataWeek.price) / priceDataWeek.price) * 100
-                    : 0,
         };
     });
 }
