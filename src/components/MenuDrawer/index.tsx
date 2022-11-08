@@ -112,12 +112,12 @@ const MenuDrawer = ({
                         <ListItemText primary={'Tokens'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem button key={'Protocol Fees'} disablePadding>
+                <ListItem button key={'Fees'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'fees'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <MonetizationOnIcon />
                         </ListItemIcon>
-                        <ListItemText primary={'Protocol Fees'} />
+                        <ListItemText primary={'Fees'} />
                     </ListItemButton>
                 </ListItem>
             </List>
