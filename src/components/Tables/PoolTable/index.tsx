@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -28,12 +27,14 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
+import SwapFee from '../../SwapFee'
 
 
 interface Data {
   number: number;
   name: string;
   poolTokens: PoolTokenData[];
+  swapFee: number,
   poolData: PoolData,
   volume24: number;
   fees: number,
@@ -45,6 +46,7 @@ function createData(
   name: string,
   poolTokens: PoolTokenData[],
   poolData: PoolData,
+  swapFee: number,
   volume24: number,
   fees: number,
   tvl: number,
@@ -54,6 +56,7 @@ function createData(
     poolTokens,
     name,
     poolData,
+    swapFee,
     volume24,
     fees,
     tvl,
@@ -121,12 +124,18 @@ const headCells: readonly HeadCell[] = [
   {
     id: 'name',
     numeric: false,
-    disablePadding: false,
+    disablePadding: true,
     label: 'Pool Composition',
   },
   {
+    id: 'swapFee',
+    numeric: false,
+    disablePadding: false,
+    label: 'Swap Fee',
+  },
+  {
     id: 'volume24',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'Volume 24h',
   },
@@ -218,7 +227,7 @@ export default function PoolTable({
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   const rows = filteredPoolDatas.map(el =>
-    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.volumeUSD, el.feesUSD, el.tvlUSD)
+    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.swapFee, el.volumeUSD, el.feesUSD, el.tvlUSD)
 
   )
 
@@ -303,6 +312,9 @@ export default function PoolTable({
                         scope="row"
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
+                      </TableCell>
+                      <TableCell align="left">
+                        <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>

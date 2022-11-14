@@ -9,6 +9,7 @@ import { SvgIconTypeMap } from '@mui/material';
 
 export type CoinCardProps = {
   mainMetric: number,
+  mainMetricInUSD: boolean,
   mainMetricChange: number,
   metricName: string,
   MetricIcon: OverridableComponent<SvgIconTypeMap<{}, "svg">>
@@ -16,6 +17,7 @@ export type CoinCardProps = {
 
 const MetricsCard = ({
   mainMetric,
+  mainMetricInUSD,
   mainMetricChange,
   metricName,
   MetricIcon }: CoinCardProps) => {
@@ -44,7 +46,7 @@ const MetricsCard = ({
               color="textPrimary"
               variant="h6"
             >
-              {formatDollarAmount(mainMetric)}
+              {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0)}
             </Typography>
           </Grid>
           <Grid item>

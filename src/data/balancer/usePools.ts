@@ -193,6 +193,7 @@ export function useBalancerPoolPageData(poolId: string): {
     tvlData: BalancerChartDataItem[];
     volumeData: BalancerChartDataItem[];
     feesData: BalancerChartDataItem[];
+    tokenDatas: {tokenAddress: string, coingeckoRawData: CoingeckoSnapshotPriceData}[];
 } {
     const [activeNetwork] = useActiveNetworkVersion();
     const [coingeckoSnapshotData, setCoingeckoSnapshotData] = useState<{tokenAddress: string, coingeckoRawData: CoingeckoSnapshotPriceData}[]>([]);
@@ -238,12 +239,11 @@ export function useBalancerPoolPageData(poolId: string): {
 
 
     if (!data) {
-        return { tvlData: [], volumeData: [], feesData: [] };
+        return { tvlData: [], volumeData: [], feesData: [], tokenDatas: [] };
     }
 
     const { poolSnapshots } = data;
 
-    
     
     const tvlData = poolSnapshots.map((snapshot) => {
         let coingeckoValue = 0;
@@ -302,9 +302,12 @@ export function useBalancerPoolPageData(poolId: string): {
         };
     });
 
+    const tokenDatas = coingeckoSnapshotData;
+
     return {
         tvlData,
         volumeData,
         feesData,
+        tokenDatas,
     };
 }

@@ -63,6 +63,7 @@ export default function Protocol() {
                     >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.volume? aggregatedProtocolData.volume : 0}
+                            mainMetricInUSD={true}
                             metricName='Protocol Volume'
                             mainMetricChange={aggregatedProtocolData.volumeChange}
                             MetricIcon={EqualizerIcon}
@@ -77,6 +78,7 @@ export default function Protocol() {
                     >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.tvl}
+                            mainMetricInUSD={true}
                             metricName='Protocol TVL'
                             mainMetricChange={aggregatedProtocolData.tvlChange}
                             MetricIcon={MonetizationOnIcon}
@@ -91,6 +93,7 @@ export default function Protocol() {
                     >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.fees24}
+                            mainMetricInUSD={true}
                             metricName='Protocol Fees'
                             mainMetricChange={aggregatedProtocolData.feesChange}
                             MetricIcon={CurrencyExchangeIcon}

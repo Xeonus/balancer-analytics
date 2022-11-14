@@ -94,7 +94,7 @@ export default function PoolChart({tvlData, volumeData, feesData} : PoolChartPro
     return (
 
         <Box >
-            <Box display="flex" justifyContent="left"  sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box m={1} display="flex" justifyContent="left"  sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
                     <Tab label="Volume" {...a11yProps(0)} />
                     <Tab label="TVL" {...a11yProps(1)} />

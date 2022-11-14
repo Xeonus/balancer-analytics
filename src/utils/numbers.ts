@@ -34,3 +34,12 @@ export const formatAmount = (num: number | undefined, digits = 2) => {
         },
     });
 };
+
+// Format percentage ranges
+export const formatPercentageAmount = (num: number | undefined) => {
+    if (num === 0) return '0';
+    if (!num) return '-';
+    return numbro(num).format({
+            mantissa: num < 0.01 ? 3 : 2
+        })
+}
