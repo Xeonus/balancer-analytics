@@ -4274,7 +4274,6 @@ export type TokenSnapshotFragment = {
 
 export type GetPoolDataQueryVariables = Exact<{
   block24: Block_Height;
-  block48: Block_Height;
 }>;
 
 export type GetPoolDataQuery = {
@@ -4312,38 +4311,6 @@ export type GetPoolDataQuery = {
     }> | null;
   }>;
   pools24: Array<{
-    __typename: "Pool";
-    id: string;
-    address: string;
-    poolType?: string | null;
-    symbol?: string | null;
-    name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
-    createTime: number;
-    owner?: string | null;
-    strategyType: number;
-    swapEnabled: boolean;
-    tokens?: Array<{
-      __typename: "PoolToken";
-      id: string;
-      symbol: string;
-      name: string;
-      decimals: number;
-      address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
-    }> | null;
-  }>;
-  pools48: Array<{
     __typename: "Pool";
     id: string;
     address: string;
@@ -5803,27 +5770,19 @@ export type GetTransactionDataQueryResult = Apollo.QueryResult<
   GetTransactionDataQueryVariables
 >;
 export const GetPoolDataDocument = gql`
-  query GetPoolData($block24: Block_height!, $block48: Block_height!) {
-    pools(first: 1000, orderBy: totalLiquidity, orderDirection: desc) {
+  query GetPoolData($block24: Block_height!) {
+    pools(first: 500, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
     pools24: pools(
-      first: 1000
+      first: 500
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block24
     ) {
       ...BalancerPool
     }
-    pools48: pools(
-      first: 1000
-      orderBy: totalLiquidity
-      orderDirection: desc
-      block: $block48
-    ) {
-      ...BalancerPool
-    }
-    prices: latestPrices(first: 1000) {
+    prices: latestPrices(first: 500) {
       ...LatestPrice
     }
   }
@@ -5844,7 +5803,6 @@ export const GetPoolDataDocument = gql`
  * const { data, loading, error } = useGetPoolDataQuery({
  *   variables: {
  *      block24: // value for 'block24'
- *      block48: // value for 'block48'
  *   },
  * });
  */

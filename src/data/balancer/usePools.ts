@@ -95,7 +95,6 @@ export function useBalancerPools(): PoolData[] {
             getPoolData({
                 variables: {
                     block24: { number: parseInt(block24.number) },
-                    block48: { number: parseInt(block48.number) },
                 },
                 context: {
                     uri: activeNetwork.clientUri,
@@ -108,12 +107,11 @@ export function useBalancerPools(): PoolData[] {
         return [];
     }
 
-    const { pools, pools24, pools48, prices } = data;
+    const { pools, pools24, prices } = data;
 
     return pools.map((pool) => {
         const poolData = getPoolValues(pool.id, pools, feeData);
         const poolData24 = getPoolValues(pool.id, pools24);
-        const poolData48 = getPoolValues(pool.id, pools48);
 
         
 
@@ -144,8 +142,7 @@ export function useBalancerPools(): PoolData[] {
             tick: 0,
             volumeUSD: poolData.volume - poolData24.volume,
             volumeUSDChange:
-                (poolData.volume - poolData24.volume - (poolData24.volume - poolData48.volume)) /
-                (poolData24.volume - poolData48.volume),
+                (poolData.volume - poolData24.volume) / poolData24.volume,
             feesUSD: poolData.fees - poolData24.fees,
             feesEpochUSD: poolData.feesEpoch,
             tvlUSD: poolData.tvl,

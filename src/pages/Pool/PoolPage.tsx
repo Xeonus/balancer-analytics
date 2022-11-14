@@ -148,21 +148,23 @@ export default function PoolPage() {
                         <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
                     </Card>
                 </Grid>
+                
                 <Grid item xs={10}>
                 <Typography variant="h6">Historical Token Prices </Typography>
                     <Box display="flex" alignItems="center" >
                     {poolData.tokens.map(element => 
                     <Box mr={1}>
+                        {tokenDatas.filter(el => el.tokenAddress === element.address) ?
                     <CoinPriceCard 
                         mainMetric={0} 
                         mainMetricChange={0} 
                         chartData={tokenDatas.filter(el => el.tokenAddress === element.address)[0].coingeckoRawData} 
                         tokenAddress={element.address} 
-                        tokenName={element.symbol} />
-                    </Box>
+                        tokenName={element.symbol} /> : null}
+                    </Box> 
                     )}
                     </Box>
-                </Grid>
+                </Grid> 
             </Grid> :
             <Grid
                 container

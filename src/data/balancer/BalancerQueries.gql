@@ -91,32 +91,24 @@ fragment TokenSnapshot on TokenSnapshot {
     totalSwapCount
 }
 
-query GetPoolData($block24: Block_height!, $block48: Block_height!) {
+query GetPoolData($block24: Block_height!) {
     pools(
-        first: 1000
+        first: 500
         orderBy: totalLiquidity
         orderDirection: desc
     ) {
         ...BalancerPool
     }
     pools24: pools(
-        first: 1000
+        first: 500
         orderBy: totalLiquidity
         orderDirection: desc,
         block: $block24
     ) {
         ...BalancerPool
     }
-    pools48: pools(
-        first: 1000
-        orderBy: totalLiquidity
-        orderDirection: desc,
-        block: $block48
-    ) {
-        ...BalancerPool
-    }
     prices: latestPrices(
-        first: 1000
+        first: 500
     ) {
         ...LatestPrice
     }
