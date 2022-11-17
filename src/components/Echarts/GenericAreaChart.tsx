@@ -8,12 +8,13 @@ import { formatDollarAmount } from '../../utils/numbers';
 export interface TvlAreaProps {
     chartData: BalancerChartDataItem[],
     dataTitle: string,
-    backgroundColor?: string
+    backgroundColor?: string,
+    height?: string,
 
 }
 
 
-export default function GenericAreaChart({chartData, dataTitle, backgroundColor = '#6a7985'}: TvlAreaProps) {
+export default function GenericAreaChart({chartData, dataTitle, backgroundColor = '#6a7985', height = '278px'}: TvlAreaProps) {
     const theme = useTheme();
 
     let xData = chartData.map(el => el.time);
@@ -32,12 +33,6 @@ export default function GenericAreaChart({chartData, dataTitle, backgroundColor 
             
             
         },
-        legend: {
-            data: [dataTitle],
-            textStlye: {
-                color: theme.palette.mode === 'dark' ? '#00DDFF' : 'black',
-            }
-        },
         grid: {
             left: '3%',
             right: '4%',
@@ -47,7 +42,7 @@ export default function GenericAreaChart({chartData, dataTitle, backgroundColor 
         xAxis: [
             {
                 type: 'category',
-                show: false,
+                show: true,
                 boundaryGap: false,
                 data: xData
             }
@@ -99,14 +94,11 @@ export default function GenericAreaChart({chartData, dataTitle, backgroundColor 
         ]
     };
 
-
-
-
     return(
         chartData.length > 2 ?
             <ReactEcharts
                 option={option}
-                style={{ height: '200px', width: '100%' }}
+                style={{ height: height, width: '100%' }}
                 className={'react_for_echarts'}
             /> : <CircularProgress />
     );

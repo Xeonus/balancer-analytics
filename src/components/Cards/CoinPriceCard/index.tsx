@@ -24,12 +24,18 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
 
   const theme = useTheme();
 
-  console.log("chartData", chartData)
-  if (chartData.prices.length === 0) {
-    return(<Typography>No data</Typography>)
+  
+  if (chartData.error) {
+    return(<Typography>Coingecko API: No data</Typography>)
   }
 
   const balancerChartData = chartData.prices.map((price) => {
+    if (price == null) {
+      return {
+        value: 0,
+        time: '0'
+      }
+    }
     return {
       value: price[1] > 0 ? price[1] : 0,
       time: unixToDate(price[0] / 1000),
@@ -38,19 +44,14 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
 
 
   return (
-    balancerChartData ? 
-    <Card
-      sx={{
-        maxWidth: '275px',
-        minWidth: '275px',
-      }}
-    >
-      <CardContent>
+    balancerChartData && balancerChartData.length > 2 ? 
+    <Box>
         <Grid
           container
           spacing={3}
-          sx={{ justifyContent: 'space-between' }}
+          sx={{ justifyContent: 'flex-start' }}
         >
+          
           <Grid item>
             <Typography
               color="textSecondary"
@@ -78,7 +79,6 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
         >
           <GenericAreaChart chartData={balancerChartData} dataTitle={tokenName} />
         </Box>
-      </CardContent>
-    </Card> : <Typography>No data</Typography>
+        </Box> : <Typography>No data</Typography>
   );
 }

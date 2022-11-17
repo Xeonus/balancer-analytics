@@ -20,7 +20,6 @@ export function isAddress(value: any): string | false {
 }
 
 export function getEtherscanLink(
-    chainId: SupportedChainId,
     data: string,
     type: 'transaction' | 'token' | 'address' | 'block',
     networkVersion: NetworkInfo,

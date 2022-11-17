@@ -12,7 +12,7 @@ import GenericBarChart from "../Echarts/GenericBarChart";
 import TvlAreaChart from "../Echarts/TvlAreaChart";
 import { formatDollarAmount } from "../../utils/numbers";
 
-interface TabPanelProps {
+export interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;

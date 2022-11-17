@@ -58,8 +58,6 @@ export default function GenericBarChart({ data, }: GenericBarChartProps) {
         ]
     };
 
-
-
     return (
         data.length > 2 ?
             <ReactEcharts

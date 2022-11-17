@@ -7,6 +7,9 @@ export default function PoolsOverview() {
 
     const poolData = useBalancerPools();
     const [ activeNetwork ] = useActiveNetworkVersion();
+
+    //Ideas: show Top Pools: TVL, Fees, Swaps etc?
+    //show bar graph top 50 pools per TVL! -> beets dashboard inspiration
     
     return (
         <Grid item xs={12}>

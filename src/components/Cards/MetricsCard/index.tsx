@@ -26,12 +26,15 @@ const MetricsCard = ({
 
   return (
     <Card
-    sx={{maxWidth: '275px'}}
+    sx={{
+      maxWidth: '275px',
+      minWidth: '250px'
+    }}
     >
       <CardContent>
         <Grid
           container
-          spacing={3}
+          spacing={1}
           sx={{ justifyContent: 'space-between' }}
         >
           <Grid item>

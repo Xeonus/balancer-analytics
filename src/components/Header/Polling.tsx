@@ -42,7 +42,7 @@ export default function Polling () {
           boxShadow: 2,
         }}>
 
-        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(1, latestBlock.toString(), 'block', activeNetwork) : ''}>
+        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
           Synced block: {isMounted ? latestBlock : ' '}
         </Link>
         <Box mr={0.5}></Box>

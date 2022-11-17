@@ -4682,12 +4682,44 @@ export type GetBalancerPoolsQuery = {
 
 export type GetBalancerPoolQueryVariables = Exact<{
   id: Scalars["ID"];
-  block?: InputMaybe<Block_Height>;
+  block24?: InputMaybe<Block_Height>;
 }>;
 
 export type GetBalancerPoolQuery = {
   __typename: "Query";
   pool?: {
+    __typename: "Pool";
+    id: string;
+    address: string;
+    poolType?: string | null;
+    symbol?: string | null;
+    name?: string | null;
+    swapFee: string;
+    totalWeight?: string | null;
+    totalSwapVolume: string;
+    totalSwapFee: string;
+    totalLiquidity: string;
+    totalShares: string;
+    swapsCount: string;
+    holdersCount: string;
+    createTime: number;
+    owner?: string | null;
+    strategyType: number;
+    swapEnabled: boolean;
+    tokens?: Array<{
+      __typename: "PoolToken";
+      id: string;
+      symbol: string;
+      name: string;
+      decimals: number;
+      address: string;
+      balance: string;
+      weight?: string | null;
+      priceRate: string;
+      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+    }> | null;
+  } | null;
+  pool24?: {
     __typename: "Pool";
     id: string;
     address: string;
@@ -6546,8 +6578,11 @@ export type GetBalancerPoolsQueryResult = Apollo.QueryResult<
   GetBalancerPoolsQueryVariables
 >;
 export const GetBalancerPoolDocument = gql`
-  query GetBalancerPool($id: ID!, $block: Block_height) {
-    pool(id: $id, block: $block) {
+  query GetBalancerPool($id: ID!, $block24: Block_height) {
+    pool(id: $id) {
+      ...BalancerPool
+    }
+    pool24: pool(id: $id, block: $block24) {
       ...BalancerPool
     }
   }
@@ -6567,7 +6602,7 @@ export const GetBalancerPoolDocument = gql`
  * const { data, loading, error } = useGetBalancerPoolQuery({
  *   variables: {
  *      id: // value for 'id'
- *      block: // value for 'block'
+ *      block24: // value for 'block24'
  *   },
  * });
  */

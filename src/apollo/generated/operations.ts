@@ -569,8 +569,11 @@ export const GetBalancerPools = gql`
   ${BalancerPool}
 `;
 export const GetBalancerPool = gql`
-  query GetBalancerPool($id: ID!, $block: Block_height) {
-    pool(id: $id, block: $block) {
+  query GetBalancerPool($id: ID!, $block24: Block_height) {
+    pool(id: $id) {
+      ...BalancerPool
+    }
+    pool24: pool(id: $id, block: $block24) {
       ...BalancerPool
     }
   }

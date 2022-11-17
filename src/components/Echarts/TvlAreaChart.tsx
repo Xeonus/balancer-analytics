@@ -29,12 +29,6 @@ export default function TvlAreaChart({tvlData}: TvlAreaProps) {
             
             
         },
-        legend: {
-            data: ['TVL'],
-            textStlye: {
-                color: theme.palette.mode === 'dark' ? '#00DDFF' : 'black',
-            }
-        },
         grid: {
             left: '3%',
             right: '4%',

@@ -270,11 +270,11 @@ export default function PoolTable({
   //Table generation
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ overflow: "auto" }}>
+      <Paper sx={{ mb: 2 }}>
         <TableContainer>
           <Table
-            sx={{ minWidth: 750 }}
+            //sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
             size={dense ? 'small' : 'medium'}
           >
