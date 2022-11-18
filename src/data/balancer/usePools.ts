@@ -291,7 +291,7 @@ export function useBalancerPoolPageData(poolId: string): {
                 try {
                     const coingeckoResponse = await fetch(baseURI + queryParams);
                     const hit = coingeckoSnapshotData.find(el => el.tokenAddress === address);
-                    if (hit == null) {
+                    if (hit === null) {
                         const json = await coingeckoResponse.json();
                         setCoingeckoSnapshotData(coingeckoSnapshotData => [
                             ...coingeckoSnapshotData,

@@ -1,5 +1,4 @@
 import ReactEcharts from 'echarts-for-react';
-import { graphic } from 'echarts';
 import { useTheme } from '@mui/material/styles';
 import { CircularProgress } from '@mui/material';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';

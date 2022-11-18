@@ -46,7 +46,7 @@ const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open
         duration: theme.transitions.duration.leavingScreen,
     }),
     marginRight: '25px',
-    marginLeft: `-${drawerWidth - 25}px`,
+    marginLeft: `-${drawerWidth - 30}px`,
     ...(open && {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,

@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid, Link } from '@mui/material';
+import { Grid } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
@@ -270,7 +270,7 @@ export default function PoolTable({
   //Table generation
 
   return (
-    <Box sx={{ overflow: "auto" }}>
+    <Box sx={{ width: '100%'}}>
       <Paper sx={{ mb: 2 }}>
         <TableContainer>
           <Table
