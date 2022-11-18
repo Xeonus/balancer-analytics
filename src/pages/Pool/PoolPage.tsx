@@ -162,8 +162,7 @@ export default function PoolPage() {
                 mt='25%'
                 sx={{ justifyContent: 'center' }}
             >
-                <CustomLinearProgress /></Grid>
-            
-
+                <CustomLinearProgress />
+            </Grid>
     );
 }

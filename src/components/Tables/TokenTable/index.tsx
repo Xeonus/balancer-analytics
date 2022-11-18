@@ -23,14 +23,15 @@ import { POOL_HIDE } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
-import PoolComposition from '../../PoolComposition'
 import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
-import SwapFee from '../../SwapFee'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { TokenData } from '../../../data/balancer/balancerTypes'
 import CurrencyLogo from '../../CurrencyLogo';
+import { green } from '@mui/material/colors';
 
 
 interface Data {
@@ -115,19 +116,19 @@ const headCells: readonly HeadCell[] = [
     {
         id: 'token',
         numeric: false,
-        disablePadding: true,
+        disablePadding: false,
         label: 'Token',
     },
     {
         id: 'price',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Price',
     },
     {
         id: 'priceChange',
         numeric: false,
-        disablePadding: false,
+        disablePadding: true,
         label: 'Price Change',
     },
     {
@@ -217,12 +218,12 @@ export default function TokenTable({
 
     const filteredTokenDatas = tokenDatas.filter(x => x.address.toLowerCase() !== '0x1aafc31091d93c3ff003cff5d2d8f7ba2e728425');
 
-    const sortedTokenDats = filteredTokenDatas.sort(function(a, b) {
+    const sortedTokenDats = filteredTokenDatas.sort(function (a, b) {
         return b.tvlUSD - a.tvlUSD;
-      });
+    });
 
-    const rows = filteredTokenDatas.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, el.priceUSDChange, el.volumeUSDChange, el.tvlUSD)
+    const rows = sortedTokenDats.map(el =>
+        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, Number(formatPercentageAmount(el.priceUSDChange)), el.volumeUSD, el.tvlUSD)
 
     )
 
@@ -262,7 +263,7 @@ export default function TokenTable({
 
     return (
         <Box sx={{ width: '100%'}}>
-            <Paper elevation={3} sx={{ mb: 2 }}>
+            <Paper elevation={3} sx={{ mb: 2 }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
@@ -301,11 +302,32 @@ export default function TokenTable({
                                                     <Box mr={1}>
                                                         <CurrencyLogo address={row.token.address} size={'25px'} />
                                                     </Box>
-                                                    <Typography>{row.token.symbol}</Typography>
+                                                    <Box mr={1}>
+                                                        <Typography sx={{ fontWeight: 'bold' }}>{row.token.symbol}</Typography>
+                                                    </Box>
+                                                    <Typography >({row.token.name})</Typography>
+
                                                 </Box>
                                             </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.price)}</TableCell>
-                                            <TableCell align="right">{formatPercentageAmount(row.priceChange)}</TableCell>
+                                            <TableCell align="right">
+                                                <Box display="flex" alignItems="center">
+                                                    {row.priceChange > 0 ?
+
+                                                        <ArrowUpwardIcon fontSize="small" sx={{ color: green[500] }} />
+                                                        :
+                                                        <ArrowDownwardIcon fontSize="small" color="error" />}
+                                                    <Typography
+                                                        color={row.priceChange > 0 ? 'green' : 'error'}
+                                                        sx={{
+                                                            mr: 1
+                                                        }}
+                                                        variant="body2"
+                                                    >
+                                                        {Number(row.priceChange).toFixed(2)} %
+                                                    </Typography>
+                                                </Box>
+                                            </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                                         </TableRow>

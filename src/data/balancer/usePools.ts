@@ -108,13 +108,13 @@ export function useBalancerPools(): PoolData[] {
         return [];
     }
 
-    const { pools, pools24, prices } = data;
+    const { pools, pools24 } = data;
 
     return pools.map((pool) => {
         const poolData = getPoolValues(pool.id, pools, feeData);
         const poolData24 = getPoolValues(pool.id, pools24);
 
-
+        //TODO: token price information is not stored in PoolData Object model anymore -> remove
 
         return {
             ...pool,
@@ -124,8 +124,7 @@ export function useBalancerPools(): PoolData[] {
             swapFee: parseFloat(pool.swapFee),
             tokens: (pool.tokens || []).map((token) => {
                 const weight = token.weight ? parseFloat(token.weight) : 0;
-                const tokenPrice = prices.find((price) => price.asset === token.address);
-                const price = tokenPrice ? parseFloat(tokenPrice.price) : 0;
+                const price = 0
                 const balance = parseFloat(token.balance);
 
                 return {
@@ -189,7 +188,6 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null  {
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24, block48, blockWeek] = blocks ?? [];
     const [getPoolData, { data }] = useGetBalancerPoolLazyQuery();
-    const feeData = useBalancerSwapFeePoolData();
 
     //const incentives = GetIncentiveList();
     //console.log("incentives", incentives['week_52']);
@@ -287,11 +285,10 @@ export function useBalancerPoolPageData(poolId: string): {
             const getTokenSnapshotData = async (address: string, fromTimestamp: number, toTimestamp: number) => {
                 const baseURI = 'https://api.coingecko.com/api/v3/coins/';
                 const queryParams = activeNetwork.coingeckoId + '/contract/' + address + '/market_chart/range?vs_currency=usd&from=' + fromTimestamp.toString() + '&to=' + toTimestamp.toString();
-
                 try {
                     const coingeckoResponse = await fetch(baseURI + queryParams);
                     const hit = coingeckoSnapshotData.find(el => el.tokenAddress === address);
-                    if (hit === null) {
+                    if (hit === undefined) {
                         const json = await coingeckoResponse.json();
                         setCoingeckoSnapshotData(coingeckoSnapshotData => [
                             ...coingeckoSnapshotData,
@@ -315,9 +312,11 @@ export function useBalancerPoolPageData(poolId: string): {
     }, [data]);
 
 
-    if (!data) {
+    if (!data || !coingeckoSnapshotData) {
         return { tvlData: [], volumeData: [], feesData: [], tokenDatas: [] };
     }
+
+    //console.log("coingeckoRawData", coingeckoSnapshotData)
 
     const { poolSnapshots } = data;
 

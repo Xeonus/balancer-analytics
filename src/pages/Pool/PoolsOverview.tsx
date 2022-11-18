@@ -2,6 +2,7 @@ import { Typography, Box, Grid } from "@mui/material";
 import PoolTable from "../../components/Tables/PoolTable";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import { useActiveNetworkVersion } from "../../state/application/hooks";
+import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 
 export default function PoolsOverview() {
 
@@ -14,7 +15,16 @@ export default function PoolsOverview() {
     return (
         <Grid item xs={12}>
         <Typography variant="h5" mb={1}>Liquidity Pools Overview ({activeNetwork.name})</Typography>
-        <PoolTable poolDatas={poolData}/>
+        {poolData.length > 10 ?
+        <PoolTable poolDatas={poolData}/> : 
+        <Grid
+        container
+        spacing={2}
+        mt='25%'
+        sx={{ justifyContent: 'center' }}
+    >
+        <CustomLinearProgress />
+    </Grid>}
         </Grid>
     );
 }

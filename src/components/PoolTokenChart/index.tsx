@@ -55,18 +55,19 @@ export default function PoolTokenChart({ poolData, tokenDatas }: PoolChartProps)
         >
         <Box>
             <Box m={1} display="flex" justifyContent="left" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
+                <Tabs variant="scrollable" scrollButtons="auto" value={value} onChange={handleTabChange} aria-label="token tab">
                     {poolData.tokens.map((el, index) =>
-                        <Tab label={el.symbol} {...a11yProps(index)} />
+                        <Tab key={"tab" + index.toString()} label={el.symbol} {...a11yProps(index)} />
                     )}
                 </Tabs>
                 
             </Box>
             {poolData.tokens.map((element, index) =>
-                    <TabPanel value={value} index={index}>
+                    <TabPanel value={value} index={index} >
                         <Box mr={1}>
                             {tokenDatas.filter(el => el.tokenAddress === element.address && ! el.coingeckoRawData.error) ?
                                 <CoinPriceCard
+                                    key={element.address + index.toString()}
                                     mainMetric={0}
                                     mainMetricChange={0}
                                     chartData={tokenDatas.filter(el => el.tokenAddress === element.address)[0].coingeckoRawData}

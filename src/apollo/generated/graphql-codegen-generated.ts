@@ -4132,20 +4132,7 @@ export type GetTokenDataQuery = {
     totalVolumeUSD: string;
     totalVolumeNotional: string;
     totalSwapCount: string;
-    latestPrice?: {
-      __typename: "LatestPrice";
-      asset: string;
-      pricingAsset: string;
-      price: string;
-      poolId: { __typename: "Pool"; id: string };
-    } | null;
-  }>;
-  prices: Array<{
-    __typename: "LatestPrice";
-    asset: string;
-    pricingAsset: string;
-    price: string;
-    poolId: { __typename: "Pool"; id: string };
+    latestUSDPrice?: string | null;
   }>;
   tokens24: Array<{
     __typename: "Token";
@@ -4159,20 +4146,7 @@ export type GetTokenDataQuery = {
     totalVolumeUSD: string;
     totalVolumeNotional: string;
     totalSwapCount: string;
-    latestPrice?: {
-      __typename: "LatestPrice";
-      asset: string;
-      pricingAsset: string;
-      price: string;
-      poolId: { __typename: "Pool"; id: string };
-    } | null;
-  }>;
-  prices24: Array<{
-    __typename: "LatestPrice";
-    asset: string;
-    pricingAsset: string;
-    price: string;
-    poolId: { __typename: "Pool"; id: string };
+    latestUSDPrice?: string | null;
   }>;
 };
 
@@ -4341,13 +4315,6 @@ export type GetPoolDataQuery = {
       priceRate: string;
       poolId?: { __typename: "Pool"; id: string; address: string } | null;
     }> | null;
-  }>;
-  prices: Array<{
-    __typename: "LatestPrice";
-    asset: string;
-    pricingAsset: string;
-    price: string;
-    poolId: { __typename: "Pool"; id: string };
   }>;
 };
 
@@ -5064,13 +5031,7 @@ export type GetBalancerTokensQuery = {
     totalVolumeUSD: string;
     totalVolumeNotional: string;
     totalSwapCount: string;
-    latestPrice?: {
-      __typename: "LatestPrice";
-      asset: string;
-      pricingAsset: string;
-      price: string;
-      poolId: { __typename: "Pool"; id: string };
-    } | null;
+    latestUSDPrice?: string | null;
   }>;
 };
 
@@ -5086,13 +5047,7 @@ export type BalancerTokenFragment = {
   totalVolumeUSD: string;
   totalVolumeNotional: string;
   totalSwapCount: string;
-  latestPrice?: {
-    __typename: "LatestPrice";
-    asset: string;
-    pricingAsset: string;
-    price: string;
-    poolId: { __typename: "Pool"; id: string };
-  } | null;
+  latestUSDPrice?: string | null;
 };
 
 export type BalancerTradePairsQueryVariables = Exact<{
@@ -5123,13 +5078,7 @@ export type BalancerTradePairsQuery = {
       totalVolumeUSD: string;
       totalVolumeNotional: string;
       totalSwapCount: string;
-      latestPrice?: {
-        __typename: "LatestPrice";
-        asset: string;
-        pricingAsset: string;
-        price: string;
-        poolId: { __typename: "Pool"; id: string };
-      } | null;
+      latestUSDPrice?: string | null;
     };
     token1: {
       __typename: "Token";
@@ -5143,13 +5092,7 @@ export type BalancerTradePairsQuery = {
       totalVolumeUSD: string;
       totalVolumeNotional: string;
       totalSwapCount: string;
-      latestPrice?: {
-        __typename: "LatestPrice";
-        asset: string;
-        pricingAsset: string;
-        price: string;
-        poolId: { __typename: "Pool"; id: string };
-      } | null;
+      latestUSDPrice?: string | null;
     };
   }>;
 };
@@ -5171,13 +5114,7 @@ export type BalancerTradePairFragment = {
     totalVolumeUSD: string;
     totalVolumeNotional: string;
     totalSwapCount: string;
-    latestPrice?: {
-      __typename: "LatestPrice";
-      asset: string;
-      pricingAsset: string;
-      price: string;
-      poolId: { __typename: "Pool"; id: string };
-    } | null;
+    latestUSDPrice?: string | null;
   };
   token1: {
     __typename: "Token";
@@ -5191,13 +5128,7 @@ export type BalancerTradePairFragment = {
     totalVolumeUSD: string;
     totalVolumeNotional: string;
     totalSwapCount: string;
-    latestPrice?: {
-      __typename: "LatestPrice";
-      asset: string;
-      pricingAsset: string;
-      price: string;
-      poolId: { __typename: "Pool"; id: string };
-    } | null;
+    latestUSDPrice?: string | null;
   };
 };
 
@@ -5356,7 +5287,7 @@ export const BalancerPoolFragmentDoc = gql`
     owner
     strategyType
     swapEnabled
-    tokens(first: 1000) {
+    tokens(first: 10) {
       ...BalancerPoolToken
     }
   }
@@ -5428,14 +5359,7 @@ export const BalancerTokenFragmentDoc = gql`
     totalVolumeUSD
     totalVolumeNotional
     totalSwapCount
-    latestPrice {
-      asset
-      pricingAsset
-      price
-      poolId {
-        id
-      }
-    }
+    latestUSDPrice
   }
 `;
 export const BalancerTradePairFragmentDoc = gql`
@@ -5565,30 +5489,19 @@ export type GetProtocolDataQueryResult = Apollo.QueryResult<
 >;
 export const GetTokenDataDocument = gql`
   query GetTokenData($block24: Block_height!) {
-    tokens: tokens(
-      first: 1000
-      orderBy: totalBalanceUSD
-      orderDirection: desc
-    ) {
+    tokens: tokens(first: 250, orderBy: totalBalanceUSD, orderDirection: desc) {
       ...BalancerToken
     }
-    prices: latestPrices(first: 1000) {
-      ...LatestPrice
-    }
     tokens24: tokens(
-      first: 1000
+      first: 250
       orderBy: totalBalanceUSD
       orderDirection: desc
       block: $block24
     ) {
       ...BalancerToken
     }
-    prices24: latestPrices(first: 1000, block: $block24) {
-      ...LatestPrice
-    }
   }
   ${BalancerTokenFragmentDoc}
-  ${LatestPriceFragmentDoc}
 `;
 
 /**
@@ -5803,23 +5716,19 @@ export type GetTransactionDataQueryResult = Apollo.QueryResult<
 >;
 export const GetPoolDataDocument = gql`
   query GetPoolData($block24: Block_height!) {
-    pools(first: 500, orderBy: totalLiquidity, orderDirection: desc) {
+    pools(first: 250, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
     pools24: pools(
-      first: 500
+      first: 250
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block24
     ) {
       ...BalancerPool
     }
-    prices: latestPrices(first: 500) {
-      ...LatestPrice
-    }
   }
   ${BalancerPoolFragmentDoc}
-  ${LatestPriceFragmentDoc}
 `;
 
 /**

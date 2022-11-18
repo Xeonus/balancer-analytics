@@ -36,30 +36,19 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
 
 query GetTokenData($block24: Block_height!) {
     tokens: tokens(
-        first: 1000
+        first: 250
         orderBy: totalBalanceUSD
         orderDirection: desc
     ) {
         ...BalancerToken
     }
-    prices: latestPrices(
-        first: 1000
-    ) {
-        ...LatestPrice
-    }
     tokens24: tokens(
-        first: 1000
+        first: 250
         orderBy: totalBalanceUSD
         orderDirection: desc,
         block: $block24
     ) {
         ...BalancerToken
-    }
-    prices24: latestPrices(
-        first: 1000,
-        block: $block24
-    ) {
-        ...LatestPrice
     }
 }
 
@@ -93,24 +82,19 @@ fragment TokenSnapshot on TokenSnapshot {
 
 query GetPoolData($block24: Block_height!) {
     pools(
-        first: 500
+        first: 250
         orderBy: totalLiquidity
         orderDirection: desc
     ) {
         ...BalancerPool
     }
     pools24: pools(
-        first: 500
+        first: 250
         orderBy: totalLiquidity
         orderDirection: desc,
         block: $block24
     ) {
         ...BalancerPool
-    }
-    prices: latestPrices(
-        first: 500
-    ) {
-        ...LatestPrice
     }
 }
 
@@ -351,7 +335,7 @@ fragment BalancerPool on Pool {
     owner
     strategyType
     swapEnabled
-    tokens(first: 1000) {
+    tokens(first: 10) {
         ...BalancerPoolToken
     }
 }
@@ -630,14 +614,7 @@ fragment BalancerToken on Token {
     totalVolumeUSD
     totalVolumeNotional
     totalSwapCount
-    latestPrice {
-        asset
-        pricingAsset
-        price
-        poolId {
-            id
-        }
-    }
+    latestUSDPrice
 }
 
 

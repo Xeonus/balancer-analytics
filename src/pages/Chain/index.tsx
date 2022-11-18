@@ -7,6 +7,6 @@ export default function Chain() {
     const theme = useTheme();
 
     return (
-        <Typography>Loaded Chain Page</Typography>
+        <Typography>Chain Page: In Development</Typography>
     );
 }

@@ -52,15 +52,22 @@ function getTokenValues(
     };
 }
 
-function getTokenPriceValues(tokenAddress: string, prices: LatestPriceFragment[], coingeckoPriceData?: CoingeckoRawData): { price: number } {
-    const price = prices.find((prices) => prices.asset === tokenAddress);
-    let priceUSD = price ? parseFloat(price.price) : 0;
+function getTokenPriceValues(tokenAddress: string, tokens24: BalancerTokenFragment[], coingeckoPriceData?: CoingeckoRawData): { price: number } {
+    // const price = prices.find((prices) => prices.asset === tokenAddress);
+    // let priceUSD = price ? parseFloat(price.price) : 0;
+    // if (coingeckoPriceData && coingeckoPriceData[tokenAddress]) {
+    //     priceUSD = coingeckoPriceData[tokenAddress].usd;
+    // }
+    const token = tokens24.find((token) => token.address === tokenAddress);
+    let priceUSD = token?.latestUSDPrice ? parseFloat(token.latestUSDPrice) : 0;
     if (coingeckoPriceData && coingeckoPriceData[tokenAddress]) {
         priceUSD = coingeckoPriceData[tokenAddress].usd;
     }
 
     return { price: priceUSD };
 }
+
+
 
 export function useBalancerTokens(): TokenData[] {
     const [activeNetwork] = useActiveNetworkVersion();
@@ -131,21 +138,21 @@ export function useBalancerTokens(): TokenData[] {
         return [];
     }
 
-    const { tokens, prices, tokens24, prices24} = data;
+    const { tokens, tokens24} = data;
 
     return tokens.map((token) => {
         let tokenData = getTokenValues(token.address, tokens);
         let tokenData24 = getTokenValues(token.address, tokens24);
 
-        let priceData = getTokenPriceValues(token.address, prices);
-        let priceData24 = getTokenPriceValues(token.address, prices24);
+        let priceData = {price: token.latestUSDPrice ? Number(token.latestUSDPrice) : 0};
+        let priceData24 = getTokenPriceValues(token.address, tokens24);
         //override:
         let priceChange = 0
         if (coingeckoData && coingeckoData[token.address]) {
             tokenData = getTokenValues(token.address, tokens, coingeckoData);
             tokenData24 = getTokenValues(token.address, tokens24, coingeckoData);
-            priceData = getTokenPriceValues(token.address, prices, coingeckoData);
-            priceData24 = getTokenPriceValues(token.address, prices24, coingeckoData);
+            priceData = getTokenPriceValues(token.address, tokens24, coingeckoData);
+            priceData24 = getTokenPriceValues(token.address, tokens24, coingeckoData);
             priceChange = coingeckoData[token.address].usd_24h_change
         }
         

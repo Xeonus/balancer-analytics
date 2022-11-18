@@ -88,7 +88,7 @@ export const BalancerPool = gql`
     owner
     strategyType
     swapEnabled
-    tokens(first: 1000) {
+    tokens(first: 10) {
       ...BalancerPoolToken
     }
   }
@@ -160,14 +160,7 @@ export const BalancerToken = gql`
     totalVolumeUSD
     totalVolumeNotional
     totalSwapCount
-    latestPrice {
-      asset
-      pricingAsset
-      price
-      poolId {
-        id
-      }
-    }
+    latestUSDPrice
   }
 `;
 export const BalancerTradePair = gql`
@@ -244,30 +237,19 @@ export const GetProtocolData = gql`
 `;
 export const GetTokenData = gql`
   query GetTokenData($block24: Block_height!) {
-    tokens: tokens(
-      first: 1000
-      orderBy: totalBalanceUSD
-      orderDirection: desc
-    ) {
+    tokens: tokens(first: 250, orderBy: totalBalanceUSD, orderDirection: desc) {
       ...BalancerToken
     }
-    prices: latestPrices(first: 1000) {
-      ...LatestPrice
-    }
     tokens24: tokens(
-      first: 1000
+      first: 250
       orderBy: totalBalanceUSD
       orderDirection: desc
       block: $block24
     ) {
       ...BalancerToken
     }
-    prices24: latestPrices(first: 1000, block: $block24) {
-      ...LatestPrice
-    }
   }
   ${BalancerToken}
-  ${LatestPrice}
 `;
 export const GetTokenPageData = gql`
   query GetTokenPageData($address: String!, $startTimestamp: Int!) {
@@ -326,23 +308,19 @@ export const GetTransactionData = gql`
 `;
 export const GetPoolData = gql`
   query GetPoolData($block24: Block_height!) {
-    pools(first: 500, orderBy: totalLiquidity, orderDirection: desc) {
+    pools(first: 250, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
     pools24: pools(
-      first: 500
+      first: 250
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block24
     ) {
       ...BalancerPool
     }
-    prices: latestPrices(first: 500) {
-      ...LatestPrice
-    }
   }
   ${BalancerPool}
-  ${LatestPrice}
 `;
 export const GetUserWalletPoolData = gql`
   query GetUserWalletPoolData($userAddress: String!, $block: Int!) {
