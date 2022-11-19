@@ -65,7 +65,8 @@ export default function PoolTokenChart({ poolData, tokenDatas }: PoolChartProps)
             {poolData.tokens.map((element, index) =>
                     <TabPanel value={value} index={index} >
                         <Box mr={1}>
-                            {tokenDatas.filter(el => el.tokenAddress === element.address && ! el.coingeckoRawData.error) ?
+                            {tokenDatas.filter(el => el.tokenAddress === element.address && tokenDatas.filter(el => el.tokenAddress === element.address)[0] 
+                                &&  ! el.coingeckoRawData.error) ?
                                 <CoinPriceCard
                                     key={element.address + index.toString()}
                                     mainMetric={0}

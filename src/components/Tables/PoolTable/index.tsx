@@ -216,7 +216,7 @@ export default function PoolTable({
     return <CircularProgress />;
   }
 
-  if (poolDatas.length < 10) {
+  if (poolDatas.length === 0) {
     return (
       <Grid>
       <CircularProgress />

@@ -357,6 +357,7 @@ export const GetPoolChartData = gql`
         id
         tokens {
           address
+          balance
         }
       }
     }

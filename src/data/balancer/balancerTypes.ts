@@ -31,6 +31,9 @@ export type TokenData = {
 
     //protocol collector info
     valueUSDCollected: number;
+
+    //Coingecko price source?
+    isCoingeckoPriceSource?: boolean
 };
 
 export interface PoolTokenData {

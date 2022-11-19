@@ -13,6 +13,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CoinCard from '../../components/Cards/CoinCard';
 import { TokenData } from '../../data/balancer/balancerTypes';
+import { formatPercentageAmount } from '../../utils/numbers';
 
 export default function Tokens() {
 
@@ -26,10 +27,10 @@ export default function Tokens() {
     useEffect(() => {
         if (tokenDatas && tokenDatas.length > 10) {
         const topGainer = tokenDatas.reduce(function (prev, current) {
-            return (prev.priceUSDChange * 100 > current.priceUSDChange * 100) ? prev : current
+            return (prev.priceUSDChange > current.priceUSDChange) ? prev : current
         })
         const topLoser = tokenDatas.reduce(function (prev, current) {
-            return (prev.priceUSDChange < current.priceUSDChange) ? prev : current
+            return (prev.priceUSDChange > current.priceUSDChange) ? current : prev
         })
         if (topGainer) {
             setTopGainerToken(topGainer)
@@ -38,7 +39,7 @@ export default function Tokens() {
             setTopLoserToken(topLoser)
         }
     }
-    }, [tokenDatas.length > 200]);
+    }, [JSON.stringify(tokenDatas)]);
 
     return (
         <Grid item xs={12}>

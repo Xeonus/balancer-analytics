@@ -1,18 +1,28 @@
 import { PoolData } from "../../data/balancer/balancerTypes";
 import { useTheme } from '@mui/material/styles'
-import { AvatarGroup, Typography } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
+import { Typography } from "@mui/material";
 import { Avatar, Box } from "@mui/material";
-import { formatPercentageAmount } from '../../utils/numbers'
 import CurrencyLogo from '../CurrencyLogo';
+import { NetworkInfo } from "../../constants/networks";
+import { networkPrefix } from "../../utils/networkPrefix";
+import { useActiveNetworkVersion } from "../../state/application/hooks";
+
 
 interface PoolCompositionProps {
     poolData: PoolData;
     size?: number;
 }
 
+const getLink = (activeNetwork: NetworkInfo, id: string) => {
+    return networkPrefix(activeNetwork) + 'tokens/' + id;
+}
+
 export default function PoolCompositionWithLogos({ poolData, size = 24 }: PoolCompositionProps) {
 
     const theme = useTheme();
+    const [activeNetwork] = useActiveNetworkVersion()
+    let navigate = useNavigate();
 
     poolData.tokens = poolData.tokens.filter((tokens) => tokens.balance < 2596140000000000);
     return (
@@ -21,6 +31,7 @@ export default function PoolCompositionWithLogos({ poolData, size = 24 }: PoolCo
                 <Box mr={1}>
                     <Avatar
                         key={token.address + Math.random() * 10}
+                        onClick={() => { navigate(`${getLink(activeNetwork, token.address)}/`); }}
                         variant="rounded"
                         sx={{
                             height: size,

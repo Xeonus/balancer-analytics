@@ -1,12 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { Typography, Box, Card, Grid, CircularProgress, LinearProgress, Stack } from "@mui/material";
+import { Typography, Box, Card, Grid, CircularProgress, Stack } from "@mui/material";
 import PoolChart from '../../components/PoolChart';
-import { useBalancerPoolData } from "../../data/balancer/usePools";
 import { useBalancerPoolPageData, useBalancerPoolSingleData } from "../../data/balancer/usePools";
 import { useBalancerTransactionData } from "../../data/balancer/useTransactions";
 import { getShortPoolName } from '../../utils/getShortPoolName';
-import PoolCurrencyLogo from '../../components/PoolCurrencyLogo';
-import PoolComposition from '../../components/PoolComposition';
 import PoolCompositionWithLogos from '../../components/PoolCompositionWithLogos';
 import SwapFee from '../../components/SwapFee';
 import MetricsCard from '../../components/Cards/MetricsCard';
@@ -19,6 +16,7 @@ import PoolTokenChart from '../../components/PoolTokenChart';
 import NavCrumbs, { NavElement } from '../../components/NavCrumbs';
 import StyledExternalLink from '../../components/StyledExternalLink';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
+import PoolTokenTable from '../../components/Tables/PoolTokenTable';
 
 
 
@@ -26,7 +24,7 @@ export default function PoolPage() {
     const params = useParams();
     const [activeNetwork] = useActiveNetworkVersion();
     const poolId = params.poolId ? params.poolId : '';
-    const poolData = useBalancerPoolSingleData(poolId);
+    const poolData = useBalancerPoolSingleData(poolId);   
     const { tvlData, volumeData, feesData, tokenDatas } = useBalancerPoolPageData(poolId);
     const { swaps, joinExits, swapPairVolumes } = useBalancerTransactionData(
         (poolData?.tokens || []).map((token) => token.address),
@@ -46,6 +44,7 @@ export default function PoolPage() {
     navCrumbs.push(poolNav);
 
 
+    //TODO: Refactor in own function calls (geSwaps, getSwapsChange etc?)
     //Swaps
     let swaps24h = 0;
     let swaps24hChange = 0;
@@ -64,6 +63,39 @@ export default function PoolPage() {
             feesUSDChange = 100 / feesData[feesData.length - 2].value * feesData[feesData.length - 1].value - 100
             //feesUSDChange = (feesUSD - feesData[feesData.length - 2].value) / feesData[feesData.length - 2].value
         }
+    }
+
+    //Volume
+    let volumeUSD = 0;
+    let volumeUSDChange = 0;
+    if (volumeData.length > 3) {
+        volumeUSD = volumeData[feesData.length - 1].value;
+        if (volumeData[volumeData.length - 2]) {
+            volumeUSDChange = 100 / volumeData[volumeData.length - 2].value * volumeData[volumeData.length - 1].value - 100
+        }
+    }
+
+     //TVL
+     let tvlUSD = 0;
+     let tvlUSDChange = 0;
+     if (tvlData.length > 3) {
+        tvlUSD = tvlData[tvlData.length - 1].value;
+         if (tvlData[tvlData.length - 2]) {
+            tvlUSDChange = 100 / tvlData[tvlData.length - 2].value * tvlData[tvlData.length - 1].value - 100
+         }
+     }
+
+    //TODO: refactor - filter token datas for pool token IDs as those do not contain composable tokens
+    const tokenList = poolData?.tokens.map(token => token.balance < 2596140000000000 ? token.address : '')
+    const filteredTokenDatas = tokenDatas.filter(tokenData => tokenList?.includes(tokenData.tokenAddress))
+    if (filteredTokenDatas) {
+        poolData?.tokens.map((token) => {
+            const filteredToken = filteredTokenDatas.find(el => el.tokenAddress === token.address);
+            if (filteredToken && filteredToken.coingeckoRawData.prices) {
+                const price = filteredToken.coingeckoRawData.prices[filteredToken.coingeckoRawData.prices.length - 1][1];
+                token.tvl = token.balance * price;
+            }
+        })
     }
 
     //Ideas to show richer data:
@@ -98,17 +130,17 @@ export default function PoolPage() {
                     <Grid item xs={12}>
                         <Stack direction="row" spacing={2} justifyContent="space-between">
                             <MetricsCard
-                                mainMetric={volumeData ? poolData.volumeUSD : 0}
+                                mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
                                 mainMetricInUSD={true}
                                 metricName='Pool Volume'
-                                mainMetricChange={poolData.volumeUSDChange}
+                                mainMetricChange={volumeUSDChange ? volumeUSDChange : poolData.volumeUSDChange}
                                 MetricIcon={EqualizerIcon}
                             />
                             <MetricsCard
-                                mainMetric={poolData.tvlUSD}
+                                mainMetric={tvlUSD ? tvlUSD : poolData.tvlUSD}
                                 mainMetricInUSD={true}
                                 metricName='Pool TVL'
-                                mainMetricChange={poolData.tvlUSDChange * 100}
+                                mainMetricChange={tvlUSDChange ? tvlUSDChange : poolData.tvlUSDChange * 100}
                                 MetricIcon={MonetizationOnIcon}
                             />
                             <MetricsCard
@@ -142,7 +174,7 @@ export default function PoolPage() {
                         </Card>
                     </Grid>
                     <Grid item xs={4}>
-                        {tokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={tokenDatas} /> : 
+                        {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> : 
                         <Box display="flex" alignItems="center" flexDirection="column">
                             <CircularProgress />
                             <Typography variant="caption">Loading historical token data</Typography>
@@ -150,11 +182,15 @@ export default function PoolPage() {
                     </Grid>
                 </Grid>
                 <Grid item xs={8}>
-                        <Box mt={2}>
+                        <Box mt={2} mb={1}>
                             <Typography variant="h5">Pool Information </Typography>
                         </Box>
-                    </Grid>
-                
+                </Grid>
+                <Grid container spacing={2}>
+                <Grid item xs={8}>
+                    <PoolTokenTable tokenDatas={poolData.tokens} />
+                </Grid>
+                </Grid>
             </Box> :
             <Grid
                 container

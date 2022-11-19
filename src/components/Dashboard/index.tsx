@@ -23,6 +23,7 @@ import PoolPage from '../../pages/Pool/PoolPage';
 import Protocol from '../../pages/Protocol';
 import Chain from '../../pages/Chain';
 import Tokens from '../../pages/Tokens';
+import TokenPage from '../../pages/Token/TokenPage';
 import Fees from '../../pages/Fees';
 import { networkPrefix } from '../../utils/networkPrefix'
 
@@ -206,6 +207,8 @@ function Dashboard() {
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                             <Route path={"/:networkID/pools/:poolId"} element={<PoolPage />} />
                             <Route path={"/pools/:poolId"} element={<PoolPage />} />
+                            <Route path={"/:networkID/tokens/:address"} element={<TokenPage />} />
+                            <Route path={"/tokens/:address"} element={<TokenPage />} />
                             <Route path={"/:networkID/fees"} element={<Fees />} />
                             <Route path={"/fees"} element={<Fees />} />
                             

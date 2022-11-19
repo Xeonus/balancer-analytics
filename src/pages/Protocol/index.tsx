@@ -1,9 +1,8 @@
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { Card, Grid, CircularProgress, Typography } from '@mui/material';
+import { Card, Grid, CircularProgress, Typography, Stack } from '@mui/material';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
-import { Budget } from '../../components/MetricsCard';
 import EchartsArea from '../../components/Echarts/ProtocolEchartsArea';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
@@ -39,11 +38,12 @@ export default function Protocol() {
                 >
                     <Grid
                         item
+                        xl={3}
                         lg={3}
                         sm={6}
-                        xl={3}
                         xs={12}
                     >
+                        <Stack direction="row" spacing={2} justifyContent="space-between">
                         { coinData && coinData[balAddress] ?
                         <CoinCard 
                             tokenAddress={balAddress}
@@ -53,14 +53,6 @@ export default function Protocol() {
                             
                          />
                         : <CircularProgress /> }
-                    </Grid>
-                    <Grid
-                        item
-                        xl={3}
-                        lg={3}
-                        sm={6}
-                        xs={12}
-                    >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.volume? aggregatedProtocolData.volume : 0}
                             mainMetricInUSD={true}
@@ -68,14 +60,6 @@ export default function Protocol() {
                             mainMetricChange={aggregatedProtocolData.volumeChange}
                             MetricIcon={EqualizerIcon}
                         />
-                    </Grid>
-                    <Grid
-                        item
-                        xl={3}
-                        lg={3}
-                        sm={6}
-                        xs={12}
-                    >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.tvl}
                             mainMetricInUSD={true}
@@ -83,14 +67,6 @@ export default function Protocol() {
                             mainMetricChange={aggregatedProtocolData.tvlChange}
                             MetricIcon={MonetizationOnIcon}
                         />
-                    </Grid>
-                    <Grid
-                        item
-                        xl={3}
-                        lg={3}
-                        sm={6}
-                        xs={12}
-                    >
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.fees24}
                             mainMetricInUSD={true}
@@ -98,12 +74,13 @@ export default function Protocol() {
                             mainMetricChange={aggregatedProtocolData.feesChange}
                             MetricIcon={CurrencyExchangeIcon}
                         />
+                        </Stack>
                     </Grid>
                     <Grid
                         item
                         lg={12}
                         md={12}
-                        xl={6}
+                        xl={12}
                         xs={12}
                     >
                         <Card>

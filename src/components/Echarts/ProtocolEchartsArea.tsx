@@ -5,8 +5,9 @@ import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDat
 import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
 import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
 import { formatDollarAmount } from '../../utils/numbers';
-import { CircularProgress } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles'
+import CustomLinearProgress from '../Progress/CustomLinearProgress';
 
 export interface Normal {
     color: string;
@@ -206,6 +207,14 @@ export default function EchartsArea() {
                 option={option}
                 style={{ height: '300px', width: '100%' }}
                 className={'react_for_echarts'}
-            /> : <CircularProgress />
+            /> : <Grid
+            container
+            spacing={2}
+            mt='10%'
+            mb='10%'
+            sx={{ justifyContent: 'center' }}
+        >
+            <CustomLinearProgress />
+        </Grid>
     )
 }

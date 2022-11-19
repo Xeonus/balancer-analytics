@@ -4356,7 +4356,11 @@ export type GetPoolChartDataQuery = {
     pool: {
       __typename: "Pool";
       id: string;
-      tokens?: Array<{ __typename: "PoolToken"; address: string }> | null;
+      tokens?: Array<{
+        __typename: "PoolToken";
+        address: string;
+        balance: string;
+      }> | null;
     };
   }>;
 };
@@ -5866,6 +5870,7 @@ export const GetPoolChartDataDocument = gql`
         id
         tokens {
           address
+          balance
         }
       }
     }

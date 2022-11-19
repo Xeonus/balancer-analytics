@@ -122,6 +122,7 @@ query GetPoolChartData($poolId: String!, $startTimestamp: Int!) {
             id
             tokens {
               address
+              balance
             }
         }
     }

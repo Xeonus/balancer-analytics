@@ -69,7 +69,7 @@ function getTokenPriceValues(tokenAddress: string, tokens24: BalancerTokenFragme
 
 
 
-export function useBalancerTokens(): TokenData[] {
+export function useBalancerTokens(): TokenData[]  {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
@@ -153,10 +153,8 @@ export function useBalancerTokens(): TokenData[] {
             tokenData24 = getTokenValues(token.address, tokens24, coingeckoData);
             priceData = getTokenPriceValues(token.address, tokens24, coingeckoData);
             priceData24 = getTokenPriceValues(token.address, tokens24, coingeckoData);
-            priceChange = coingeckoData[token.address].usd_24h_change
+            priceChange = coingeckoData[token.address].usd_24h_change;
         }
-        
-
 
         const valueUSDCollected = 0;
 
@@ -175,6 +173,7 @@ export function useBalancerTokens(): TokenData[] {
             tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
             priceUSD: priceData.price,
             priceUSDChange: priceChange,
+            isCoingeckoPriceSource: priceChange !== 0 ? true : false,
         };
     });
 }
@@ -225,7 +224,7 @@ export function useBalancerTokenPageData(address: string): {
 
 
     const tvlData = snapshots.map((snapshot) => {
-        const coingeckoPrice = coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000);
+        const coingeckoPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000) : 0;
         let coingeckoValue = 0;
         if (coingeckoPrice) {
             coingeckoValue = Number(snapshot.totalBalanceNotional) * coingeckoPrice[1];
@@ -239,12 +238,12 @@ export function useBalancerTokenPageData(address: string): {
 
     const volumeData = snapshots.map((snapshot, idx) => {
 
-        const coingeckoPrevPrice = coingeckoSnapshotData?.prices.find(s => idx === 0 ? 0 : s[0] === snapshots[idx-1].timestamp * 1000);
+        const coingeckoPrevPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => idx === 0 ? 0 : s[0] === snapshots[idx-1].timestamp * 1000) : null;
         let coingeckoPrevVolValue = 0;
         if (coingeckoPrevPrice) {
             coingeckoPrevVolValue = idx === 0 ? 0 : Number(snapshots[idx - 1].totalVolumeNotional) * coingeckoPrevPrice[1];
         }
-        const coingeckoPrice = coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000);
+        const coingeckoPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000) : null;
         let coingeckoVolValue = 0;
         if (coingeckoPrice) {
             coingeckoVolValue = Number(snapshot.totalVolumeNotional) * coingeckoPrice[1];
@@ -255,13 +254,13 @@ export function useBalancerTokenPageData(address: string): {
         const value = parseFloat(snapshot.totalVolumeUSD);
 
         return {
-            value: coingeckoDelta > 0 ? coingeckoDelta : 0,
+            value: coingeckoDelta > 0 ? coingeckoDelta : value - prevValue,
             time: unixToDate(snapshot.timestamp),
         };
     });
 
     const priceData = snapshots.map((snapshot) => {
-        const coingeckoPrice = coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000);
+        const coingeckoPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => s[0] === snapshot.timestamp * 1000) : null;
         let coingeckoValue = 0;
         if (coingeckoPrice) {
             coingeckoValue = coingeckoPrice[1];

@@ -229,7 +229,6 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null  {
             const tokenPrice = 0
             const price = 0
             const balance = parseFloat(token.balance);
-
             return {
                 ...token,
                 decimals: token.decimals,
@@ -318,7 +317,10 @@ export function useBalancerPoolPageData(poolId: string): {
 
     //console.log("coingeckoRawData", coingeckoSnapshotData)
 
-    const { poolSnapshots } = data;
+    let { poolSnapshots } = data;
+
+    //remove composable tokens from snapshots:
+    //poolSnapshots = poolSnapshots.filter((el) => el.pool.tokens?.filter((token) => token.balance < 2596140000000000) );
 
 
     const tvlData = poolSnapshots.map((snapshot) => {
