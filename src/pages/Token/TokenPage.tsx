@@ -115,9 +115,11 @@ export default function TokenPage() {
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card>
+                        <Box>
+                        <Card >
                             <TokenChart tvlData={tvlData} volumeData={volumeData} priceData={priceData} />
                         </Card>
+                        </Box>
                     </Grid>
                 </Grid>
                 <Grid item xs={8}>

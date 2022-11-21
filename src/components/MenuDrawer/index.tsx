@@ -157,7 +157,7 @@ const MenuDrawer = ({
                     <img src={DiscordIconLight} alt="Discord Icon" width="25" />
                 </Link>
             </Box>
-            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
+            <Box display="flex" justifyContent="space-evenly" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
                 <IconButton
                     sx={{
                         ml: 1,

@@ -1,9 +1,6 @@
-import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { graphic, registerTheme } from 'echarts'
-import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
-import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
+import { ProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import { formatDollarAmount } from '../../utils/numbers';
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles'
@@ -28,18 +25,20 @@ export interface ToolTipParams {
   data: echartsData;
 }
 
+interface ProtocolBarChartProps {
+    mainnetProtocolData: ProtocolData,
+    arbitrumProtocolData: ProtocolData,
+    polygonProtocolData: ProtocolData
+}
 
 
-export default function ProtocolEchartsArea() {
+
+export default function ProtocolMultipleBarCharts({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
-    const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
-    const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
-
-    const mainnetData = protocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-    let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+    const mainnetData = mainnetProtocolData.feeData.map(el => Number(el.value.toFixed(2)));
+    let arbitrumData = arbitrumProtocolData.feeData.map(el => Number(el.value.toFixed(2)));
     //add proceeding zero values based on mainnet size
     if (mainnetData && arbitrumData) {
         const diffSize = mainnetData.length - arbitrumData.length;
@@ -48,7 +47,7 @@ export default function ProtocolEchartsArea() {
     }
 
 
-    let polygonData = polygonProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+    let polygonData = polygonProtocolData.feeData.map(el => Number(el.value.toFixed(2)));
 
     if (mainnetData && polygonData) {
         const diffSize = mainnetData.length - polygonData.length;
@@ -62,7 +61,7 @@ export default function ProtocolEchartsArea() {
   });
 
 
-    const mainnetxAxisData = protocolData.tvlData.map(el => el.time);
+    const mainnetxAxisData = mainnetProtocolData.feeData.map(el => el.time);
 
     const option = {
         color: ['#00DDFF','#80FFA5', '#37A2FF'],
@@ -110,7 +109,7 @@ export default function ProtocolEchartsArea() {
         series: [
             {
                 name: 'Mainnet',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -142,7 +141,7 @@ export default function ProtocolEchartsArea() {
             },
             {
                 name: 'Arbitrum',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -174,7 +173,7 @@ export default function ProtocolEchartsArea() {
             },
             {
                 name: 'Polygon',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
