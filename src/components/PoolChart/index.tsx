@@ -1,14 +1,19 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Divider } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { BalancerChartDataItem} from '../../data/balancer/balancerTypes';
+import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import GenericBarChart from "../Echarts/GenericBarChart";
 import TvlAreaChart from "../Echarts/TvlAreaChart";
+import dayjs, { Dayjs } from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export interface TabPanelProps {
     children?: React.ReactNode;
@@ -48,9 +53,14 @@ function a11yProps(index: number) {
     };
 }
 
-export default function PoolChart({tvlData, volumeData, feesData} : PoolChartProps) {
+export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartProps) {
 
     const [value, setValue] = React.useState(0);
+    const [startDate, setStartDate] = React.useState(dayjs().subtract(7, 'day').valueOf());
+    const [startIndex, setStartIndex] = React.useState(0);
+    const [endIndex, setEndIndex] = React.useState(0);
+    const [showDate, setShowDate] = React.useState(false);
+    const [endDate, setEndDate] = React.useState(Date.now());
     const [timeRange, setTimeRange] = React.useState('0');
 
     React.useEffect(() => {
@@ -63,7 +73,14 @@ export default function PoolChart({tvlData, volumeData, feesData} : PoolChartPro
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(timeRange)))
             setRangedFeesData(feesData.slice(feesData.length - Number(timeRange)))
         }
-    }, [tvlData, timeRange]);
+        if (showDate) {
+            setRangedTvlData(tvlData.slice(startIndex, endIndex))
+            setRangedVolumeData(volumeData.slice(startIndex, endIndex))
+            setRangedFeesData(feesData.slice(startIndex, endIndex))
+        }
+    }, [tvlData, timeRange, startIndex, endIndex]);
+
+    console.log("tvlData", tvlData)
 
     //data state
     const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
@@ -81,10 +98,41 @@ export default function PoolChart({tvlData, volumeData, feesData} : PoolChartPro
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(event.target.value)))
             setRangedFeesData(feesData.slice(feesData.length - Number(event.target.value)))
         }
+        if (event.target.value == '1000') {
+            setShowDate(true);
+        } else {
+            setShowDate(false);
+        }
     };
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
+
+    };
+
+    const handleStartDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
+        if (value) {
+            setStartDate(value);
+            //Find index of selected date and slice accordingly
+            const date = dayjs(value).format('YYYY-MM-DD')
+            const hit = tvlData.find(el => el.time === date)
+            if (hit) {
+                setStartIndex(tvlData.indexOf(hit))
+
+            }
+        }
+    };
+
+    const handleEndDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
+        if (value) {
+            setEndDate(value);
+            //Find index of selected date and slice accordingly
+            const date = dayjs(value).format('YYYY-MM-DD')
+            const hit = tvlData.find(el => el.time === date)
+            if (hit) {
+                setEndIndex(tvlData.indexOf(hit))
+            }
+        }
     };
 
 
@@ -92,48 +140,75 @@ export default function PoolChart({tvlData, volumeData, feesData} : PoolChartPro
     return (
 
         <Box >
-            <Box m={1} display="flex" justifyContent="left"  sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box m={1} display="flex" alignItems="center" justifyContent="left" sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
                     <Tab label="Volume" {...a11yProps(0)} />
                     <Tab label="TVL" {...a11yProps(1)} />
                     <Tab label="Fees" {...a11yProps(2)} />
                 </Tabs>
                 <FormControl size="small">
-                <Select
-                sx={{
-                    backgroundColor: "background.paper",
-                    boxShadow: 2,
-                    borderRadius: 2,
-                    borderColor: 0,
-                }}
-                color="primary"
-                labelId="timeRangeSelectLabel"
-                id="timeRangeSelect"
-                onChange={handleChange}
-                value={timeRange}
-                inputProps={{
-                    name: 'timeRange',
-                    id: 'timeRangeId-native-simple',
-                }}
-            >
-                    <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
-                    <Divider />
-                    <MenuItem value={30}> 30 days</MenuItem>
-                    <MenuItem value={90}>90 days</MenuItem>
-                    <MenuItem value={180}>180 days</MenuItem>
-                    <MenuItem value={365}>365 days</MenuItem>
-                    <MenuItem value={0}>All time</MenuItem>
-                </Select>
-            </FormControl>
+                    <Select
+                        sx={{
+                            backgroundColor: "background.paper",
+                            boxShadow: 2,
+                            borderRadius: 2,
+                            borderColor: 0,
+                        }}
+                        color="primary"
+                        labelId="timeRangeSelectLabel"
+                        id="timeRangeSelect"
+                        onChange={handleChange}
+                        value={timeRange}
+                        inputProps={{
+                            name: 'timeRange',
+                            id: 'timeRangeId-native-simple',
+                        }}
+                    >
+                        <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                        <Divider />
+                        <MenuItem value={30}> 30 days</MenuItem>
+                        <MenuItem value={90}>90 days</MenuItem>
+                        <MenuItem value={180}>180 days</MenuItem>
+                        <MenuItem value={365}>365 days</MenuItem>
+                        <MenuItem value={0}>All time</MenuItem>
+                        <MenuItem value={1000}> Custom </MenuItem>
+                    </Select>
+                </FormControl>
+
+                {showDate ?
+                <Box p={1} display="flex" justifyContent="left" >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="Start Date"
+                            maxDate={Date.now()}
+                            value={startDate}
+                            onChange={handleStartDateChange}
+                            renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                        />
+                    </LocalizationProvider>
+                    <Box p={1}>
+                        <Typography>to</Typography>
+                    </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="End Date"
+                            maxDate={Date.now()}
+                            value={endDate}
+                            onChange={handleEndDateChange}
+                            renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Box> : null}
             </Box>
+            
             <TabPanel value={value} index={0}>
-                <GenericBarChart data={rangedVolumeData}/>
+                <GenericBarChart data={rangedVolumeData} />
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <TvlAreaChart tvlData={rangedTvlData} />
             </TabPanel>
             <TabPanel value={value} index={2}>
-            <   GenericBarChart data={rangedFeesData}/>
+                <   GenericBarChart data={rangedFeesData} />
             </TabPanel>
         </Box>
 
