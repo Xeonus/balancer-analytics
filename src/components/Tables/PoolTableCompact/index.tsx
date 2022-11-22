@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid, TableFooter } from '@mui/material';
+import { Grid } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
@@ -199,16 +199,15 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-export default function PoolTable({
+export default function PoolTableCompact({
     poolDatas
 }: {
     poolDatas?: PoolData[]
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const page = 0;
+  const rowsPerPage = 10;
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();
 
@@ -240,23 +239,6 @@ export default function PoolTable({
     setOrderBy(property);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    //TODO?
-  }
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDense(event.target.checked);
-  };
-
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -268,15 +250,14 @@ export default function PoolTable({
 
 
   //Table generation
-
   return (
     <Box sx={{ width: '100%'}}>
       <Paper sx={{ mb: 2 }}>
         <TableContainer>
           <Table
             //sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            aria-labelledby="topPools"
+            size={'medium'}
           >
             <EnhancedTableHead
               order={order}
@@ -285,8 +266,6 @@ export default function PoolTable({
               rowCount={rows.length}
             />
             <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-              rows.sort(getComparator(order, orderBy)).slice() */}
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
@@ -325,37 +304,16 @@ export default function PoolTable({
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height: (33) * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
             </TableBody>
-            <TableFooter>
-              
-            </TableFooter>
           </Table>
         </TableContainer>
-        <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-        <Box m={1} display="flex" justifyContent={"flex-start"}>
-        <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Compact view"
-      />
-      </Box>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
       </Paper>
-      
     </Box>
   );
 }

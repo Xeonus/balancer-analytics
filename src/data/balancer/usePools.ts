@@ -79,7 +79,7 @@ prevThuDate.setUTCHours(0, 0, 0, 0);
 const today = new Date();
 today.setUTCHours(0, 0, 0, 0);
 
-export function useBalancerPools(): PoolData[] {
+export function useBalancerPools(first = 250): PoolData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
@@ -96,13 +96,14 @@ export function useBalancerPools(): PoolData[] {
             getPoolData({
                 variables: {
                     block24: { number: parseInt(block24.number) },
+                    first: first,
                 },
                 context: {
                     uri: activeNetwork.clientUri,
                 }
             });
         }
-    }, [block24]);
+    }, [block24, first]);
 
     if (!data) {
         return [];

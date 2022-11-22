@@ -10,7 +10,7 @@ import PoolChart from '../../components/PoolChart';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
-import PoolTable from "../../components/Tables/PoolTable";
+import PoolTableCompact from "../../components/Tables/PoolTableCompact";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 
@@ -21,8 +21,7 @@ export default function Chain() {
     const theme = useTheme();
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, activeNetwork.startTimeStamp);
-    const poolData = useBalancerPools();
-    const poolDataSubset = poolData.slice(0, 10)
+    const poolData = useBalancerPools(20);
 
 
         //Navigation
@@ -39,7 +38,13 @@ export default function Chain() {
         navCrumbs.push(poolNav);
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ 
+            flexGrow: 1,
+            }} >
+            <Grid 
+            alignItems="center"
+            justifyContent="center"
+            >
             <Grid
                     container
                     spacing={3}
@@ -66,7 +71,7 @@ export default function Chain() {
             >
                 <Grid
                     item
-                    xs={12}
+                    xs={10}
                 >
                     <Stack direction="row" spacing={2} justifyContent="space-between">
                         <MetricsCard
@@ -100,7 +105,7 @@ export default function Chain() {
                 <Grid
                     item
                     mt={1}
-                    xs={8}
+                    xs={10}
                 >
                     <Box mt={2}>
                         <Typography variant='h5'>Historical Data</Typography>
@@ -111,13 +116,12 @@ export default function Chain() {
                     </Card>
                     </Box>
                 </Grid>
-            </Grid>
-            <Grid item xs={12}>
+                <Grid item xs={10}>
                 <Box mt={2}>
-            <Typography variant="h5" mb={1}>Liquidity Pools Overview ({activeNetwork.name})</Typography>
+            <Typography variant="h5" mb={1}> Top 10 Liquidity Pools ({activeNetwork.name})</Typography>
             </Box>
             {poolData.length >= 1 ?
-                <PoolTable poolDatas={poolDataSubset} /> :
+                <PoolTableCompact poolDatas={poolData} /> :
                 <Grid
                     container
                     spacing={2}
@@ -126,6 +130,9 @@ export default function Chain() {
                 >
                     <CustomLinearProgress />
                 </Grid>}
+            </Grid>
+            
+        </Grid>
         </Grid>
         </Box>
     );

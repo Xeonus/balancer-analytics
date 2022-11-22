@@ -307,12 +307,12 @@ export const GetTransactionData = gql`
   ${BalancerJoinExit}
 `;
 export const GetPoolData = gql`
-  query GetPoolData($block24: Block_height!) {
-    pools(first: 250, orderBy: totalLiquidity, orderDirection: desc) {
+  query GetPoolData($block24: Block_height!, $first: Int!) {
+    pools(first: $first, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
     pools24: pools(
-      first: 250
+      first: $first
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block24

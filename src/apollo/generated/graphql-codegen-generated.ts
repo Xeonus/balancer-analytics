@@ -4248,6 +4248,7 @@ export type TokenSnapshotFragment = {
 
 export type GetPoolDataQueryVariables = Exact<{
   block24: Block_Height;
+  first: Scalars["Int"];
 }>;
 
 export type GetPoolDataQuery = {
@@ -5719,12 +5720,12 @@ export type GetTransactionDataQueryResult = Apollo.QueryResult<
   GetTransactionDataQueryVariables
 >;
 export const GetPoolDataDocument = gql`
-  query GetPoolData($block24: Block_height!) {
-    pools(first: 250, orderBy: totalLiquidity, orderDirection: desc) {
+  query GetPoolData($block24: Block_height!, $first: Int!) {
+    pools(first: $first, orderBy: totalLiquidity, orderDirection: desc) {
       ...BalancerPool
     }
     pools24: pools(
-      first: 250
+      first: $first
       orderBy: totalLiquidity
       orderDirection: desc
       block: $block24
@@ -5748,6 +5749,7 @@ export const GetPoolDataDocument = gql`
  * const { data, loading, error } = useGetPoolDataQuery({
  *   variables: {
  *      block24: // value for 'block24'
+ *      first: // value for 'first'
  *   },
  * });
  */

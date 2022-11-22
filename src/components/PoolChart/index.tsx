@@ -60,8 +60,10 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [startIndex, setStartIndex] = React.useState(0);
     const [endIndex, setEndIndex] = React.useState(0);
     const [showDate, setShowDate] = React.useState(false);
-    const [endDate, setEndDate] = React.useState(Date.now());
+    const [endDate, setEndDate] = React.useState(dayjs().valueOf());
     const [timeRange, setTimeRange] = React.useState('0');
+
+    console.log(startDate)
 
     React.useEffect(() => {
         if (tvlData.length < Number(timeRange) || timeRange == '0') {
@@ -74,6 +76,9 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             setRangedFeesData(feesData.slice(feesData.length - Number(timeRange)))
         }
         if (showDate) {
+            if (startIndex === 0 && endIndex === 0) {
+                setInitialDateIndices(startDate, endDate);
+            }
             setRangedTvlData(tvlData.slice(startIndex, endIndex))
             setRangedVolumeData(volumeData.slice(startIndex, endIndex))
             setRangedFeesData(feesData.slice(startIndex, endIndex))
@@ -130,10 +135,29 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             const date = dayjs(value).format('YYYY-MM-DD')
             const hit = tvlData.find(el => el.time === date)
             if (hit) {
-                setEndIndex(tvlData.indexOf(hit))
+                setEndIndex(tvlData.indexOf(hit) + 1)
             }
         }
     };
+
+    function setInitialDateIndices(startDate: number | null, endDate: number | null) {
+        if (startDate) {
+            //Find index of selected date and slice accordingly
+            const start = dayjs(startDate).format('YYYY-MM-DD')
+            const hit = tvlData.find(el => el.time === start)
+            if (hit) {
+                setEndIndex(tvlData.indexOf(hit) + 1)
+            }
+        }
+        if (endDate) {
+            //Find index of selected date and slice accordingly
+            const end = dayjs(endDate).format('YYYY-MM-DD')
+            const hit = tvlData.find(el => el.time === end)
+            if (hit) {
+                setEndIndex(tvlData.indexOf(hit) + 1)
+            }
+        }
+    }
 
 
 
