@@ -73,11 +73,17 @@ export interface PoolData {
     tvlUSD: number;
     tvlUSDChange: number;
 
+    //Fees
     feesUSD: number;
     feesEpochUSD: number;
 
-    //Pool Type info
+    //Additional pool info
     poolType: string;
+    amp: string;
+    createTime: number;
+    owner: string;
+    holdersCount: number;
+    factory: string;
 }
 
 

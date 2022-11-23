@@ -51,7 +51,8 @@ export default function PoolTokenChart({ poolData, tokenDatas }: PoolChartProps)
 
     return (
         <Card
-        sx={{maxWidth: '100%'}}
+        sx={{maxWidth: '100%'
+            }}
         >
         <Box>
             <Box m={1} display="flex" justifyContent="left" sx={{ borderBottom: 1, borderColor: 'divider' }}>

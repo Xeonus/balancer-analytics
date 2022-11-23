@@ -11,6 +11,7 @@ import GenericAreaChart from '../../Echarts/GenericAreaChart';
 import CurrencyLogo from '../../CurrencyLogo';
 import { CoingeckoSnapshotPriceData } from '../../../data/balancer/useTokens';
 import { unixToDate } from '../../../utils/date';
+import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
 
 export type CoinPriceCardProps = {
   mainMetric: number,
@@ -29,6 +30,8 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
     return(<Typography>Coingecko API: No data</Typography>)
   }
 
+  let price = 0
+  let tokenPriceChange = 0
   const balancerChartData = chartData.prices.map((price) => {
     if (price == null) {
       return {
@@ -42,33 +45,60 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
     }
   });
 
+  if (balancerChartData.length > 2) {
+    price = balancerChartData[balancerChartData.length - 1].value ? balancerChartData[balancerChartData.length - 1].value : 0;
+    tokenPriceChange = 100 / balancerChartData[balancerChartData.length - 2].value * balancerChartData[balancerChartData.length - 1].value - 100
+  }
+
 
   return (
     balancerChartData && balancerChartData.length > 2 ? 
     <Box>
         <Grid
           container
-          spacing={3}
-          sx={{ justifyContent: 'flex-start' }}
+          sx={{ 
+            justifyContent: 'flex-start',
+            alignItems: 'center'
+          }}
         >
-          
-          <Grid item>
-            <Typography
-              color="textSecondary"
-              gutterBottom
-              variant="h5"
-            >
-              {tokenName}
-            </Typography>
+           <Grid item>
+            <Box display='flex' alignItems='center'>
+              <Box m={1}>
+            <CurrencyLogo address={tokenAddress} size='30px' />
+            </Box>
             <Typography
               color="textPrimary"
-              variant="h6"
+              variant="h5"
             >
-              {formatDollarAmount(balancerChartData[balancerChartData.length - 1].value ? balancerChartData[balancerChartData.length - 1].value : 0)}
+              {formatDollarAmount(price)}
             </Typography>
-          </Grid>
-          <Grid item>
-            <CurrencyLogo address={tokenAddress} size='40px' />
+            </Box>
+            <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          {tokenPriceChange > 0 ? 
+            <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} /> 
+            : 
+            <ArrowDownwardIcon fontSize="small" color="error" />}
+          <Typography
+            color={tokenPriceChange > 0 ? 'green' : 'error'}
+            sx={{
+              mr: 1
+            }}
+            variant="body2"
+          >
+            {Number(tokenPriceChange).toFixed(2)} %
+          </Typography>
+          <Typography
+            color="textSecondary"
+            variant="caption"
+          >
+            (24h)
+          </Typography>
+        </Box>
           </Grid>
         </Grid>
         <Box
@@ -79,6 +109,6 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
         >
           <GenericAreaChart chartData={balancerChartData} dataTitle={tokenName} />
         </Box>
-        </Box> : <Typography>No data</Typography>
+        </Box> : <Typography>No data available from pricing provider</Typography>
   );
 }

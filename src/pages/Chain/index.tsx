@@ -59,7 +59,7 @@ export default function Chain() {
                     <Grid item xs={12}>
                         <Box display="flex" alignItems="center">
                             <Box mb={1}>
-                                <Typography variant={"h5"}>Chain Metrics: {activeNetwork.name}</Typography>
+                                <Typography variant={"h5"}>Chain Metrics ({activeNetwork.name})</Typography>
                             </Box>
                         </Box>
                     </Grid>
@@ -71,7 +71,7 @@ export default function Chain() {
             >
                 <Grid
                     item
-                    xs={10}
+                    xs={12}
                 >
                     <Stack direction="row" spacing={2} justifyContent="space-between">
                         <MetricsCard
@@ -105,10 +105,10 @@ export default function Chain() {
                 <Grid
                     item
                     mt={1}
-                    xs={10}
+                    xs={12}
                 >
                     <Box mt={2}>
-                        <Typography variant='h5'>Historical Data</Typography>
+                        <Typography variant='h5'>Historical Performance</Typography>
                     </Box>
                     <Box>
                     <Card>
@@ -116,9 +116,9 @@ export default function Chain() {
                     </Card>
                     </Box>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={12}>
                 <Box mt={2}>
-            <Typography variant="h5" mb={1}> Top 10 Liquidity Pools ({activeNetwork.name})</Typography>
+            <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
             </Box>
             {poolData.length >= 1 ?
                 <PoolTableCompact poolDatas={poolData} /> :

@@ -86,6 +86,8 @@ export const BalancerPool = gql`
     holdersCount
     createTime
     owner
+    amp
+    factory
     strategyType
     swapEnabled
     tokens(first: 10) {

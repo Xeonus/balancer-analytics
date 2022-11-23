@@ -4270,6 +4270,8 @@ export type GetPoolDataQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4302,6 +4304,8 @@ export type GetPoolDataQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4578,6 +4582,8 @@ export type BalancerPoolFragment = {
   holdersCount: string;
   createTime: number;
   owner?: string | null;
+  amp?: string | null;
+  factory?: string | null;
   strategyType: number;
   swapEnabled: boolean;
   tokens?: Array<{
@@ -4635,6 +4641,8 @@ export type GetBalancerPoolsQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4676,6 +4684,8 @@ export type GetBalancerPoolQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4708,6 +4718,8 @@ export type GetBalancerPoolQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4897,6 +4909,8 @@ export type BalancePortfolioDataQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -4938,6 +4952,8 @@ export type BalancePortfolioDataQuery = {
     holdersCount: string;
     createTime: number;
     owner?: string | null;
+    amp?: string | null;
+    factory?: string | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
@@ -5290,6 +5306,8 @@ export const BalancerPoolFragmentDoc = gql`
     holdersCount
     createTime
     owner
+    amp
+    factory
     strategyType
     swapEnabled
     tokens(first: 10) {

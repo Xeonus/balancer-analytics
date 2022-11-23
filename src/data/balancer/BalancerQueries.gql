@@ -334,6 +334,8 @@ fragment BalancerPool on Pool {
     holdersCount
     createTime
     owner
+    amp
+    factory
     strategyType
     swapEnabled
     tokens(first: 10) {

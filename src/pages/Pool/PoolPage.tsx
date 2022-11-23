@@ -17,6 +17,7 @@ import NavCrumbs, { NavElement } from '../../components/NavCrumbs';
 import StyledExternalLink from '../../components/StyledExternalLink';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import PoolTokenTable from '../../components/Tables/PoolTokenTable';
+import PoolInfoTable from '../../components/Tables/PoolInfoTable';
 
 
 
@@ -91,7 +92,7 @@ export default function PoolPage() {
     if (filteredTokenDatas) {
         poolData?.tokens.map((token) => {
             const filteredToken = filteredTokenDatas.find(el => el.tokenAddress === token.address);
-            if (filteredToken && filteredToken.coingeckoRawData.prices) {
+            if (filteredToken && filteredToken.coingeckoRawData.prices.length) {
                 const price = filteredToken.coingeckoRawData.prices[filteredToken.coingeckoRawData.prices.length - 1][1];
                 token.tvl = token.balance * price;
             }
@@ -105,7 +106,7 @@ export default function PoolPage() {
             <Box sx={{ flexGrow: 1 }}>
                 <Grid
                     container
-                    spacing={3}
+                    spacing={2}
                     sx={{ justifyContent: 'space-between' }}
                 >
                     <Grid item xs={12}>
@@ -163,32 +164,38 @@ export default function PoolPage() {
                     </Grid>
                 </Grid>
                 <Grid container spacing={1}>
-                    <Grid item xs={8}>
+                    <Grid item xs={12}>
                         <Box mt={2}>
-                            <Typography variant="h5">Historical Data </Typography>
+                            <Typography variant="h5">Historical Performance </Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={12}>
                         <Card>
                             <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
                         </Card>
                     </Grid>
-                    <Grid item xs={4}>
-                        {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> : 
+                  
+                </Grid>
+                <Grid item xs={8}>
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Pool & Token Metrics </Typography>
+                        </Box>
+                </Grid>
+                <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
+                    {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> : 
                         <Box display="flex" alignItems="center" flexDirection="column">
                             <CircularProgress />
                             <Typography variant="caption">Loading historical token data</Typography>
                         </Box>}
+                    
+                </Grid>
+                <Grid item xs={6}>
+                <PoolInfoTable poolData={poolData}/>
                     </Grid>
-                </Grid>
                 <Grid item xs={8}>
-                        <Box mt={2} mb={1}>
-                            <Typography variant="h5">Pool Information </Typography>
-                        </Box>
-                </Grid>
-                <Grid container spacing={2}>
-                <Grid item xs={8}>
-                    <PoolTokenTable tokenDatas={poolData.tokens} />
+                   
                 </Grid>
                 </Grid>
             </Box> :

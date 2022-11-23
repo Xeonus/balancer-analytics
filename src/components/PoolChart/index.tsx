@@ -63,8 +63,6 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [endDate, setEndDate] = React.useState(dayjs().valueOf());
     const [timeRange, setTimeRange] = React.useState('0');
 
-    console.log(startDate)
-
     React.useEffect(() => {
         if (tvlData.length < Number(timeRange) || timeRange == '0') {
             setRangedTvlData(tvlData);
@@ -84,8 +82,6 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             setRangedFeesData(feesData.slice(startIndex, endIndex))
         }
     }, [tvlData, timeRange, startIndex, endIndex]);
-
-    console.log("tvlData", tvlData)
 
     //data state
     const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
@@ -200,7 +196,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                 </FormControl>
 
                 {showDate ?
-                <Box p={1} display="flex" justifyContent="left" >
+                <Box p={0.5} display="flex" justifyContent="left" >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                             label="Start Date"

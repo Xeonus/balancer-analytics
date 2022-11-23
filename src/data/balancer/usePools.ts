@@ -151,6 +151,11 @@ export function useBalancerPools(first = 250): PoolData[] {
             tvlUSDChange: (poolData.tvl - poolData24.tvl) / poolData24.tvl,
             //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,
             poolType: poolData.poolType + "",
+            amp: pool.amp ? pool.amp : '0',
+            owner: pool.owner ? pool.owner : '',
+            createTime: pool.createTime,
+            holdersCount: parseInt(pool.holdersCount),
+            factory: pool.factory ? pool.factory : '',
         };
     });
 }
@@ -219,6 +224,8 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null  {
         return null
     }
 
+    console.log("amp", pool.amp)
+
     return {
         ...pool,
         name: pool.name || '',
@@ -253,6 +260,12 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null  {
         tvlUSDChange: (parseFloat(pool.totalLiquidity) - parseFloat(pool24.totalLiquidity)) / parseFloat(pool24.totalLiquidity),
         //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,
         poolType: pool.poolType + "",
+        amp: pool.amp ? pool.amp : '0',
+        owner: pool.owner ? pool.owner : '',
+        createTime: pool.createTime,
+        holdersCount: parseInt(pool.holdersCount),
+        factory: pool.factory ? pool.factory : '',
+
     };
 }
 

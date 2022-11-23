@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid, Typography } from '@mui/material';
+import { Grid, TableFooter, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
@@ -28,25 +28,20 @@ import { PoolData, PoolTokenData, TokenData } from '../../../data/balancer/balan
 import CurrencyLogo from '../../CurrencyLogo';
 import { green } from '@mui/material/colors';
 import { STABLE_POOLS } from '../../../constants';
+import dayjs from 'dayjs';
 
 interface Data {
-    token: PoolTokenData;
-    weight: number;
-    balance: number,
-    tvl: number;
+    attribute: string;
+    value: string;
 }
 
 function createData(
-    token: PoolTokenData,
-    weight: number,
-    balance: number,
-    tvl: number,
+    attribute: string,
+    value: string,
 ): Data {
     return {
-        token,
-        weight,
-        balance,
-        tvl,
+        attribute,
+        value,
     };
 }
 
@@ -66,8 +61,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | PoolTokenData },
-    b: { [key in Key]: number | string | PoolTokenData },
+    a: { [key in Key]: string },
+    b: { [key in Key]: string },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -97,28 +92,16 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'token',
+        id: 'attribute',
         numeric: false,
         disablePadding: false,
-        label: 'Token',
+        label: 'Attribute',
     },
     {
-        id: 'weight',
-        numeric: true,
+        id: 'value',
+        numeric: false,
         disablePadding: false,
-        label: 'Weight',
-    },
-    {
-        id: 'balance',
-        numeric: true,
-        disablePadding: false,
-        label: 'Balance',
-    },
-    {
-        id: 'tvl',
-        numeric: true,
-        disablePadding: false,
-        label: 'Value',
+        label: 'Details',
     },
 ];
 
@@ -127,7 +110,6 @@ interface EnhancedTableProps {
     order: Order;
     orderBy: string;
     rowCount: number;
-    isWeightEnabled: boolean;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -140,11 +122,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
     const theme = useTheme()
 
+
     return (
         <TableHead>
             <TableRow>
                 {headCells.map((headCell) => (
-                    headCell.id === 'weight' && ! props.isWeightEnabled ? null :
                     <TableCell
                         key={headCell.id}
                         align={headCell.numeric ? 'right' : 'left'}
@@ -170,49 +152,44 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function PoolTokenTable({
-    tokenDatas,
-    poolType,
+export default function PoolInfoTable({
+    poolData,
 }: {
-    tokenDatas?: PoolTokenData[]
-    poolType: string
+    poolData?: PoolData
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('attribute');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
-    if (!tokenDatas) {
+    if (!poolData) {
         return <CircularProgress />;
     }
 
-    if (tokenDatas.length < 1) {
-        return (
-            <Grid>
-                <CircularProgress />
-            </Grid>
-        );
-    }
 
-    const filteredTokenDatas = tokenDatas.filter(x => x.address.toLowerCase() !== '0x1aafc31091d93c3ff003cff5d2d8f7ba2e728425');
-
-    const sortedTokenDats = filteredTokenDatas.sort(function (a, b) {
-        return b.tvl - a.tvl;
-    });
-
-    const rows = sortedTokenDats.map(el =>
-        createData(el, el.weight, el.balance, el.tvl)
-
-    )
+    console.log("poolData", poolData)
+    //Statically create data elements
+    const rows = [
+        createData('Pool Name', poolData.name),
+        createData('Pool Symbol', poolData.symbol),
+        createData('Pool Type', poolData.poolType),
+        createData('Holders count', poolData.holdersCount.toString()),
+        createData('Amp Factor', poolData.amp.toString()),
+        createData('Swap Fees', formatPercentageAmount(poolData.swapFee)),
+        createData('Pool Owner', poolData.owner),
+        createData('Contract address', poolData.address),
+        createData('Creation Time', dayjs.unix(poolData.createTime).format('MM.DD.YYYY hh:mm:ss')),
+        createData('Pool factory', poolData.factory),
+    ]
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
         property: keyof Data,
     ) => {
-        const isAsc = orderBy === property && order === 'asc';
+        const isAsc = orderBy === property && order === 'desc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
@@ -244,68 +221,42 @@ export default function PoolTokenTable({
 
     return (
         <Box sx={{ width: '100%'}}>
-            <Paper elevation={1} sx={{ mb: 2 }}>
+            <Paper elevation={1}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size={'medium'}
                     >
                         <EnhancedTableHead
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
                             rowCount={rows.length}
-                            isWeightEnabled={(STABLE_POOLS.includes(poolType)) ? false : true}
                         />
                         <TableBody>
-                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-              rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
-
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={() => { navigate(`${getLink(activeNetwork, row.token.address)}/`); }}
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.token.address}
+                                            key={row.attribute}
                                         >
-                                            <TableCell
-                                                align="left"
-                                            >
-                                                <Box display="flex" alignItems="center">
-                                                    <Box mr={1}>
-                                                <CurrencyLogo address={row.token.address}/>
-                                                </Box>
-                                                <Typography>{row.token.symbol}</Typography>
-                                                </Box>
+                                            <TableCell align="left">
+                                               <Typography sx={{fontWeight: 'bold'}}>
+                                                {row.attribute}
+                                               </Typography>
                                             </TableCell>
-                                            {(! STABLE_POOLS.includes(poolType)) ? 
-                                            <TableCell align="right">
-                                                {formatPercentageAmount(row.weight * 100) +' %'}
-                                            </TableCell> : null }
-                                            <TableCell align="right">
-                                                {Number(row.balance).toFixed(2)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                               {row.tvl === 0 ? '-' : formatDollarAmount(row.tvl)}
+                                            <TableCell align="left">
+                                               {row.value}
                                             </TableCell>
                                         </TableRow>
                                     );
                                 })}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

@@ -124,7 +124,7 @@ const headCells: readonly HeadCell[] = [
   {
     id: 'name',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: 'Pool Composition',
   },
   {
@@ -332,9 +332,6 @@ export default function PoolTable({
                 </TableRow>
               )}
             </TableBody>
-            <TableFooter>
-              
-            </TableFooter>
           </Table>
         </TableContainer>
         <Box display="flex" alignItems="center" justifyContent={"space-between"}>

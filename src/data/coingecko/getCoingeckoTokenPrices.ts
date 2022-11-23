@@ -15,7 +15,6 @@ export async function getCoingeckoPrices(addresses: string, formattedTokens: Tok
     const queryParams = coingeckoNetwork + '?contract_addresses=' + addresses + '&vs_currencies=usd&include_24hr_change=true';
     const coingeckoResponse = await fetch(baseURI + queryParams);
     const json: CoingeckoRawData = await coingeckoResponse.json();
-    console.log("json", json);
     if (json) {
     formattedTokens.forEach(token => {
         if (json[token.address] && json[token.address].usd) {
