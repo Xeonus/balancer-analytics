@@ -21,6 +21,7 @@ const CoinCard = ({
 
   const theme = useTheme();
 
+  console.log("address", tokenAddress)
   return (
     <Card
     sx={{

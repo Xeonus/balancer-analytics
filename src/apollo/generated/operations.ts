@@ -238,12 +238,16 @@ export const GetProtocolData = gql`
   ${BalancerSwap}
 `;
 export const GetTokenData = gql`
-  query GetTokenData($block24: Block_height!) {
-    tokens: tokens(first: 250, orderBy: totalBalanceUSD, orderDirection: desc) {
+  query GetTokenData($block24: Block_height!, $first: Int!) {
+    tokens: tokens(
+      first: $first
+      orderBy: totalBalanceUSD
+      orderDirection: desc
+    ) {
       ...BalancerToken
     }
     tokens24: tokens(
-      first: 250
+      first: $first
       orderBy: totalBalanceUSD
       orderDirection: desc
       block: $block24
@@ -256,7 +260,7 @@ export const GetTokenData = gql`
 export const GetTokenPageData = gql`
   query GetTokenPageData($address: String!, $startTimestamp: Int!) {
     tokenSnapshots(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: asc
       where: { token: $address, timestamp_gte: $startTimestamp }
@@ -273,7 +277,7 @@ export const GetTransactionData = gql`
     $startTimestamp: Int!
   ) {
     swapsIn: swaps(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: desc
       where: {
@@ -285,7 +289,7 @@ export const GetTransactionData = gql`
       ...BalancerSwap
     }
     swapsOut: swaps(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: desc
       where: {

@@ -218,7 +218,7 @@ export default function TokenTable({
     });
 
     const rows = sortedTokenDats.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, Number(formatPercentageAmount(el.priceUSDChange)), el.volumeUSD, el.tvlUSD)
+        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, el.priceUSDChange === NaN ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
 
     )
 
@@ -312,13 +312,13 @@ export default function TokenTable({
                                                         :
                                                         <ArrowDownwardIcon fontSize="small" color="error" />}
                                                     <Typography
-                                                        color={row.priceChange > 0 ? 'green' : 'error'}
+                                                        color={Number(formatPercentageAmount(row.priceChange)) > 0 ? 'green' : 'error'}
                                                         sx={{
                                                             mr: 1
                                                         }}
                                                         variant="body2"
                                                     >
-                                                        {Number(row.priceChange).toFixed(2)} %
+                                                        {Number(formatPercentageAmount(row.priceChange)).toFixed(2)} %
                                                     </Typography>
                                                 </Box>
                                             </TableCell>

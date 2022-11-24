@@ -45,7 +45,7 @@ export default function Tokens() {
         <Grid item xs={12}>
             <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
 
-            {tokenDatas.length > 10 ?
+            {topGainerToken.address && topLoserToken.address ? 
                 <Grid item xs={12}>
                     <Stack direction="row" spacing={2}>
                         <CoinCard

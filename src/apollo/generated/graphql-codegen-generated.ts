@@ -4116,6 +4116,7 @@ export type GetProtocolDataQuery = {
 
 export type GetTokenDataQueryVariables = Exact<{
   block24: Block_Height;
+  first: Scalars["Int"];
 }>;
 
 export type GetTokenDataQuery = {
@@ -5511,12 +5512,16 @@ export type GetProtocolDataQueryResult = Apollo.QueryResult<
   GetProtocolDataQueryVariables
 >;
 export const GetTokenDataDocument = gql`
-  query GetTokenData($block24: Block_height!) {
-    tokens: tokens(first: 250, orderBy: totalBalanceUSD, orderDirection: desc) {
+  query GetTokenData($block24: Block_height!, $first: Int!) {
+    tokens: tokens(
+      first: $first
+      orderBy: totalBalanceUSD
+      orderDirection: desc
+    ) {
       ...BalancerToken
     }
     tokens24: tokens(
-      first: 250
+      first: $first
       orderBy: totalBalanceUSD
       orderDirection: desc
       block: $block24
@@ -5540,6 +5545,7 @@ export const GetTokenDataDocument = gql`
  * const { data, loading, error } = useGetTokenDataQuery({
  *   variables: {
  *      block24: // value for 'block24'
+ *      first: // value for 'first'
  *   },
  * });
  */
@@ -5580,7 +5586,7 @@ export type GetTokenDataQueryResult = Apollo.QueryResult<
 export const GetTokenPageDataDocument = gql`
   query GetTokenPageData($address: String!, $startTimestamp: Int!) {
     tokenSnapshots(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: asc
       where: { token: $address, timestamp_gte: $startTimestamp }
@@ -5649,7 +5655,7 @@ export const GetTransactionDataDocument = gql`
     $startTimestamp: Int!
   ) {
     swapsIn: swaps(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: desc
       where: {
@@ -5661,7 +5667,7 @@ export const GetTransactionDataDocument = gql`
       ...BalancerSwap
     }
     swapsOut: swaps(
-      first: 1000
+      first: 500
       orderBy: timestamp
       orderDirection: desc
       where: {

@@ -69,7 +69,7 @@ function getTokenPriceValues(tokenAddress: string, tokens24: BalancerTokenFragme
 
 
 
-export function useBalancerTokens(): TokenData[]  {
+export function useBalancerTokens(first = 100): TokenData[]  {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
@@ -83,6 +83,7 @@ export function useBalancerTokens(): TokenData[]  {
             getTokenData({
                 variables: {
                     block24: { number: parseInt(block24.number) },
+                    first: first,
                 },
                 context: {
                     uri: activeNetwork.clientUri,

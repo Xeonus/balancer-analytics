@@ -58,7 +58,7 @@ export default function GenericBarChart({ data, }: GenericBarChartProps) {
     };
 
     return (
-        data.length > 2 ?
+        data.length > 1 ?
             <ReactEcharts
                 option={option}
                 style={{ height: '350px', width: '100%' }}

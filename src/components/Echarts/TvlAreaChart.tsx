@@ -92,7 +92,7 @@ export default function TvlAreaChart({tvlData}: TvlAreaProps) {
 
 
     return(
-        tvlData.length > 2 ?
+        tvlData.length > 1 ?
             <ReactEcharts
                 option={option}
                 style={{ height: '350px', width: '100%' }}

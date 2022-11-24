@@ -34,16 +34,16 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
     }
 }
 
-query GetTokenData($block24: Block_height!) {
+query GetTokenData($block24: Block_height!, $first: Int!) {
     tokens: tokens(
-        first: 250
+        first: $first
         orderBy: totalBalanceUSD
         orderDirection: desc
     ) {
         ...BalancerToken
     }
     tokens24: tokens(
-        first: 250
+        first: $first
         orderBy: totalBalanceUSD
         orderDirection: desc,
         block: $block24
@@ -53,16 +53,16 @@ query GetTokenData($block24: Block_height!) {
 }
 
 query GetTokenPageData($address: String!, $startTimestamp: Int!) {
-    tokenSnapshots(first: 1000, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
+    tokenSnapshots(first: 500, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
         ...TokenSnapshot
     }
 }
 
 query GetTransactionData($addresses: [Bytes!]!, $poolIds: [String!]!, $startTimestamp: Int!) {
-    swapsIn: swaps(first: 1000, orderBy: timestamp, orderDirection: desc, where: {tokenIn_in: $addresses, poolId_in: $poolIds, timestamp_gte: $startTimestamp}) {
+    swapsIn: swaps(first: 500, orderBy: timestamp, orderDirection: desc, where: {tokenIn_in: $addresses, poolId_in: $poolIds, timestamp_gte: $startTimestamp}) {
         ...BalancerSwap
     }
-    swapsOut: swaps(first: 1000, orderBy: timestamp, orderDirection: desc, where: {tokenOut_in: $addresses, poolId_in: $poolIds, timestamp_gte: $startTimestamp}) {
+    swapsOut: swaps(first: 500, orderBy: timestamp, orderDirection: desc, where: {tokenOut_in: $addresses, poolId_in: $poolIds, timestamp_gte: $startTimestamp}) {
         ...BalancerSwap
     }
     joinExits(first: 150, orderBy: timestamp, orderDirection: desc, where: {pool_in: $poolIds, timestamp_gte: $startTimestamp}) {
