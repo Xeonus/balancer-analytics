@@ -1,6 +1,7 @@
+import { BalancerSwapFragment } from "../../../apollo/generated/graphql-codegen-generated";
+import TokenChip from "./TokenChip";
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,13 +9,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Grid, TableFooter, Typography } from '@mui/material';
+import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import Paper from '@mui/material/Paper';
+import { Grid } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
-import { formatDollarAmount, formatPercentageAmount } from '../../../utils/numbers';
+import { formatDollarAmount } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
@@ -22,26 +24,30 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { PoolData, PoolTokenData, TokenData } from '../../../data/balancer/balancerTypes'
-import CurrencyLogo from '../../CurrencyLogo';
 import { green } from '@mui/material/colors';
-import { STABLE_POOLS } from '../../../constants';
-import dayjs from 'dayjs';
+import { formatTime } from "../../../utils/date";
+import { getEtherscanLink } from "../../../utils";
+import StyledExternalLink from "../../StyledExternalLink";
+
 
 interface Data {
-    attribute: string;
-    value: string;
+    action: string,
+    swap: BalancerSwapFragment,
+    value: string,
+    time: number;
 }
 
 function createData(
-    attribute: string,
+    action: string,
+    swap: BalancerSwapFragment,
     value: string,
+    time: number,
 ): Data {
     return {
-        attribute,
+        action,
+        swap,
         value,
+        time,
     };
 }
 
@@ -61,8 +67,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: string },
-    b: { [key in Key]: string },
+    a: { [key in Key]: number | string | BalancerSwapFragment },
+    b: { [key in Key]: number | string | BalancerSwapFragment },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -92,16 +98,28 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'attribute',
+        id: 'action',
         numeric: false,
         disablePadding: false,
-        label: 'Attribute',
+        label: 'Action',
+    },
+    {
+        id: 'swap',
+        numeric: false,
+        disablePadding: false,
+        label: 'Swap Details',
     },
     {
         id: 'value',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
-        label: 'Details',
+        label: 'Value',
+    },
+    {
+        id: 'time',
+        numeric: true,
+        disablePadding: false,
+        label: 'Time',
     },
 ];
 
@@ -121,7 +139,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         };
 
     const theme = useTheme()
-
 
     return (
         <TableHead>
@@ -152,49 +169,44 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function PoolInfoTable({
-    poolData,
-}: {
-    poolData?: PoolData
-}) {
+export default function SwapsTable({swaps} : 
+    {swaps: BalancerSwapFragment[]}) {
+
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('attribute');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('time');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
-    if (!poolData) {
+    if (!swaps) {
         return <CircularProgress />;
     }
 
-
-    console.log("poolData", poolData)
-    //Statically create data elements
-    const rows = [
-        createData('Pool Name', poolData.name),
-        createData('Pool Symbol', poolData.symbol),
-        createData('Pool Type', poolData.poolType),
-        createData('Holders count', poolData.holdersCount.toString()),
-        createData('Swap Fees', formatPercentageAmount(poolData.swapFee)),
-        createData('Pool Owner', poolData.owner),
-        createData('Contract address', poolData.address),
-        createData('Creation Time', dayjs.unix(poolData.createTime).format('DD.MM.YYYY hh:mm:ss')),
-        createData('Pool factory', poolData.factory),
-    ];
-    //Add amp factor if it is a stable pool type
-    if (STABLE_POOLS.includes(poolData.poolType)) {
-        rows.push(
-            createData('Amp Factor', poolData.amp.toString()),
-        )
+    if (swaps.length < 1) {
+        return (
+            <Grid>
+                <CircularProgress />
+            </Grid>
+        );
     }
+
+
+    const sortedSwaps = swaps.sort(function (a, b) {
+        return b.timestamp - a.timestamp;
+    });
+
+    const rows = sortedSwaps.map(el =>
+        createData(el.caller, el, el.valueUSD, el.timestamp)
+
+    )
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
         property: keyof Data,
     ) => {
-        const isAsc = orderBy === property && order === 'desc';
+        const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
@@ -221,17 +233,16 @@ export default function PoolInfoTable({
         return networkPrefix(activeNetwork) + 'tokens/' + id;
     }
 
-
     //Table generation
 
     return (
         <Box sx={{ width: '100%'}}>
-            <Paper elevation={1}>
+            <Paper elevation={1} sx={{ mb: 2 }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
-                        size={'medium'}
+                        size={dense ? 'small' : 'medium'}
                     >
                         <EnhancedTableHead
                             order={order}
@@ -240,33 +251,75 @@ export default function PoolInfoTable({
                             rowCount={rows.length}
                         />
                         <TableBody>
+                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+              rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
+
                                     return (
                                         <TableRow
                                             hover
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.attribute}
+                                            key={row.swap.tx}
                                         >
-                                            <TableCell align="left">
-                                               <Typography sx={{fontWeight: 'bold'}}>
-                                                {row.attribute}
-                                               </Typography>
+                                            <TableCell>
+                                                {row.action}
                                             </TableCell>
-                                            <TableCell align="left">
-                                               {row.value}
+                                            <TableCell
+                                                align="left"
+                                            >
+                                                <TokenChip swap={row.swap} size={35} />
+                                            </TableCell>
+                                         
+                                            <TableCell align="right">
+                                                {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Box alignContent={'row'}>
+                                                {formatTime(`${row.time}`)}
+                                                <Box ml={1}>
+                                                <StyledExternalLink address={row.swap.userAddress.id} activeNetwork={activeNetwork}/>
+                                                </Box>
+                                                </Box>
                                             </TableCell>
                                         </TableRow>
                                     );
                                 })}
+                            {emptyRows > 0 && (
+                                <TableRow
+                                    style={{
+                                        height: (dense ? 33 : 53) * emptyRows,
+                                    }}
+                                >
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Paper>
-        </Box>
-    );
+                <Box display="flex" alignItems="center" justifyContent={"space-between"}>
+        <Box m={1} display="flex" justifyContent={"flex-start"}>
+        <FormControlLabel
+        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        label="Compact view"
+      />
+      </Box>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Box>
+      </Paper>
+      
+    </Box>
+  );
 }
 

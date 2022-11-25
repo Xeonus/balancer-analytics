@@ -298,7 +298,7 @@ export default function PoolTable({
                       onClick={() => { navigate(`${getLink(activeNetwork, row.poolData.id)}/`); }}
                       role="number"
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.poolData.address}
                     >
                       <TableCell 
                       align="left"

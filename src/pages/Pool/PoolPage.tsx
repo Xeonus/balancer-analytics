@@ -18,6 +18,8 @@ import StyledExternalLink from '../../components/StyledExternalLink';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import PoolTokenTable from '../../components/Tables/PoolTokenTable';
 import PoolInfoTable from '../../components/Tables/PoolInfoTable';
+import StyledLinkButton from '../../components/Buttons/StyledLinkButton';
+import SwapsTable from '../../components/Tables/SwapsTable';
 
 
 
@@ -117,19 +119,24 @@ export default function PoolPage() {
                        
                     </Grid>
                     <Grid item xs={12}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
                         <Box display="flex" alignItems="center">
                             <Box mr={1}>
                                 <Typography variant={"h5"}>{poolData.poolType} Pool - </Typography>
                             </Box>
                             <PoolCompositionWithLogos poolData={poolData} size={35} />
-
                             <Box ml={1}>
                                 <SwapFee swapFee={poolData.swapFee} size={30} />
                             </Box>
                         </Box>
+                        <Box display="flex" alignItems="center" flexDirection="row">
+                            <StyledLinkButton href={`${activeNetwork.appUri}pool/${poolId}`} name={'Invest'}/>
+                            <StyledLinkButton href={`${activeNetwork.appUri}trade/`} name={'Trade'}/>
+                        </Box>
+                        </Box>
                     </Grid>
                     <Grid item xs={12}>
-                        <Stack direction="row" spacing={2} justifyContent="space-between">
+                        <Stack direction="row" spacing={2} justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
                                 mainMetricInUSD={true}
@@ -194,9 +201,14 @@ export default function PoolPage() {
                 <Grid item xs={6}>
                 <PoolInfoTable poolData={poolData}/>
                     </Grid>
-                <Grid item xs={8}>
-                   
+                    <Grid item xs={8}>
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Historical Swaps </Typography>
+                        </Box>
                 </Grid>
+                <Grid item xs={10}>
+                <SwapsTable swaps={swaps}/>
+            </Grid>
                 </Grid>
             </Box> :
             <Grid
@@ -207,5 +219,6 @@ export default function PoolPage() {
             >
                 <CustomLinearProgress />
             </Grid>
+
     );
 }

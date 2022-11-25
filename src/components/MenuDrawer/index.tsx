@@ -2,7 +2,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import { Drawer, Box, Grid, Link } from "@mui/material"
+import { Drawer, Box, Link } from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -14,7 +14,6 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
-import DiscordIconDark from '../../assets/svg/discord-dark.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
@@ -165,7 +164,12 @@ const MenuDrawer = ({
                         height: 30,
                         borderRadius: 1,
                     }}>
-                    <Link color={theme.palette.mode === 'dark' ? 'white' : 'black'} target="_blank" rel="noopener noreferrer" variant="caption" display="block" underline="none" href="https://coingecko.com">
+                    <Link 
+                        color={theme.palette.mode === 'dark' ? 'white' : 'black'} 
+                        target="_blank" rel="noopener noreferrer" 
+                        variant="caption" display="block" 
+                        underline="none" 
+                        href="https://coingecko.com">
                         <Box display="flex" alignItems="center" alignContent="center">
                             <Typography variant="caption" >Powered by</Typography>
                             <Box
