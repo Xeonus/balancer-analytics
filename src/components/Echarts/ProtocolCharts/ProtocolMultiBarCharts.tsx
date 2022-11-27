@@ -1,13 +1,10 @@
-import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { graphic, registerTheme } from 'echarts'
-import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
-import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
-import { formatDollarAmount } from '../../utils/numbers';
+import { graphic } from 'echarts'
+import { formatDollarAmount } from '../../../utils/numbers';
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles'
-import CustomLinearProgress from '../Progress/CustomLinearProgress';
+import CustomLinearProgress from '../../Progress/CustomLinearProgress';
+import { PolygonNetworkInfo } from '../../../constants/networks';
 
 export interface Normal {
     color: string;
@@ -28,41 +25,18 @@ export interface ToolTipParams {
   data: echartsData;
 }
 
+interface ProtocolBarChartProps {
+    mainnetData: number[],
+    arbitrumData: number[],
+    polygonData: number[],
+    xAxis: string[],
+}
 
 
-export default function ProtocolEchartsArea() {
+
+export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, xAxis}: ProtocolBarChartProps) {
 
     const theme = useTheme();
-
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
-    const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
-    const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
-
-    const mainnetData = protocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-    let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-    //add proceeding zero values based on mainnet size
-    if (mainnetData && arbitrumData) {
-        const diffSize = mainnetData.length - arbitrumData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        arbitrumData = zeroArray.concat(arbitrumData);
-    }
-
-
-    let polygonData = polygonProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && polygonData) {
-        const diffSize = mainnetData.length - polygonData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        polygonData = zeroArray.concat(polygonData);
-    }
-
-    // register theme object
-    registerTheme('my_theme', {
-    
-  });
-
-
-    const mainnetxAxisData = protocolData.tvlData.map(el => el.time);
 
     const option = {
         color: ['#00DDFF','#80FFA5', '#37A2FF'],
@@ -94,7 +68,7 @@ export default function ProtocolEchartsArea() {
             {
                 type: 'category',
                 boundaryGap: false,
-                data: mainnetxAxisData
+                data: xAxis
             }
         ],
         yAxis: [
@@ -110,7 +84,7 @@ export default function ProtocolEchartsArea() {
         series: [
             {
                 name: 'Mainnet',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -119,16 +93,8 @@ export default function ProtocolEchartsArea() {
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(77, 119, 255)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(0, 221, 255)'
-                        }
-                    ])
+                    color: 'rgb(0, 221, 255)'
+                    
                 },
                 emphasis: {
                     focus: 'series'
@@ -142,7 +108,7 @@ export default function ProtocolEchartsArea() {
             },
             {
                 name: 'Arbitrum',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -151,16 +117,8 @@ export default function ProtocolEchartsArea() {
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(1, 191, 236)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(128, 255, 165)'
-                        }
-                    ])
+                    color: 'rgb(128, 255, 165)'
+                    
                 },
                 emphasis: {
                     focus: 'series'
@@ -174,25 +132,16 @@ export default function ProtocolEchartsArea() {
             },
             {
                 name: 'Polygon',
-                type: 'line',
+                type: 'bar',
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
                     width: 0
                 },
                 showSymbol: false,
-                areaStyle: {
+                itemStyle: {
                     opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(116, 21, 219)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(55, 162, 255)'
-                        }
-                    ])
+                    color: 'rgb(155, 10, 255)'
                 },
                 emphasis: {
                     focus: 'series'
@@ -208,11 +157,11 @@ export default function ProtocolEchartsArea() {
     };
 
     return (
-        polygonData.length > 10 ?
+        mainnetData.length > 1 && arbitrumData.length > 1 && polygonData.length > 1 && xAxis ?
             <ReactEcharts
                 option={option}
                 theme='my_theme'
-                style={{ height: '300px' }}
+                style={{ height: '350px' }}
                 className={'react_for_echarts'}
             /> : <Grid
             container

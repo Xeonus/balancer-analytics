@@ -62,6 +62,10 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [showDate, setShowDate] = React.useState(false);
     const [endDate, setEndDate] = React.useState(dayjs().valueOf());
     const [timeRange, setTimeRange] = React.useState('0');
+    //data state
+    const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
+    const [rangedVolumeData, setRangedVolumeData] = React.useState(volumeData);
+    const [rangedFeesData, setRangedFeesData] = React.useState(feesData);
 
     React.useEffect(() => {
         if (tvlData.length < Number(timeRange) || timeRange == '0') {
@@ -83,17 +87,12 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
         }
     }, [tvlData, timeRange, startIndex, endIndex]);
 
-    //data state
-    const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
-    const [rangedVolumeData, setRangedVolumeData] = React.useState(volumeData);
-    const [rangedFeesData, setRangedFeesData] = React.useState(feesData);
-
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
         if (tvlData.length < Number(event.target.value) || event.target.value == '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
-            setRangedFeesData(volumeData);
+            setRangedFeesData(feesData);
         } else if (tvlData.length >= Number(event.target.value)) {
             setRangedTvlData(tvlData.slice(tvlData.length - Number(event.target.value)))
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(event.target.value)))
@@ -196,31 +195,31 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                 </FormControl>
 
                 {showDate ?
-                <Box p={0.5} display="flex" justifyContent="left" >
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            label="Start Date"
-                            maxDate={Date.now()}
-                            value={startDate}
-                            onChange={handleStartDateChange}
-                            renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
-                        />
-                    </LocalizationProvider>
-                    <Box p={1}>
-                        <Typography>to</Typography>
-                    </Box>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            label="End Date"
-                            maxDate={Date.now()}
-                            value={endDate}
-                            onChange={handleEndDateChange}
-                            renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Box> : null}
+                    <Box p={0.5} display="flex" justifyContent="left" >
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Start Date"
+                                maxDate={Date.now()}
+                                value={startDate}
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                            />
+                        </LocalizationProvider>
+                        <Box p={1}>
+                            <Typography>to</Typography>
+                        </Box>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="End Date"
+                                maxDate={Date.now()}
+                                value={endDate}
+                                onChange={handleEndDateChange}
+                                renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                            />
+                        </LocalizationProvider>
+                    </Box> : null}
             </Box>
-            
+
             <TabPanel value={value} index={0}>
                 <GenericBarChart data={rangedVolumeData} />
             </TabPanel>

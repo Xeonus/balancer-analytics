@@ -39,7 +39,7 @@ const CoinCard = ({
             <Typography
               color="textSecondary"
               gutterBottom
-              variant="h5"
+              variant="h6"
             >
               {tokenName}
             </Typography>
