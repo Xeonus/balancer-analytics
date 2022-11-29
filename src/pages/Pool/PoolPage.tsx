@@ -20,6 +20,8 @@ import PoolTokenTable from '../../components/Tables/PoolTokenTable';
 import PoolInfoTable from '../../components/Tables/PoolInfoTable';
 import StyledLinkButton from '../../components/Buttons/StyledLinkButton';
 import SwapsTable from '../../components/Tables/SwapsTable';
+import JoinExitsTable from '../../components/Tables/JoinExitsTable';
+import { STABLE_POOLS } from '../../constants';
 
 
 
@@ -27,7 +29,7 @@ export default function PoolPage() {
     const params = useParams();
     const [activeNetwork] = useActiveNetworkVersion();
     const poolId = params.poolId ? params.poolId : '';
-    const poolData = useBalancerPoolSingleData(poolId);   
+    const poolData = useBalancerPoolSingleData(poolId);
     const { tvlData, volumeData, feesData, tokenDatas } = useBalancerPoolPageData(poolId);
     const { swaps, joinExits, swapPairVolumes } = useBalancerTransactionData(
         (poolData?.tokens || []).map((token) => token.address),
@@ -46,6 +48,7 @@ export default function PoolPage() {
     navCrumbs.push(homeNav)
     navCrumbs.push(poolNav);
 
+    console.log("joinExit example: ", joinExits[0])
 
     //TODO: Refactor in own function calls (geSwaps, getSwapsChange etc?)
     //Swaps
@@ -78,15 +81,15 @@ export default function PoolPage() {
         }
     }
 
-     //TVL
-     let tvlUSD = 0;
-     let tvlUSDChange = 0;
-     if (tvlData.length > 3) {
+    //TVL
+    let tvlUSD = 0;
+    let tvlUSDChange = 0;
+    if (tvlData.length > 3) {
         tvlUSD = tvlData[tvlData.length - 1].value;
-         if (tvlData[tvlData.length - 2]) {
+        if (tvlData[tvlData.length - 2]) {
             tvlUSDChange = 100 / tvlData[tvlData.length - 2].value * tvlData[tvlData.length - 1].value - 100
-         }
-     }
+        }
+    }
 
     //TODO: refactor - filter token datas for pool token IDs as those do not contain composable tokens
     const tokenList = poolData?.tokens.map(token => token.balance < 2596140000000000 ? token.address : '')
@@ -94,7 +97,7 @@ export default function PoolPage() {
     if (filteredTokenDatas) {
         poolData?.tokens.map((token) => {
             const filteredToken = filteredTokenDatas.find(el => el.tokenAddress === token.address);
-            if (filteredToken && filteredToken.coingeckoRawData.prices.length) {
+            if (filteredToken && !filteredToken.coingeckoRawData.error && filteredToken.coingeckoRawData.prices.length) {
                 const price = filteredToken.coingeckoRawData.prices[filteredToken.coingeckoRawData.prices.length - 1][1];
                 token.tvl = token.balance * price;
             }
@@ -114,25 +117,25 @@ export default function PoolPage() {
                     <Grid item xs={12}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={getShortPoolName(poolData)} />
-                            <StyledExternalLink address={poolData.address} activeNetwork={activeNetwork} />
+                            <StyledExternalLink address={poolData.address} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
-                       
+
                     </Grid>
                     <Grid item xs={12}>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Box display="flex" alignItems="center">
-                            <Box mr={1}>
-                                <Typography variant={"h5"}>{poolData.poolType} Pool - </Typography>
+                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                            <Box display="flex" alignItems="center">
+                                <Box mr={1}>
+                                    <Typography variant={"h5"}>{poolData.poolType} Pool - </Typography>
+                                </Box>
+                                <PoolCompositionWithLogos poolData={poolData} size={35} />
+                                <Box ml={1}>
+                                    <SwapFee swapFee={poolData.swapFee} size={30} />
+                                </Box>
                             </Box>
-                            <PoolCompositionWithLogos poolData={poolData} size={35} />
-                            <Box ml={1}>
-                                <SwapFee swapFee={poolData.swapFee} size={30} />
+                            <Box display="flex" alignItems="center" flexDirection="row">
+                                <StyledLinkButton href={`${activeNetwork.appUri}pool/${poolId}`} name={'Invest'} />
+                                <StyledLinkButton href={`${activeNetwork.appUri}trade/`} name={'Trade'} />
                             </Box>
-                        </Box>
-                        <Box display="flex" alignItems="center" flexDirection="row">
-                            <StyledLinkButton href={`${activeNetwork.appUri}pool/${poolId}`} name={'Invest'}/>
-                            <StyledLinkButton href={`${activeNetwork.appUri}trade/`} name={'Trade'}/>
-                        </Box>
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
@@ -181,44 +184,50 @@ export default function PoolPage() {
                             <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
                         </Card>
                     </Grid>
-                  
+
                 </Grid>
                 <Grid item xs={8}>
-                        <Box mt={2} mb={1}>
-                            <Typography variant="h5">Pool & Token Metrics </Typography>
-                        </Box>
+                    <Box mt={2} mb={1}>
+                        <Typography variant="h5">Pool & Token Metrics </Typography>
+                    </Box>
                 </Grid>
                 <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
-                    {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> : 
-                        <Box display="flex" alignItems="center" flexDirection="column">
-                            <CircularProgress />
-                            <Typography variant="caption">Loading historical token data</Typography>
-                        </Box>}
-                    
-                </Grid>
-                <Grid item xs={6}>
-                <PoolInfoTable poolData={poolData}/>
+                    <Grid item xs={6}>
+                        <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
+                        {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> :
+                            <Box display="flex" alignItems="center" flexDirection="column">
+                                <CircularProgress />
+                                <Typography variant="caption">Loading historical token data</Typography>
+                            </Box>}
+
+                    </Grid>
+                    <Grid item xs={6}>
+                        <PoolInfoTable poolData={poolData} />
                     </Grid>
                     <Grid item xs={8}>
                         <Box mt={2} mb={1}>
                             <Typography variant="h5">Historical Swaps </Typography>
                         </Box>
-                </Grid>
-                <Grid item xs={10}>
-                <SwapsTable swaps={swaps}/>
-            </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <SwapsTable swaps={swaps} />
+                    </Grid>
+                    {! STABLE_POOLS.includes(poolData.poolType) ?
+                    (<Grid item xs={8}>
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Liquidity Provisions </Typography>
+                        </Box>
+                        <JoinExitsTable joinExits={joinExits} />
+                    </Grid>) : null }
                 </Grid>
             </Box> :
-            <Grid
+            (<Grid
                 container
                 spacing={2}
                 mt='25%'
                 sx={{ justifyContent: 'center' }}
             >
                 <CustomLinearProgress />
-            </Grid>
-
+            </Grid>)
     );
 }

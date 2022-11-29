@@ -1,5 +1,4 @@
-import { BalancerSwapFragment } from "../../../apollo/generated/graphql-codegen-generated";
-import TokenChip from "./TokenChip";
+import { BalancerJoinExitFragment } from "../../../apollo/generated/graphql-codegen-generated";
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -24,28 +23,31 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
-import { green } from '@mui/material/colors';
+import { green, red } from '@mui/material/colors';
 import { formatTime } from "../../../utils/date";
 import { getEtherscanLink } from "../../../utils";
 import StyledExternalLink from "../../StyledExternalLink";
+import JoinExitChip from "./JoinExitChip";
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 interface Data {
-    swapper: string,
-    swap: BalancerSwapFragment,
+    action: string,
+    joinExit: BalancerJoinExitFragment,
     value: string,
     time: number;
 }
 
 function createData(
-    swapper: string,
-    swap: BalancerSwapFragment,
+    action: string,
+    joinExit: BalancerJoinExitFragment,
     value: string,
     time: number,
 ): Data {
     return {
-        swapper,
-        swap,
+        action,
+        joinExit,
         value,
         time,
     };
@@ -67,8 +69,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | BalancerSwapFragment },
-    b: { [key in Key]: number | string | BalancerSwapFragment },
+    a: { [key in Key]: number | string | BalancerJoinExitFragment },
+    b: { [key in Key]: number | string | BalancerJoinExitFragment },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -98,22 +100,22 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'swap',
+        id: 'action',
         numeric: false,
         disablePadding: false,
-        label: 'Swap Details',
+        label: 'Operation',
+    },
+    {
+        id: 'joinExit',
+        numeric: false,
+        disablePadding: false,
+        label: 'Details',
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
-    },
-    {
-        id: 'swapper',
-        numeric: false,
-        disablePadding: false,
-        label: 'Swapper',
     },
     {
         id: 'time',
@@ -169,8 +171,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function SwapsTable({swaps} : 
-    {swaps: BalancerSwapFragment[]}) {
+export default function JoinExitsTable({ joinExits }:
+    { joinExits: BalancerJoinExitFragment[] }) {
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('time');
@@ -180,11 +182,11 @@ export default function SwapsTable({swaps} :
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
-    if (!swaps) {
+    if (!joinExits) {
         return <CircularProgress />;
     }
 
-    if (swaps.length < 1) {
+    if (joinExits.length < 1) {
         return (
             <Grid>
                 <CircularProgress />
@@ -193,12 +195,12 @@ export default function SwapsTable({swaps} :
     }
 
 
-    const sortedSwaps = swaps.sort(function (a, b) {
+    const sortedJoinExits = joinExits.sort(function (a, b) {
         return b.timestamp - a.timestamp;
     });
 
-    const rows = sortedSwaps.map(el =>
-        createData(el.caller, el, el.valueUSD, el.timestamp)
+    const rows = sortedJoinExits.map(el =>
+        createData(el.type, el, el.valueUSD ? el.valueUSD : '-', el.timestamp)
 
     )
 
@@ -236,7 +238,7 @@ export default function SwapsTable({swaps} :
     //Table generation
 
     return (
-        <Box sx={{ width: '100%'}}>
+        <Box sx={{ width: '100%' }}>
             <Paper elevation={1} sx={{ mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -263,26 +265,26 @@ export default function SwapsTable({swaps} :
                                             hover
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.swap.tx}
+                                            key={row.joinExit.tx}
                                         >
-                                             <TableCell
+                                            <TableCell>
+                                                {row.action === 'Join' ? <LoginIcon /> : <LogoutIcon />} {row.action}
+                                            </TableCell>
+                                            <TableCell
                                                 align="left"
                                             >
-                                                <TokenChip swap={row.swap} size={35} />
+                                                <JoinExitChip amounts={row.joinExit.amounts} tokenList={row.joinExit.pool.tokensList} size={35} />
                                             </TableCell>
                                             <TableCell align="right">
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
                                             </TableCell>
-                                             <TableCell>
-                                                <Link href={getEtherscanLink(row.swapper, 'transaction', activeNetwork)} target='_blank'>{row.swapper}</Link>
-                                                
-                                            </TableCell>
+                                            
                                             <TableCell align="right">
                                                 <Box display='flex' alignItems='center'>
-                                                {formatTime(`${row.time}`)}
-                                                <Box ml={1}>
-                                                <StyledExternalLink address={row.swap.tx} type={'transaction'}  activeNetwork={activeNetwork}/>
-                                                </Box>
+                                                    {formatTime(`${row.time}`)}
+                                                    <Box ml={1}>
+                                                        <StyledExternalLink address={row.joinExit.tx} type={'transaction'} activeNetwork={activeNetwork} />
+                                                    </Box>
                                                 </Box>
                                             </TableCell>
                                         </TableRow>
@@ -301,25 +303,25 @@ export default function SwapsTable({swaps} :
                     </Table>
                 </TableContainer>
                 <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-        <Box m={1} display="flex" justifyContent={"flex-start"}>
-        <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Compact view"
-      />
-      </Box>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-      </Paper>
-      
-    </Box>
-  );
+                    <Box m={1} display="flex" justifyContent={"flex-start"}>
+                        <FormControlLabel
+                            control={<Switch checked={dense} onChange={handleChangeDense} />}
+                            label="Compact view"
+                        />
+                    </Box>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
+            </Paper>
+
+        </Box>
+    );
 }
 

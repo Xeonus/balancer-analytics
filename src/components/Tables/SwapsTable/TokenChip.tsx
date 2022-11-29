@@ -9,6 +9,7 @@ import { Avatar } from "@mui/material";
 import { NetworkInfo } from "../../../constants/networks";
 import { networkPrefix } from "../../../utils/networkPrefix";
 import { useActiveNetworkVersion } from "../../../state/application/hooks";
+import { formatAmount } from "../../../utils/numbers";
 
 
 interface TokenChipProps {
@@ -44,7 +45,7 @@ export default function TokenChip({swap, size=35} : TokenChipProps) {
                     <CurrencyLogo key={swap.tokenIn} address={swap.tokenIn} size='25px' />
                 </Box>
                 <Box display="flex" justifyContent="space-between">
-                    <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{Number(swap.tokenAmountIn).toFixed(4)}</Typography>
+                    <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{formatAmount(Number(swap.tokenAmountIn), 2)}</Typography>
                 </Box>
             </Avatar>
             <Box ml={1} mr={1}>
@@ -66,7 +67,7 @@ export default function TokenChip({swap, size=35} : TokenChipProps) {
                     <CurrencyLogo key={swap.tokenOut} address={swap.tokenOut} size='25px' />
                 </Box>
                 <Box display="flex" justifyContent="space-between">
-                    <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{Number(swap.tokenAmountOut).toFixed(4)}</Typography>
+                    <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{formatAmount(Number(swap.tokenAmountOut), 2)}</Typography>
                 </Box>
             </Avatar>
         </Box>

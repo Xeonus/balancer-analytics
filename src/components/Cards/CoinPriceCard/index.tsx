@@ -63,7 +63,7 @@ export default function CoinPriceCard({ mainMetric, mainMetricChange, chartData,
             <Box display="flex" justifyContent='space-between'>
             <Box>
             <Box display='flex' alignItems='center'>
-              <Box >
+              <Box mr={1} >
                 <CurrencyLogo address={tokenAddress} size='30px' />
               </Box>
               <Typography

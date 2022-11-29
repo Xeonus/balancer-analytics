@@ -116,7 +116,7 @@ const MenuDrawer = ({
                         <ListItemIcon>
                             <MonetizationOnIcon />
                         </ListItemIcon>
-                        <ListItemText primary={'Fees'} />
+                        <ListItemText primary={'Protocol Fees'} />
                     </ListItemButton>
                 </ListItem>
             </List>

@@ -25,6 +25,7 @@ const MetricsCard = ({
   MetricIcon }: CoinCardProps) => {
 
   const theme = useTheme();
+  const metricUnit = mainMetricUnit ? mainMetricUnit : '';
 
   return (
     <Card
@@ -51,7 +52,7 @@ const MetricsCard = ({
               color="textPrimary"
               variant="h6"
             >
-              {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0) + mainMetricUnit}
+              {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0) + metricUnit}
             </Typography>
           </Grid>
           <Grid item>

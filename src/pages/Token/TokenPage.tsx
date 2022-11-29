@@ -58,7 +58,7 @@ export default function TokenPage() {
                     <Grid item xs={12}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={tokenData.symbol} />
-                            <StyledExternalLink address={address} activeNetwork={activeNetwork} />
+                            <StyledExternalLink address={address} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
 
                     </Grid>
@@ -74,7 +74,7 @@ export default function TokenPage() {
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
-                        <Stack direction="row" spacing={2} justifyContent="space-between">
+                        <Stack direction="row" spacing={2} justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={tokenData ? tokenData.volumeUSD : 0}
                                 mainMetricInUSD={true}

@@ -36,7 +36,6 @@ export default function Protocol() {
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
     const mainnetTVLChange = protocolData.tvlChange ? protocolData.tvlChange : 0
     const mainnetPercentage = 100 / aggregatedProtocolData.tvl * mainnetTVL
-    const mainnetPercentageChange = 100 / aggregatedProtocolData.tvlChange  * mainnetTVLChange
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -50,7 +49,7 @@ export default function Protocol() {
                     xs={12}
                 >
                     <Stack direction="row" spacing={2} justifyContent="flex-start">
-                        {coinData && coinData[balAddress] ?
+                        {coinData && coinData[balAddress] && coinData[balAddress].usd ?
                             <CoinCard
                                 tokenAddress={balAddress}
                                 tokenName='BAL'
@@ -85,7 +84,7 @@ export default function Protocol() {
                             mainMetricInUSD={false}
                             mainMetricUnit={' %'}
                             metricName='Mainnet Dominance'
-                            mainMetricChange={mainnetPercentageChange}
+                            mainMetricChange={mainnetTVLChange}
                             MetricIcon={PieChartIcon}
                         />
                     </Stack>
@@ -99,9 +98,11 @@ export default function Protocol() {
                 <Grid
                     item
                     mt={1}
-                    xs={6}
+                    xs={12}
                 >
-                    <Typography variant='h6'>Historical TVL</Typography>
+                    <Box mt={2}>
+                    <Typography variant='h5'>Historical TVL</Typography>
+                    </Box>
                     <Box>
                             <ProtocolMultiAreaChart
                                 mainnetProtocolData={protocolData}
@@ -113,9 +114,11 @@ export default function Protocol() {
                 <Grid
                     item
                     mt={1}
-                    xs={6}
+                    xs={12}
                 >
-                    <Typography variant='h6'>Historical Volume</Typography>
+                    <Box mt={2}>
+                    <Typography variant='h5'>Historical Volume</Typography>
+                    </Box>
                     <Box>
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.volumeData}
@@ -127,9 +130,11 @@ export default function Protocol() {
                 <Grid
                     item
                     mt={1}
-                    xs={6}
+                    xs={12}
                 >
-                    <Typography variant='h6'>Historical Fees</Typography>
+                    <Box mt={2}>
+                    <Typography variant='h5'>Historical Fees</Typography>
+                    </Box>
                     <Box>
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.feeData}
@@ -141,9 +146,11 @@ export default function Protocol() {
                 <Grid
                     item
                     mt={1}
-                    xs={6}
+                    xs={12}
                 >
-                    <Typography variant='h6'>Historical Swaps</Typography>
+                    <Box mt={2}>
+                    <Typography variant='h5'>Historical Swaps</Typography>
+                    </Box>
                     <Box>
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.swapData}
