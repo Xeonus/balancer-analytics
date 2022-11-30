@@ -169,8 +169,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function SwapsTable({swaps} : 
-    {swaps: BalancerSwapFragment[]}) {
+export default function SwapsTable({ swaps }:
+    { swaps: BalancerSwapFragment[] }) {
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('time');
@@ -236,7 +236,7 @@ export default function SwapsTable({swaps} :
     //Table generation
 
     return (
-        <Box sx={{ width: '100%'}}>
+        <Box sx={{ width: '100%' }}>
             <Paper elevation={1} sx={{ mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -265,7 +265,7 @@ export default function SwapsTable({swaps} :
                                             tabIndex={-1}
                                             key={row.swap.tx}
                                         >
-                                             <TableCell
+                                            <TableCell
                                                 align="left"
                                             >
                                                 <TokenChip swap={row.swap} size={35} />
@@ -273,16 +273,16 @@ export default function SwapsTable({swaps} :
                                             <TableCell align="right">
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
                                             </TableCell>
-                                             <TableCell>
+                                            <TableCell>
                                                 <Link href={getEtherscanLink(row.swapper, 'address', activeNetwork)} target='_blank'>{row.swapper}</Link>
-                                                
+
                                             </TableCell>
                                             <TableCell align="right">
-                                                <Box display='flex' alignItems='center'>
-                                                {formatTime(`${row.time}`)}
-                                                <Box ml={1}>
-                                                <StyledExternalLink address={row.swap.tx} type={'transaction'}  activeNetwork={activeNetwork}/>
-                                                </Box>
+                                                <Box display='flex' alignItems='center' justifyContent='flex-end'>
+                                                    {formatTime(`${row.time}`)}
+                                                    <Box ml={1}>
+                                                        <StyledExternalLink address={row.swap.tx} type={'transaction'} activeNetwork={activeNetwork} />
+                                                    </Box>
                                                 </Box>
                                             </TableCell>
                                         </TableRow>
@@ -301,25 +301,25 @@ export default function SwapsTable({swaps} :
                     </Table>
                 </TableContainer>
                 <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-        <Box m={1} display="flex" justifyContent={"flex-start"}>
-        <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Compact view"
-      />
-      </Box>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-      </Paper>
-      
-    </Box>
-  );
+                    <Box m={1} display="flex" justifyContent={"flex-start"}>
+                        <FormControlLabel
+                            control={<Switch checked={dense} onChange={handleChangeDense} />}
+                            label="Compact view"
+                        />
+                    </Box>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
+            </Paper>
+
+        </Box>
+    );
 }
 

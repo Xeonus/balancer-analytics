@@ -16,6 +16,8 @@ import { useBalancerTokenPageData } from '../../data/balancer/useTokens';
 import CurrencyLogo from '../../components/CurrencyLogo';
 import PoolTable from '../../components/Tables/PoolTable';
 import TokenChart from '../../components/TokenChart';
+import SwapsTable from '../../components/Tables/SwapsTable';
+import JoinExitsTable from '../../components/Tables/JoinExitsTable';
 
 
 
@@ -39,7 +41,7 @@ export default function TokenPage() {
         name: 'Tokens',
         link: 'tokens'
     }
-    const navCrumbs: NavElement[] = new Array()
+    const navCrumbs: NavElement[] = []
     navCrumbs.push(homeNav)
     navCrumbs.push(tokenNav);
     
@@ -49,20 +51,20 @@ export default function TokenPage() {
     // Biggest swaps token, bigges fees token? Show Pool routes from swap data?
     return (
         tokenData ?
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 2 }}>
                 <Grid
                     container
                     spacing={3}
-                    sx={{ justifyContent: 'space-between' }}
+                    sx={{ justifyContent: 'center' }}
                 >
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={tokenData.symbol} />
                             <StyledExternalLink address={address} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
 
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Box display="flex" alignItems="center">
                             <Box mr={1}>
                                 <CurrencyLogo address={tokenData.address} size={'25px'} />
@@ -73,7 +75,7 @@ export default function TokenPage() {
                             <Typography >({tokenData.name})</Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Stack direction="row" spacing={2} justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={tokenData ? tokenData.volumeUSD : 0}
@@ -108,13 +110,13 @@ export default function TokenPage() {
                         </Stack>
                     </Grid>
                 </Grid>
-                <Grid container spacing={1}>
-                    <Grid item xs={12}>
+                <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
+                    <Grid item xs={10}>
                         <Box mt={2}>
                             <Typography variant="h5">{tokenData.symbol} - Historical Data </Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Box>
                         <Card >
                             <TokenChart tvlData={tvlData} volumeData={volumeData} priceData={priceData} />
@@ -122,15 +124,36 @@ export default function TokenPage() {
                         </Box>
                     </Grid>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
+                <Grid item xs={10}>
                     <Box mt={2}>
                         <Typography variant="h5">{tokenData.symbol} - Deployed Liquidity Pools </Typography>
                     </Box>
                 </Grid>
-                <Box mt={2}>
-                <PoolTable poolDatas={poolData} />
-                </Box>
-
+                <Grid item xs={10}>
+                    <PoolTable poolDatas={poolData} />
+                </Grid>
+                </Grid>
+                <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
+                <Grid item xs={10}>
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Historical Swaps </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={10} >
+                    <Grid item xs={10}>
+                        <SwapsTable swaps={swaps} />
+                    </Grid>
+                    </Grid>
+                    <Grid item xs={10}>
+                    <Grid item xs={10}>
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Liquidity Provisions </Typography>
+                        </Box>
+                        <JoinExitsTable joinExits={joinExits} />
+                    </Grid>
+                    </Grid>
+                    </Grid>
             </Box> :
             <Grid
                 container

@@ -44,7 +44,7 @@ export default function PoolPage() {
         name: 'Pools',
         link: 'pools'
     }
-    const navCrumbs: NavElement[] = new Array()
+    const navCrumbs: NavElement[] = []
     navCrumbs.push(homeNav)
     navCrumbs.push(poolNav);
 
@@ -108,20 +108,20 @@ export default function PoolPage() {
     //24h swaps / biggest swap / 24h joins / show token price data stacked / poolinfo?
     return (
         poolData ?
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 2 }}>
                 <Grid
                     container
                     spacing={2}
-                    sx={{ justifyContent: 'space-between' }}
+                    sx={{ justifyContent: 'center' }}
                 >
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={getShortPoolName(poolData)} />
                             <StyledExternalLink address={poolData.address} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
 
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <Box display="flex" alignItems="center">
                                 <Box mr={1}>
@@ -138,7 +138,7 @@ export default function PoolPage() {
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Stack direction="row" spacing={2} justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
@@ -172,53 +172,50 @@ export default function PoolPage() {
                             />
                         </Stack>
                     </Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                    <Grid item xs={12}>
-                        <Box mt={2}>
-                            <Typography variant="h5">Historical Performance </Typography>
-                        </Box>
+                    <Grid mt={2} item xs={10}>
+                        <Typography variant="h5">Historical Performance </Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Card>
                             <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
                         </Card>
                     </Grid>
 
-                </Grid>
-                <Grid item xs={8}>
-                    <Box mt={2} mb={1}>
+                    <Grid item mt={1} xs={10}>
                         <Typography variant="h5">Pool & Token Metrics </Typography>
-                    </Box>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
-                        {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> :
-                            <Box display="flex" alignItems="center" flexDirection="column">
-                                <CircularProgress />
-                                <Typography variant="caption">Loading historical token data</Typography>
-                            </Box>}
 
                     </Grid>
-                    <Grid item xs={6}>
-                        <PoolInfoTable poolData={poolData} />
+                    <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+                        <Grid mt={1} item xs={5}>
+                            <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
+                            {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> :
+                                <Box display="flex" alignItems="center" flexDirection="column">
+                                    <CircularProgress />
+                                    <Typography variant="caption">Loading historical token data</Typography>
+                                </Box>}
+
+                        </Grid>
+                        <Grid mt={1} item xs={5}>
+                            <PoolInfoTable poolData={poolData} />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={8}>
-                        <Box mt={2} mb={1}>
+                    <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+                        <Grid item mt={1} xs={10}>
                             <Typography variant="h5">Historical Swaps </Typography>
-                        </Box>
+                        </Grid>
+                        <Grid item mt={1} xs={10}>
+                            <SwapsTable swaps={swaps} />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={10}>
-                        <SwapsTable swaps={swaps} />
-                    </Grid>
-                    {! STABLE_POOLS.includes(poolData.poolType) ?
-                    (<Grid item xs={10}>
-                        <Box mt={2} mb={1}>
-                            <Typography variant="h5">Liquidity Provisions </Typography>
-                        </Box>
-                        <JoinExitsTable joinExits={joinExits} />
-                    </Grid>) : null }
+                    {!STABLE_POOLS.includes(poolData.poolType) ?
+                        <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+                            <Grid item mt={1} xs={10}>
+                                <Typography variant="h5">Liquidity Provisions </Typography>
+                            </Grid>
+                            <Grid item xs={10}>
+                                <JoinExitsTable joinExits={joinExits} />
+                            </Grid>
+                        </Grid> : null}
                 </Grid>
             </Box> :
             (<Grid

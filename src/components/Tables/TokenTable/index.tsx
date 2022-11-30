@@ -195,7 +195,7 @@ export default function TokenTable({
     const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
@@ -339,20 +339,24 @@ export default function TokenTable({
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                <Box display="flex" alignItems="center" justifyContent={"space-between"}>
+                    <Box m={1} display="flex" justifyContent={"flex-start"}>
+                        <FormControlLabel
+                            control={<Switch checked={dense} onChange={handleChangeDense} />}
+                            label="Compact view"
+                        />
+                    </Box>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
             </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense view"
-            />
         </Box>
     );
 }

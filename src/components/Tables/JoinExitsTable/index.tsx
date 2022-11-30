@@ -12,7 +12,7 @@ import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Paper from '@mui/material/Paper';
-import { Grid, Link, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
 import { formatDollarAmount } from '../../../utils/numbers';
@@ -25,7 +25,6 @@ import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
 import { green, red } from '@mui/material/colors';
 import { formatTime } from "../../../utils/date";
-import { getEtherscanLink } from "../../../utils";
 import StyledExternalLink from "../../StyledExternalLink";
 import JoinExitChip from "./JoinExitChip";
 import LoginIcon from '@mui/icons-material/Login';
@@ -268,9 +267,9 @@ export default function JoinExitsTable({ joinExits }:
                                             key={row.joinExit.tx}
                                         >
                                             <TableCell>
-                                                <Box display='flex' alignItems='center'>
+                                                <Box display='flex' alignItems='center' alignContent='center'>
                                                     <Box mr={1}>
-                                                {row.action === 'Join' ? <LoginIcon color='success' /> : <LogoutIcon color='error' />} 
+                                                {row.action === 'Join' ? <LoginIcon fontSize='small' color='success' /> : <LogoutIcon fontSize='small' color='error' />} 
                                                 </Box>
                                                 <Typography variant='body1' color={row.action === 'Exit' ? red[500] : green[500]}>
                                                     {row.action}
@@ -287,7 +286,7 @@ export default function JoinExitsTable({ joinExits }:
                                             </TableCell>
                                             
                                             <TableCell align="right">
-                                                <Box display='flex' alignItems='center'>
+                                                <Box display='flex' alignItems='center' alignContent='center' justifyContent='flex-end'>
                                                     {formatTime(`${row.time}`)}
                                                     <Box ml={1}>
                                                         <StyledExternalLink address={row.joinExit.tx} type={'transaction'} activeNetwork={activeNetwork} />

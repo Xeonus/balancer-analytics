@@ -38,101 +38,95 @@ export default function Chain() {
     navCrumbs.push(poolNav);
 
     return (
-        <Box sx={{
-            flexGrow: 1,
-        }} >
+        <Box sx={{ flexGrow: 2 }}>
             <Grid
-                alignItems="center"
-                justifyContent="center"
+                container
+                spacing={2}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Grid item xs={10}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                    </Box>
+
+                </Grid>
+                <Grid item xs={10}>
+                    <Box display="flex" alignItems="center">
+                        <Box mb={1}>
+                            <Typography variant={"h5"}>Chain Metrics ({activeNetwork.name})</Typography>
+                        </Box>
+                    </Box>
+                </Grid>
+            </Grid>
+            <Grid
+                container
+                spacing={2}
+                sx={{ justifyContent: 'center' }}
             >
                 <Grid
-                    container
-                    spacing={3}
-                    sx={{ justifyContent: 'space-between' }}
+                    item
+                    xs={10}
                 >
-                    <Grid item xs={12}>
-                        <Box display="flex" alignItems="center" justifyContent="space-between">
-                            <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                        </Box>
-
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box display="flex" alignItems="center">
-                            <Box mb={1}>
-                                <Typography variant={"h5"}>Chain Metrics ({activeNetwork.name})</Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
+                    <Stack direction="row" spacing={2} justifyContent="flex-start">
+                        <MetricsCard
+                            mainMetric={protocolData.volume24 ? protocolData.volume24 : 0}
+                            mainMetricInUSD={true}
+                            metricName='Volume'
+                            mainMetricChange={protocolData.volumeChange ? protocolData.volumeChange : 0}
+                            MetricIcon={EqualizerIcon}
+                        />
+                        <MetricsCard
+                            mainMetric={protocolData.tvl ? protocolData.tvl : 0}
+                            mainMetricInUSD={true}
+                            metricName='TVL'
+                            mainMetricChange={protocolData.tvlChange ? protocolData.tvlChange : 0}
+                            MetricIcon={MonetizationOnIcon}
+                        />
+                        <MetricsCard
+                            mainMetric={protocolData.fees24 ? protocolData.fees24 : 0}
+                            mainMetricInUSD={true}
+                            metricName='Fees'
+                            mainMetricChange={protocolData.feesChange ? protocolData.feesChange : 0}
+                            MetricIcon={CurrencyExchangeIcon}
+                        />
+                    </Stack>
                 </Grid>
+            </Grid>
+            <Grid
+                container
+                spacing={2}
+                sx={{ justifyContent: 'center' }}
+            >
                 <Grid
-                    container
-                    spacing={1}
-                    sx={{ justifyContent: 'space-between' }}
+                    item
+                    mt={1}
+                    xs={10}
                 >
-                    <Grid
-                        item
-                        xs={12}
-                    >
-                        <Stack direction="row" spacing={2} justifyContent="flex-start">
-                            <MetricsCard
-                                mainMetric={protocolData.volume24 ? protocolData.volume24 : 0}
-                                mainMetricInUSD={true}
-                                metricName='Volume'
-                                mainMetricChange={protocolData.volumeChange ? protocolData.volumeChange : 0}
-                                MetricIcon={EqualizerIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={protocolData.tvl ? protocolData.tvl : 0}
-                                mainMetricInUSD={true}
-                                metricName='TVL'
-                                mainMetricChange={protocolData.tvlChange ? protocolData.tvlChange : 0}
-                                MetricIcon={MonetizationOnIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={protocolData.fees24 ? protocolData.fees24 : 0}
-                                mainMetricInUSD={true}
-                                metricName='Fees'
-                                mainMetricChange={protocolData.feesChange ? protocolData.feesChange : 0}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-                        </Stack>
-                    </Grid>
+                    <Box mt={2}>
+                        <Typography variant='h5'>Historical Performance</Typography>
+                    </Box>
+                    <Box>
+                        <Card>
+                            <PoolChart tvlData={protocolData.tvlData} volumeData={protocolData.volumeData} feesData={protocolData.feeData} />
+                        </Card>
+                    </Box>
                 </Grid>
-                <Grid
-                    container
-                    spacing={1}
-                >
-                    <Grid
-                        item
-                        mt={1}
-                        xs={12}
-                    >
-                        <Box mt={2}>
-                            <Typography variant='h5'>Historical Performance</Typography>
-                        </Box>
-                        <Box>
-                            <Card>
-                                <PoolChart tvlData={protocolData.tvlData} volumeData={protocolData.volumeData} feesData={protocolData.feeData} />
-                            </Card>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box mt={2}>
-                            <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
-                        </Box>
-                        {poolData.length >= 1 ?
-                            <PoolTableCompact poolDatas={poolData} /> :
-                            <Grid
-                                container
-                                spacing={2}
-                                mt={5}
-                                sx={{ justifyContent: 'center' }}
-                            >
-                                <CustomLinearProgress />
-                            </Grid>}
-                    </Grid>
+                <Grid item xs={10}>
+                    <Box mt={2}>
+                        <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
+                    </Box>
+                    {poolData.length >= 1 ?
+                        <PoolTableCompact poolDatas={poolData} /> :
+                        <Grid
+                            container
+                            spacing={2}
+                            mt={5}
+                            sx={{ justifyContent: 'center' }}
+                        >
+                            <CustomLinearProgress />
+                        </Grid>}
+                </Grid>
 
-                </Grid>
             </Grid>
         </Box>
     );

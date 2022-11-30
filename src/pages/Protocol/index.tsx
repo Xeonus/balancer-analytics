@@ -1,8 +1,6 @@
-import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box';
-import { Card, Grid, CircularProgress, Typography, Stack } from '@mui/material';
+import { Grid, CircularProgress, Typography, Stack } from '@mui/material';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
-import EchartsArea from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import useAggregatedProtocolData from '../../data/balancer/useAggregatedProtocolData';
@@ -21,7 +19,6 @@ import CustomLinearProgress from '../../components/Progress/CustomLinearProgress
 
 export default function Protocol() {
 
-    const theme = useTheme();
     //TODO: obtain form contants
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     //Data
@@ -38,15 +35,15 @@ export default function Protocol() {
     const mainnetPercentage = 100 / aggregatedProtocolData.tvl * mainnetTVL
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <Grid
-                container
-                spacing={1}
-                sx={{ justifyContent: 'space-between' }}
-            >
+        <Box sx={{ flexGrow: 2 }}>
+                <Grid
+                    container
+                    spacing={3}
+                    sx={{ justifyContent: 'center' }}
+                >
                 <Grid
                     item
-                    xs={12}
+                    xs={10}
                 >
                     <Stack direction="row" spacing={2} justifyContent="flex-start">
                         {coinData && coinData[balAddress] && coinData[balAddress].usd ?
@@ -94,71 +91,52 @@ export default function Protocol() {
             <Grid
                 container
                 spacing={1}
+                sx={{ justifyContent: 'center' }}
             >
-                <Grid
-                    item
-                    mt={1}
-                    xs={12}
-                >
-                    <Box mt={2}>
-                    <Typography variant='h5'>Historical TVL</Typography>
-                    </Box>
-                    <Box>
+                <Grid item mt={1} xs={10}>
+                        <Typography variant='h5'>Historical TVL</Typography>
+                    </Grid>
+                    <Grid item mt={1} xs={10}>
                             <ProtocolMultiAreaChart
                                 mainnetProtocolData={protocolData}
                                 arbitrumProtocolData={arbitrumProtocolData}
                                 polygonProtocolData={polygonProtocolData}
                             />
-                    </Box>
-                </Grid>
-                <Grid
-                    item
-                    mt={1}
-                    xs={12}
-                >
-                    <Box mt={2}>
+                            </Grid>
+                
+                <Grid item mt={1} xs={10} >
                     <Typography variant='h5'>Historical Volume</Typography>
-                    </Box>
-                    <Box>
+                    </Grid>
+                    <Grid item mt={1} xs={10} >
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.volumeData}
                                 arbitrumProtocolData={arbitrumProtocolData.volumeData}
                                 polygonProtocolData={polygonProtocolData.volumeData}
                             />
-                    </Box>
-                </Grid>
-                <Grid
-                    item
-                    mt={1}
-                    xs={12}
-                >
-                    <Box mt={2}>
+                            </Grid>
+                
+                <Grid item mt={1} xs={10} >
                     <Typography variant='h5'>Historical Fees</Typography>
-                    </Box>
-                    <Box>
+                    </Grid>
+                    <Grid item mt={1} xs={10} >
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.feeData}
                                 arbitrumProtocolData={arbitrumProtocolData.feeData}
                                 polygonProtocolData={polygonProtocolData.feeData}
                             />
-                    </Box>
-                </Grid>
-                <Grid
-                    item
-                    mt={1}
-                    xs={12}
-                >
-                    <Box mt={2}>
+                            </Grid>
+                
+                <Grid item mt={1} xs={10} >
                     <Typography variant='h5'>Historical Swaps</Typography>
-                    </Box>
-                    <Box>
+                    </Grid>
+                    <Grid item mt={1} xs={10} >
                             <ProtocolMultipleBarChart
                                 mainnetProtocolData={protocolData.swapData}
                                 arbitrumProtocolData={arbitrumProtocolData.swapData}
                                 polygonProtocolData={polygonProtocolData.swapData}
                             />
-                    </Box>
-                </Grid>
+                            </Grid>
+                
             </Grid> : <Grid
             container
             spacing={2}
