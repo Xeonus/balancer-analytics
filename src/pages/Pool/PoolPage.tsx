@@ -209,11 +209,11 @@ export default function PoolPage() {
                             <Typography variant="h5">Historical Swaps </Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <SwapsTable swaps={swaps} />
                     </Grid>
                     {! STABLE_POOLS.includes(poolData.poolType) ?
-                    (<Grid item xs={8}>
+                    (<Grid item xs={10}>
                         <Box mt={2} mb={1}>
                             <Typography variant="h5">Liquidity Provisions </Typography>
                         </Box>

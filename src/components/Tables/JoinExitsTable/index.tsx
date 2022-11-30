@@ -12,7 +12,7 @@ import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Paper from '@mui/material/Paper';
-import { Grid, Link } from '@mui/material';
+import { Grid, Link, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
 import { formatDollarAmount } from '../../../utils/numbers';
@@ -268,7 +268,14 @@ export default function JoinExitsTable({ joinExits }:
                                             key={row.joinExit.tx}
                                         >
                                             <TableCell>
-                                                {row.action === 'Join' ? <LoginIcon /> : <LogoutIcon />} {row.action}
+                                                <Box display='flex' alignItems='center'>
+                                                    <Box mr={1}>
+                                                {row.action === 'Join' ? <LoginIcon color='success' /> : <LogoutIcon color='error' />} 
+                                                </Box>
+                                                <Typography variant='body1' color={row.action === 'Exit' ? red[500] : green[500]}>
+                                                    {row.action}
+                                                </Typography>
+                                                </Box>
                                             </TableCell>
                                             <TableCell
                                                 align="left"

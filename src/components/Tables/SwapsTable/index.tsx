@@ -274,7 +274,7 @@ export default function SwapsTable({swaps} :
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
                                             </TableCell>
                                              <TableCell>
-                                                <Link href={getEtherscanLink(row.swapper, 'transaction', activeNetwork)} target='_blank'>{row.swapper}</Link>
+                                                <Link href={getEtherscanLink(row.swapper, 'address', activeNetwork)} target='_blank'>{row.swapper}</Link>
                                                 
                                             </TableCell>
                                             <TableCell align="right">
