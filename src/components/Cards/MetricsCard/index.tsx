@@ -1,7 +1,6 @@
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { useTheme } from '@mui/material/styles'
 import { formatDollarAmount } from '../../../utils/numbers';
 import { green } from '@mui/material/colors';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
@@ -24,7 +23,6 @@ const MetricsCard = ({
   metricName,
   MetricIcon }: CoinCardProps) => {
 
-  const theme = useTheme();
   const metricUnit = mainMetricUnit ? mainMetricUnit : '';
 
   return (

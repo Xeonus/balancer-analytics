@@ -13,6 +13,7 @@ import NavCrumbs from '../../components/NavCrumbs';
 import PoolTableCompact from "../../components/Tables/PoolTableCompact";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
+import SwapsTable from '../../components/Tables/SwapsTable';
 
 
 
@@ -125,6 +126,28 @@ export default function Chain() {
                         >
                             <CustomLinearProgress />
                         </Grid>}
+                </Grid>
+
+            </Grid>
+            <Grid
+                container
+                spacing={2}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Grid
+                    item
+                    mt={1}
+                    xs={10}
+                >
+                    <Grid item xs={10} >
+                    <Box mt={2}>
+                        <Typography variant='h5'>Large Swaps</Typography>
+                    </Box>
+                    </Grid>
+                </Grid>
+                <Grid item xs={10}>
+                         <SwapsTable swaps={protocolData.whaleSwaps} />
+                        
                 </Grid>
 
             </Grid>
