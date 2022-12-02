@@ -135,7 +135,7 @@ const headCells: readonly HeadCell[] = [
   },
   {
     id: 'volume24',
-    numeric: false,
+    numeric: true,
     disablePadding: false,
     label: 'Volume 24h',
   },
@@ -313,7 +313,7 @@ export default function PoolTable({
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
-                      <TableCell align="left">
+                      <TableCell align="right">
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
