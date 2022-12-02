@@ -15,7 +15,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { getThemeDesignTokens } from '../../assets/theme';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
-import { SUPPORTED_NETWORK_VERSIONS, EthereumNetworkInfo, SupportedNetwork } from '../../constants/networks';
+import { SUPPORTED_NETWORK_VERSIONS, EthereumNetworkInfo } from '../../constants/networks';
 import NetworkSelector from '../NetworkSelector';
 import MenuDrawer from '../MenuDrawer'
 import PoolsOverview from '../../pages/Pool/PoolsOverview';
@@ -118,7 +118,7 @@ function Dashboard() {
         if (location.pathname === '/') {
             setActiveNetwork(EthereumNetworkInfo);
         } else {
-            SUPPORTED_NETWORK_VERSIONS.map((n) => {
+            SUPPORTED_NETWORK_VERSIONS.forEach((n) => {
                 if (location.pathname.includes(n.route.toLocaleLowerCase())) {
                     setActiveNetwork(n);
                 }

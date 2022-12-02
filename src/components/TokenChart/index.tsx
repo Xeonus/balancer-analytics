@@ -55,7 +55,7 @@ export default function TokenChart({tvlData, volumeData, priceData} : PoolChartP
     const [timeRange, setTimeRange] = React.useState('0');
 
     React.useEffect(() => {
-        if (tvlData.length < Number(timeRange) || timeRange == '0') {
+        if (tvlData.length < Number(timeRange) || timeRange === '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedPriceData(priceData);
@@ -73,7 +73,7 @@ export default function TokenChart({tvlData, volumeData, priceData} : PoolChartP
 
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
-        if (tvlData.length < Number(event.target.value) || event.target.value == '0') {
+        if (tvlData.length < Number(event.target.value) || event.target.value === '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedPriceData(volumeData);
@@ -119,11 +119,11 @@ export default function TokenChart({tvlData, volumeData, priceData} : PoolChartP
             >
                     <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                     <Divider />
-                    <MenuItem value={30}> 30 days</MenuItem>
-                    <MenuItem value={90}>90 days</MenuItem>
-                    <MenuItem value={180}>180 days</MenuItem>
-                    <MenuItem value={365}>365 days</MenuItem>
-                    <MenuItem value={0}>All time</MenuItem>
+                    <MenuItem value={'30'}> 30 days</MenuItem>
+                    <MenuItem value={'90'}>90 days</MenuItem>
+                    <MenuItem value={'180'}>180 days</MenuItem>
+                    <MenuItem value={'365'}>365 days</MenuItem>
+                    <MenuItem value={'0'}>All time</MenuItem>
                 </Select>
             </FormControl>
             </Box>

@@ -1,16 +1,10 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { SupportedChainId, Percent, Token, WETH9 } from '@uniswap/sdk-core';
+import { SupportedChainId, Token, WETH9 } from '@uniswap/sdk-core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
-import JSBI from 'jsbi';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const MAX_UINT128 = BigNumber.from(2).pow(128).sub(1);
-
-// a list of tokens by chain
-type ChainTokenList = {
-    readonly [chainId in SupportedChainId]: Token[];
-};
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
@@ -114,9 +108,3 @@ export interface WalletInfo {
 }
 
 export const NetworkContextName = 'NETWORK';
-
-// used for rewards deadlines
-export const BIG_INT_SECONDS_IN_WEEK = JSBI.BigInt(60 * 60 * 24 * 7);
-export const BIG_INT_ZERO = JSBI.BigInt(0);
-export const ZERO_PERCENT = new Percent('0');
-export const ONE_HUNDRED_PERCENT = new Percent('1');

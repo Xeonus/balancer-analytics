@@ -1,7 +1,6 @@
-import { Box, Card, CardContent, Grid, SxProps, Typography } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { useTheme } from '@mui/material/styles'
 import CurrencyLogo from '../../CurrencyLogo';
 import { formatDollarAmount } from '../../../utils/numbers';
 import { green } from '@mui/material/colors';
@@ -19,9 +18,6 @@ const CoinCard = ({
   tokenName,
   tokenAddress }: CoinCardProps) => {
 
-  const theme = useTheme();
-
-  console.log("address", tokenAddress)
   return (
     <Card
     sx={{

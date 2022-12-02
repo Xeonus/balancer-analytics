@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,24 +8,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid, TableFooter, Typography } from '@mui/material';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
-import { formatDollarAmount, formatPercentageAmount } from '../../../utils/numbers';
+import { formatPercentageAmount } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
-import { useNavigate } from 'react-router-dom';
-import { networkPrefix } from '../../../utils/networkPrefix';
-import { useActiveNetworkVersion } from '../../../state/application/hooks';
-import { NetworkInfo } from '../../../constants/networks';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { PoolData, PoolTokenData, TokenData } from '../../../data/balancer/balancerTypes'
-import CurrencyLogo from '../../CurrencyLogo';
-import { green } from '@mui/material/colors';
+import { PoolData, } from '../../../data/balancer/balancerTypes'
 import { STABLE_POOLS } from '../../../constants';
 import dayjs from 'dayjs';
 
@@ -109,11 +98,10 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
-    rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, rowCount, onRequestSort } =
+    const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -159,12 +147,6 @@ export default function PoolInfoTable({
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('attribute');
-    const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [activeNetwork] = useActiveNetworkVersion();
-    let navigate = useNavigate();
-
     if (!poolData) {
         return <CircularProgress />;
     }
@@ -199,28 +181,6 @@ export default function PoolInfoTable({
         setOrderBy(property);
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDense(event.target.checked);
-    };
-
-
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    const getLink = (activeNetwork: NetworkInfo, id: string) => {
-        return networkPrefix(activeNetwork) + 'tokens/' + id;
-    }
-
 
     //Table generation
 
@@ -237,13 +197,10 @@ export default function PoolInfoTable({
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
-                            rowCount={rows.length}
                         />
                         <TableBody>
                             {stableSort(rows, getComparator(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
                                     return (
                                         <TableRow
                                             hover

@@ -74,7 +74,7 @@ function getEpochSwapFees(
 //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
 const target = 3 // Wednesday
 const prevThuDate = new Date()
-prevThuDate.setDate(prevThuDate.getDate() - (prevThuDate.getDay() == target ? 7 : (prevThuDate.getDay() + (7 - target)) % 7));
+prevThuDate.setDate(prevThuDate.getDate() - (prevThuDate.getDay() === target ? 7 : (prevThuDate.getDay() + (7 - target)) % 7));
 prevThuDate.setUTCHours(0, 0, 0, 0);
 const today = new Date();
 today.setUTCHours(0, 0, 0, 0);
@@ -82,13 +82,12 @@ today.setUTCHours(0, 0, 0, 0);
 export function useBalancerPools(first = 250): PoolData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
-    const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
-    const [block24, block48, blockWeek] = blocks ?? [];
+    const { blocks } = useBlocksFromTimestamps([t24, t48, tWeek]);
+    const [block24] = blocks ?? [];
     const [getPoolData, { data }] = useGetPoolDataLazyQuery();
     const feeData = useBalancerSwapFeePoolData();
 
-    //const incentives = GetIncentiveList();
-    //console.log("incentives", incentives['week_52']);
+
 
     useEffect(() => {
         if (block24) {
@@ -103,7 +102,7 @@ export function useBalancerPools(first = 250): PoolData[] {
                 }
             });
         }
-    }, [block24, first]);
+    }, [block24, first, activeNetwork.clientUri]);
 
     if (!data) {
         return [];

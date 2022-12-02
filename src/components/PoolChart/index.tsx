@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import GenericBarChart from "../Echarts/GenericBarChart";
 import TvlAreaChart from "../Echarts/TvlAreaChart";
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -68,7 +68,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [rangedFeesData, setRangedFeesData] = React.useState(feesData);
 
     React.useEffect(() => {
-        if (tvlData.length < Number(timeRange) || timeRange == '0') {
+        if (tvlData.length < Number(timeRange) || timeRange === '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedFeesData(feesData);
@@ -89,7 +89,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
 
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
-        if (tvlData.length < Number(event.target.value) || event.target.value == '0') {
+        if (tvlData.length < Number(event.target.value) || event.target.value === '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedFeesData(feesData);
@@ -98,7 +98,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(event.target.value)))
             setRangedFeesData(feesData.slice(feesData.length - Number(event.target.value)))
         }
-        if (event.target.value == '1000') {
+        if (event.target.value === '1000') {
             setShowDate(true);
         } else {
             setShowDate(false);
@@ -185,12 +185,12 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                     >
                         <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                         <Divider />
-                        <MenuItem value={30}> 30 days</MenuItem>
-                        <MenuItem value={90}>90 days</MenuItem>
-                        <MenuItem value={180}>180 days</MenuItem>
-                        <MenuItem value={365}>365 days</MenuItem>
-                        <MenuItem value={0}>All time</MenuItem>
-                        <MenuItem value={1000}> Custom </MenuItem>
+                        <MenuItem value={'30'}> 30 days</MenuItem>
+                        <MenuItem value={'90'}>90 days</MenuItem>
+                        <MenuItem value={'180'}>180 days</MenuItem>
+                        <MenuItem value={'365'}>365 days</MenuItem>
+                        <MenuItem value={'0'}>All time</MenuItem>
+                        <MenuItem value={'1000'}> Custom </MenuItem>
                     </Select>
                 </FormControl>
 

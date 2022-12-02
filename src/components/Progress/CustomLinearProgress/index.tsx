@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles'
+
 import { styled } from '@mui/material/styles';
 import { Box } from "@mui/system";
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
@@ -16,8 +16,6 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   }));
 
 export default function CustomLinearProgress() {
-
-    const theme = useTheme();
 
     return (
         <Box

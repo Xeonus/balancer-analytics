@@ -1,6 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
 import { graphic } from 'echarts';
-import { useTheme } from '@mui/material/styles';
 import { CircularProgress } from '@mui/material';
 import { BalancerChartDataItem} from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -15,7 +14,6 @@ export interface TvlAreaProps {
 
 
 export default function GenericAreaChart({chartData, dataTitle, backgroundColor = '#6a7985', height = '278px'}: TvlAreaProps) {
-    const theme = useTheme();
 
     let xData = chartData.map(el => el.time);
     let yData = chartData.map(el => el.value);

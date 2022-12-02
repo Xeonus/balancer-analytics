@@ -2,7 +2,6 @@ import { PoolData } from "../../data/balancer/balancerTypes";
 import { useTheme } from '@mui/material/styles'
 import { AvatarGroup, Typography } from "@mui/material";
 import { Avatar, Box } from "@mui/material";
-import { formatPercentageAmount } from '../../utils/numbers'
 
 interface PoolCompositionProps {
     poolData: PoolData;

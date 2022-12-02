@@ -3,11 +3,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import { SupportedChainId, Currency, CurrencyAmount, Fraction, Percent, Token } from '@uniswap/sdk-core';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, NetworkInfo, PolygonNetworkInfo } from './../constants/networks';
-import JSBI from 'jsbi';
-//import { ROUTER_ADDRESS } from '../constants';
-//import { TokenAddressMap } from '../state/lists/hooks';
+import { SupportedChainId } from '@uniswap/sdk-core';
+import { ArbitrumNetworkInfo, NetworkInfo, PolygonNetworkInfo } from './../constants/networks';
 
 
 // returns the checksummed address if the address is valid, otherwise returns false

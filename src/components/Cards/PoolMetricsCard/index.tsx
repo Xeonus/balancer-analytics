@@ -50,7 +50,7 @@ export default function PoolMetricsCard({
                   color="textPrimary"
                   variant="h6"
                 >
-                  {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0) + mainMetric}
+                  {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0) + metricUnit}
                 </Typography>
               </Grid>
               <Grid item>

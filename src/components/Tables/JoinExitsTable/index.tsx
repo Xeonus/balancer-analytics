@@ -19,10 +19,7 @@ import { formatDollarAmount } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
-import { useNavigate } from 'react-router-dom';
-import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
-import { NetworkInfo } from '../../../constants/networks';
 import { green, red } from '@mui/material/colors';
 import { formatTime } from "../../../utils/date";
 import StyledExternalLink from "../../StyledExternalLink";
@@ -128,11 +125,10 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
-    rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, rowCount, onRequestSort } =
+    const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -179,7 +175,6 @@ export default function JoinExitsTable({ joinExits }:
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
-    let navigate = useNavigate();
 
     if (!joinExits) {
         return <CircularProgress />;
@@ -230,10 +225,6 @@ export default function JoinExitsTable({ joinExits }:
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const getLink = (activeNetwork: NetworkInfo, id: string) => {
-        return networkPrefix(activeNetwork) + 'tokens/' + id;
-    }
-
     //Table generation
 
     return (
@@ -249,7 +240,6 @@ export default function JoinExitsTable({ joinExits }:
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
-                            rowCount={rows.length}
                         />
                         <TableBody>
                             {/* if you don't need to support IE11, you can replace the `stableSort` call with:
@@ -257,8 +247,6 @@ export default function JoinExitsTable({ joinExits }:
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-
                                     return (
                                         <TableRow
                                             hover

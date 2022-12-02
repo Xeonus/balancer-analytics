@@ -1,9 +1,7 @@
 import React from 'react';
 import { ProtocolData } from '../../../data/balancer/useProtocolDataWithClientOverride';
-import { Card, Grid, Box, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles'
+import { Card, Grid, Box } from '@mui/material';
 import CustomLinearProgress from '../../Progress/CustomLinearProgress';
-import dayjs from 'dayjs';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -39,8 +37,6 @@ interface ProtocolAreaChartProps {
 
 export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData}: ProtocolAreaChartProps) {
 
-    const theme = useTheme();
-
     const mainnetData = mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
     //add preceeding zero values based on mainnet size to later deployed chains
@@ -62,12 +58,6 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
 
 
     //---Hooks for custom time ranges---
-    const [value, setValue] = React.useState(0);
-    const [startDate, setStartDate] = React.useState(dayjs().subtract(7, 'day').valueOf());
-    const [startIndex, setStartIndex] = React.useState(0);
-    const [endIndex, setEndIndex] = React.useState(0);
-    const [showDate, setShowDate] = React.useState(false);
-    const [endDate, setEndDate] = React.useState(dayjs().valueOf());
     const [timeRange, setTimeRange] = React.useState('0');
     //data state
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
@@ -76,7 +66,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
     React.useEffect(() => {
-        if (mainnetData.length < Number(timeRange) || timeRange == '0') {
+        if (mainnetData.length < Number(timeRange) || timeRange === '0') {
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
@@ -87,20 +77,11 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
-        if (showDate) {
-            if (startIndex === 0 && endIndex === 0) {
-                setInitialDateIndices(startDate, endDate);
-            }
-            setrangedMainnetData(mainnetData.slice(startIndex, endIndex))
-            setrangedArbitrumData(arbitrumData.slice(startIndex, endIndex))
-            setrangedPolygonData(polygonData.slice(startIndex, endIndex))
-            setRangedxAxis(mainnetxAxisData.slice(startIndex, endIndex))
-        }
-    }, [timeRange, startIndex, endIndex]);
+    }, [timeRange]);
 
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
-        if (mainnetData.length < Number(event.target.value) || event.target.value == '0') {
+        if (mainnetData.length < Number(event.target.value) || event.target.value === '0') {
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
@@ -109,56 +90,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(event.target.value)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(event.target.value)))
         }
-        if (event.target.value == '1000') {
-            setShowDate(true);
-        } else {
-            setShowDate(false);
-        }
     };
-
-    const handleStartDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
-        if (value) {
-            setStartDate(value);
-            //Find index of selected date and slice accordingly
-            const date = dayjs(value).format('YYYY-MM-DD')
-            const hit = mainnetxAxisData.indexOf(date)
-            if (hit) {
-                setStartIndex(mainnetData.indexOf(hit))
-
-            }
-        }
-    };
-
-    const handleEndDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
-        if (value) {
-            setEndDate(value);
-            //Find index of selected date and slice accordingly
-            const date = dayjs(value).format('YYYY-MM-DD')
-            const hit = mainnetxAxisData.indexOf(date)
-            if (hit) {
-                setEndIndex(mainnetData.indexOf(hit) + 1)
-            }
-        }
-    };
-
-    function setInitialDateIndices(startDate: number | null, endDate: number | null) {
-        if (startDate) {
-            //Find index of selected date and slice accordingly
-            const start = dayjs(startDate).format('YYYY-MM-DD')
-            const hit = mainnetxAxisData.indexOf(start)
-            if (hit) {
-                setEndIndex(mainnetData.indexOf(hit) + 1)
-            }
-        }
-        if (endDate) {
-            //Find index of selected date and slice accordingly
-            const end = dayjs(endDate).format('YYYY-MM-DD')
-            const hit = mainnetxAxisData.indexOf(end)
-            if (hit) {
-                setEndIndex(mainnetData.indexOf(hit) + 1)
-            }
-        }
-    }
 
     return (
         polygonData.length > 10 ?
@@ -184,11 +116,11 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
                     >
                         <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                         <Divider />
-                        <MenuItem value={30}> 30 days</MenuItem>
-                        <MenuItem value={90}>90 days</MenuItem>
-                        <MenuItem value={180}>180 days</MenuItem>
-                        <MenuItem value={365}>365 days</MenuItem>
-                        <MenuItem value={0}>All time</MenuItem>
+                        <MenuItem value={'30'}> 30 days</MenuItem>
+                        <MenuItem value={'90'}>90 days</MenuItem>
+                        <MenuItem value={'180'}>180 days</MenuItem>
+                        <MenuItem value={'365'}>365 days</MenuItem>
+                        <MenuItem value={'0'}>All time</MenuItem>
                     </Select>
                 </FormControl>
                 </Box>

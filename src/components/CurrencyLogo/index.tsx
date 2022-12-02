@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { useTheme } from '@mui/material/styles'
 import { EthereumNetworkInfo, SupportedNetwork } from "../../constants/networks";
@@ -50,7 +50,7 @@ export default function CurrencyLogo({
             [`${address}`]:
                 `https://raw.githubusercontent.com/balancer-labs/assets/${assetLoc}/assets/${address}.png`,
         }
-    }, [])
+    }, [address, assetLoc])
 
     //Token image sources
     const srcs: string[] = useMemo(() => {
@@ -62,7 +62,7 @@ export default function CurrencyLogo({
             return [getTokenLogoURL(checkSummed, activeNetwork.id), override]
         }
         return []
-    }, [address, tempSources])
+    }, [address, tempSources, activeNetwork.id])
 
     //Return an avatar for the default source, or an avatar as a child if default source is empty!
     return <Avatar

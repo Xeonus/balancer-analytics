@@ -1,10 +1,8 @@
 import ReactEcharts from 'echarts-for-react';
-import { graphic } from 'echarts'
 import { formatDollarAmount } from '../../../utils/numbers';
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles'
 import CustomLinearProgress from '../../Progress/CustomLinearProgress';
-import { PolygonNetworkInfo } from '../../../constants/networks';
 
 export interface Normal {
     color: string;

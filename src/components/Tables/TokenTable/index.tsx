@@ -144,11 +144,10 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
-    rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, rowCount, onRequestSort } =
+    const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -218,7 +217,7 @@ export default function TokenTable({
     });
 
     const rows = sortedTokenDats.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, el.priceUSDChange === NaN ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
+        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, isNaN(el.priceUSDChange) ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
 
     )
 
@@ -269,16 +268,11 @@ export default function TokenTable({
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
-                            rowCount={rows.length}
                         />
                         <TableBody>
-                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-              rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-
+                                .map((row) => {
                                     return (
                                         <TableRow
                                             hover
