@@ -1,9 +1,8 @@
-import { createReducer, nanoid } from '@reduxjs/toolkit'
+import { createReducer } from '@reduxjs/toolkit'
 import { NetworkInfo } from '../../constants/networks'
 import {
   updateBlockNumber,
   updateSubgraphStatus,
-  ApplicationModal,
   updateActiveNetworkVersion,
 } from './actions'
 import { EthereumNetworkInfo } from '../../constants/networks'

@@ -18,21 +18,20 @@ export default function Tokens() {
     const [topGainerToken, setTopGainerToken] = useState({} as TokenData)
     const [topLoserToken, setTopLoserToken] = useState({} as TokenData)
     useEffect(() => {
-        if (tokenDatas && tokenDatas.length > 10) {
-            const topGainer = tokenDatas.reduce(function (prev, current) {
-                return (prev.priceUSDChange > current.priceUSDChange) ? prev : current
-            })
+        if (tokenDatas && tokenDatas.length > 0) {
+            //const topGainer = tokenDatas.reduce(function (prev, current) {
+            //    return (prev.priceUSDChange > current.priceUSDChange) ? prev : current
+            //})
+            const topGainer = tokenDatas.reduce((prev, curr) => (prev.priceUSDChange > curr.priceUSDChange && prev.isCoingeckoPriceSource === true ? prev : curr));
             const topLoser = tokenDatas.reduce(function (prev, current) {
                 return (prev.priceUSDChange > current.priceUSDChange) ? current : prev
             })
-            if (topGainer) {
                 setTopGainerToken(topGainer)
-            }
             if (topLoser) {
                 setTopLoserToken(topLoser)
             }
         }
-    }, [JSON.stringify(tokenDatas)]);
+    }, [tokenDatas]);
 
     return (
         <Box sx={{ flexGrow: 2 }}>

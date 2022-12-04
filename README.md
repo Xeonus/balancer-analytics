@@ -5,14 +5,22 @@ Balancer V2 analytics
 
 An open sourced interface for Balancer V2 analytics - reimagined by Xeonus
 
+
+
 Info URL: https://info.balancer.xeonus.io/#/
+Prototype / testing build: https://balancer-analytics-prototype.web.app
 
 ## Development
+
+### Configure .env environment
+- replace sample .env_example file with your file
+- rename to .env
+- do not store sensitive API keys in this file
 
 ### Install Dependencies
 
 ```bash
-yarn
+yarn install
 ```
 
 ### Run

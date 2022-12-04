@@ -8,13 +8,11 @@ import {
   polygonClient,
 } from '../../apollo/client'
 import { NetworkInfo, SupportedNetwork } from '../../constants/networks'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useActiveWeb3React } from '../../hooks'
-import { AppDispatch, AppState } from '../index'
+import { AppState } from '../index'
 import {
-  ApplicationModal,
-  PopupContent,
   updateActiveNetworkVersion,
   updateSubgraphStatus,
 } from './actions'
