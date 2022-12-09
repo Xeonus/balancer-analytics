@@ -5,20 +5,31 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { useBalancerProtocolData } from "../../data/balancer/useProtocolData";
 import ChainFeeChart from "../../components/ChainFeeChart";
 import { useBalancerPools } from "../../data/balancer/usePools";
-import { useGetPortfolio } from "../../data/debank/useGetPortfolio";
 import { FEE_COLLECTOR_ADDRESS } from "../../constants/wallets";
+import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
+import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
+import { formatDollarAmount } from "../../utils/numbers";
+import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 
-export default function Fees () {
+export default function Fees() {
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
-    const subgraphPools = useBalancerPools();
+    const pools = useBalancerPools();
+    const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
 
-    const { portfolio } = useGetPortfolio(FEE_COLLECTOR_ADDRESS)
+    //Clean up data and retrieve total amounts
+    const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>
+        balance.amount * balance.price >= activeNetwork.feeCollectorThreshold &&
+        balance.chain === activeNetwork.debankId) : null;
+    const totalAmountAboveThreshold = balancesAboveThreshold ? balancesAboveThreshold.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
 
-    console.log("portfolio object", portfolio)
+    const balancesBelowThreshold = totalBalances ? totalBalances.filter(balance =>
+        balance.amount * balance.price < activeNetwork.feeCollectorThreshold &&
+        balance.chain === activeNetwork.debankId) : null;
+    const totalAmountBelowThreshold = balancesBelowThreshold ? balancesBelowThreshold.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
 
-    //merge APR data as a test
+
 
     //Navigation
     const homeNav: NavElement = {
@@ -41,30 +52,70 @@ export default function Fees () {
 
     return (
         <Box sx={{ flexGrow: 2 }}>
-        <Grid
-            container
-            spacing={2}
-            sx={{ justifyContent: 'center' }}
-        >
-            <Grid item xs={10}>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                    <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                </Box>
-
-            </Grid>
-            <Grid item xs={10}>
-                <Box display="flex" alignItems="center">
-                    <Box mb={1}>
-                        <Typography variant={"h5"}>Fee Metrics ({activeNetwork.name})</Typography>
+            <Grid
+                container
+                spacing={1}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Grid item xs={10}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                     </Box>
-                </Box>
+
+                </Grid>
+                <Grid mt={2} item xs={10}>
+                    <Box display="flex" alignItems="center">
+                        <Box>
+                            <Typography variant={"h5"}>Fee Metrics ({activeNetwork.name})</Typography>
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid item xs={10}>
+                    <Card>
+                        <ChainFeeChart feesData={protocolData.feeData} />
+                    </Card>
+                </Grid>
+                <Grid mt={2} item xs={10}>
+                    <Typography variant="h5">Tokens in Fee Collector</Typography>
+                </Grid>
+                <Grid item xs={10}>
+                    <Typography variant="h6">Tokens to be collected: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
+                </Grid>
             </Grid>
-            <Grid item xs={10}>
-                <Card>
-                <ChainFeeChart feesData={protocolData.feeData} />
-                </Card>
-            </Grid>
-        </Grid>
+            {totalBalances ?
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ justifyContent: 'center' }}
+                >
+                    {balancesAboveThreshold && balancesAboveThreshold.length > 0 ?
+                        <Grid item xs={10}>
+                            <FeeCollectorTokenTable tokenBalances={balancesAboveThreshold} />
+                        </Grid> : 
+                        <Grid item xs={10}>
+                                                    <Box ml={1}>
+                            <Typography color='error'>No tokens to be collected</Typography>
+                            </Box>
+                        </Grid> 
+                        }
+                    <Grid item xs={10}>
+
+                            <Typography variant="h6">
+                                Tokens below threshold ( &lt; {formatDollarAmount(activeNetwork.feeCollectorThreshold)}) : {formatDollarAmount(totalAmountBelowThreshold)}
+                            </Typography>
+                    </Grid>
+                    {balancesBelowThreshold ?
+                        <Grid item xs={10}>
+                            <FeeCollectorTokenTable tokenBalances={balancesBelowThreshold} />
+                        </Grid> : <Typography>No tokens below threshold</Typography>}
+                </Grid> : (<Grid
+                    container
+                    spacing={2}
+                    mt='25%'
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <CustomLinearProgress />
+                </Grid>)}
         </Box>
     );
 }

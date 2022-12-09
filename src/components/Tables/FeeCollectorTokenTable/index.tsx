@@ -14,7 +14,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
-import { formatDollarAmount, formatPercentageAmount } from '../../../utils/numbers';
+import { formatDollarAmount, formatPercentageAmount, formatNumber } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
@@ -22,37 +22,39 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { TokenData } from '../../../data/balancer/balancerTypes'
 import CurrencyLogo from '../../CurrencyLogo';
-import { green } from '@mui/material/colors';
+
+import { TokenBalance, TotalTokenBalances } from "../../../data/debank/debankTypes";
+
+interface FeeCollectorTableProps {
+    tokenBalances: TotalTokenBalances
+}
 
 
 interface Data {
     number: number,
-    token: TokenData;
+    token: TokenBalance,
     price: number,
-    priceChange: number,
-    volume24: number,
-    tvl: number;
+    balance: number,
+    value: number,
+    ratio: number;
 }
 
 function createData(
     number: number,
-    token: TokenData,
+    token: TokenBalance,
     price: number,
-    priceChange: number,
-    volume24: number,
-    tvl: number,
+    balance: number,
+    value: number,
+    ratio: number,
 ): Data {
     return {
         number,
         token,
         price,
-        priceChange,
-        volume24,
-        tvl,
+        balance,
+        value,
+        ratio,
     };
 }
 
@@ -72,8 +74,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | TokenData },
-    b: { [key in Key]: number | string | TokenData },
+    a: { [key in Key]: number | string | TokenBalance },
+    b: { [key in Key]: number | string | TokenBalance },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -120,22 +122,22 @@ const headCells: readonly HeadCell[] = [
         label: 'Price',
     },
     {
-        id: 'priceChange',
-        numeric: false,
-        disablePadding: true,
-        label: 'Price Change',
-    },
-    {
-        id: 'volume24',
+        id: 'balance',
         numeric: true,
         disablePadding: false,
-        label: 'Volume 24h',
+        label: 'Balance',
     },
     {
-        id: 'tvl',
+        id: 'value',
         numeric: true,
         disablePadding: false,
-        label: 'TVL',
+        label: 'Value',
+    },
+    {
+        id: 'ratio',
+        numeric: true,
+        disablePadding: false,
+        label: 'Contribution',
     },
 ];
 
@@ -184,24 +186,22 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function TokenTable({
-    tokenDatas
-}: {
-    tokenDatas?: TokenData[]
-}) {
+
+
+export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTableProps) {
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('value');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(25);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
-    if (!tokenDatas) {
+    if (!tokenBalances) {
         return <CircularProgress />;
     }
 
-    if (tokenDatas.length < 10) {
+    if (tokenBalances.length < 1) {
         return (
             <Grid>
                 <CircularProgress />
@@ -209,14 +209,21 @@ export default function TokenTable({
         );
     }
 
-    const filteredTokenDatas = tokenDatas.filter(x => x.address.toLowerCase() !== '0x1aafc31091d93c3ff003cff5d2d8f7ba2e728425');
+    //Filter and extract data
+    const filteredTokenDatas = tokenBalances.filter(
+        x => x.chain === activeNetwork.debankId &&
+        x.amount * x.price > 10 );
 
-    const sortedTokenDats = filteredTokenDatas.sort(function (a, b) {
-        return b.tvlUSD - a.tvlUSD;
+    const sortedTokenDatas = filteredTokenDatas.sort(function (a, b) {
+        return b.amount * b.price - a.amount * a.price;
     });
 
-    const rows = sortedTokenDats.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, isNaN(el.priceUSDChange) ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
+    //Calculate TVL to obtain relative ratio
+    const tvl = sortedTokenDatas.reduce((acc, el) => acc + el.amount * el.price, 0)
+
+    //Create rows
+    const rows = sortedTokenDatas.map(el =>
+        createData(filteredTokenDatas.indexOf(el) + 1, el, el.price, el.amount, el.price * el.amount, 100 / tvl * el.price * el.amount)
 
     )
 
@@ -253,7 +260,6 @@ export default function TokenTable({
 
 
     //Table generation
-
     return (
         <Box sx={{ width: '100%'}}>
             <Paper elevation={3} sx={{ mb: 2 }}>
@@ -275,10 +281,10 @@ export default function TokenTable({
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={() => { navigate(`${getLink(activeNetwork, row.token.address)}/`); }}
+                                            onClick={() => { navigate(`${getLink(activeNetwork, row.token.id)}/`); }}
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.token.address}
+                                            key={row.token.id}
                                         >
                                             <TableCell
                                                 align="left"
@@ -288,7 +294,7 @@ export default function TokenTable({
                                             <TableCell >
                                                 <Box display="flex" alignItems="center">
                                                     <Box mr={1}>
-                                                        <CurrencyLogo address={row.token.address} size={'25px'} />
+                                                        <CurrencyLogo address={row.token.id} size={'25px'} />
                                                     </Box>
                                                     <Box mr={1}>
                                                         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{row.token.symbol}</Typography>
@@ -298,25 +304,10 @@ export default function TokenTable({
                                             </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.price)}</TableCell>
                                             <TableCell align="right">
-                                                <Box display="flex" alignItems="center">
-                                                    {row.priceChange > 0 ?
-
-                                                        <ArrowUpwardIcon fontSize="small" sx={{ color: green[500] }} />
-                                                        :
-                                                        <ArrowDownwardIcon fontSize="small" color="error" />}
-                                                    <Typography
-                                                        color={Number(formatPercentageAmount(row.priceChange)) > 0 ? 'green' : 'error'}
-                                                        sx={{
-                                                            mr: 1
-                                                        }}
-                                                        variant="body2"
-                                                    >
-                                                        {Number(formatPercentageAmount(row.priceChange)).toFixed(2)} %
-                                                    </Typography>
-                                                </Box>
+                                                        {formatNumber(row.balance, 2)}
                                             </TableCell>
-                                            <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                                            <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
+                                            <TableCell align="right">{formatDollarAmount(row.value)}</TableCell>
+                                            <TableCell align="right">{formatPercentageAmount(row.ratio)}%</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -353,4 +344,7 @@ export default function TokenTable({
         </Box>
     );
 }
+
+
+
 

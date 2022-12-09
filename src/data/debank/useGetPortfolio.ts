@@ -1,16 +1,16 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import isDev from '../../constants';
 import { DB_KEY } from '../balancer/constants';
-import {Portfolio } from './debankPortfolioInterface'
+import { Portfolio } from './debankTypes';
+import debankPortfolio from '../mocks/debank-complexPortfolio.json'
 
 export const useGetPortfolio = (walletId: string) => {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
 
-  // use an effect hook to fetch the total balance
   useEffect(() => {
     async function fetchTotalBalance() {
       try {
-        // make a GET request to the API endpoint
         const response = await axios.get(
           `https://pro-openapi.debank.com/v1/user/all_complex_protocol_list?id=${walletId}&chain_ids=eth,matic,arb`,
           {
@@ -19,22 +19,22 @@ export const useGetPortfolio = (walletId: string) => {
             }
           }
         );
-
-        // set the total balance from the response
-        //setPortfolio(response.data.total_balance);
-        console.log("response", response)
         const json: Portfolio = response.data
         setPortfolio(json);
       } catch (error) {
-        // handle the error
         console.error(error);
         setPortfolio(null);
       }
     }
-
-    fetchTotalBalance();
+    if (isDev()) {
+      console.log("DEV: loading mock")
+      const copy = JSON.parse(JSON.stringify(debankPortfolio));
+      setPortfolio(copy)
+    } else {
+      console.log("PRODUCTION: fetching data from Debank")
+      fetchTotalBalance();
+    }
   }, [walletId]);
 
-  // return the total balance and loading state
   return { portfolio };
 };

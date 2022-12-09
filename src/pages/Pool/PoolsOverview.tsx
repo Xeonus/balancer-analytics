@@ -78,7 +78,7 @@ export default function PoolsOverview() {
                     </Stack>
                 </Grid> : null }
                 <Grid item xs={10}>
-                    <Typography variant="h5" mb={1}>Liquidity Pools Overview ({activeNetwork.name})</Typography>
+                    <Typography variant="h5" mb={1}>Deployed Liquidity on {activeNetwork.name}</Typography>
                     {poolData.length > 10 ?
                         <PoolTable poolDatas={poolData} /> :
                         <Grid

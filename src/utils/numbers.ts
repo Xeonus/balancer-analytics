@@ -35,6 +35,18 @@ export const formatAmount = (num: number | undefined, digits = 2) => {
     });
 };
 
+export const formatNumber = (num: number | undefined, digits = 2) => {
+    if (num === 0) return '0';
+    if (!num) return '-';
+    if (num < 0.001) {
+        return '<0.001';
+    }
+    return numbro(num).format({
+        thousandSeparated: true,
+        mantissa: num > 1000 ? 2 : digits,
+    });
+};
+
 // Format percentage ranges
 export const formatPercentageAmount = (num: number | undefined) => {
     if (num === 0) return '0';

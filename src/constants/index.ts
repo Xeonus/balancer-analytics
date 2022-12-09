@@ -1,6 +1,23 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { SupportedChainId, Token, WETH9 } from '@uniswap/sdk-core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
+import process from "process";
+
+const development: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+
+export default function isDev(): boolean
+{
+    return development;
+}
+
+export const YIELD_BEARING_TOKENS = [
+    '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', //wstETH
+    '0xa13a9247ea42d743238089903570127dda72fe44', //bb-a-USD
+    '0xae78736cd615f374d3085123a210448e74fc6393', //rETH
+    '0xac3e018457b222d93114458476f3e3416abbe38f', //sfrxETH
+    '0x48e6b98ef6329f8f0a30ebb8c7c960330d648085', //bb-am-USD
+
+]
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 

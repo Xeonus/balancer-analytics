@@ -14,6 +14,8 @@ export type NetworkInfo = {
   id: SupportedNetwork
   chainId: string
   coingeckoId: string
+  debankId: string
+  feeCollectorThreshold: number
   decentralicedClientUri: string
   route: string
   name: string
@@ -31,6 +33,8 @@ export const EthereumNetworkInfo: NetworkInfo = {
     id: SupportedNetwork.ETHEREUM,
     chainId: '1',
     coingeckoId: 'ethereum',
+    debankId: 'eth',
+    feeCollectorThreshold: 10000,
     route: '',
     name: 'Ethereum',
     startTimeStamp: 1619874000,
@@ -47,6 +51,8 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ARBITRUM,
   chainId: '42161',
   coingeckoId: 'arbitrum-one',
+  debankId: 'arb',
+  feeCollectorThreshold: 5000,
   route: 'arbitrum',
   name: 'Arbitrum',
   startTimeStamp: 1619874000,
@@ -64,6 +70,8 @@ export const PolygonNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.POLYGON,
   chainId: '137',
   coingeckoId: 'polygon-pos',
+  debankId: 'matic',
+  feeCollectorThreshold: 5000,
   route: 'polygon',
   name: 'Polygon',
   startTimeStamp: 1619874000,

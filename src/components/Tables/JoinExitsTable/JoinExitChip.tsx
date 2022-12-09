@@ -30,7 +30,7 @@ export default function JoinExitChip({amounts, tokenList, size}: JoinExitChipPro
             Number(amounts[tokenList.indexOf(token)]) > 0 ?
             <Box mr={1}>
              <Avatar
-             key={token + Math.random() * 10}
+             key={token + Math.random() * 10 + amounts[tokenList.indexOf(token)]}
              onClick={() => { navigate(`${getLink(activeNetwork, token)}/`); }}
              variant="rounded"
              sx={{

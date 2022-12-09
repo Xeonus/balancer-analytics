@@ -252,7 +252,7 @@ export default function JoinExitsTable({ joinExits }:
                                             hover
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.joinExit.tx}
+                                            key={row.joinExit.tx + Math.random() * 10}
                                         >
                                             <TableCell>
                                                 <Box display='flex' alignItems='center' alignContent='center'>
@@ -267,7 +267,7 @@ export default function JoinExitsTable({ joinExits }:
                                             <TableCell
                                                 align="left"
                                             >
-                                                <JoinExitChip amounts={row.joinExit.amounts} tokenList={row.joinExit.pool.tokensList} size={35} />
+                                                <JoinExitChip key={row.joinExit.amounts + row.joinExit.id} amounts={row.joinExit.amounts} tokenList={row.joinExit.pool.tokensList} size={35} />
                                             </TableCell>
                                             <TableCell align="right">
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
