@@ -159,7 +159,7 @@ export default function PoolInfoTable({
         createData('Pool Symbol', poolData.symbol),
         createData('Pool Type', poolData.poolType),
         createData('Holders count', poolData.holdersCount.toString()),
-        createData('Swap Fees', formatPercentageAmount(poolData.swapFee)),
+        createData('Swap Fee', formatPercentageAmount(poolData.swapFee * 100) + '%'),
         createData('Pool Owner', poolData.owner),
         createData('Contract address', poolData.address),
         createData('Creation Time', dayjs.unix(poolData.createTime).format('DD.MM.YYYY hh:mm:ss')),

@@ -64,7 +64,7 @@ export default function TokenChip({swap, size=35} : TokenChipProps) {
                 }}
             >
                 <Box mr={1}>
-                    <CurrencyLogo key={swap.tokenOut} address={swap.tokenOut} size='25px' />
+                    <CurrencyLogo key={swap.tx} address={swap.tokenOut} size='25px' />
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                     <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{formatAmount(Number(swap.tokenAmountOut), 2)}</Typography>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 //Coingecko Interface
 export interface CoingeckoRawData {

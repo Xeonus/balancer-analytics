@@ -48,7 +48,7 @@ export default function PoolPage() {
     navCrumbs.push(homeNav)
     navCrumbs.push(poolNav);
 
-    console.log("joinExit example: ", joinExits[0])
+    console.log("swapPairVolumes: ", swapPairVolumes)
 
     //TODO: Refactor in own function calls (geSwaps, getSwapsChange etc?)
     //Swaps

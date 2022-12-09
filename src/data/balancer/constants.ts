@@ -12,3 +12,7 @@ export const BALANCER_LOADING_IMAGE = process.env.REACT_APP_LOADING_IMAGE || '';
 export const BALANCER_BACKGROUND_IMAGE = process.env.REACT_APP_BACKGROUND_IMAGE  || '';
 export const BALANCER_GRAPH_KEY = process.env.REACT_APP_BALANCER_GRAPH_KEY || '';
 export const PERSONAL_GRAPH_KEY = process.env.REACT_APP_PERSONAL_GRAPH_KEY || '';
+export const INFURA_KEY = process.env.REACT_APP_INFURA_KEY || '';
+export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY || '';
+export const ALCHEMY_URL = process.env.REACT_APP_ALCHEMY_URL || '';
+export const DB_KEY = process.env.REACT_APP_DB_KEY || '';

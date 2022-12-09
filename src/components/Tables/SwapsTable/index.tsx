@@ -250,7 +250,7 @@ export default function SwapsTable({ swaps }:
                                             hover
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.swap.tx}
+                                            key={row.swap.timestamp * Math.random()}
                                         >
                                             <TableCell
                                                 align="left"
