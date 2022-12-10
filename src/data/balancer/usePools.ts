@@ -17,12 +17,14 @@ import { CoingeckoSnapshotPriceData } from './useTokens';
 function getPoolValues(
     poolId: string,
     pools: BalancerPoolFragment[],
+    startunixTime: number,
+    endunixTime: number,
     poolSwapFeeSnapshots?: BalancerPoolSnapshotFragment[],
 ): { tvl: number; volume: number; swapCount: number; fees: number, feesEpoch: number, poolType: string | null | undefined } {
     const pool = pools.find((pool) => poolId === pool.id);
     let epochFees = 0;
     if (poolSwapFeeSnapshots) {
-        const feeData = getEpochSwapFees(poolId, Math.floor(today.getTime() / 1000), Math.floor(prevThuDate.getTime() / 1000), poolSwapFeeSnapshots);
+        const feeData = getEpochSwapFees(poolId, startunixTime, endunixTime, poolSwapFeeSnapshots);
         epochFees = feeData.swapFee;
     }
 
@@ -72,20 +74,21 @@ function getEpochSwapFees(
 
 
 //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
-const target = 3 // Wednesday
-const prevThuDate = new Date()
-prevThuDate.setDate(prevThuDate.getDate() - (prevThuDate.getDay() === target ? 7 : (prevThuDate.getDay() + (7 - target)) % 7));
-prevThuDate.setUTCHours(0, 0, 0, 0);
 const today = new Date();
-today.setUTCHours(0, 0, 0, 0);
+//Set timestamps if none is given:
+const startTimestamp = Math.floor(today.getTime() / 1000)
+const weekAgo = new Date();
+weekAgo.setDate(today.getDate() - 7);
+const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
 
-export function useBalancerPools(first = 250): PoolData[] {
+
+export function useBalancerPools(first = 250, startunixTime = startTimestamp, endunixTime = endTimeStamp): PoolData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24] = blocks ?? [];
     const [getPoolData, { data }] = useGetPoolDataLazyQuery();
-    const feeData = useBalancerSwapFeePoolData();
+    const feeData = useBalancerSwapFeePoolData(startunixTime, endunixTime);
 
 
 
@@ -111,8 +114,8 @@ export function useBalancerPools(first = 250): PoolData[] {
     const { pools, pools24 } = data;
 
     return pools.map((pool) => {
-        const poolData = getPoolValues(pool.id, pools, feeData);
-        const poolData24 = getPoolValues(pool.id, pools24);
+        const poolData = getPoolValues(pool.id, pools, startunixTime, endunixTime, feeData);
+        const poolData24 = getPoolValues(pool.id, pools24, startunixTime, endunixTime);
 
         //TODO: token price information is not stored in PoolData Object model anymore -> remove
 
@@ -159,10 +162,11 @@ export function useBalancerPools(first = 250): PoolData[] {
     });
 }
 
-export function useBalancerSwapFeePoolData() {
+export function useBalancerSwapFeePoolData(startTimestamp: number, endTimeStamp: number) {
+
     const [activeNetwork] = useActiveNetworkVersion();
     const { data } = useBalancerPoolSwapFeeSnapshotQuery({
-        variables: { startTimestamp: Math.floor(today.getTime() / 1000), endTimeStamp: Math.floor(prevThuDate.getTime() / 1000) },
+        variables: { startTimestamp: startTimestamp, endTimeStamp: endTimeStamp },
         context: {
             uri: activeNetwork.clientUri,
         }
@@ -187,7 +191,7 @@ export function useBalancerPoolData(poolId: string): PoolData | null {
     return pool || null;
 }
 
-export function useBalancerPoolSingleData(poolId: string): PoolData | null  {
+export function useBalancerPoolSingleData(poolId: string): PoolData | null {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
