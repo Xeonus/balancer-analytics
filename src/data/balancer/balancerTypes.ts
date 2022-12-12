@@ -84,6 +84,9 @@ export interface PoolData {
     owner: string;
     holdersCount: number;
     factory: string;
+
+    //APR data
+    aprSet?: AprSet
 }
 
 
@@ -126,3 +129,37 @@ export interface TokenSet {
     tokenId: string;
     amount: number;
 }
+
+//Balancer SDK APR interface
+export interface AprSet {
+    swapFees: number
+    tokenAprs: TokenAprs
+    stakingApr: StakingApr
+    rewardAprs: RewardAprs
+    protocolApr: number
+    min: number
+    max: number
+  }
+  
+  export interface TokenAprs {
+    total: number
+    breakdown: TokenBreakdown
+  }
+  
+  export interface TokenBreakdown {
+    [key: string]: number
+  }
+  
+  export interface StakingApr {
+    min: number
+    max: number
+  }
+  
+  export interface RewardAprs {
+    total: number
+    breakdown: RewardsBreakdown
+  }
+  
+  export interface RewardsBreakdown {
+    [key: string]: number
+  }

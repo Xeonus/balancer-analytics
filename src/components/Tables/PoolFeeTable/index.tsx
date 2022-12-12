@@ -18,7 +18,7 @@ import { getShortPoolName } from '../../../utils/getShortPoolName';
 import { CircularProgress } from '@mui/material';
 import { formatAmount, formatDollarAmount } from '../../../utils/numbers';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
-import { POOL_HIDE } from '../../../constants/index'
+import { POOL_HIDE, YIELD_BEARING_TOKENS } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
@@ -37,6 +37,7 @@ interface Data {
   swapFee: number;
   poolRevenue: number;
   protocolRevenue: number;
+  dailyTokenYield: number;
   contribution: number;
 }
 
@@ -47,15 +48,17 @@ function createData(
   swapFee: number,
   poolRevenue: number,
   protocolRevenue: number,
+  dailyTokenYield: number,
   contribution: number,
 ): Data {
   return {
-    poolTokens,
     name,
+    poolTokens,
     poolData,
     swapFee,
     poolRevenue,
     protocolRevenue,
+    dailyTokenYield,
     contribution,
   };
 }
@@ -76,8 +79,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string | PoolTokenData[] | PoolData},
-  b: { [key in Key]: number | string | PoolTokenData[] | PoolData},
+  a: { [key in Key]: number | string | PoolTokenData[] | PoolData },
+  b: { [key in Key]: number | string | PoolTokenData[] | PoolData },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -138,6 +141,12 @@ const headCells: readonly HeadCell[] = [
     label: 'Protocol Revenue',
   },
   {
+    id: 'dailyTokenYield',
+    numeric: true,
+    disablePadding: false,
+    label: 'Token Yield (24h)',
+  },
+  {
     id: 'contribution',
     numeric: true,
     disablePadding: false,
@@ -159,8 +168,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       onRequestSort(event, property);
     };
 
-    const theme = useTheme()
-    
+  const theme = useTheme()
+
   return (
     <TableHead>
       <TableRow>
@@ -176,7 +185,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: <Typography variant='body2' sx={{ fontWeight: 'bold' }}>{headCell.label}</Typography>}
+              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : <Typography variant='body2' sx={{ fontWeight: 'bold' }}>{headCell.label}</Typography>}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -191,9 +200,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function PoolFeeTable({
-    poolDatas
+  poolDatas
 }: {
-    poolDatas?: PoolData[]
+  poolDatas?: PoolData[]
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
@@ -203,27 +212,42 @@ export default function PoolFeeTable({
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();
 
-  if(!poolDatas) {
+  if (!poolDatas) {
     return <CircularProgress />;
   }
 
   if (poolDatas.length === 0) {
     return (
       <Grid>
-      <CircularProgress />
+        <CircularProgress />
       </Grid>
     );
   }
-  
+
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   //Calculate TVL to obtain relative ratio
   const totalFees = filteredPoolDatas.reduce((acc, el) => acc + el.feesEpochUSD, 0)
 
+  //Helper function to calculate daily token yield
+  function calculateDailyTokenYield(poolData: PoolData) {
+    let yearlyYield = 0
+    if (poolData.aprSet) {
+      poolData.tokens.forEach((token) => {
+        let tokenYield = 0
+        if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
+          tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
+          yearlyYield += tokenYield
+        }
+      }
+      )
+    }
+    return yearlyYield
+  }
+
   //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
-
+    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.feesEpochUSD, el.feesEpochUSD * 0.25, calculateDailyTokenYield(el), 100 / totalFees * el.feesEpochUSD)
   )
 
   const handleRequestSort = (
@@ -261,7 +285,7 @@ export default function PoolFeeTable({
   //Table generation
 
   return (
-    <Box sx={{ width: '100%'}}>
+    <Box sx={{ width: '100%' }}>
       <Paper sx={{ mb: 2 }}>
         <TableContainer>
           <Table
@@ -290,7 +314,9 @@ export default function PoolFeeTable({
                       tabIndex={-1}
                       key={row.poolData.address}
                     >
-                      <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
+                      <TableCell >
+                        <PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> 
+                      </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
@@ -302,23 +328,31 @@ export default function PoolFeeTable({
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">
-                        { row.poolRevenue > 0 ?
-                        formatDollarAmount(row.poolRevenue) :
-                        <CircularProgress size={'20px'} />
+                        {row.poolRevenue > 0 ?
+                          formatDollarAmount(row.poolRevenue) :
+                          <CircularProgress size={'20px'} />
                         }
-                        </TableCell>
-                      <TableCell align="right">
-                        { row.protocolRevenue > 0 ?
-                      formatDollarAmount(row.protocolRevenue) : 
-                      <CircularProgress size={'20px'} />
-                      }
                       </TableCell>
                       <TableCell align="right">
-                        { row.contribution > 0 ?
-                        formatAmount(row.contribution) + '%' :
-                        <CircularProgress size={'20px'} />
+                        {row.protocolRevenue > 0 ?
+                          formatDollarAmount(row.protocolRevenue) :
+                          <CircularProgress size={'20px'} />
                         }
-                        </TableCell>
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
+                        row.dailyTokenYield > 0 ?
+                          formatDollarAmount(row.dailyTokenYield) :
+                          <CircularProgress size={'20px'} />
+                         : '-'
+                        }
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.contribution > 0 ?
+                          formatAmount(row.contribution) + '%' :
+                          <CircularProgress size={'20px'} />
+                        }
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -335,24 +369,24 @@ export default function PoolFeeTable({
           </Table>
         </TableContainer>
         <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-        <Box m={1} display="flex" justifyContent={"flex-start"}>
-        <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Compact view"
-      />
-      </Box>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
+          <Box m={1} display="flex" justifyContent={"flex-start"}>
+            <FormControlLabel
+              control={<Switch checked={dense} onChange={handleChangeDense} />}
+              label="Compact view"
+            />
+          </Box>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Box>
       </Paper>
-      
+
     </Box>
   );
 }

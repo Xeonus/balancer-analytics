@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, PoolData } from './balancerTypes';
 import { CoingeckoSnapshotPriceData } from './useTokens';
+import { decoratePoolsWithTokenAPRs } from '../balancer-sdk/decoratePoolsWithTokenAPRs';
 
 function getPoolValues(
     poolId: string,

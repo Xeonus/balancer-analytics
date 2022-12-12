@@ -1,5 +1,5 @@
 import * as React from 'react';
-import dayjs from 'dayjs';
+import { useState, useEffect } from 'react';
 import { Typography, Grid, Box, Card, Divider } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
@@ -21,6 +21,7 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { decoratePoolsWithTokenAPRs } from '../../data/balancer-sdk/decoratePoolsWithTokenAPRs';
 
 export default function Fees() {
 
@@ -30,24 +31,28 @@ export default function Fees() {
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
+    
 
     //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
     const today = new Date();
     //Set timestamps if none is given:
     today.setUTCHours(0, 0, 0, 0);
     const startTimestamp = Math.floor(today.getTime() / 1000)
-
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 7);
     weekAgo.setUTCHours(0, 0, 0, 0);
     const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
-
+    //Date States
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
 
-    console.log("startDate", startDate)
-    const pools = useBalancerPools(100, startDate, endDate)
+ 
+    let pools = useBalancerPools(250, startDate, endDate);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
+
+    //TODO: Decorate pools with APRs, might migrate to usePools function?
+    decoratePoolsWithTokenAPRs(pools);
+  
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>
