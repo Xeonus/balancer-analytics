@@ -76,9 +76,12 @@ function getEpochSwapFees(
 //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
 const today = new Date();
 //Set timestamps if none is given:
+today.setUTCHours(0,0,0,0);
 const startTimestamp = Math.floor(today.getTime() / 1000)
+
 const weekAgo = new Date();
 weekAgo.setDate(today.getDate() - 7);
+weekAgo.setUTCHours(0,0,0,0);
 const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
 
 
@@ -89,8 +92,6 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
     const [block24] = blocks ?? [];
     const [getPoolData, { data }] = useGetPoolDataLazyQuery();
     const feeData = useBalancerSwapFeePoolData(startunixTime, endunixTime);
-
-
 
     useEffect(() => {
         if (block24) {
@@ -171,6 +172,7 @@ export function useBalancerSwapFeePoolData(startTimestamp: number, endTimeStamp:
             uri: activeNetwork.clientUri,
         }
     });
+
     if (!data) {
         return [];
     }

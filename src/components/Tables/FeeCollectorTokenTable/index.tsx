@@ -32,7 +32,6 @@ interface FeeCollectorTableProps {
 
 
 interface Data {
-    number: number,
     token: TokenBalance,
     price: number,
     balance: number,
@@ -41,7 +40,6 @@ interface Data {
 }
 
 function createData(
-    number: number,
     token: TokenBalance,
     price: number,
     balance: number,
@@ -49,7 +47,6 @@ function createData(
     ratio: number,
 ): Data {
     return {
-        number,
         token,
         price,
         balance,
@@ -103,12 +100,6 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-    {
-        id: 'number',
-        numeric: false,
-        disablePadding: false,
-        label: '#',
-    },
     {
         id: 'token',
         numeric: false,
@@ -172,7 +163,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
-                            {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : headCell.label}
+                            {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : <Typography variant='body2' sx={{ fontWeight: 'bold' }}>{headCell.label}</Typography>}
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -192,7 +183,7 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('value');
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
+    const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
@@ -223,7 +214,7 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
 
     //Create rows
     const rows = sortedTokenDatas.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.price, el.amount, el.price * el.amount, 100 / tvl * el.price * el.amount)
+        createData(el, el.price, el.amount, el.price * el.amount, 100 / tvl * el.price * el.amount)
 
     )
 
@@ -286,11 +277,6 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
                                             tabIndex={-1}
                                             key={row.token.id}
                                         >
-                                            <TableCell
-                                                align="left"
-                                            >
-                                                {row.number}
-                                            </TableCell>
                                             <TableCell >
                                                 <Box display="flex" alignItems="center">
                                                     <Box mr={1}>

@@ -28,7 +28,6 @@ import SwapFee from '../../SwapFee'
 
 
 interface Data {
-  number: number;
   name: string;
   poolTokens: PoolTokenData[];
   swapFee: number,
@@ -39,7 +38,6 @@ interface Data {
 }
 
 function createData(
-  number: number,
   name: string,
   poolTokens: PoolTokenData[],
   poolData: PoolData,
@@ -49,7 +47,6 @@ function createData(
   tvl: number,
 ): Data {
   return {
-    number, 
     poolTokens,
     name,
     poolData,
@@ -106,12 +103,6 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  {
-    id: 'number',
-    numeric: false,
-    disablePadding: false,
-    label: '#',
-  },
   {
     id: 'poolTokens',
     numeric: false,
@@ -222,7 +213,7 @@ export default function PoolTableCompact({
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   const rows = filteredPoolDatas.map(el =>
-    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.swapFee, el.volumeUSD, el.feesUSD, el.tvlUSD)
+    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.volumeUSD, el.feesUSD, el.tvlUSD)
 
   )
 
@@ -274,11 +265,6 @@ export default function PoolTableCompact({
                       tabIndex={-1}
                       key={row.name}
                     >
-                      <TableCell 
-                      align="left"
-                      >
-                        {row.number}
-                      </TableCell>
                       <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell
                         component="th"

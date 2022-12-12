@@ -22,6 +22,12 @@ export default function GenericBarChart({ data, }: GenericBarChartProps) {
                 type: 'shadow'
             },
         },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
         xAxis: {
             type: 'category',
             data: xData

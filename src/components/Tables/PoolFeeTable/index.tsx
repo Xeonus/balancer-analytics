@@ -9,14 +9,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
 import { PoolData, PoolTokenData } from '../../../data/balancer/balancerTypes';
 import { getShortPoolName } from '../../../utils/getShortPoolName';
 import { CircularProgress } from '@mui/material';
-import { formatDollarAmount } from '../../../utils/numbers';
+import { formatAmount, formatDollarAmount } from '../../../utils/numbers';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
 import { POOL_HIDE } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
@@ -31,35 +31,32 @@ import SwapFee from '../../SwapFee'
 
 
 interface Data {
-  number: number;
   name: string;
   poolTokens: PoolTokenData[];
-  swapFee: number,
-  poolData: PoolData,
-  volume24: number;
-  fees: number,
-  tvl: number;
+  poolData: PoolData;
+  swapFee: number;
+  poolRevenue: number;
+  protocolRevenue: number;
+  contribution: number;
 }
 
 function createData(
-  number: number,
   name: string,
   poolTokens: PoolTokenData[],
   poolData: PoolData,
   swapFee: number,
-  volume24: number,
-  fees: number,
-  tvl: number,
+  poolRevenue: number,
+  protocolRevenue: number,
+  contribution: number,
 ): Data {
   return {
-    number, 
     poolTokens,
     name,
     poolData,
     swapFee,
-    volume24,
-    fees,
-    tvl,
+    poolRevenue,
+    protocolRevenue,
+    contribution,
   };
 }
 
@@ -108,13 +105,8 @@ interface HeadCell {
   numeric: boolean;
 }
 
+
 const headCells: readonly HeadCell[] = [
-  {
-    id: 'number',
-    numeric: false,
-    disablePadding: false,
-    label: '#',
-  },
   {
     id: 'poolTokens',
     numeric: false,
@@ -134,22 +126,22 @@ const headCells: readonly HeadCell[] = [
     label: 'Swap Fee',
   },
   {
-    id: 'volume24',
+    id: 'poolRevenue',
     numeric: true,
     disablePadding: false,
-    label: 'Volume 24h',
+    label: 'Pool Revenue',
   },
   {
-    id: 'fees',
+    id: 'protocolRevenue',
     numeric: true,
     disablePadding: false,
-    label: 'Trading Fees 24h',
+    label: 'Protocol Revenue',
   },
   {
-    id: 'tvl',
+    id: 'contribution',
     numeric: true,
     disablePadding: false,
-    label: 'TVL',
+    label: 'Contribution %',
   },
 ];
 
@@ -184,7 +176,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: headCell.label}
+              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: <Typography variant='body2' sx={{ fontWeight: 'bold' }}>{headCell.label}</Typography>}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -204,10 +196,10 @@ export default function PoolFeeTable({
     poolDatas?: PoolData[]
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();
 
@@ -225,8 +217,12 @@ export default function PoolFeeTable({
   
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
+  //Calculate TVL to obtain relative ratio
+  const totalFees = filteredPoolDatas.reduce((acc, el) => acc + el.feesEpochUSD, 0)
+
+  //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(filteredPoolDatas.indexOf(el) +1, getShortPoolName(el), el.tokens, el, el.swapFee, el.volumeUSD, el.feesUSD, el.tvlUSD)
+    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
 
   )
 
@@ -294,11 +290,6 @@ export default function PoolFeeTable({
                       tabIndex={-1}
                       key={row.poolData.address}
                     >
-                      <TableCell 
-                      align="left"
-                      >
-                        {row.number}
-                      </TableCell>
                       <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell
                         component="th"
@@ -310,9 +301,24 @@ export default function PoolFeeTable({
                       <TableCell align="right">
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
+                      <TableCell align="right">
+                        { row.poolRevenue > 0 ?
+                        formatDollarAmount(row.poolRevenue) :
+                        <CircularProgress size={'20px'} />
+                        }
+                        </TableCell>
+                      <TableCell align="right">
+                        { row.protocolRevenue > 0 ?
+                      formatDollarAmount(row.protocolRevenue) : 
+                      <CircularProgress size={'20px'} />
+                      }
+                      </TableCell>
+                      <TableCell align="right">
+                        { row.contribution > 0 ?
+                        formatAmount(row.contribution) + '%' :
+                        <CircularProgress size={'20px'} />
+                        }
+                        </TableCell>
                     </TableRow>
                   );
                 })}

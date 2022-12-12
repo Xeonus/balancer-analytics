@@ -35,16 +35,16 @@ export default function PoolCompositionWithLogos({ poolData, size = 24 }: PoolCo
                         variant="rounded"
                         sx={{
                             height: size,
-                            width: size * 3.75,
+                            width: 'auto',
                             borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                             backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
                             borderRadius: '0.5rem',
                         }}
                     >
-                        <Box mr={1}>
+                        <Box ml={1}>
                             <CurrencyLogo key={token.address} address={token.address} size='20px' />
                         </Box>
-                        <Box display="flex" justifyContent="space-between">
+                        <Box m={1} display="flex" justifyContent="space-between">
                             <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{token.symbol}</Typography>
                             {poolData.poolType === 'Weighted' ?
                                 <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} variant="caption">{Number((token.weight * 100).toFixed(0))}%</Typography>

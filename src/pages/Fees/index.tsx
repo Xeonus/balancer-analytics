@@ -1,4 +1,6 @@
-import { Typography, Grid, Box, Card } from "@mui/material";
+import * as React from 'react';
+import dayjs from 'dayjs';
+import { Typography, Grid, Box, Card, Divider } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
@@ -10,12 +12,41 @@ import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
 import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
 import { formatDollarAmount } from "../../utils/numbers";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
+import PoolFeeTable from "../../components/Tables/PoolFeeTable";
+import StyledExternalLink from '../../components/StyledExternalLink';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export default function Fees() {
 
+    //Time range selector States
+    const [showDate, setShowDate] = React.useState(false);
+    const [timeRange, setTimeRange] = React.useState('7');
+
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
-    const pools = useBalancerPools();
+
+    //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
+    const today = new Date();
+    //Set timestamps if none is given:
+    today.setUTCHours(0, 0, 0, 0);
+    const startTimestamp = Math.floor(today.getTime() / 1000)
+
+    const weekAgo = new Date();
+    weekAgo.setDate(today.getDate() - 7);
+    weekAgo.setUTCHours(0, 0, 0, 0);
+    const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
+
+    const [startDate, setStartDate] = React.useState(startTimestamp);
+    const [endDate, setEndDate] = React.useState(endTimeStamp);
+
+    console.log("startDate", startDate)
+    const pools = useBalancerPools(100, startDate, endDate)
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
 
     //Clean up data and retrieve total amounts
@@ -41,13 +72,39 @@ export default function Fees() {
         link: 'chain'
     }
     const feesNav: NavElement = {
-        name: 'Fees',
+        name: 'Revenue',
         link: 'fees'
     }
     const navCrumbs: NavElement[] = new Array()
     navCrumbs.push(homeNav)
     navCrumbs.push(chainNav);
     navCrumbs.push(feesNav);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setTimeRange(event.target.value as string);
+        if (event.target.value === '1000') {
+            setShowDate(true);
+        } else {
+            setShowDate(false);
+            const newEndDate = new Date()
+            newEndDate.setDate(today.getDate() - Number(event.target.value));
+            newEndDate.setUTCHours(0, 0, 0, 0);
+            setEndDate( Math.floor(newEndDate.getTime() / 1000));
+        }
+    };
+
+    const handleStartDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
+        if (value) {
+            setStartDate(value);
+        }
+    };
+
+    const handleEndDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {
+        if (value) {
+            setEndDate(value);
+            //Find index of selected date and slice accordingly
+        }
+    };
 
 
     return (
@@ -66,7 +123,7 @@ export default function Fees() {
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems="center">
                         <Box>
-                            <Typography variant={"h5"}>Fee Metrics ({activeNetwork.name})</Typography>
+                            <Typography variant={"h5"}>Revenue Metrics ({activeNetwork.name})</Typography>
                         </Box>
                     </Box>
                 </Grid>
@@ -76,13 +133,84 @@ export default function Fees() {
                     </Card>
                 </Grid>
                 <Grid mt={2} item xs={10}>
-                    <Typography variant="h5">Tokens in Fee Collector</Typography>
+                    <Typography variant="h5">Pool contributions to protocol revenue</Typography>
+                </Grid>
+                <Grid item xs={10} >
+                <Box display="flex" alignItems="center" justifyContent="space-between" >
+                    <Typography variant="subtitle1">Protocol revenue is split 25% to the DAO and 75% to veBAL holders</Typography>
+                    <FormControl size="small">
+                            <Select
+                                sx={{
+                                    backgroundColor: "background.paper",
+                                    boxShadow: 2,
+                                    borderRadius: 2,
+                                    borderColor: 0,
+                                }}
+                                color="primary"
+                                labelId="timeRangeSelectLabel"
+                                id="timeRangeSelect"
+                                onChange={handleChange}
+                                value={timeRange}
+                                inputProps={{
+                                    name: 'timeRange',
+                                    id: 'timeRangeId-native-simple',
+                                }}
+                            >
+                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                <Divider />
+                                <MenuItem value={'7'}> 7 days</MenuItem>
+                                <MenuItem value={'14'}> 14 days</MenuItem>
+                                <MenuItem value={'30'}> 30 days</MenuItem>
+                                <MenuItem value={'90'}>90 days</MenuItem>
+                                <MenuItem value={'180'}>180 days</MenuItem>
+                                <MenuItem value={'365'}>365 days</MenuItem>
+                                <MenuItem value={'0'}>All time</MenuItem>
+                                <MenuItem value={'1000'}> Custom </MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        {showDate ?
+                            <Box p={0.5} display="flex" justifyContent="left" >
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Start Date"
+                                        maxDate={Date.now()}
+                                        value={startDate}
+                                        onChange={handleStartDateChange}
+                                        renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                                    />
+                                </LocalizationProvider>
+                                <Box p={1}>
+                                    <Typography>to</Typography>
+                                </Box>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="End Date"
+                                        maxDate={Date.now()}
+                                        value={endDate}
+                                        onChange={handleEndDateChange}
+                                        renderInput={(params) => <TextField size='small' sx={{ maxWidth: '150px' }} {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </Box> : null}
+                            </Box>
                 </Grid>
                 <Grid item xs={10}>
-                    <Typography variant="h6">Tokens to be collected: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
+                    <PoolFeeTable poolDatas={pools} />
+                </Grid>
+                <Grid mt={2} item xs={10}>
+                    <Box display="flex" alignItems='center'>
+                        <Typography variant="h5">Tokens in Fee Collector Contract</Typography>
+                        <Box ml={1}>
+                            <StyledExternalLink address={FEE_COLLECTOR_ADDRESS} type={'address'} activeNetwork={activeNetwork} />
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid item xs={10}>
+                    <Typography variant="subtitle1">Tokens to be collected: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
                 </Grid>
             </Grid>
-            {totalBalances ?
+            {totalBalances && totalBalances.length > 0 ?
                 <Grid
                     container
                     spacing={1}
@@ -91,18 +219,18 @@ export default function Fees() {
                     {balancesAboveThreshold && balancesAboveThreshold.length > 0 ?
                         <Grid item xs={10}>
                             <FeeCollectorTokenTable tokenBalances={balancesAboveThreshold} />
-                        </Grid> : 
+                        </Grid> :
                         <Grid item xs={10}>
-                                                    <Box ml={1}>
-                            <Typography color='error'>No tokens to be collected</Typography>
+                            <Box ml={1}>
+                                <Typography color='error'>No tokens to be collected</Typography>
                             </Box>
-                        </Grid> 
-                        }
+                        </Grid>
+                    }
                     <Grid item xs={10}>
 
-                            <Typography variant="h6">
-                                Tokens below threshold ( &lt; {formatDollarAmount(activeNetwork.feeCollectorThreshold)}) : {formatDollarAmount(totalAmountBelowThreshold)}
-                            </Typography>
+                        <Typography variant="subtitle1">
+                            Tokens below threshold ( &lt; {formatDollarAmount(activeNetwork.feeCollectorThreshold)}) : {formatDollarAmount(totalAmountBelowThreshold)}
+                        </Typography>
                     </Grid>
                     {balancesBelowThreshold ?
                         <Grid item xs={10}>
@@ -111,7 +239,7 @@ export default function Fees() {
                 </Grid> : (<Grid
                     container
                     spacing={2}
-                    mt='25%'
+                    mt={3}
                     sx={{ justifyContent: 'center' }}
                 >
                     <CustomLinearProgress />

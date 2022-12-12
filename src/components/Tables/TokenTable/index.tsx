@@ -30,7 +30,6 @@ import { green } from '@mui/material/colors';
 
 
 interface Data {
-    number: number,
     token: TokenData;
     price: number,
     priceChange: number,
@@ -39,7 +38,6 @@ interface Data {
 }
 
 function createData(
-    number: number,
     token: TokenData,
     price: number,
     priceChange: number,
@@ -47,7 +45,6 @@ function createData(
     tvl: number,
 ): Data {
     return {
-        number,
         token,
         price,
         priceChange,
@@ -101,12 +98,6 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-    {
-        id: 'number',
-        numeric: false,
-        disablePadding: false,
-        label: '#',
-    },
     {
         id: 'token',
         numeric: false,
@@ -216,7 +207,7 @@ export default function TokenTable({
     });
 
     const rows = sortedTokenDats.map(el =>
-        createData(filteredTokenDatas.indexOf(el) + 1, el, el.priceUSD, isNaN(el.priceUSDChange) ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
+        createData(el, el.priceUSD, isNaN(el.priceUSDChange) ? 0 : el.priceUSDChange, el.volumeUSD, el.tvlUSD)
 
     )
 
@@ -280,11 +271,6 @@ export default function TokenTable({
                                             tabIndex={-1}
                                             key={row.token.address}
                                         >
-                                            <TableCell
-                                                align="left"
-                                            >
-                                                {row.number}
-                                            </TableCell>
                                             <TableCell >
                                                 <Box display="flex" alignItems="center">
                                                     <Box mr={1}>

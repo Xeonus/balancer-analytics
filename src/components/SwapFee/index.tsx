@@ -18,7 +18,7 @@ export default function SwapFee({ swapFee, size = 24 }: SwapFeeProps) {
                 variant="rounded"
                 sx={{
                     height: size,
-                    width: size * 1.5,
+                    width: 'auto',
                     fontSize: 10,
                     borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                     backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
@@ -27,7 +27,7 @@ export default function SwapFee({ swapFee, size = 24 }: SwapFeeProps) {
                     marginLeft: '-0.5rem',
                 }}
             >
-                <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} sx={{ fontWeight: 'bold' }} variant="caption">
+                <Typography m={1} color={theme.palette.mode === 'dark' ? 'white' : 'black'} sx={{ fontWeight: 'bold' }} variant="caption">
                     {formatPercentageAmount(swapFee * 100) + '%'}
                 </Typography>
             </Avatar>
