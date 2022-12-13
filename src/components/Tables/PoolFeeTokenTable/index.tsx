@@ -37,6 +37,7 @@ interface Data {
   swapFee: number;
   poolRevenue: number;
   protocolRevenue: number;
+  dailyTokenYield: number;
   contribution: number;
 }
 
@@ -47,6 +48,7 @@ function createData(
   swapFee: number,
   poolRevenue: number,
   protocolRevenue: number,
+  dailyTokenYield: number,
   contribution: number,
 ): Data {
   return {
@@ -56,6 +58,7 @@ function createData(
     swapFee,
     poolRevenue,
     protocolRevenue,
+    dailyTokenYield,
     contribution,
   };
 }
@@ -129,13 +132,19 @@ const headCells: readonly HeadCell[] = [
     id: 'poolRevenue',
     numeric: true,
     disablePadding: false,
-    label: 'Pool Revenue',
+    label: 'Token Revenue',
   },
   {
     id: 'protocolRevenue',
     numeric: true,
     disablePadding: false,
     label: 'Protocol Revenue',
+  },
+  {
+    id: 'dailyTokenYield',
+    numeric: true,
+    disablePadding: false,
+    label: 'Daily Yield',
   },
   {
     id: 'contribution',
@@ -190,7 +199,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-export default function PoolFeeTable({
+export default function PoolFeeTokenTable({
   poolDatas,
   timeRange
 }: {
@@ -222,11 +231,27 @@ export default function PoolFeeTable({
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   //Calculate TVL to obtain relative ratio
-  const totalFees = filteredPoolDatas.reduce((acc, el) => acc + el.feesEpochUSD, 0)
+  const totalFees = filteredPoolDatas.reduce((acc, el) => acc + calculateDailyTokenYield(el), 0)
+
+  //Helper function to calculate daily token yield
+  function calculateDailyTokenYield(poolData: PoolData) {
+    let yearlyYield = 0
+    if (poolData.aprSet) {
+      poolData.tokens.forEach((token) => {
+        let tokenYield = 0
+        if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
+          tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365 * time
+          yearlyYield += tokenYield
+        }
+      }
+      )
+    }
+    return yearlyYield
+  }
 
   //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
+    createData(getShortPoolName(el), el.tokens, el, el.swapFee, calculateDailyTokenYield(el), calculateDailyTokenYield(el) * 0.5, calculateDailyTokenYield(el), 100 / totalFees * el.feesEpochUSD)
   )
 
   const handleRequestSort = (
@@ -316,6 +341,14 @@ export default function PoolFeeTable({
                         {row.protocolRevenue > 0 ?
                           formatDollarAmount(row.protocolRevenue) :
                           <CircularProgress size={'20px'} />
+                        }
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
+                        row.dailyTokenYield > 0 ?
+                          formatDollarAmount(row.dailyTokenYield) :
+                          <CircularProgress size={'20px'} />
+                         : '-'
                         }
                       </TableCell>
                       <TableCell align="right">

@@ -21,17 +21,20 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { decoratePoolsWithTokenAPRs } from '../../data/balancer-sdk/decoratePoolsWithTokenAPRs';
+import { useDecoratePoolStats } from '../../data/balancer-sdk/useDecoratePoolStats';
+import PoolFeeTokenTable from '../../components/Tables/PoolFeeTokenTable';
+import { YIELD_BEARING_TOKENS } from '../../constants';
+import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
 
 export default function Fees() {
 
     //Time range selector States
     const [showDate, setShowDate] = React.useState(false);
-    const [timeRange, setTimeRange] = React.useState('7');
+    const [timeRange, setTimeRange] = React.useState('1');
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
-    
+
 
     //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
     const today = new Date();
@@ -46,13 +49,21 @@ export default function Fees() {
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
 
- 
-    let pools = useBalancerPools(250, startDate, endDate);
+
+    const pools = useBalancerPools(250, startDate, endDate);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
 
     //TODO: Decorate pools with APRs, might migrate to usePools function?
-    decoratePoolsWithTokenAPRs(pools);
-  
+    //Also fix so that it does propagate promises, as well as return the decorated object?
+    //const deco = useDecoratePoolStats(pools);
+    const yoloPools = useDecoratePools(pools)
+    //console.log("yoloPools", yoloPools)
+    const yieldTokenPools = yoloPools ? yoloPools.filter(pool =>
+        pool.tokens.some(token => 
+            YIELD_BEARING_TOKENS.includes(token.address)
+        )
+        ) : undefined
+
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>
@@ -94,7 +105,7 @@ export default function Fees() {
             const newEndDate = new Date()
             newEndDate.setDate(today.getDate() - Number(event.target.value));
             newEndDate.setUTCHours(0, 0, 0, 0);
-            setEndDate( Math.floor(newEndDate.getTime() / 1000));
+            setEndDate(Math.floor(newEndDate.getTime() / 1000));
         }
     };
 
@@ -138,12 +149,12 @@ export default function Fees() {
                     </Card>
                 </Grid>
                 <Grid mt={2} item xs={10}>
-                    <Typography variant="h5">Pool contributions to protocol revenue</Typography>
+                    <Typography variant="h5">Pool & Token contributions to protocol revenue</Typography>
                 </Grid>
                 <Grid item xs={10} >
-                <Box display="flex" alignItems="center" justifyContent="space-between" >
-                    <Typography variant="subtitle1">Protocol revenue is split 25% to the DAO and 75% to veBAL holders</Typography>
-                    <FormControl size="small">
+                    <Box display="flex" alignItems="center" justifyContent="space-between" >
+                        <Typography variant="subtitle1">Protocol revenue is split 25% to the DAO and 75% to veBAL holders</Typography>
+                        <FormControl size="small">
                             <Select
                                 sx={{
                                     backgroundColor: "background.paper",
@@ -163,6 +174,7 @@ export default function Fees() {
                             >
                                 <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                                 <Divider />
+                                <MenuItem value={'1'}> 24 hours</MenuItem>
                                 <MenuItem value={'7'}> 7 days</MenuItem>
                                 <MenuItem value={'14'}> 14 days</MenuItem>
                                 <MenuItem value={'30'}> 30 days</MenuItem>
@@ -198,10 +210,14 @@ export default function Fees() {
                                     />
                                 </LocalizationProvider>
                             </Box> : null}
-                            </Box>
+                    </Box>
                 </Grid>
                 <Grid item xs={10}>
-                    <PoolFeeTable poolDatas={pools} />
+                    <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
+                </Grid>
+                <Grid item xs={10}>
+                <Typography variant="subtitle1">Yield on yield-bearing assets is split 50% to the DAO and 50% to liquidity providers</Typography>
+                    <PoolFeeTokenTable poolDatas={yieldTokenPools} timeRange={Number(timeRange)} />
                 </Grid>
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems='center'>
