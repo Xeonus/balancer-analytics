@@ -15,24 +15,6 @@ export default function Tokens() {
     let tokenDatas = useBalancerTokens();
     tokenDatas = tokenDatas.filter(x => x.tvlUSD < 10000000000)
 
-    const [topGainerToken, setTopGainerToken] = useState({} as TokenData)
-    const [topLoserToken, setTopLoserToken] = useState({} as TokenData)
-    useEffect(() => {
-        if (tokenDatas && tokenDatas.length > 0) {
-            //const topGainer = tokenDatas.reduce(function (prev, current) {
-            //    return (prev.priceUSDChange > current.priceUSDChange) ? prev : current
-            //})
-            const topGainer = tokenDatas.reduce((prev, curr) => (prev.priceUSDChange > curr.priceUSDChange && prev.isCoingeckoPriceSource === true ? prev : curr));
-            const topLoser = tokenDatas.reduce(function (prev, current) {
-                return (prev.priceUSDChange > current.priceUSDChange) ? current : prev
-            })
-                setTopGainerToken(topGainer)
-            if (topLoser) {
-                setTopLoserToken(topLoser)
-            }
-        }
-    }, [tokenDatas]);
-
     return (
         <Box sx={{ flexGrow: 2 }}>
             <Grid
@@ -43,22 +25,8 @@ export default function Tokens() {
                 <Grid item xs={10}>
                     <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                 </Grid>
-                    {topGainerToken.address && topLoserToken.address ?
+                    {tokenDatas ?
                         <Grid item xs={10}>
-                            <Stack direction="row" spacing={2}>
-                                <CoinCard
-                                    tokenPrice={topGainerToken.priceUSD}
-                                    tokenPriceChange={topGainerToken.priceUSDChange}
-                                    tokenName={'Gainer: ' + topGainerToken.symbol}
-                                    tokenAddress={topGainerToken.address}
-                                />
-                                <CoinCard
-                                    tokenPrice={topLoserToken.priceUSD}
-                                    tokenPriceChange={topLoserToken.priceUSDChange}
-                                    tokenName={'Loser: ' + topLoserToken.symbol}
-                                    tokenAddress={topLoserToken.address}
-                                />
-                            </Stack>
                             <Box mt={2}>
                                 <TokenTable tokenDatas={tokenDatas} />
                             </Box>

@@ -154,6 +154,14 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
         ]
     };
 
+    const onChartHover = (params: any) => {
+        console.log('Chart mouse trigger params:', params);
+      };
+    
+      const onEvents = {
+        mousemove: onChartHover,
+      };
+
     return (
         mainnetData.length > 1 && arbitrumData.length > 1 && polygonData.length > 1 && xAxis ?
             <ReactEcharts
@@ -161,6 +169,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 theme='my_theme'
                 style={{ height: '350px' }}
                 className={'react_for_echarts'}
+                //onEvents={onEvents}
             /> : <Grid
             container
             spacing={2}

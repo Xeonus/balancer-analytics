@@ -12,6 +12,7 @@ export default function isDev(): boolean
 
 export const YIELD_BEARING_TOKENS = [
     '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', //wstETH
+    '0x5979d7b546e38e414f7e9822514be443a4800529', //wstETH (Arb)
     '0xa13a9247ea42d743238089903570127dda72fe44', //bb-a-USD
     '0x2f4eb100552ef93840d5adc30560e5513dfffacb', //bb-a-USDT
     '0x82698aecc9e28e9bb27608bd52cf57f704bd1b83', //bb-a-USDC

@@ -1,27 +1,20 @@
 import { useState, useEffect } from 'react';
 import { BalancerSDK, PoolWithMethods } from '@balancer-labs/sdk';
-import { ALCHEMY_URL } from "../balancer/constants";
 import { PoolData } from '../balancer/balancerTypes';
-import { YIELD_BEARING_TOKENS } from '../../constants';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 
 export default function useDecoratePools(
     poolDatas: PoolData[]
 ) {
-
-
     const [loadPools, setLoadPools] = useState(Boolean);
     const [loadAprs, setLoadAprs] = useState(Boolean);
-    const [loadAll, setLoadAll] = useState(Boolean);
     const [sdkPool, setSdkPool] = useState<PoolWithMethods[]>()
     const [finalPool, setFinalPool] = useState<PoolWithMethods[]>()
     const [decoratedPools, setDecoratedPools] = useState<PoolData[]>()
     const [activeNetwork] = useActiveNetworkVersion()
 
     //Init SDK
-
-    console.log("chainId", activeNetwork.chainId)
     const sdk = new BalancerSDK({
         network: Number(activeNetwork.chainId),
         rpcUrl: activeNetwork.alchemyRPCUrl,
@@ -33,10 +26,10 @@ export default function useDecoratePools(
         const sdkPoolList = (
             await pools.where(
                 (pool) =>
-                    pool.poolType != 'Element' &&
-                        pool.poolType != 'AaveLinear' &&
-                        pool.poolType != 'LiquidityBootstrapping' &&
-                        pool.tokenAddresses ? pool.tokenAddresses?.some(element => YIELD_BEARING_TOKENS.includes(element)) : false
+                    (activeNetwork.chainId === '137' ? true : pool.poolType != 'Element') &&
+                    (activeNetwork.chainId === '137' ? true : pool.poolType != 'AaveLinear') &&
+                    (activeNetwork.chainId === '137' ? true :  pool.poolType != 'LiquidityBootstrapping' ) &&
+                    poolDatas.find(p => p.address === pool.address) !== null
             )
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
 
@@ -69,7 +62,7 @@ export default function useDecoratePools(
     const runLoadPools = async () => {
         const poolData = await fetchPools();
         //console.log('runLoadPools');
-        setLoadPools(true); //Something that is not null
+        setLoadPools(true);
         setSdkPool(poolData)
     };
 
@@ -80,7 +73,7 @@ export default function useDecoratePools(
             setFinalPool(pools)
             //console.log("runLoadAprs", pools)
         }
-        setLoadAprs(true); //Something that is not null
+        setLoadAprs(true);
     };
 
     //Trigger chained execution
@@ -92,16 +85,14 @@ export default function useDecoratePools(
     useEffect(() => {
         //if (loadPools) {
             runLoadAprs();
-            setLoadAprs(true); //Something that is not null
+            setLoadAprs(true);
         //}
     }, [loadPools, sdkPool]);
-
-
 
     //Decorate pool data
     useEffect(() => {
         if (loadAprs && loadPools) {
-        console.log("decoration", finalPool)
+        console.log("decorated pools", finalPool)
         poolDatas.forEach((pool) => {
             if (pool && finalPool) {
                 const hit = finalPool.find((el) => el?.id === pool.id)
@@ -115,10 +106,9 @@ export default function useDecoratePools(
             }
         }
         )
-        
             setDecoratedPools(poolDatas);
             //console.log("FINAL decorated pool", decoratedPools)
-            console.log("Balancer SDK: successful decoration")
+            console.log("Balancer SDK: successful pool data enrichment")
         }
     }, [finalPool]);
 

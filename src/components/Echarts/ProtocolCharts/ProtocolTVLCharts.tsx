@@ -180,12 +180,21 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
         ]
     };
 
+    const onChartHover = (params: any) => {
+        console.log('Chart mouse trigger params:', params);
+      };
+    
+      const onEvents = {
+        mousemove: onChartHover,
+      };
+
     return (
         mainnetData.length > 1 && arbitrumData.length > 1 && polygonData.length > 1 && xAxis ?
             <ReactEcharts
                 option={option}
                 style={{ height: '350px' }}
                 className={'react_for_echarts'}
+                //onEvents={onEvents}
             /> : <Grid
                 container
                 spacing={2}

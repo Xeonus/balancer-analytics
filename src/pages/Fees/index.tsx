@@ -12,7 +12,6 @@ import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
 import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
 import { formatDollarAmount } from "../../utils/numbers";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
-import PoolFeeTable from "../../components/Tables/PoolFeeTable";
 import StyledExternalLink from '../../components/StyledExternalLink';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -21,10 +20,9 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useDecoratePoolStats } from '../../data/balancer-sdk/useDecoratePoolStats';
-import PoolFeeTokenTable from '../../components/Tables/PoolFeeTokenTable';
-import { YIELD_BEARING_TOKENS } from '../../constants';
 import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
+import AggregatedPoolFeeTable from '../../components/Tables/AggregatedPoolFeeTable';
+import ProtocolFeeSankeyChart from '../../components/Echarts/ProtocolCharts/ProtocolFeeSankeyChart';
 
 export default function Fees() {
 
@@ -52,12 +50,12 @@ export default function Fees() {
     //Load pools and balances
     const pools = useBalancerPools(250, startDate, endDate);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-    const yieldPools = useDecoratePools(pools)
-    const yieldTokenPools = yieldPools ? yieldPools.filter(pool =>
-        pool.tokens.some(token => 
-            YIELD_BEARING_TOKENS.includes(token.address)
-        )
-        ) : undefined
+    const decoratedPools = useDecoratePools(pools)
+    // const yieldTokenPools = yieldPools ? yieldPools.filter(pool =>
+    //     pool.tokens.some(token => 
+    //         YIELD_BEARING_TOKENS.includes(token.address)
+    //     )
+    //     ) : undefined
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>
@@ -133,7 +131,7 @@ export default function Fees() {
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems="center">
                         <Box>
-                            <Typography variant={"h5"}>Revenue Metrics ({activeNetwork.name})</Typography>
+                            <Typography variant={"h5"}>Historical Swap Fee Revenue on ({activeNetwork.name})</Typography>
                         </Box>
                     </Box>
                 </Grid>
@@ -147,7 +145,7 @@ export default function Fees() {
                 </Grid>
                 <Grid item xs={10} >
                     <Box display="flex" alignItems="center" justifyContent="space-between" >
-                        <Typography variant="subtitle1">Protocol revenue is split 25% to the DAO and 75% to veBAL holders</Typography>
+                        <Typography variant="caption">Protocol swap fee revenue is split 25% to the DAO and 75% to veBAL holders. Token yield is split 50% to the DAO and LPs.</Typography>
                         <FormControl size="small">
                             <Select
                                 sx={{
@@ -206,13 +204,19 @@ export default function Fees() {
                             </Box> : null}
                     </Box>
                 </Grid>
+
                 <Grid item xs={10}>
-                    <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
+                    <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                 </Grid>
                 <Grid item xs={10}>
-                <Typography variant="subtitle1">Yield on yield-bearing assets is split 50% to the DAO and 50% to liquidity providers</Typography>
-                    <PoolFeeTokenTable poolDatas={yieldTokenPools} timeRange={Number(timeRange)} />
+                    <Typography variant="h5">Revenue Flows ({timeRange === '1' ? '24h' : timeRange + 'days'})</Typography>
                 </Grid>
+                {decoratedPools ?
+                    <Grid item xs={10}>
+                        <Card>
+                            <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
+                        </Card>
+                    </Grid> : null}
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems='center'>
                         <Typography variant="h5">Tokens in Fee Collector Contract</Typography>
