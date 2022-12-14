@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Typography, Grid, Box, Card, Divider } from "@mui/material";
+import { Typography, Grid, Box, Card, Divider, CircularProgress } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
@@ -52,13 +52,14 @@ export default function Fees() {
 
     //Load pools and balances
     const pools = useBalancerPools(250, startDate, endDate);
+    const pools24h = useBalancerPools(250);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-    const decoratedPools = useDecoratePools(pools)
-    const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
-        pool.tokens.some(token => 
-            YIELD_BEARING_TOKENS.includes(token.address)
-        )
-        ) : undefined
+    const decoratedPools = useDecoratePools(pools24h)
+    // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
+    //     pool.tokens.some(token => 
+    //         YIELD_BEARING_TOKENS.includes(token.address)
+    //     )
+    //     ) : undefined
 
     
 
@@ -150,11 +151,11 @@ export default function Fees() {
                     </Card>
                 </Grid>
                 <Grid mt={2} item xs={10}>
-                    <Typography variant="h5">Pool & Token contributions to protocol revenue</Typography>
+                    <Typography variant="h5">Historical Pool Contributions to Protocol Revenue</Typography>
                 </Grid>
                 <Grid item xs={10} >
                     <Box display="flex" alignItems="center" justifyContent="space-between" >
-                        <Typography variant="caption">Protocol swap fee revenue is split 25% to the DAO and 75% to veBAL holders. Token yield is streamed to the fee collector.</Typography>
+                        <Typography variant="caption">Historical contributions from earned swap fees based on the chosen time range</Typography>
                         <FormControl size="small">
                             <Select
                                 sx={{
@@ -211,25 +212,27 @@ export default function Fees() {
                             </Box> : null}
                     </Box>
                 </Grid>
-
-                <Grid item xs={10}>
-                    <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
-                </Grid>
                  <Grid item xs={10}>
                     <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
                 </Grid> 
                 <Grid item xs={10}>
-                    <PoolFeeTokenTable poolDatas={yieldTokenPools} timeRange={Number(timeRange)} />
-                </Grid> 
-                <Grid item xs={10}>
-                    <Typography variant="h5">Revenue Flows ({timeRange === '1' ? '24h' : timeRange + 'days'})</Typography>
+                    <Box alignItems='left'>
+                    <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
+                    <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
+                    </Box>
                 </Grid>
                 {decoratedPools ?
                     <Grid item xs={10}>
                         <Card>
                             <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                         </Card>
-                    </Grid> : null}
+                    </Grid> : <CircularProgress size={'small'}/>}
+                <Grid mt={2} item xs={10}>
+                    <Typography variant="h6">Projected Pool Revenue Performance to the DAO</Typography>
+                </Grid>
+                <Grid item xs={10}>
+                    <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
+                </Grid>
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems='center'>
                         <Typography variant="h5">Tokens in Fee Collector Contract</Typography>
@@ -237,6 +240,7 @@ export default function Fees() {
                             <StyledExternalLink address={FEE_COLLECTOR_ADDRESS} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
                     </Box>
+                    <Typography variant="caption">Collected tokens will be distributed to veBAL holders, bribes and the DAO</Typography>
                 </Grid>
                 <Grid item xs={10}>
                     <Typography variant="subtitle1">Tokens to be collected: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>

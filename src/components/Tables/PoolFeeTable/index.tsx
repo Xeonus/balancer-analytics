@@ -190,7 +190,7 @@ export default function PoolFeeTable({
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+  const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();

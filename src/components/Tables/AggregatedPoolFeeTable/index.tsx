@@ -141,7 +141,7 @@ const headCells: readonly HeadCell[] = [
         id: 'contribution',
         numeric: true,
         disablePadding: false,
-        label: 'Revenue Contribution',
+        label: 'Contribution %',
     },
 ];
 
@@ -200,7 +200,7 @@ export default function AggregatedPoolFeeTable({
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
+    const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
@@ -224,7 +224,7 @@ export default function AggregatedPoolFeeTable({
 
     //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
-    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.25 + el.feesEpochUSD * 0.25, 0) * time
+    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.25 + el.feesEpochUSD * 0.25, 0) * time * 0.5
 
     //Helper function to calculate daily token yield
     function calculateTokenYieldInUsd(poolData: PoolData) {
@@ -233,7 +233,7 @@ export default function AggregatedPoolFeeTable({
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365 * time
+                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
                     yearlyYield += tokenYield
                 }
             }
@@ -249,10 +249,10 @@ export default function AggregatedPoolFeeTable({
             getShortPoolName(el),
             el.tokens,
             el,
-            el.feesEpochUSD  * 0.5 * 0.25,
-            el.feesEpochUSD  * 0.25 + calculateTokenYieldInUsd(el) * 0.5,
-            calculateTokenYieldInUsd(el),
-            100 / totalRevenue * (el.feesEpochUSD * time * 0.25 + calculateTokenYieldInUsd(el) * 0.5 * 0.25) * time)
+            el.feesEpochUSD * time  * 0.5 * 0.25,
+            el.feesEpochUSD  * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el) * time * 0.5 * 0.25,
+            calculateTokenYieldInUsd(el) * time * 0.5 * 0.25 ,
+            100 / totalRevenue * (el.feesEpochUSD * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el) * time * 0.5 * 0.25))
     )
 
     const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
