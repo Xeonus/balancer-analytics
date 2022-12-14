@@ -2,7 +2,13 @@
 import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
-import { BALANCER_PRIMARY_COLOR, BALANCER_SECONDARY_COLOR, PERSONAL_GRAPH_KEY } from '../data/balancer/constants';
+import {
+  ALCHEMY_KEY,
+  ALCHEMY_KEY_ARBITRUM, ALCHEMY_KEY_POLYGON, 
+  ALCHEMY_URL, ALCHEMY_URL_ARBITRUM, ALCHEMY_URL_POLYGON, 
+  BALANCER_PRIMARY_COLOR,
+  BALANCER_SECONDARY_COLOR, PERSONAL_GRAPH_KEY
+} from '../data/balancer/constants';
 
 export enum SupportedNetwork {
   ETHEREUM,
@@ -17,6 +23,8 @@ export type NetworkInfo = {
   debankId: string
   feeCollectorThreshold: number
   decentralicedClientUri: string
+  alchemyRPCUrl: string
+  alchemyKey: string
   route: string
   name: string
   startTimeStamp: number
@@ -30,21 +38,23 @@ export type NetworkInfo = {
 }
 
 export const EthereumNetworkInfo: NetworkInfo = {
-    id: SupportedNetwork.ETHEREUM,
-    chainId: '1',
-    coingeckoId: 'ethereum',
-    debankId: 'eth',
-    feeCollectorThreshold: 10000,
-    route: '',
-    name: 'Ethereum',
-    startTimeStamp: 1619874000,
-    appUri: 'https://app.balancer.fi/#/',
-    clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
-    decentralicedClientUri: 'https://gateway.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/GAWNgiGrA9eRce5gha9tWc7q5DPvN3fs5rSJ6tEULFNM',
-    bgColor: BALANCER_PRIMARY_COLOR,
-    primaryColor: BALANCER_PRIMARY_COLOR,
-    secondaryColor: BALANCER_SECONDARY_COLOR,
-    imageURL: ETHEREUM_LOGO_URL,
+  id: SupportedNetwork.ETHEREUM,
+  chainId: '1',
+  coingeckoId: 'ethereum',
+  debankId: 'eth',
+  feeCollectorThreshold: 10000,
+  route: '',
+  name: 'Ethereum',
+  startTimeStamp: 1619874000,
+  appUri: 'https://app.balancer.fi/#/',
+  clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
+  decentralicedClientUri: 'https://gateway.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/GAWNgiGrA9eRce5gha9tWc7q5DPvN3fs5rSJ6tEULFNM',
+  alchemyRPCUrl: ALCHEMY_URL,
+  alchemyKey: ALCHEMY_KEY,
+  bgColor: BALANCER_PRIMARY_COLOR,
+  primaryColor: BALANCER_PRIMARY_COLOR,
+  secondaryColor: BALANCER_SECONDARY_COLOR,
+  imageURL: ETHEREUM_LOGO_URL,
 }
 
 export const ArbitrumNetworkInfo: NetworkInfo = {
@@ -59,6 +69,8 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/arbitrum/',
   clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2',
   decentralicedClientUri: '',
+  alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
+  alchemyKey: ALCHEMY_KEY_ARBITRUM,
   imageURL: ARBITRUM_LOGO_URL,
   bgColor: '#0A294B',
   primaryColor: '#0490ED',
@@ -78,6 +90,8 @@ export const PolygonNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/polygon/',
   clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
   decentralicedClientUri: '',
+  alchemyRPCUrl: ALCHEMY_URL_POLYGON,
+  alchemyKey: ALCHEMY_KEY_POLYGON,
   bgColor: '#8247e5',
   primaryColor: '#8247e5',
   secondaryColor: '#FB7876',

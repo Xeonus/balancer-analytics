@@ -49,21 +49,15 @@ export default function Fees() {
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
 
-
+    //Load pools and balances
     const pools = useBalancerPools(250, startDate, endDate);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-
-    //TODO: Decorate pools with APRs, might migrate to usePools function?
-    //Also fix so that it does propagate promises, as well as return the decorated object?
-    //const deco = useDecoratePoolStats(pools);
-    const yoloPools = useDecoratePools(pools)
-    //console.log("yoloPools", yoloPools)
-    const yieldTokenPools = yoloPools ? yoloPools.filter(pool =>
+    const yieldPools = useDecoratePools(pools)
+    const yieldTokenPools = yieldPools ? yieldPools.filter(pool =>
         pool.tokens.some(token => 
             YIELD_BEARING_TOKENS.includes(token.address)
         )
         ) : undefined
-
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>

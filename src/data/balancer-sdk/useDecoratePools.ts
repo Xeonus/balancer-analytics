@@ -20,9 +20,11 @@ export default function useDecoratePools(
     const [activeNetwork] = useActiveNetworkVersion()
 
     //Init SDK
+
+    console.log("chainId", activeNetwork.chainId)
     const sdk = new BalancerSDK({
         network: Number(activeNetwork.chainId),
-        rpcUrl: activeNetwork.chainId === '1' ? `${ALCHEMY_URL}` : `${ALCHEMY_URL?.replace('eth-mainnet', 'polygon-mainnet.g')}`,
+        rpcUrl: activeNetwork.alchemyRPCUrl,
     });
 
     const { pools } = sdk;
@@ -39,7 +41,7 @@ export default function useDecoratePools(
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
 
         const poolList = await Promise.all(sdkPoolList)
-        console.log("poolList loaded:", poolList)
+        //console.log("fetchPools:", poolList)
         return poolList
     }
 
@@ -58,7 +60,7 @@ export default function useDecoratePools(
             });
             const finalPools = await Promise.all(promises)
             finalPools.map(pool => pool ? decoratedPools.push(pool) : null)
-            console.log("finalpools", decoratedPools)
+            //console.log("fetchAprData", decoratedPools)
             return decoratedPools
         }
     }
@@ -66,7 +68,7 @@ export default function useDecoratePools(
     //Load Pools
     const runLoadPools = async () => {
         const poolData = await fetchPools();
-        console.log('runLoadPools');
+        //console.log('runLoadPools');
         setLoadPools(true); //Something that is not null
         setSdkPool(poolData)
     };
@@ -76,7 +78,7 @@ export default function useDecoratePools(
         const pools = await fetchAprData(sdkPool);
         if (pools) {
             setFinalPool(pools)
-            console.log("final decorated sdk pools", pools)
+            //console.log("runLoadAprs", pools)
         }
         setLoadAprs(true); //Something that is not null
     };
@@ -88,17 +90,18 @@ export default function useDecoratePools(
     }, []);
 
     useEffect(() => {
-        if (loadPools) {
+        //if (loadPools) {
             runLoadAprs();
             setLoadAprs(true); //Something that is not null
-        }
-    }, [loadPools]);
+        //}
+    }, [loadPools, sdkPool]);
 
 
 
     //Decorate pool data
     useEffect(() => {
-        console.log("finalPool passed", finalPool)
+        if (loadAprs && loadPools) {
+        console.log("decoration", finalPool)
         poolDatas.forEach((pool) => {
             if (pool && finalPool) {
                 const hit = finalPool.find((el) => el?.id === pool.id)
@@ -112,9 +115,10 @@ export default function useDecoratePools(
             }
         }
         )
-        if (loadAprs && loadPools) {
+        
             setDecoratedPools(poolDatas);
-            console.log("FINAL decorated pool", decoratedPools)
+            //console.log("FINAL decorated pool", decoratedPools)
+            console.log("Balancer SDK: successful decoration")
         }
     }, [finalPool]);
 

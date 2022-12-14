@@ -27,14 +27,12 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
-import SwapFee from '../../SwapFee'
 
 
 interface Data {
   name: string;
   poolTokens: PoolTokenData[];
   poolData: PoolData;
-  swapFee: number;
   poolRevenue: number;
   protocolRevenue: number;
   contribution: number;
@@ -44,7 +42,6 @@ function createData(
   name: string,
   poolTokens: PoolTokenData[],
   poolData: PoolData,
-  swapFee: number,
   poolRevenue: number,
   protocolRevenue: number,
   contribution: number,
@@ -53,7 +50,6 @@ function createData(
     name,
     poolTokens,
     poolData,
-    swapFee,
     poolRevenue,
     protocolRevenue,
     contribution,
@@ -118,12 +114,6 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: 'Pool Composition',
-  },
-  {
-    id: 'swapFee',
-    numeric: false,
-    disablePadding: false,
-    label: 'Swap Fee',
   },
   {
     id: 'poolRevenue',
@@ -226,7 +216,7 @@ export default function PoolFeeTable({
 
   //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
+    createData(getShortPoolName(el), el.tokens, el, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
   )
 
   const handleRequestSort = (
@@ -302,9 +292,6 @@ export default function PoolFeeTable({
                         scope="row"
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
-                      </TableCell>
-                      <TableCell align="right">
-                        <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">
                         {row.poolRevenue > 0 ?

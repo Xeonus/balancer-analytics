@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -16,7 +17,7 @@ import { visuallyHidden } from '@mui/utils';
 import { PoolData, PoolTokenData } from '../../../data/balancer/balancerTypes';
 import { getShortPoolName } from '../../../utils/getShortPoolName';
 import { CircularProgress } from '@mui/material';
-import { formatAmount, formatDollarAmount } from '../../../utils/numbers';
+import { formatDollarAmount } from '../../../utils/numbers';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
 import { POOL_HIDE, YIELD_BEARING_TOKENS } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
@@ -34,32 +35,26 @@ interface Data {
   name: string;
   poolTokens: PoolTokenData[];
   poolData: PoolData;
-  swapFee: number;
   poolRevenue: number;
   protocolRevenue: number;
   dailyTokenYield: number;
-  contribution: number;
 }
 
 function createData(
   name: string,
   poolTokens: PoolTokenData[],
   poolData: PoolData,
-  swapFee: number,
   poolRevenue: number,
   protocolRevenue: number,
   dailyTokenYield: number,
-  contribution: number,
 ): Data {
   return {
     name,
     poolTokens,
     poolData,
-    swapFee,
     poolRevenue,
     protocolRevenue,
     dailyTokenYield,
-    contribution,
   };
 }
 
@@ -123,16 +118,10 @@ const headCells: readonly HeadCell[] = [
     label: 'Pool Composition',
   },
   {
-    id: 'swapFee',
-    numeric: false,
-    disablePadding: false,
-    label: 'Swap Fee',
-  },
-  {
     id: 'poolRevenue',
     numeric: true,
     disablePadding: false,
-    label: 'Token Revenue',
+    label: 'Pool Revenue',
   },
   {
     id: 'protocolRevenue',
@@ -144,13 +133,7 @@ const headCells: readonly HeadCell[] = [
     id: 'dailyTokenYield',
     numeric: true,
     disablePadding: false,
-    label: 'Daily Yield',
-  },
-  {
-    id: 'contribution',
-    numeric: true,
-    disablePadding: false,
-    label: 'Contribution %',
+    label: 'Yield (24h)',
   },
 ];
 
@@ -207,7 +190,7 @@ export default function PoolFeeTokenTable({
   timeRange?: number
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('dailyTokenYield');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -230,17 +213,22 @@ export default function PoolFeeTokenTable({
 
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
+  //TODO: bugfix propagation / no useeffect allowed here
   //Calculate TVL to obtain relative ratio
-  const totalFees = filteredPoolDatas.reduce((acc, el) => acc + calculateDailyTokenYield(el), 0)
+  //const totalFees = filteredPoolDatas.reduce((acc, el) => acc + calculateDailyTokenYield(el), 0)
 
   //Helper function to calculate daily token yield
-  function calculateDailyTokenYield(poolData: PoolData) {
+  function calculateTokenYieldInUsd(poolData: PoolData, isTimed = false) {
     let yearlyYield = 0
     if (poolData.aprSet) {
       poolData.tokens.forEach((token) => {
         let tokenYield = 0
         if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-          tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365 * time
+            if (isTimed) {
+                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365 * time
+            } else {
+                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
+            }
           yearlyYield += tokenYield
         }
       }
@@ -251,7 +239,7 @@ export default function PoolFeeTokenTable({
 
   //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(getShortPoolName(el), el.tokens, el, el.swapFee, calculateDailyTokenYield(el), calculateDailyTokenYield(el) * 0.5, calculateDailyTokenYield(el), 100 / totalFees * el.feesEpochUSD)
+    createData(getShortPoolName(el), el.tokens, el, calculateTokenYieldInUsd(el, true), calculateTokenYieldInUsd(el, true) * 0.5, calculateTokenYieldInUsd(el))
   )
 
   const handleRequestSort = (
@@ -329,9 +317,6 @@ export default function PoolFeeTokenTable({
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
                       <TableCell align="right">
-                        <SwapFee swapFee={row.swapFee} size={35} />
-                      </TableCell>
-                      <TableCell align="right">
                         {row.poolRevenue > 0 ?
                           formatDollarAmount(row.poolRevenue) :
                           <CircularProgress size={'20px'} />
@@ -351,12 +336,7 @@ export default function PoolFeeTokenTable({
                          : '-'
                         }
                       </TableCell>
-                      <TableCell align="right">
-                        {row.contribution > 0 ?
-                          formatAmount(row.contribution) + '%' :
-                          <CircularProgress size={'20px'} />
-                        }
-                      </TableCell>
+                     
                     </TableRow>
                   );
                 })}
