@@ -23,6 +23,9 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
 import AggregatedPoolFeeTable from '../../components/Tables/AggregatedPoolFeeTable';
 import ProtocolFeeSankeyChart from '../../components/Echarts/ProtocolCharts/ProtocolFeeSankeyChart';
+import PoolFeeTokenTable from '../../components/Tables/PoolFeeTokenTable';
+import PoolFeeTable from '../../components/Tables/PoolFeeTable';
+import { YIELD_BEARING_TOKENS } from '../../constants';
 
 export default function Fees() {
 
@@ -51,11 +54,17 @@ export default function Fees() {
     const pools = useBalancerPools(250, startDate, endDate);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
     const decoratedPools = useDecoratePools(pools)
-    // const yieldTokenPools = yieldPools ? yieldPools.filter(pool =>
-    //     pool.tokens.some(token => 
-    //         YIELD_BEARING_TOKENS.includes(token.address)
-    //     )
-    //     ) : undefined
+    const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
+        pool.tokens.some(token => 
+            YIELD_BEARING_TOKENS.includes(token.address)
+        )
+        ) : undefined
+
+    
+
+    //Problem statement: We should distinguish between views of real realized fees -> make a swap fee analysis view that shows the "real" swap fees earned
+    //Create an additional aggregated table that ESTIMATES / Makes a forecast on potential fees and its distributions from TODAYS fees!
+    //Therefore load pools 2 times, once with custom time range and once for 24h range to make 2 views!
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>
@@ -145,7 +154,7 @@ export default function Fees() {
                 </Grid>
                 <Grid item xs={10} >
                     <Box display="flex" alignItems="center" justifyContent="space-between" >
-                        <Typography variant="caption">Protocol swap fee revenue is split 25% to the DAO and 75% to veBAL holders. Token yield is split 50% to the DAO and LPs.</Typography>
+                        <Typography variant="caption">Protocol swap fee revenue is split 25% to the DAO and 75% to veBAL holders. Token yield is streamed to the fee collector.</Typography>
                         <FormControl size="small">
                             <Select
                                 sx={{
@@ -173,8 +182,6 @@ export default function Fees() {
                                 <MenuItem value={'90'}>90 days</MenuItem>
                                 <MenuItem value={'180'}>180 days</MenuItem>
                                 <MenuItem value={'365'}>365 days</MenuItem>
-                                <MenuItem value={'0'}>All time</MenuItem>
-                                <MenuItem value={'1000'}> Custom </MenuItem>
                             </Select>
                         </FormControl>
 
@@ -208,6 +215,12 @@ export default function Fees() {
                 <Grid item xs={10}>
                     <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                 </Grid>
+                 <Grid item xs={10}>
+                    <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
+                </Grid> 
+                <Grid item xs={10}>
+                    <PoolFeeTokenTable poolDatas={yieldTokenPools} timeRange={Number(timeRange)} />
+                </Grid> 
                 <Grid item xs={10}>
                     <Typography variant="h5">Revenue Flows ({timeRange === '1' ? '24h' : timeRange + 'days'})</Typography>
                 </Grid>

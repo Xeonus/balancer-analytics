@@ -123,7 +123,7 @@ const headCells: readonly HeadCell[] = [
         id: 'poolRevenue',
         numeric: true,
         disablePadding: false,
-        label: 'Swap Fee Revenue',
+        label: 'Protocol Swap Fee Revenue',
     },
     {
         id: 'tokenRevenue',
@@ -249,10 +249,10 @@ export default function AggregatedPoolFeeTable({
             getShortPoolName(el),
             el.tokens,
             el,
-            el.feesEpochUSD + calculateTokenYieldInUsd(el),
-            el.feesEpochUSD * 0.25 + calculateTokenYieldInUsd(el) * 0.5,
+            el.feesEpochUSD  * 0.5 * 0.25,
+            el.feesEpochUSD  * 0.25 + calculateTokenYieldInUsd(el) * 0.5,
             calculateTokenYieldInUsd(el),
-            100 / totalRevenue * (el.feesEpochUSD * 0.25 + calculateTokenYieldInUsd(el) * 0.5 * 0.25) * time)
+            100 / totalRevenue * (el.feesEpochUSD * time * 0.25 + calculateTokenYieldInUsd(el) * 0.5 * 0.25) * time)
     )
 
     const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
