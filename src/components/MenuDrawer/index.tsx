@@ -122,7 +122,7 @@ const MenuDrawer = ({
             </List>
             <Divider />
             <List>
-                <ListItem key={'DAO Treasury'} disablePadding>
+                <ListItem button key={'DAO Treasury'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'} >
                     <ListItemButton>
                         <ListItemIcon>
                             <AccountBalanceWalletIcon />
@@ -130,7 +130,7 @@ const MenuDrawer = ({
                         <ListItemText primary={'DAO Treasury'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key={'Service Providers'} disablePadding>
+                <ListItem button key={'Service Providers'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'serviceProviders'}>
                     <ListItemButton>
                         <ListItemIcon>
                             <HandshakeIcon />

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import { Typography, Grid, Box, Card, Divider, CircularProgress } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
@@ -23,9 +22,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
 import AggregatedPoolFeeTable from '../../components/Tables/AggregatedPoolFeeTable';
 import ProtocolFeeSankeyChart from '../../components/Echarts/ProtocolCharts/ProtocolFeeSankeyChart';
-import PoolFeeTokenTable from '../../components/Tables/PoolFeeTokenTable';
 import PoolFeeTable from '../../components/Tables/PoolFeeTable';
-import { YIELD_BEARING_TOKENS } from '../../constants';
 
 export default function Fees() {
 
@@ -35,7 +32,6 @@ export default function Fees() {
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
-
 
     //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
     const today = new Date();

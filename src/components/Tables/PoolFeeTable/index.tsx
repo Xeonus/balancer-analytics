@@ -18,7 +18,7 @@ import { getShortPoolName } from '../../../utils/getShortPoolName';
 import { CircularProgress } from '@mui/material';
 import { formatAmount, formatDollarAmount } from '../../../utils/numbers';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
-import { POOL_HIDE, YIELD_BEARING_TOKENS } from '../../../constants/index'
+import { POOL_HIDE } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'

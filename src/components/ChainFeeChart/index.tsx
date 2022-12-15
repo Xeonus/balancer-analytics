@@ -18,7 +18,6 @@ interface ChanFeeChartProps {
 
 export default function ChainFeeChart({feesData }: ChanFeeChartProps) {
 
-    const [value, setValue] = React.useState(0);
     const [startDate, setStartDate] = React.useState(dayjs().subtract(7, 'day').valueOf());
     const [startIndex, setStartIndex] = React.useState(0);
     const [endIndex, setEndIndex] = React.useState(0);
@@ -54,11 +53,6 @@ export default function ChainFeeChart({feesData }: ChanFeeChartProps) {
         } else {
             setShowDate(false);
         }
-    };
-
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-
     };
 
     const handleStartDateChange = (value: number | null, keyboardInputValue?: string | undefined) => {

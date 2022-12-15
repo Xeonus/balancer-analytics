@@ -4,18 +4,15 @@ import isDev from '../../constants';
 import { DB_KEY } from '../balancer/constants';
 import { Portfolio } from './debankTypes';
 import debankPortfolio from '../mocks/debank-complexPortfolio.json'
-import { useActiveNetworkVersion } from '../../state/application/hooks';
 
-export const useGetPortfolio = (walletId: string) => {
+export const useGetPortfolioAllChains = (walletId: string) => {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
 
-  const [activeNetwork] = useActiveNetworkVersion();
-
   useEffect(() => {
-    async function fetchTotalPortfolio() {
+    async function fetchTotalBalance() {
       try {
         const response = await axios.get(
-          `https://pro-openapi.debank.com/v1/user/complex_protocol_list?id=${walletId}&chain_id=${activeNetwork.debankId}`,
+          `https://pro-openapi.debank.com/v1/user/all_complex_protocol_list?id=${walletId}&chain_ids=eth,matic,arb`,
           {
             headers: {
               'AccessKey': DB_KEY,
@@ -30,12 +27,12 @@ export const useGetPortfolio = (walletId: string) => {
       }
     }
     if (isDev()) {
-      console.log("DEV: loading PORTFOLIO mock")
+      console.log("DEV: loading PORTFOLIO ALL CHAINS mock")
       const copy = JSON.parse(JSON.stringify(debankPortfolio));
       setPortfolio(copy)
     } else {
-      console.log("PRODUCTION: fetching portfolio from Debank")
-      fetchTotalPortfolio();
+      console.log("PRODUCTION: fetching data from Debank")
+      fetchTotalBalance();
     }
   }, [walletId]);
 

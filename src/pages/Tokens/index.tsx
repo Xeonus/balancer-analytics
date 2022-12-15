@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Typography, Stack, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useBalancerTokens } from '../../data/balancer/useTokens';
 import TokenTable from '../../components/Tables/TokenTable';
 import { Grid } from '@mui/material';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
-import CoinCard from '../../components/Cards/CoinCard';
-import { TokenData } from '../../data/balancer/balancerTypes';
 
 
 export default function Tokens() {

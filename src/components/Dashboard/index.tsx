@@ -26,6 +26,8 @@ import Tokens from '../../pages/Tokens';
 import TokenPage from '../../pages/Token/TokenPage';
 import Fees from '../../pages/Fees';
 import { networkPrefix } from '../../utils/networkPrefix'
+import Treasury from '../../pages/Treasury';
+import ServiceProviders from '../../pages/ServiceProviders';
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -211,7 +213,10 @@ function Dashboard() {
                             <Route path={"/tokens/:address"} element={<TokenPage />} />
                             <Route path={"/:networkID/fees"} element={<Fees />} />
                             <Route path={"/fees"} element={<Fees />} />
-                            
+                            <Route path={"/:networkID/treasury"} element={<Treasury />} />
+                            <Route path={"/treasury"} element={<Treasury />} />
+                            <Route path={"/:networkID/serviceProviders"} element={<ServiceProviders />} />
+                            <Route path={"/serviceProviders"} element={<ServiceProviders />} />    
                         </Routes>
                     </MainContent>
                 </Box>

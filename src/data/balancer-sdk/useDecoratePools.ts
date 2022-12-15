@@ -22,13 +22,14 @@ export default function useDecoratePools(
 
     const { pools } = sdk;
 
+    //TODO: remove / refactor chain logic
     const fetchPools = async () => {
         const sdkPoolList = (
             await pools.where(
                 (pool) =>
-                    (activeNetwork.chainId === '137' ? true : pool.poolType != 'Element') &&
-                    (activeNetwork.chainId === '137' ? true : pool.poolType != 'AaveLinear') &&
-                    (activeNetwork.chainId === '137' ? true :  pool.poolType != 'LiquidityBootstrapping' ) &&
+                    (activeNetwork.chainId === '137' ? true : pool.poolType !== 'Element') &&
+                    (activeNetwork.chainId === '137' ? true : pool.poolType !== 'AaveLinear') &&
+                    (activeNetwork.chainId === '137' ? true :  pool.poolType !== 'LiquidityBootstrapping' ) &&
                     poolDatas.find(p => p.address === pool.address) !== null
             )
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
