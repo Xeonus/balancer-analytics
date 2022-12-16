@@ -13,6 +13,7 @@ import StyledExternalLink from '../../components/StyledExternalLink';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
+import LiquidityPosition from '../../components/LiquidityPosition';
 
 export default function Treasury() {
 
@@ -21,7 +22,7 @@ export default function Treasury() {
     //Data
     const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
 
-    
+
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -44,14 +45,19 @@ export default function Treasury() {
     const [activeNetwork] = useActiveNetworkVersion()
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
-    const {totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
+    const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
+
+    console.log("portfolio", portfolio)
 
     //Obtain wallet total worth and USDC
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+    let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
+    netWorth += walletTokenNetworth;
     const usdcReserves = totalBalances ? totalBalances.find(el => {
-        if (el.symbol === 'USDC'){
-            return el}
-        })?.amount : 0;
+        if (el.symbol === 'USDC') {
+            return el
+        }
+    })?.amount : 0;
     console.log("walletTokenNetworth", walletTokenNetworth);
     console.log("usdcReserves", usdcReserves)
 
@@ -90,6 +96,13 @@ export default function Treasury() {
                             />
                             : <CircularProgress />}
                         <MetricsCard
+                            mainMetric={netWorth}
+                            mainMetricInUSD={true}
+                            metricName='Net Worth'
+                            mainMetricChange={0}
+                            MetricIcon={WalletIcon}
+                        />
+                        <MetricsCard
                             mainMetric={walletTokenNetworth}
                             mainMetricInUSD={true}
                             metricName='Tokens in Wallet'
@@ -114,9 +127,19 @@ export default function Treasury() {
                     </Box>
                 </Grid>
                 {totalBalances ?
-                <Grid item xs={10}>
-                            <FeeCollectorTokenTable tokenBalances={totalBalances} />
-                </Grid> : null }
+                    <Grid item xs={10}>
+                        <FeeCollectorTokenTable tokenBalances={totalBalances} />
+                        <Grid mt={2} item xs={10}>
+                            <Typography variant="h5">Liquidity Provisions</Typography>
+                        </Grid>
+                    </Grid> : null}
+                {portfolio ?
+                    portfolio.map(pos =>
+                        <Grid item xs={10}>
+                            <LiquidityPosition position={pos} />
+                        </Grid>
+                    )
+                    : undefined}
             </Grid>
         </Box>
     );

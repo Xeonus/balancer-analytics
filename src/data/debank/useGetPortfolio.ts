@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import isDev from '../../constants';
 import { DB_KEY } from '../balancer/constants';
 import { Portfolio } from './debankTypes';
-import debankPortfolio from '../mocks/debank-complexPortfolio.json'
+import debankPortfolio from '../mocks/debank-complexPortfolioChain.json'
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 export const useGetPortfolio = (walletId: string) => {
