@@ -5,7 +5,7 @@ import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 
 export default function useDecoratePools(
-    poolDatas: PoolData[]
+    poolDatas: PoolData[] | undefined
 ) {
     const [loadPools, setLoadPools] = useState(Boolean);
     const [loadAprs, setLoadAprs] = useState(Boolean);
@@ -30,7 +30,7 @@ export default function useDecoratePools(
                     (activeNetwork.chainId === '137' ? true : pool.poolType !== 'Element') &&
                     (activeNetwork.chainId === '137' ? true : pool.poolType !== 'AaveLinear') &&
                     (activeNetwork.chainId === '137' ? true :  pool.poolType !== 'LiquidityBootstrapping' ) &&
-                    poolDatas.find(p => p.address === pool.address) !== null
+                    poolDatas?.find(p => p.id === pool.id) !== null
             )
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
 
@@ -79,9 +79,12 @@ export default function useDecoratePools(
 
     //Trigger chained execution
     useEffect(() => {
+        if (poolDatas && poolDatas?.length > 1) {
+            console.log("trigger useeffect")
         runLoadPools();
         setLoadPools(true)
-    }, []);
+        }
+    }, [poolDatas?.length]);
 
     useEffect(() => {
         //if (loadPools) {
@@ -92,7 +95,7 @@ export default function useDecoratePools(
 
     //Decorate pool data
     useEffect(() => {
-        if (loadAprs && loadPools) {
+        if (loadAprs && loadPools && poolDatas) {
         console.log("decorated pools", finalPool)
         poolDatas.forEach((pool) => {
             if (pool && finalPool) {

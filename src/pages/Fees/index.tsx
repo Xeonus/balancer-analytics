@@ -49,8 +49,9 @@ export default function Fees() {
     //Load pools and balances
     const pools = useBalancerPools(250, startDate, endDate);
     const pools24h = useBalancerPools(250);
+    console.log("pools24h", pools24h)
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-    const decoratedPools = useDecoratePools(pools24h)
+    const decoratedPools = useDecoratePools(pools24h ? pools24h : undefined)
     // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
     //     pool.tokens.some(token => 
     //         YIELD_BEARING_TOKENS.includes(token.address)

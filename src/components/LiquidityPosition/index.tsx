@@ -33,18 +33,18 @@ export default function LiquidityPosition({position} : LiquidityPositionProps) {
                 <Box display="flex" alignItems={"center"} >
                     <Avatar
                         sx={{
-                            height: '30px',
-                            width: '30px',
+                            height: '25px',
+                            width: '25px',
                             backgroundColor: theme.palette.mode === 'dark' ? 'white' : 'rgb(226, 232, 240)',
                             color: theme.palette.mode === 'dark' ? 'white' : 'black',
                             fontSize: '15px',
                         }}
                         src={position.logo_url} />
                         <Box ml={1}>
-                            <Typography variant="h6">{position.name}</Typography>
+                            <Typography variant="body1">{position.name}</Typography>
                     </Box>
                 </Box>
-                <Typography variant="h6">{formatDollarAmount(getPostionUsdValue(position.portfolio_item_list))}</Typography>
+                <Typography variant="body1">{formatDollarAmount(getPostionUsdValue(position.portfolio_item_list))}</Typography>
             </Box>  
             </Grid> : undefined }
             <Grid item >
