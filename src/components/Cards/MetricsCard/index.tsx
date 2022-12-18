@@ -10,7 +10,7 @@ export type CoinCardProps = {
   mainMetric: number,
   mainMetricInUSD: boolean,
   mainMetricUnit? : string,
-  mainMetricChange: number,
+  mainMetricChange?: number,
   metricName: string,
   MetricIcon: OverridableComponent<SvgIconTypeMap<{}, "svg">>
 }
@@ -29,7 +29,8 @@ const MetricsCard = ({
     <Card
     sx={{
       maxWidth: '275px',
-      minWidth: '250px'
+      minWidth: '250px',
+      maxHeight: '150px'
     }}
     >
       <CardContent>
@@ -63,10 +64,11 @@ const MetricsCard = ({
             alignItems: 'center'
           }}
         >
-          {mainMetricChange > 0 ? 
+          {mainMetricChange && mainMetricChange > 0 ? 
             <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} /> 
             : 
-            <ArrowDownwardIcon fontSize="small" color="error" />}
+            mainMetricChange ? <ArrowDownwardIcon fontSize="small" color="error" /> : null}
+            {mainMetricChange ?
           <Typography
             color={mainMetricChange > 0 ? 'green' : 'error'}
             sx={{
@@ -75,13 +77,14 @@ const MetricsCard = ({
             variant="body2"
           >
             {Number(mainMetricChange).toFixed(2)} %
-          </Typography>
+          </Typography> : null }
+          {mainMetricChange ? 
           <Typography
             color="textSecondary"
             variant="caption"
           >
             (24h)
-          </Typography>
+          </Typography> : null }
         </Box>
       </CardContent>
     </Card>

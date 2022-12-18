@@ -80,7 +80,7 @@ today.setUTCHours(0,0,0,0);
 const startTimestamp = Math.floor(today.getTime() / 1000)
 
 const weekAgo = new Date();
-weekAgo.setDate(today.getDate() - 7);
+weekAgo.setDate(today.getDate() - 1);
 weekAgo.setUTCHours(0,0,0,0);
 const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
 
@@ -92,6 +92,7 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
     const [block24] = blocks ?? [];
     const [getPoolData, { data }] = useGetPoolDataLazyQuery();
     const feeData = useBalancerSwapFeePoolData(startunixTime, endunixTime);
+
 
     useEffect(() => {
         if (block24) {

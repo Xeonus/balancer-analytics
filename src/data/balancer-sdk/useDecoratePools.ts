@@ -80,7 +80,7 @@ export default function useDecoratePools(
     //Trigger chained execution
     useEffect(() => {
         if (poolDatas && poolDatas?.length > 1) {
-            console.log("trigger useeffect")
+            //console.log("trigger useeffect")
         runLoadPools();
         setLoadPools(true)
         }
@@ -96,7 +96,7 @@ export default function useDecoratePools(
     //Decorate pool data
     useEffect(() => {
         if (loadAprs && loadPools && poolDatas) {
-        console.log("decorated pools", finalPool)
+        //console.log("decorated pools", finalPool)
         poolDatas.forEach((pool) => {
             if (pool && finalPool) {
                 const hit = finalPool.find((el) => el?.id === pool.id)

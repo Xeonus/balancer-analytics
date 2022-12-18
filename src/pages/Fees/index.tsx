@@ -28,7 +28,7 @@ export default function Fees() {
 
     //Time range selector States
     const [showDate, setShowDate] = React.useState(false);
-    const [timeRange, setTimeRange] = React.useState('1');
+    const [timeRange, setTimeRange] = React.useState('7');
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerProtocolData()
@@ -48,10 +48,9 @@ export default function Fees() {
 
     //Load pools and balances
     const pools = useBalancerPools(250, startDate, endDate);
-    const pools24h = useBalancerPools(250);
-    console.log("pools24h", pools24h)
+    const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-    const decoratedPools = useDecoratePools(pools24h ? pools24h : undefined)
+    const decoratedPools = useDecoratePools(yieldPools ? yieldPools : undefined)
     // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
     //     pool.tokens.some(token => 
     //         YIELD_BEARING_TOKENS.includes(token.address)
@@ -240,7 +239,7 @@ export default function Fees() {
                     <Typography variant="caption">Collected tokens will be distributed to veBAL holders, bribes and the DAO</Typography>
                 </Grid>
                 <Grid item xs={10}>
-                    <Typography variant="subtitle1">Tokens to be collected: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
+                    <Typography variant="subtitle1">Tokens to be distributed: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
                 </Grid>
             </Grid>
             {totalBalances && totalBalances.length > 0 ?

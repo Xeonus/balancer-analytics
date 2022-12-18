@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Typography, Grid, Box, Card, Divider, Stack, CircularProgress } from "@mui/material";
+import { Typography, Grid, Box, Card, Stack, CircularProgress } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { NavElement } from '../../components/NavCrumbs';
@@ -8,20 +7,15 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { getTreasuryConfig } from "../../constants/wallets";
 import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
 import { useGetPortfolio } from '../../data/debank/useGetPortfolio';
-import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 import StyledExternalLink from '../../components/StyledExternalLink';
-import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
 import LiquidityPosition from '../../components/LiquidityPosition';
+import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
+import GenericPieChart from '../../components/Echarts/GenericPieChart';
+import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
 
 export default function Treasury() {
-
-    //TODO: obtain form contants
-    const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
-    //Data
-    const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
-
 
     //Navigation
     const homeNav: NavElement = {
@@ -34,9 +28,9 @@ export default function Treasury() {
     }
     const feesNav: NavElement = {
         name: 'Treasury',
-        link: 'fees'
+        link: 'treasury'
     }
-    const navCrumbs: NavElement[] = new Array()
+    const navCrumbs: NavElement[] = []
     navCrumbs.push(homeNav)
     navCrumbs.push(chainNav);
     navCrumbs.push(feesNav);
@@ -47,8 +41,6 @@ export default function Treasury() {
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
 
-    console.log("portfolio", portfolio)
-
     //Obtain wallet total worth and USDC
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
@@ -58,10 +50,34 @@ export default function Treasury() {
             return el
         }
     })?.amount : 0;
-    console.log("walletTokenNetworth", walletTokenNetworth);
-    console.log("usdcReserves", usdcReserves)
+
+    //Token Balances Pie Chart
+    const tokenPieChartData: BalancerPieChartDataItem[] | null = totalBalances ? totalBalances.filter(
+        x => x.chain === activeNetwork.debankId &&
+            x.amount * x.price > 10).map((balance) => {
+                return {
+                    value: balance.amount * balance.price,
+                    name: balance.symbol
+                }
+            }
+            ) : null;
+
+    const ratioPieChartData: BalancerPieChartDataItem[] = []
+    ratioPieChartData.push(
+        {
+            value: walletTokenNetworth,
+            name: 'Tokens'
+        }
+    )
+    ratioPieChartData.push(
+        {
+            value: netWorth - walletTokenNetworth,
+            name: 'Deployed liquidity'
+        }
+    )
 
     return (
+        totalBalances && portfolio ?
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
@@ -85,47 +101,78 @@ export default function Treasury() {
                     item
                     xs={10}
                 >
-                    <Stack direction="row" spacing={2} justifyContent="flex-start">
-                        {coinData && coinData[balAddress] && coinData[balAddress].usd ?
-                            <CoinCard
-                                tokenAddress={balAddress}
-                                tokenName='BAL'
-                                tokenPrice={coinData[balAddress].usd}
-                                tokenPriceChange={coinData[balAddress].usd_24h_change}
-
-                            />
-                            : <CircularProgress />}
-                        <MetricsCard
+                    <Box display="flex" justifyContent="space-around" alignItems="row">
+                        <Stack direction="column" spacing={1} justifyContent="flex-start">
+                            <MetricsCard
                             mainMetric={netWorth}
                             mainMetricInUSD={true}
                             metricName='Net Worth'
                             mainMetricChange={0}
                             MetricIcon={WalletIcon}
                         />
-                        <MetricsCard
-                            mainMetric={walletTokenNetworth}
-                            mainMetricInUSD={true}
-                            metricName='Tokens in Wallet'
-                            mainMetricChange={0}
-                            MetricIcon={WalletIcon}
-                        />
-                        <MetricsCard
-                            mainMetric={usdcReserves ? usdcReserves : 0}
-                            mainMetricInUSD={true}
-                            metricName='USDC Reserves'
-                            mainMetricChange={0}
-                            MetricIcon={CurrencyExchangeIcon}
-                        />
-                    </Stack>
-                </Grid>
-                <Grid mt={2} item xs={10}>
-                    <Box display="flex" alignItems='center'>
-                        <Typography variant="h5">Tokens in Treasury Wallet</Typography>
+                            <MetricsCard
+                                mainMetric={walletTokenNetworth}
+                                mainMetricInUSD={true}
+                                metricName='Tokens in Wallet'
+                                mainMetricChange={0}
+                                MetricIcon={WalletIcon}
+                            />
+                            <MetricsCard
+                                mainMetric={usdcReserves ? usdcReserves : 0}
+                                mainMetricInUSD={true}
+                                metricName='USDC Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+
+                        </Stack>
+                        {ratioPieChartData ?
                         <Box ml={1}>
-                            <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'address'} activeNetwork={activeNetwork} />
-                        </Box>
+                            <Card sx={{ minWidth: '500px' }}>
+                                <Box p={1}>
+                                <Typography
+                                    color="textSecondary"
+                                    gutterBottom
+                                    variant="h6"
+                                >
+                                    Asset Distribution
+                                </Typography>
+                                </Box>
+                                <GenericPieChart data={ratioPieChartData} height='295px' />
+                            </Card> </Box> : <CircularProgress />}
+                        {tokenPieChartData ?
+                        <Box ml={1}>
+                            <Card sx={{ minWidth: '400px' }}>
+                                <Box p={1}>
+                                <Typography
+                                    color="textSecondary"
+                                    gutterBottom
+                                    variant="h6"
+                                >
+                                    Token distribution
+                                </Typography>
+                                </Box>
+                                <GenericPieChart data={tokenPieChartData} height='295px' />
+                            </Card> </Box> : <CircularProgress />}
                     </Box>
                 </Grid>
+
+                <Grid
+                    item
+                    mt={1}
+                    spacing={1}
+                    xs={10}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                            <Box display="flex" alignItems='center'>
+                                <Typography variant="h5">Tokens in Treasury Wallet</Typography>
+                                <Box ml={1}>
+                                    <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'address'} activeNetwork={activeNetwork} />
+                                </Box>
+                            </Box>    
+                    </Box>
+                </Grid>
+
                 {totalBalances ?
                     <Grid item xs={10}>
                         <FeeCollectorTokenTable tokenBalances={totalBalances} />
@@ -133,14 +180,27 @@ export default function Treasury() {
                             <Typography variant="h5">Liquidity Provisions</Typography>
                         </Grid>
                     </Grid> : null}
-                {portfolio ?
+                    <Grid item xs={10}>
+                <Card> 
+                    <Box p={1}>
+                    {portfolio ?
                     portfolio.map(pos =>
-                        <Grid item xs={10}>
                             <LiquidityPosition position={pos} />
-                        </Grid>
                     )
-                    : undefined}
+                    : undefined }
+                    </Box>
+                    </Card>
+                    </Grid>
             </Grid>
-        </Box>
+        </Box> :
+        <Grid
+        container
+        spacing={2}
+        mt='25%'
+        sx={{ justifyContent: 'center' }}
+    >
+        <CustomLinearProgress />
+    </Grid>
+    
     );
 }

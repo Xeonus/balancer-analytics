@@ -1,89 +1,83 @@
 import ReactEcharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { CircularProgress } from '@mui/material';
-import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
+import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
 
 export interface GenericPieChartProps {
-    data: BalancerChartDataItem[],
+    data: BalancerPieChartDataItem[],
+    height: string
 }
 
 export interface ToolTipParams {
     name: string;
-    data: BalancerChartDataItem;
-  }
+    data: BalancerPieChartDataItem;
+}
 
-export default function GenericBarChart({ data }: GenericPieChartProps) {  
+export default function GenericPieChart({ data, height }: GenericPieChartProps) {
 
-    let dataNames = data.map(a => a.time);
-    
+    const theme = useTheme()
+
+    let dataNames = data.map(a => a.name);
+
     //Chart options
     const option = {
-      backgroundColor: "rgb(43, 51, 59)",
-      toolbox: {
-        show: true,
-        feature: {
-          mark: {
-            show: true
-          },
-          magicType: {
-            show: true,
-            type: ["pie", "funnel"]
-          },
-          restore: {
-            show: true,
-            title: "Restore"
-          },
-          saveAsImage: {
-            show: true,
-            title: "Save Image"
-          }
-        }
-      },
-      // Hover Tooltip
-      // {a} = series:[{name:}]
-      // {b} = series:[{data: [{name:}]}]
-      // {c} = series:[{data: [{value:}]
-      //formatter: "{a}<br/><strong>{b}</strong>: ${c}"
-      tooltip: {
-        trigger: "item",
-        formatter: function (params: ToolTipParams) {
-          return `
-                 <b>${params.name}</b></br>
+
+        // Hover Tooltip
+        // {a} = series:[{name:}]
+        // {b} = series:[{data: [{name:}]}]
+        // {c} = series:[{data: [{value:}]
+        //formatter: "{a}<br/><strong>{b}</strong>: ${c}"
+        tooltip: {
+            trigger: "item",
+            formatter: function (params: ToolTipParams) {
+                return `
+                 
                 ${formatDollarAmount(params.data.value)} <br />`
-        }
-      },
-      calculable: true,
-      legend: {
-        icon: "circle",
-        top: "bottom",
-        data: dataNames,
-        textStyle: {
-          color: "#fff"
-        }
-      },
-      series: [
-          {
-            name: 'Total asset fraction',
-            type: 'pie',
-            radius: '50%',
-            data: data,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
             }
-          }
-        ]
-  
+        },
+        calculable: true,
+        series: [
+            {
+                name: 'Total asset fraction',
+                type: 'pie',
+                data: data,
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: true,
+                    color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                    formatter: '{b} ({d}%)'
+                    
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        formatter: '{b} ({d}%)',
+                        fontSize: 15,
+                        fontWeight: 'bold',
+                        
+                    }
+                },
+                labelLine: {
+                    show: true
+                },
+            }],
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+
+
     };
-  
-      return (
-          <ReactEcharts 
-          option={option} 
-          className="pie-chart" 
-          />
-      );
+
+    return (
+        <ReactEcharts
+            option={option}
+            style={{ height: height, width: '100%' }}
+            className="pie-chart"
+        />
+    );
 }

@@ -221,10 +221,12 @@ export default function AggregatedPoolFeeTable({
 
     const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 100);
 
+    //Data to be averaged -> TODO: make dependency from parent!
+
 
     //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
-    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.25 + el.feesEpochUSD * 0.25, 0) * time * 0.5
+    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.5 * 0.25 * time + el.feesEpochUSD / 7 * 0.5 * 0.25 * time, 0)
 
     //Helper function to calculate daily token yield
     function calculateTokenYieldInUsd(poolData: PoolData) {
@@ -249,10 +251,10 @@ export default function AggregatedPoolFeeTable({
             getShortPoolName(el),
             el.tokens,
             el,
-            el.feesEpochUSD * time  * 0.5 * 0.25,
-            el.feesEpochUSD  * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el) * time * 0.5 * 0.25,
-            calculateTokenYieldInUsd(el) * time * 0.5 * 0.25 ,
-            100 / totalRevenue * (el.feesEpochUSD * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el) * time * 0.5 * 0.25))
+            el.feesEpochUSD / 7  * time  * 0.5 * 0.25,
+            el.feesEpochUSD / 7   * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el)  * time  * 0.5 * 0.25,
+            calculateTokenYieldInUsd(el)  *time * 0.5 * 0.25 ,
+            100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el)  * time  * 0.5 * 0.25))
     )
 
     const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)

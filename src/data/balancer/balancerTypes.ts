@@ -3,6 +3,12 @@ export interface BalancerChartDataItem {
     time: string;
 }
 
+//Reduntant?
+export interface BalancerPieChartDataItem {
+    value: number;
+    name: string;
+}
+
 export type TokenData = {
     // token is in some pool on uniswap
     exists: boolean;

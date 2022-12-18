@@ -38,11 +38,11 @@ export default function ProtocolFeeSankeyChart({
   //Obtain values
   //const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.25 + el.feesEpochUSD * 0.25, 0) * timeRange
 
-  const swapRevenue = filteredPoolDatas.reduce((acc, el) => acc + el.feesEpochUSD * timeRange, 0)
+  const swapRevenue = filteredPoolDatas.reduce((acc, el) => acc + el.feesEpochUSD  / 7 * timeRange, 0)
 
   const bribeFeesYieldPools = filteredPoolDatas.filter(
     pool => pool.tokens.some(token => YIELD_BEARING_TOKENS.includes(token.address))).reduce(
-      (acc, el) => acc + el.feesEpochUSD * timeRange, 0
+      (acc, el) => acc + el.feesEpochUSD / 7 * timeRange, 0
     )
 
   const tokenYield = filteredPoolDatas.filter(
@@ -72,6 +72,9 @@ export default function ProtocolFeeSankeyChart({
         },
       },
       edgeLabel: {
+        color: theme.palette.mode === 'dark' ? 'white' : 'black'
+      },
+      label: {
         color: theme.palette.mode === 'dark' ? 'white' : 'black'
       },
       lineStyle: {
@@ -129,12 +132,7 @@ export default function ProtocolFeeSankeyChart({
         {
           source: 'Fee Collector',
           target: 'Revenue to the DAO',
-          value: tokenYield * 0.5 * 0.25
-        },
-        {
-          source: 'Fee Collector',
-          target: 'Revenue to the DAO',
-          value: swapRevenue * 0.5 * 0.25
+          value: tokenYield * 0.5 * 0.25 + swapRevenue * 0.5 * 0.25
         },
         {
           source: 'Fee Collector',
@@ -154,7 +152,7 @@ export default function ProtocolFeeSankeyChart({
         {
           source: 'Fee Collector',
           target: 'Revenue to veBAL holders',
-          value: swapRevenue * 0.5 * 0.75 - + bribeFeesYieldPools * 0.5 * 0.75
+          value: swapRevenue * 0.5 * 0.75 - bribeFeesYieldPools * 0.5 * 0.75
         },
       ],
       levels: [

@@ -216,7 +216,11 @@ export default function PoolFeeTable({
 
   //Create rows
   const rows = filteredPoolDatas.map(el =>
-    createData(getShortPoolName(el), el.tokens, el, el.feesEpochUSD, el.feesEpochUSD * 0.25, 100 / totalFees * el.feesEpochUSD)
+    createData(
+      getShortPoolName(el), 
+      el.tokens, el, 
+      el.feesEpochUSD, 
+      el.feesEpochUSD *0.5, 100 / totalFees * el.feesEpochUSD)
   )
 
   const handleRequestSort = (
