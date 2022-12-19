@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { formatDollarAmount } from '../../../utils/numbers';
+import { formatDollarAmount, formatNumber } from '../../../utils/numbers';
 import { green } from '@mui/material/colors';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { SvgIconTypeMap } from '@mui/material';
@@ -51,7 +51,7 @@ const MetricsCard = ({
               color="textPrimary"
               variant="h6"
             >
-              {mainMetricInUSD ? formatDollarAmount(mainMetric) : Number(mainMetric).toFixed(0) + metricUnit}
+              {mainMetricInUSD ? formatDollarAmount(mainMetric) : formatNumber(mainMetric, 0) + metricUnit}
             </Typography>
           </Grid>
           <Grid item>

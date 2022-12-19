@@ -43,7 +43,7 @@ export const formatNumber = (num: number | undefined, digits = 2) => {
     }
     return numbro(num).format({
         thousandSeparated: true,
-        mantissa: num > 1000 ? 2 : digits,
+        mantissa: digits,
     });
 };
 

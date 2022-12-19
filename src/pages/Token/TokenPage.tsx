@@ -10,7 +10,7 @@ import CustomLinearProgress from '../../components/Progress/CustomLinearProgress
 import NavCrumbs, { NavElement } from '../../components/NavCrumbs';
 import StyledExternalLink from '../../components/StyledExternalLink';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
-import { useBalancerTokenData } from '../../data/balancer/useTokens';
+import { useBalancerTokenData, useBalancerTokenSingleData } from '../../data/balancer/useTokens';
 import { useBalancerPoolsForToken } from '../../data/balancer/usePools';
 import { useBalancerTokenPageData } from '../../data/balancer/useTokens';
 import CurrencyLogo from '../../components/CurrencyLogo';
@@ -25,13 +25,17 @@ export default function TokenPage() {
     const params = useParams();
     const [activeNetwork] = useActiveNetworkVersion();
     const address = params.address ? params.address : '';
-    const tokenData = useBalancerTokenData(address);
+    const tokenData = useBalancerTokenSingleData(address);
     const poolData = useBalancerPoolsForToken(address);
     const { swaps, joinExits } = useBalancerTransactionData(
         [address],
         poolData.map((pool) => pool.id),
     );
     const { tvlData, volumeData, priceData } = useBalancerTokenPageData(address);
+
+    console.log("tokenData", tokenData)
+    console.log("tvlData", tvlData)
+    console.log("volumeData", volumeData)
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',

@@ -1034,6 +1034,48 @@ export interface PoolWeightUpdatesArgs {
   where?: InputMaybe<GradualWeightUpdate_Filter>;
 }
 
+export interface PoolContract {
+  __typename: "PoolContract";
+  id: Scalars["ID"];
+  pool: Pool;
+}
+
+export interface PoolContract_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  pool?: InputMaybe<Scalars["String"]>;
+  pool_?: InputMaybe<Pool_Filter>;
+  pool_contains?: InputMaybe<Scalars["String"]>;
+  pool_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_gt?: InputMaybe<Scalars["String"]>;
+  pool_gte?: InputMaybe<Scalars["String"]>;
+  pool_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_lt?: InputMaybe<Scalars["String"]>;
+  pool_lte?: InputMaybe<Scalars["String"]>;
+  pool_not?: InputMaybe<Scalars["String"]>;
+  pool_not_contains?: InputMaybe<Scalars["String"]>;
+  pool_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_not_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type PoolContract_OrderBy = "id" | "pool";
+
 export interface PoolHistoricalLiquidity {
   __typename: "PoolHistoricalLiquidity";
   block: Scalars["BigInt"];
@@ -2226,6 +2268,8 @@ export interface Query {
   managementOperation?: Maybe<ManagementOperation>;
   managementOperations: Array<ManagementOperation>;
   pool?: Maybe<Pool>;
+  poolContract?: Maybe<PoolContract>;
+  poolContracts: Array<PoolContract>;
   poolHistoricalLiquidities: Array<PoolHistoricalLiquidity>;
   poolHistoricalLiquidity?: Maybe<PoolHistoricalLiquidity>;
   poolShare?: Maybe<PoolShare>;
@@ -2393,6 +2437,22 @@ export interface QueryPoolArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
   subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryPoolContractArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryPoolContractsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<PoolContract_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<PoolContract_Filter>;
 }
 
 export interface QueryPoolHistoricalLiquiditiesArgs {
@@ -2650,6 +2710,8 @@ export interface Subscription {
   managementOperation?: Maybe<ManagementOperation>;
   managementOperations: Array<ManagementOperation>;
   pool?: Maybe<Pool>;
+  poolContract?: Maybe<PoolContract>;
+  poolContracts: Array<PoolContract>;
   poolHistoricalLiquidities: Array<PoolHistoricalLiquidity>;
   poolHistoricalLiquidity?: Maybe<PoolHistoricalLiquidity>;
   poolShare?: Maybe<PoolShare>;
@@ -2817,6 +2879,22 @@ export interface SubscriptionPoolArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
   subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionPoolContractArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionPoolContractsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<PoolContract_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<PoolContract_Filter>;
 }
 
 export interface SubscriptionPoolHistoricalLiquiditiesArgs {
@@ -4120,6 +4198,43 @@ export type GetTokenDataQueryVariables = Exact<{
 }>;
 
 export type GetTokenDataQuery = {
+  __typename: "Query";
+  tokens: Array<{
+    __typename: "Token";
+    id: string;
+    address: string;
+    decimals: number;
+    name?: string | null;
+    symbol?: string | null;
+    totalBalanceUSD: string;
+    totalBalanceNotional: string;
+    totalVolumeUSD: string;
+    totalVolumeNotional: string;
+    totalSwapCount: string;
+    latestUSDPrice?: string | null;
+  }>;
+  tokens24: Array<{
+    __typename: "Token";
+    id: string;
+    address: string;
+    decimals: number;
+    name?: string | null;
+    symbol?: string | null;
+    totalBalanceUSD: string;
+    totalBalanceNotional: string;
+    totalVolumeUSD: string;
+    totalVolumeNotional: string;
+    totalSwapCount: string;
+    latestUSDPrice?: string | null;
+  }>;
+};
+
+export type GetTokenSingleDataQueryVariables = Exact<{
+  address: Scalars["String"];
+  block24: Block_Height;
+}>;
+
+export type GetTokenSingleDataQuery = {
   __typename: "Query";
   tokens: Array<{
     __typename: "Token";
@@ -5515,14 +5630,14 @@ export const GetTokenDataDocument = gql`
   query GetTokenData($block24: Block_height!, $first: Int!) {
     tokens: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
     ) {
       ...BalancerToken
     }
     tokens24: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
       block: $block24
     ) {
@@ -5582,6 +5697,78 @@ export type GetTokenDataLazyQueryHookResult = ReturnType<
 export type GetTokenDataQueryResult = Apollo.QueryResult<
   GetTokenDataQuery,
   GetTokenDataQueryVariables
+>;
+export const GetTokenSingleDataDocument = gql`
+  query GetTokenSingleData($address: String!, $block24: Block_height!) {
+    tokens: tokens(
+      orderBy: totalBalanceUSD
+      orderDirection: desc
+      where: { address: $address }
+    ) {
+      ...BalancerToken
+    }
+    tokens24: tokens(
+      orderBy: totalBalanceUSD
+      orderDirection: desc
+      block: $block24
+      where: { address: $address }
+    ) {
+      ...BalancerToken
+    }
+  }
+  ${BalancerTokenFragmentDoc}
+`;
+
+/**
+ * __useGetTokenSingleDataQuery__
+ *
+ * To run a query within a React component, call `useGetTokenSingleDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTokenSingleDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTokenSingleDataQuery({
+ *   variables: {
+ *      address: // value for 'address'
+ *      block24: // value for 'block24'
+ *   },
+ * });
+ */
+export function useGetTokenSingleDataQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTokenSingleDataQuery,
+    GetTokenSingleDataQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTokenSingleDataQuery,
+    GetTokenSingleDataQueryVariables
+  >(GetTokenSingleDataDocument, options);
+}
+export function useGetTokenSingleDataLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTokenSingleDataQuery,
+    GetTokenSingleDataQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTokenSingleDataQuery,
+    GetTokenSingleDataQueryVariables
+  >(GetTokenSingleDataDocument, options);
+}
+export type GetTokenSingleDataQueryHookResult = ReturnType<
+  typeof useGetTokenSingleDataQuery
+>;
+export type GetTokenSingleDataLazyQueryHookResult = ReturnType<
+  typeof useGetTokenSingleDataLazyQuery
+>;
+export type GetTokenSingleDataQueryResult = Apollo.QueryResult<
+  GetTokenSingleDataQuery,
+  GetTokenSingleDataQueryVariables
 >;
 export const GetTokenPageDataDocument = gql`
   query GetTokenPageData($address: String!, $startTimestamp: Int!) {

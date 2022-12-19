@@ -5,6 +5,7 @@ import {
     LatestPriceFragment,
     useGetTokenDataLazyQuery,
     useGetTokenPageDataQuery,
+    useGetTokenSingleDataLazyQuery,
 } from '../../apollo/generated/graphql-codegen-generated';
 import { useEffect } from 'react';
 import { unixToDate } from '../../utils/date';
@@ -184,6 +185,116 @@ export function useBalancerTokenData(address: string): TokenData | null {
     const token = tokens.find((token) => token.address === address);
 
     return token || null;
+}
+
+export function useBalancerTokenSingleData(address: string) : TokenData | null {
+    const [activeNetwork] = useActiveNetworkVersion();
+    const [t24, t48, tWeek] = useDeltaTimestamps();
+    const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
+    const [block24, block48, blockWeek] = blocks ?? [];
+    const [getTokenData, { data }] = useGetTokenSingleDataLazyQuery();
+    const tokenAddresses: Array<string> = [];
+    const [coingeckoData, setCoingeckoData] = useState<CoingeckoRawData>();
+
+    useEffect(() => {
+        if (block24) {
+            getTokenData({
+                variables: {
+                    address: address,
+                    block24: { number: parseInt(block24.number) },
+                },
+                context: {
+                    uri: activeNetwork.clientUri,
+                },
+            });
+        }
+    }, [block24]);
+
+    useEffect(() => {
+        //V2: repopulate formatted token data with coingecko data
+        if (data && data.tokens.length === 1) {
+            data.tokens.forEach(token => {
+                tokenAddresses.push(token.address);
+            })
+
+            const getTokenPrices = async (addresses: string) => {
+                const baseURI = 'https://api.coingecko.com/api/v3/simple/token_price/';
+                const queryParams = activeNetwork.coingeckoId + '?contract_addresses=' + addresses + '&vs_currencies=usd&include_24hr_change=true';
+                try {
+                    const coingeckoResponse = await fetch(baseURI + queryParams);
+                    const json = await coingeckoResponse.json();
+                    //TODO: find way to append to interface object?
+                    const spread = {
+                        ...coingeckoData,
+                        json
+                    }
+                    setCoingeckoData(json);
+                } catch {
+                    console.log("Coingecko: token_price API not reachable")
+                }
+            }
+            const tokenAddresses1 = tokenAddresses.slice(1, 150);
+            const tokenAddresses2 = tokenAddresses.slice(151, 300);
+            //raw batch call in hook:
+            let addressesString1 = '';
+            tokenAddresses1.forEach(el => {
+                addressesString1 = addressesString1 + el + ','
+            })
+
+            getTokenPrices(addressesString1);
+
+            let addressesString2 = '';
+            tokenAddresses2.forEach(el => {
+                addressesString2 = addressesString2 + el + ','
+            })
+
+            //getTokenPrices(addressesString2);
+        }
+    }, [data]);
+
+    if (!data) {
+        return null;
+    }
+
+    const { tokens, tokens24} = data;
+
+    const singleToken = tokens.find(t => t.address === address)
+    const singleToken24 = tokens.find(t => t.address === address)
+
+        let tokenData = getTokenValues(tokens[0].address, tokens);
+        let tokenData24 = getTokenValues(tokens[0].address, tokens24);
+
+        let priceData = {price: tokens[0].latestUSDPrice ? Number(tokens[0].latestUSDPrice) : 0};
+        let priceData24 = getTokenPriceValues(tokens[0].address, tokens24);
+        //override:
+        let priceChange = 0
+        if (coingeckoData && coingeckoData[tokens[0].address]) {
+            tokenData = getTokenValues(tokens[0].address, tokens, coingeckoData);
+            tokenData24 = getTokenValues(tokens[0].address, tokens24, coingeckoData);
+            priceData = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
+            priceData24 = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
+            priceChange = coingeckoData[tokens[0].address].usd_24h_change;
+        }
+
+        const valueUSDCollected = 0;
+
+        return {
+            address: tokens[0].address,
+            name: tokens[0].name || '',
+            symbol: tokens[0].symbol || '',
+            exists: true,
+            volumeUSD: tokenData.volume - tokenData24.volume,
+            volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
+            txCount: parseFloat(tokens[0].totalSwapCount),
+            feesUSD: 0,
+            tvlToken: tokenData.tvlToken,
+            tvlUSD: (tokens[0].symbol?.includes('bb-') ? 0 : tokenData.tvl),
+            valueUSDCollected: valueUSDCollected,
+            tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
+            priceUSD: priceData.price,
+            priceUSDChange: priceChange,
+            isCoingeckoPriceSource: priceChange !== 0 ? true : false,
+        };
 }
 
 export function useBalancerTokenPageData(address: string): {

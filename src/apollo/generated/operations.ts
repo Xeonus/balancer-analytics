@@ -241,16 +241,36 @@ export const GetTokenData = gql`
   query GetTokenData($block24: Block_height!, $first: Int!) {
     tokens: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
     ) {
       ...BalancerToken
     }
     tokens24: tokens(
       first: $first
+      orderBy: totalVolumeUSD
+      orderDirection: desc
+      block: $block24
+    ) {
+      ...BalancerToken
+    }
+  }
+  ${BalancerToken}
+`;
+export const GetTokenSingleData = gql`
+  query GetTokenSingleData($address: String!, $block24: Block_height!) {
+    tokens: tokens(
+      orderBy: totalBalanceUSD
+      orderDirection: desc
+      where: { address: $address }
+    ) {
+      ...BalancerToken
+    }
+    tokens24: tokens(
       orderBy: totalBalanceUSD
       orderDirection: desc
       block: $block24
+      where: { address: $address }
     ) {
       ...BalancerToken
     }
