@@ -1,6 +1,7 @@
 import { Typography, Grid, Box, Card, Stack, CircularProgress } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
@@ -39,6 +40,7 @@ export default function Treasury() {
     const [activeNetwork] = useActiveNetworkVersion()
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
+    console.log("portfolio", portfolio)
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
 
     //Obtain wallet total worth and USDC
@@ -72,135 +74,134 @@ export default function Treasury() {
     ratioPieChartData.push(
         {
             value: netWorth - walletTokenNetworth,
-            name: 'Deployed liquidity'
+            name: 'Liquidity provisions'
         }
     )
 
     return (
         totalBalances && portfolio ?
-        <Box sx={{ flexGrow: 2 }}>
-            <Grid
-                container
-                spacing={1}
-                sx={{ justifyContent: 'center' }}
-            >
-                <Grid item xs={10}>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                    </Box>
-
-                </Grid>
-                <Grid mt={2} item xs={10}>
-                    <Box display="flex" alignItems="center">
-                        <Box>
-                            <Typography variant={"h5"}>Treasury Metrics on {activeNetwork.name}</Typography>
-                        </Box>
-                    </Box>
-                </Grid>
+            <Box sx={{ flexGrow: 2 }}>
                 <Grid
-                    item
-                    xs={10}
-                >
-                    <Box display="flex" justifyContent="space-around" alignItems="row">
-                        <Stack direction="column" spacing={1} justifyContent="flex-start">
-                            <MetricsCard
-                            mainMetric={netWorth}
-                            mainMetricInUSD={true}
-                            metricName='Net Worth'
-                            mainMetricChange={0}
-                            MetricIcon={WalletIcon}
-                        />
-                            <MetricsCard
-                                mainMetric={walletTokenNetworth}
-                                mainMetricInUSD={true}
-                                metricName='Tokens in Wallet'
-                                mainMetricChange={0}
-                                MetricIcon={WalletIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={usdcReserves ? usdcReserves : 0}
-                                mainMetricInUSD={true}
-                                metricName='USDC Reserves'
-                                mainMetricChange={0}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-
-                        </Stack>
-                        {ratioPieChartData ?
-                        <Box ml={1}>
-                            <Card sx={{ minWidth: '500px' }}>
-                                <Box p={1}>
-                                <Typography
-                                    color="textSecondary"
-                                    gutterBottom
-                                    variant="h6"
-                                >
-                                    Asset Distribution
-                                </Typography>
-                                </Box>
-                                <GenericPieChart data={ratioPieChartData} height='295px' />
-                            </Card> </Box> : <CircularProgress />}
-                        {tokenPieChartData ?
-                        <Box ml={1}>
-                            <Card sx={{ minWidth: '400px' }}>
-                                <Box p={1}>
-                                <Typography
-                                    color="textSecondary"
-                                    gutterBottom
-                                    variant="h6"
-                                >
-                                    Token distribution
-                                </Typography>
-                                </Box>
-                                <GenericPieChart data={tokenPieChartData} height='295px' />
-                            </Card> </Box> : <CircularProgress />}
-                    </Box>
-                </Grid>
-
-                <Grid
-                    item
-                    mt={1}
+                    container
                     spacing={1}
-                    xs={10}
+                    sx={{ justifyContent: 'center' }}
                 >
-                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                    <Grid item xs={10}>
+                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                            <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                        </Box>
+
+                    </Grid>
+                    <Grid mt={2} item xs={10}>
+                        <Box display="flex" alignItems="center">
+                            <Box>
+                                <Typography variant={"h5"}>Treasury Metrics on {activeNetwork.name}</Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={10}
+                    >
+                        <Box display="flex" justifyContent="space-between" alignItems="row">
+                            <Stack direction="column" spacing={1} justifyContent="flex-start">
+                                <MetricsCard
+                                    mainMetric={netWorth}
+                                    mainMetricInUSD={true}
+                                    metricName='Net Worth'
+                                    mainMetricChange={0}
+                                    MetricIcon={AccountBalanceIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={walletTokenNetworth}
+                                    mainMetricInUSD={true}
+                                    metricName='Tokens in Wallet'
+                                    mainMetricChange={0}
+                                    MetricIcon={WalletIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={usdcReserves ? usdcReserves : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='USDC Reserves'
+                                    mainMetricChange={0}
+                                    MetricIcon={CurrencyExchangeIcon}
+                                />
+
+                            </Stack>
+                            {ratioPieChartData ?
+                                <Box ml={1}>
+                                    <Card sx={{ minWidth: '500px' }}>
+                                        <Box p={1}>
+                                            <Typography
+                                                color="textSecondary"
+                                                gutterBottom
+                                                variant="h6"
+                                            >
+                                                Asset Distribution
+                                            </Typography>
+                                        </Box>
+                                        <GenericPieChart data={ratioPieChartData} height='295px' />
+                                    </Card> </Box> : <CircularProgress />}
+                            {tokenPieChartData && tokenPieChartData.length > 0 ?
+                                <Box ml={1}>
+                                    <Card sx={{ minWidth: '400px' }}>
+                                        <Box p={1}>
+                                            <Typography
+                                                color="textSecondary"
+                                                gutterBottom
+                                                variant="h6"
+                                            >
+                                                Token distribution
+                                            </Typography>
+                                        </Box>
+                                        <GenericPieChart data={tokenPieChartData} height='295px' />
+                                    </Card> </Box> : <CircularProgress />}
+                        </Box>
+                    </Grid>
+
+                    <Grid
+                        item
+                        mt={1}
+                        xs={10}
+                    >
+                        <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
                                 <Typography variant="h5">Tokens in Treasury Wallet</Typography>
                                 <Box ml={1}>
                                     <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'address'} activeNetwork={activeNetwork} />
                                 </Box>
-                            </Box>    
-                    </Box>
-                </Grid>
-
-                {totalBalances ?
-                    <Grid item xs={10}>
-                        <FeeCollectorTokenTable tokenBalances={totalBalances} />
-                        <Grid mt={2} item xs={10}>
-                            <Typography variant="h5">Liquidity Provisions</Typography>
-                        </Grid>
-                    </Grid> : null}
-                    <Grid item xs={10}>
-                <Card> 
-                    <Box p={1}>
-                    {portfolio ?
-                    portfolio.map(pos =>
-                            <LiquidityPosition position={pos} />
-                    )
-                    : undefined }
-                    </Box>
-                    </Card>
+                            </Box>
+                        </Box>
                     </Grid>
+
+                    {totalBalances && totalBalances.length > 0 ?
+                        <Grid item xs={10}>
+                            <FeeCollectorTokenTable tokenBalances={totalBalances} />
+                            <Grid mt={2} item xs={10}>
+                                <Typography variant="h5">Liquidity Provisions</Typography>
+                            </Grid>
+                        </Grid> : null}
+                    <Grid item xs={10}>
+
+                        {portfolio ?
+                            portfolio.map(pos =>
+                                pos.chain === activeNetwork.debankId ?
+                                <Box mb={1}>
+                                        <LiquidityPosition key={pos.id} position={pos} />
+                                </Box> : undefined
+                            )
+                            : undefined}
+                    </Grid>
+                </Grid>
+            </Box> :
+            <Grid
+                container
+                spacing={2}
+                mt='25%'
+                sx={{ justifyContent: 'center' }}
+            >
+                <CustomLinearProgress />
             </Grid>
-        </Box> :
-        <Grid
-        container
-        spacing={2}
-        mt='25%'
-        sx={{ justifyContent: 'center' }}
-    >
-        <CustomLinearProgress />
-    </Grid>
-    
+
     );
 }
