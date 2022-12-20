@@ -18,6 +18,7 @@ import PoolTable from '../../components/Tables/PoolTable';
 import TokenChart from '../../components/TokenChart';
 import SwapsTable from '../../components/Tables/SwapsTable';
 import JoinExitsTable from '../../components/Tables/JoinExitsTable';
+import { formatNumber } from '../../utils/numbers';
 
 
 

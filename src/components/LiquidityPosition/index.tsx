@@ -50,10 +50,11 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                     return accumulator;
                 }, []),
                 balances: item.detail.supply_token_list.reduce((accumulator: number[], currentValue) => {
-                    accumulator.push(currentValue.amount * currentValue.price);
+                    accumulator.push(currentValue.amount);
                     return accumulator;
                 }, []),
-                totalAmount: item.detail.supply_token_list.reduce((acc, el) => acc + el.amount * el.price, 0)
+                totalAmount: item.detail.supply_token_list.reduce((acc, el) => acc + el.amount * el.price, 0),
+                description: item.detail.description ? item.detail.description : '',
             }
         })
 
@@ -79,14 +80,18 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                                     <Box display="flex" alignItems="center">
                                         <PoolCurrencyLogo tokens={row.tokens} />
                                         <Box ml={1}>
-                                            {row.names.join(" + ")}
+                                            <Typography variant="body2" fontWeight={"bold"}>
+                                                {row.description ? row.description : row.names.join(" + ")}
+                                            </Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ maxWidth: '100px' }} align="right">
                                     <Box alignItems="row" >
                                         {row.balances.map(balance =>
-                                            <Typography>{formatNumber(balance)} {row.names[row.balances.indexOf(balance)]}</Typography>
+                                            <Typography variant="body2">
+                                                {formatNumber(balance)} {row.names[row.balances.indexOf(balance)]}
+                                            </Typography>
                                         )}
                                     </Box>
                                 </TableCell>

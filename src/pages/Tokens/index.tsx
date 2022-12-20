@@ -22,7 +22,7 @@ export default function Tokens() {
                 <Grid item xs={10}>
                     <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                 </Grid>
-                    {tokenDatas ?
+                    {tokenDatas.length > 10 ?
                         <Grid item xs={10}>
                             <Box mt={2}>
                                 <TokenTable tokenDatas={tokenDatas} />
