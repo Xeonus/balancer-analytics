@@ -15,6 +15,8 @@ import LiquidityPosition from '../../components/LiquidityPosition';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
+import { useGetTransactions } from "../../data/debank/useGetTransactions";
+import { useGetRawTransactionData } from "../../data/covalent/useGetRawTransactionData";
 
 export default function Treasury() {
 
@@ -38,10 +40,12 @@ export default function Treasury() {
 
 
     const [activeNetwork] = useActiveNetworkVersion()
+    //Fetch debank data
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
-    console.log("portfolio", portfolio)
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
+    const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, 1649388375)
+    //const { transactions } = useGetRawTransactionData(TREASURY_CONFIG.treasury)
 
     //Obtain wallet total worth and USDC
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;

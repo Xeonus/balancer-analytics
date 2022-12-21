@@ -110,3 +110,103 @@ export interface Pool {
   index: any
   time_at: number
 }
+
+//Transaction types
+
+export interface TransactionHistory {
+  cate_dict: CateDict
+  history_list: HistoryList[]
+  project_dict: ProjectDict
+  token_dict: TokenDict
+}
+
+export interface CateDict {
+  approve: Approve
+  receive: Receive
+  send: Send
+}
+
+export interface Approve {
+  id: string
+  name: string
+}
+
+export interface Receive {
+  id: string
+  name: string
+}
+
+export interface Send {
+  id: string
+  name: string
+}
+
+export interface HistoryList {
+  cate_id: string
+  chain: string
+  id: string
+  project_id?: string
+  receives: any[]
+  sends: Send2[]
+  time_at: number
+  token_approve?: TokenApprove
+  tx: Tx
+  other_addr?: string
+}
+
+export interface Send2 {
+  amount: number
+  to_addr: string
+  token_id: string
+}
+
+export interface TokenApprove {
+  spender: string
+  token_id: string
+  value: number
+}
+
+export interface Tx {
+  eth_gas_fee: number
+  from_addr: string
+  name: string
+  params: any[]
+  status: number
+  to_addr: string
+  usd_gas_fee: number
+  value: number
+}
+
+export interface ProjectDict {
+  zkswap: Zkswap
+}
+
+export interface Zkswap {
+  chain: string
+  id: string
+  logo_url: string
+  name: string
+  site_url: string
+}
+
+export interface TokenDict {
+  eth: Eth
+}
+
+export interface Eth {
+  chain: string
+  decimals: number
+  display_symbol: any
+  id: string
+  is_core: boolean
+  is_verified: boolean
+  is_wallet: boolean
+  logo_url: string
+  name: string
+  optimized_symbol: string
+  price: number
+  protocol_id: string
+  symbol: string
+  time_at: number
+}
+
