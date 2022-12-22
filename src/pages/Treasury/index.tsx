@@ -110,11 +110,10 @@ export default function Treasury() {
 
     return (
         totalBalances && portfolio ?
-            <Box sx={{ flexGrow: 2 }}>
+            <Box sx={{ flexGrow: 1, justifyContent: "center" }}>
                 
                 <Grid
                     container
-                    spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
                     <Grid item xs={10}>
@@ -175,7 +174,7 @@ export default function Treasury() {
                                     </Card> </Box> : <CircularProgress />}
                             {tokenPieChartData && tokenPieChartData.length > 0 ?
                                 <Box ml={1}>
-                                    <Card sx={{ minWidth: '400px' }}>
+                                    <Card sx={{ minWidth: '500px' }}>
                                         <Box p={1}>
                                             <Typography
                                                 color="textSecondary"
@@ -217,8 +216,8 @@ export default function Treasury() {
                         {portfolio ?
                             portfolio.map(pos =>
                                 pos.chain === activeNetwork.debankId ?
-                                <Box mb={1}>
-                                        <LiquidityPosition key={pos.id} position={pos} />
+                                <Box key={pos.id + "box"} mb={1}>
+                                        <LiquidityPosition key={pos.id + pos.name} position={pos} />
                                 </Box> : undefined
                             )
                             : undefined}

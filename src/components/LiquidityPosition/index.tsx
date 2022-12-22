@@ -58,7 +58,6 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
             }
         })
 
-
         return (
 
             <TableContainer >
@@ -73,7 +72,7 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                     <TableBody>
                         {rows.map((row) => (
                             <TableRow
-                                key={row.totalAmount}
+                                key={row.totalAmount + row.description}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell sx={{ maxWidth: '50px' }} align="right">
@@ -112,7 +111,6 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
         <Grid>
             {getPostionUsdValue(position.portfolio_item_list) > 0 ?
                 <Grid item >
-
                     <Box mt={2} mb={2} display="flex" alignItems="center" justifyContent="space-between">
                         <Box display="flex" alignItems={"center"} >
                             <Avatar

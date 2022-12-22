@@ -7,7 +7,7 @@ import { EthereumNetworkInfo } from '../../constants/networks'
 import { Link, CircularProgress, Box, IconButton } from '@mui/material'
 
 
-export default function Polling () {
+export default function Polling() {
   const theme = useTheme()
   const mode = theme.palette.mode;
   const [activeNetwork] = useActiveNetworkVersion()
@@ -31,30 +31,34 @@ export default function Polling () {
 
   return (
 
-    <Box display="flex" justifyContent="space-between" paddingY="20px">
+    <Box display="flex" alignItems="center" justifyContent="space-between" paddingY="20px">
       <IconButton
         sx={{
           mr: 1,
           animationDuration: 2,
-          height: 20,
+          height: 25,
           borderRadius: 1,
           backgroundColor: "background.paper",
           boxShadow: 2,
         }}>
-
-        <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
-          Synced block: {isMounted ? latestBlock : ' '}
-        </Link>
-        <Box mr={0.5}></Box>
-        <CircularProgress
-          size={12}
-          thickness={isMounted ? 22 : 10}
-          variant={isMounted ? "determinate" : "indeterminate"}
-          value={100}
-          sx={{
-            color: isMounted ? green[500] : orange[500]
-          }}
-        />
+        <Box display="flex" alignContent="center" alignItems="center">
+          <Box>
+            <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
+              Synced block: {isMounted ? latestBlock : ' '}
+            </Link>
+          </Box>
+          <Box ml={0.5}>
+            <CircularProgress
+              size={15}
+              thickness={isMounted ? 22 : 10}
+              variant={isMounted ? "determinate" : "indeterminate"}
+              value={100}
+              sx={{
+                color: isMounted ? green[500] : orange[500]
+              }}
+            />
+          </Box>
+        </Box>
       </IconButton>
     </Box>
 

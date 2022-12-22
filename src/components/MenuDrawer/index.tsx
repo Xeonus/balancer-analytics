@@ -13,15 +13,17 @@ import TokenIcon from '@mui/icons-material/Token';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
+import DebankColor from '../../assets/svg/debank-symbol.svg'
+import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
@@ -66,7 +68,7 @@ const MenuDrawer = ({
                 },
                 //backgroundColor: {
                 //    opacity: 0.5,
-               // }
+                // }
             }}
             variant="persistent"
             anchor="left"
@@ -79,107 +81,151 @@ const MenuDrawer = ({
             </DrawerHeader>
             <Divider />
             <List>
-                <ListItem button key={'Protocol Metrics'} disablePadding component={NavLink} to={'/'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <AccountBalanceIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Protocol Metrics'} />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem button key={'Chain Metrics'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'chain'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <LinkIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Chain Metrics'} />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem button key={'Liquidity Pools'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'pools'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <WavesIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Liquidity Pools'} />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem button key={'Tokens'} disablePadding component={NavLink} to={'/' + route + 'tokens'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <TokenIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Tokens'} />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem button key={'Fees'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'fees'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <MonetizationOnIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Protocol Revenue'} />
-                    </ListItemButton>
-                </ListItem>
+                <ListItemButton key={'Protocol Metrics'} component={NavLink} to={'/'}>
+                    <ListItemIcon>
+                        <AccountBalanceIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Protocol Metrics'} />
+                </ListItemButton>
+
+                <ListItemButton key={'Chain Metrics'} component={NavLink} to={networkPrefix(activeNetwork) + 'chain'}>
+                    <ListItemIcon>
+                        <LinkIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Chain Metrics'} />
+                </ListItemButton>
+
+
+                <ListItemButton key={'Liquidity Pools'} component={NavLink} to={networkPrefix(activeNetwork) + 'pools'}>
+                    <ListItemIcon>
+                        <WavesIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Liquidity Pools'} />
+                </ListItemButton>
+
+
+                <ListItemButton key={'Tokens'} component={NavLink} to={'/' + route + 'tokens'}>
+                    <ListItemIcon>
+                        <TokenIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Tokens'} />
+                </ListItemButton>
             </List>
-            <Divider />
             <List>
-                <ListItem button key={'DAO Treasury'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'} >
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <AccountBalanceWalletIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'DAO Treasury'} />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem button key={'Service Providers'} disablePadding component={NavLink} to={networkPrefix(activeNetwork) + 'serviceProviders'}>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <HandshakeIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Service Providers'} />
-                    </ListItemButton>
-                </ListItem>
+                <Divider />
+                <ListItemButton key={'Fees'} component={NavLink} to={networkPrefix(activeNetwork) + 'fees'}>
+                    <ListItemIcon>
+                        <MonetizationOnIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Protocol Revenue'} />
+                </ListItemButton>
+                <ListItemButton key={'DAO Treasury'} component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'}>
+                    <ListItemIcon>
+                        <AccountBalanceWalletIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'DAO Treasury'} />
+                </ListItemButton>
+                <ListItemButton key={'Service Providers'} component={NavLink} to={networkPrefix(activeNetwork) + 'serviceProviders'}>
+                    <ListItemIcon>
+                        <HandshakeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Service Providers'} />
+                </ListItemButton>
+                <ListItemButton key={'DAO Financials'} component={NavLink} to={networkPrefix(activeNetwork) + 'financials'}>
+                    <ListItemIcon>
+                        <RequestQuoteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'DAO Financials'} />
+                </ListItemButton>
             </List>
             <Divider />
-            <Divider />
-            <Box position={"fixed"} bottom="0" maxWidth={drawerWidth}>
-            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'}>
+            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth / 6 + 'px'}>
                 <Polling />
             </Box>
-            <Box display="flex" justifyContent="space-between" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
-                <Link href="https://github.com/Xeonus" target="_blank" rel="noopener noreferrer">
-                    <GitHubIcon />
-                </Link>
-                <Link href="https://twitter.com/Xeonusify" target="_blank" rel="noopener noreferrer">
-                    <TwitterIcon />
-                </Link>
-                <Link href="https://discord.balancer.fi" target="_blank" rel="noopener noreferrer">
-                    <img src={DiscordIconLight} alt="Discord Icon" width="25" />
-                </Link>
-            </Box>
-            <Box display="flex" justifyContent="space-evenly" paddingX={drawerWidth/6 + 'px'} paddingY="10px">
-                <IconButton
-                    sx={{
-                        ml: 1,
-                        animationDuration: 2,
-                        height: 30,
-                        borderRadius: 1,
-                    }}>
-                    <Link 
-                        color={theme.palette.mode === 'dark' ? 'white' : 'black'} 
-                        target="_blank" rel="noopener noreferrer" 
-                        variant="caption" display="block" 
-                        underline="none" 
-                        href="https://coingecko.com">
-                        <Box display="flex" alignItems="center" alignContent="center">
-                            <Typography variant="caption" >Powered by</Typography>
-                            <Box
-                                sx={{ display: { xs: 'none', md: 'flex' }, ml: 1 }} >
-                                <img src={CoingeckoColor} alt="Coingecko Logo" width="20" />
-                            </Box>
-                        </Box>
+            <Divider />
+            <Box position={"fixed"} bottom="0" maxWidth={drawerWidth + drawerWidth / 6}>
+                <Box mt={1} display="flex" justifyContent="space-between" paddingX={drawerWidth / 6 + 'px'} paddingY="5px">
+
+                    <Link href="https://github.com/Xeonus" target="_blank" rel="noopener noreferrer">
+                        <GitHubIcon />
                     </Link>
-                </ IconButton>
-            </Box>
+                    <Link href="https://twitter.com/Xeonusify" target="_blank" rel="noopener noreferrer">
+                        <TwitterIcon />
+                    </Link>
+                    <Link href="https://discord.balancer.fi" target="_blank" rel="noopener noreferrer">
+                        <img src={DiscordIconLight} alt="Discord Icon" width="25" />
+                    </Link>
+                </Box>
+                <Box mt={1} display="flex" justifyContent="center" paddingX={drawerWidth / 6 + 'px'}>
+                    <Typography variant="body2" fontWeight={"bold"} >Powered by</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-evenly" paddingX={drawerWidth / 6 + 'px'} paddingY="5px">
+                    <IconButton
+                        sx={{
+                            ml: 1,
+                            animationDuration: 2,
+                            height: 30,
+                            borderRadius: 1,
+                        }}>
+                        <Link
+                            color={theme.palette.mode === 'dark' ? 'white' : 'black'}
+                            target="_blank" rel="noopener noreferrer"
+                            variant="caption" display="block"
+                            underline="none"
+                            href="https://coingecko.com">
+                            <Box display="flex" alignItems="center" alignContent="center">
+                                <Box
+                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
+                                </Box>
+                            </Box>
+                        </Link>
+                    </ IconButton>
+                    <IconButton
+                        sx={{
+                            ml: 1,
+                            animationDuration: 2,
+                            height: 30,
+                            borderRadius: 1,
+                        }}>
+                        <Link
+                            color={theme.palette.mode === 'dark' ? 'white' : 'black'}
+                            target="_blank" rel="noopener noreferrer"
+                            variant="caption" display="block"
+                            underline="none"
+                            href="https://cloud.debank.com/">
+                            <Box display="flex" alignItems="center" alignContent="center">
+
+                                <Box
+                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    <img src={DebankColor} alt="Debank Logo" width="25" />
+                                </Box>
+                            </Box>
+                        </Link>
+                    </ IconButton>
+                    <IconButton
+                        sx={{
+                            ml: 1,
+                            animationDuration: 2,
+                            height: 30,
+                            borderRadius: 1,
+                        }}>
+                        <Link
+                            color={theme.palette.mode === 'dark' ? 'white' : 'black'}
+                            target="_blank" rel="noopener noreferrer"
+                            variant="caption" display="block"
+                            underline="none"
+                            href="https://www.alchemy.com/">
+                            <Box display="flex" alignItems="center" alignContent="center">
+
+                                <Box
+                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    <img src={AlchemyBlue} alt="Alchemy Logo" width="25" />
+                                </Box>
+                            </Box>
+                        </Link>
+                    </ IconButton>
+                </Box>
             </Box>
         </Drawer>
     );

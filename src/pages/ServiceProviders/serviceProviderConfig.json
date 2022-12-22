@@ -1,0 +1,233 @@
+{
+    "service_provider":[
+        {
+            "name": "Balancer Maxis",
+            "short_description": "The Balancer Maxis are a passionate group of Balancer community contributors. A center of excellence that keeps the Balancer ecosystem operating at a first class level.",
+            "site_url": "https://www.notion.so/Balancer-Maxis-b2825faaad2a46a39b7eda2992ae4251",
+            "img_ref": "balancerMaxis.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x337fb336a2cd984da550939152af0f397db0ba48683229e739c5a7d883f98d46",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 12300,
+                        "BAL_VESTED": 20625
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 4,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x45f33cd819654400cb821f966fc54cc0c8ad7e4001d1dee3ee935285d03d9b31",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 12300,
+                        "BAL_VESTED": 28050
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Orb Collective",
+            "site_url": "",
+            "short_description": "Orb is an experienced and passionate team of professionals who are dedicated to propelling Balancers growth. Orbs mission is simple: to scale global utilization of the Balancer Protocol, and continue to cultivate the Balancer ecosystem for the next decade of innovation in DeFi.",
+            "img_ref": "orbCollective.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbb8abd7f99ed93399236a5976d22dc8c3b172528f3c305fa6bfca39fbcf59857",
+                    "budget_requested": {
+                        "USDC": 732334,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 4,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbb8abd7f99ed93399236a5976d22dc8c3b172528f3c305fa6bfca39fbcf59857",
+                    "budget_requested": {
+                        "USDC": 973413,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 1,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbb8abd7f99ed93399236a5976d22dc8c3b172528f3c305fa6bfca39fbcf59857",
+                    "budget_requested": {
+                        "USDC": 1022734,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbb8abd7f99ed93399236a5976d22dc8c3b172528f3c305fa6bfca39fbcf59857",
+                    "budget_requested": {
+                        "USDC": 954471,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbb8abd7f99ed93399236a5976d22dc8c3b172528f3c305fa6bfca39fbcf59857",
+                    "budget_requested": {
+                        "USDC": 305725,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                }
+                
+            ]
+        },
+        {
+            "name": "Balancer OpCo",
+            "short_description": "Balancer OpCo Limited (or the “Balancer OpCo”) is a wholly-owned subsidiary of the Balancer Foundation. It is an integral element of the Balancer Foundation  corporate structure supporting the BalancerDAO, and is intended to serve two primary functions: Admnisistrative & Operational as well as Front-End Dev and Engineering Workstream.",
+            "site_url": "",
+            "img_ref": "default.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe7bb60c4fc08c8c1b3694a39734e9b5f9b7060b5dc7fb34090b6849318212e75",
+                    "budget_requested": {
+                        "USDC": 418691,
+                        "BAL": 116678.08,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 4,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe7bb60c4fc08c8c1b3694a39734e9b5f9b7060b5dc7fb34090b6849318212e75",
+                    "budget_requested": {
+                        "USDC": 418691,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 1,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe7bb60c4fc08c8c1b3694a39734e9b5f9b7060b5dc7fb34090b6849318212e75",
+                    "budget_requested": {
+                        "USDC": 464068,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe7bb60c4fc08c8c1b3694a39734e9b5f9b7060b5dc7fb34090b6849318212e75",
+                    "budget_requested": {
+                        "USDC": 533217,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Balancer Grants",
+            "short_description": "The grant program provides support and funding (up to $100K USD, paid in BAL) to projects committed to supporting Balancer Protocol in achieving its mission to become the number one source of liquidity for DeFi. This program is made for groups and individuals that aspire to run a project that builds on the Balancer Protocol or supports the development of the Balancer ecosystem.",
+            "site_url": "https://www.notion.so/Balancer-Grants-938f1b979810427f8d903a904315da41",
+            "img_ref": "default.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x29c1d0e6b7d09fbee6f69d28b24539e1a793c7a7d61ca7eb039686ae5de6ed02",
+                    "budget_requested": {
+                        "USDC": 60000,
+                        "BAL": 101500,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 4,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xabf95f31233e9b6c9ee22e06d96ffe9e05736acaa091fca8d867d625a6a4a343",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Balancer Foundation",
+            "short_description": "he Foundation provides the DAO with an additional mechanism for executing work, furthering Balancer’s decentralization goals, and building resilience across the Balancer Ecosystem. The Balancer Foundation is a traditional legal entity that is directed by the DAO.",
+            "site_url": "",
+            "img_ref": "default.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x05d36e7cb6f2f63ac84eb279ff7bb274eb6375a81429edc77655212c79d6d0ae",
+                    "budget_requested": {
+                        "USDC": 32941,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 3,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x05d36e7cb6f2f63ac84eb279ff7bb274eb6375a81429edc77655212c79d6d0ae",
+                    "budget_requested": {
+                        "USDC": 67919,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2022,
+                    "quarter": 4,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x05d36e7cb6f2f63ac84eb279ff7bb274eb6375a81429edc77655212c79d6d0ae",
+                    "budget_requested": {
+                        "USDC": 67969,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 1,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x05d36e7cb6f2f63ac84eb279ff7bb274eb6375a81429edc77655212c79d6d0ae",
+                    "budget_requested": {
+                        "USDC": 78384,
+                        "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                }
+            ]
+        },
+        {
+            "name": "DAOism Systems",
+            "short_description": "Daoism Systems is a consultancy of computer scientists, engineers, and researchers developing on-chain solutions for web3 organizations, founded in Berlin in January 2022. Please read our manifesto 1 for more details.",
+            "site_url": "https://daoism.systems/",
+            "img_ref": "daoismSystems.png",
+            "budgets": [
+                {
+                    "year": 2022,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x29a37ab71ce03a5e167fd012c363e72088bd0554d2b25c99f3373fa7cceb7124",
+                    "budget_requested": {
+                        "USDC": 60000,
+                        "BAL": 7000,
+                        "BAL_VESTED": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

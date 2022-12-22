@@ -65,3 +65,30 @@ export type PriceChartEntry = {
     high: number;
     low: number;
 };
+
+
+export interface ServiceProvidersConfig {
+    service_provider: ServiceProviderEntry[];
+}
+
+export interface ServiceProviderEntry {
+    name:               string;
+    short_description?: string;
+    site_url:           string;
+    budgets:            Budget[];
+    img_ref:            string;
+    short_descrption?:  string;
+}
+
+export interface Budget {
+    year:              number;
+    quarter:           number;
+    snapshotReference: string;
+    budget_requested:  BudgetRequested;
+}
+
+export interface BudgetRequested {
+    USDC:       number;
+    BAL:        number;
+    BAL_VESTED: number;
+}
