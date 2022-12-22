@@ -4,6 +4,7 @@ import isDev from '../../constants';
 import { DB_KEY } from '../balancer/constants';
 import { TransactionHistory } from './debankTypes';
 import debankPortfolio from '../mocks/debank-complexPortfolioChain.json'
+import debankTransactions from './data/treasuryTxHistory.json'
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 export const useGetTransactions = (walletId: string, startTimeStamp: number) => {
@@ -30,9 +31,9 @@ export const useGetTransactions = (walletId: string, startTimeStamp: number) => 
         setTransactions(null);
       }
     }
-    if (isDev() === false) {
+    if (isDev()) {
       console.log("DEV: loading transaction mock")
-      const copy = JSON.parse(JSON.stringify(debankPortfolio));
+      const copy = JSON.parse(JSON.stringify(debankTransactions));
       setTransactions(copy)
     } else {
       console.log("PRODUCTION: fetching portfolio from Debank")
