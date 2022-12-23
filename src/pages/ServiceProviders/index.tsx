@@ -92,12 +92,12 @@ export default function ServiceProviders() {
                 </Grid>
                 <Grid
                     item
-                    mt={1}
+                    mt={2}
                     xs={10}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h5">Overall Financial Impact to DAO Treasury</Typography>
+                            <Typography variant="h6">Overall Financial Impact to DAO Treasury</Typography>
                         </Box>
                     </Box>
                 </Grid>
@@ -145,14 +145,16 @@ export default function ServiceProviders() {
                 </Grid>
                 <Grid
                     item
-                    mt={1}
+                    mt={2}
                     xs={10}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h5">Financial Impact by Service Provider</Typography>
+                            <Typography variant="h6">Financial Impact by Service Provider</Typography>
                         </Box>
+                        
                     </Box>
+                    <Typography>Coming soon!</Typography>
                 </Grid>
             </Grid>
         </Box>
