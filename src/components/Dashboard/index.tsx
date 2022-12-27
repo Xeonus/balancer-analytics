@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Cookies from 'universal-cookie';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import BalancerLogoWhite from '../../assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
@@ -28,6 +29,7 @@ import Fees from '../../pages/Fees';
 import { networkPrefix } from '../../utils/networkPrefix'
 import Treasury from '../../pages/Treasury';
 import ServiceProviders from '../../pages/ServiceProviders';
+import Financials from '../../pages/Financials';
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -99,12 +101,24 @@ function Dashboard() {
         setOpen(false);
     };
 
+    //Color mode cookie
+    const cookies = React.useMemo(() => new Cookies(), []);
+    let storedTheme = 'light';
+    if (cookies.get('storedTheme') !== null && cookies.get('storedTheme') !== undefined ) {
+       storedTheme = cookies.get('storedTheme');
+    } else {
+       storedTheme = 'light';
+    }
+    console.log("cookies", cookies)
+
     //Color mode handler
-    const [mode, setMode] = React.useState<'light' | 'dark'>('light');
+    const [mode, setMode] = React.useState<'light' | 'dark'>(storedTheme === 'light' ? 'light' : 'dark');
     const colorMode = React.useMemo(
         () => ({
             toggleColorMode: () => {
                 setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+                //Set cookie
+                cookies.set('storedTheme', (mode === 'light' ? 'dark' : 'light'));
             },
         }),
         [],
@@ -133,15 +147,15 @@ function Dashboard() {
             <ThemeProvider theme={theme}>
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
-                    <AppBar 
-                        position="fixed" 
-                        open={open} 
-                        enableColorOnDark 
-                        sx={{ 
-                            background: mode === 'dark' ? "rgba(14, 23, 33, 0.2)" : "rgba(255, 255, 255, 0.2)", 
-                            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", 
-                            backdropFilter: "blur(5px)" 
-                            }}>
+                    <AppBar
+                        position="fixed"
+                        open={open}
+                        enableColorOnDark
+                        sx={{
+                            background: mode === 'dark' ? "rgba(14, 23, 33, 0.2)" : "rgba(255, 255, 255, 0.2)",
+                            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                            backdropFilter: "blur(5px)"
+                        }}>
                         <Toolbar>
                             <IconButton
                                 aria-label="open drawer"
@@ -171,6 +185,7 @@ function Dashboard() {
                                 >
                                     Analytics
                                 </Typography>
+                                <Typography variant="caption">Alpha</Typography>
                                 <Box position="absolute" right="10px" >
                                     <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
 
@@ -197,7 +212,7 @@ function Dashboard() {
                         open={open}
                         drawerWidth={drawerWidth}
                         handleDrawerClose={handleDrawerClose}
-                        activeNetwork = {activeNetwork}
+                        activeNetwork={activeNetwork}
                     />
                     <MainContent open={open}>
                         <DrawerHeader />
@@ -216,7 +231,9 @@ function Dashboard() {
                             <Route path={"/:networkID/treasury"} element={<Treasury />} />
                             <Route path={"/treasury"} element={<Treasury />} />
                             <Route path={"/:networkID/serviceProviders"} element={<ServiceProviders />} />
-                            <Route path={"/serviceProviders"} element={<ServiceProviders />} />    
+                            <Route path={"/serviceProviders"} element={<ServiceProviders />} />
+                            <Route path={"/:networkID/financials"} element={<Financials />} />
+                            <Route path={"/financials"} element={<Financials />} />
                         </Routes>
                     </MainContent>
                 </Box>

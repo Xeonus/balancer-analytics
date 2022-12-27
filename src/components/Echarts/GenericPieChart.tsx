@@ -1,7 +1,6 @@
 import ReactEcharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
-import { CircularProgress } from '@mui/material';
-import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
+import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
 
 export interface GenericPieChartProps {
@@ -43,7 +42,7 @@ export default function GenericPieChart({ data, height }: GenericPieChartProps) 
                 type: 'pie',
                 data: data,
                 radius: ['40%', '70%'],
-                avoidLabelOverlap: false,
+                avoidLabelOverlap: true,
                 label: {
                     show: true,
                     color: theme.palette.mode === 'dark' ? 'white' : 'black',
@@ -54,7 +53,7 @@ export default function GenericPieChart({ data, height }: GenericPieChartProps) 
                     label: {
                         show: true,
                         formatter: '{b} ({d}%)',
-                        fontSize: 15,
+                        fontSize: 12,
                         fontWeight: 'bold',
                         
                     }
