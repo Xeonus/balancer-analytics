@@ -12,13 +12,15 @@ export default function Financials() {
         name: 'Home',
         link: ''
     }
-    const feesNav: NavElement = {
-        name: 'DAO Financials',
-        link: 'financials'
-    }
     const navCrumbs: NavElement[] = new Array()
     navCrumbs.push(homeNav)
-    navCrumbs.push(feesNav);
+
+    //TODOs: 
+    //1. show quarterly graph of historical USDC income per source. 
+    //sources: fjord / copper, protocol fees / paybacks / ribbon margin calls / taxations like liquidations
+    //2. show quarterly spendings (past and future for SPs -> use same data as SP page)
+    //3. show forecast gauge in months (based on average spendings how far we can go with reserves)
+    //4. Show sankey chart of in- and outflows? Breakdown of BAL and USDC
 
     return (
         <Box sx={{ flexGrow: 2 }}>
@@ -29,7 +31,7 @@ export default function Financials() {
             >
                 <Grid item xs={10}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                        <NavCrumbs crumbSet={navCrumbs} destination={'DAO Financials'} />
                     </Box>
 
                 </Grid>

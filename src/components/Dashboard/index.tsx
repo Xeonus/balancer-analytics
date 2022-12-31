@@ -176,7 +176,7 @@ function Dashboard() {
                                     component="a"
                                     href="/"
                                     sx={{
-                                        mr: 2,
+                                        mr: 0.5,
                                         display: { xs: 'none', md: 'flex' },
                                         fontWeight: 700,
                                         textDecoration: 'none',
