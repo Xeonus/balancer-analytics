@@ -8,11 +8,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import Paper from '@mui/material/Paper';
-import { Grid, TableFooter, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
 import { formatDollarAmount, formatNumber } from '../../../utils/numbers';
@@ -200,7 +197,7 @@ export default function ServiceProviderSpendingTable({ spRows, year, quarter, ba
     }
 
 
-    const rows = spRows;
+    const rows = spRows.filter((row) => row.quarterlyTotal > 0);
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -210,20 +207,6 @@ export default function ServiceProviderSpendingTable({ spRows, year, quarter, ba
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
-
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDense(event.target.checked);
-    };
-
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =

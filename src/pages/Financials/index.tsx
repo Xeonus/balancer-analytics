@@ -3,6 +3,8 @@ import { Typography, Grid, Box, Card, Divider, CircularProgress } from "@mui/mat
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
+import txnJson from '../../data/debank/data/treasuryTxHistory.json'
+import { TransactionHistory } from '../../data/debank/debankTypes';
 
 export default function Financials() {
 
@@ -14,6 +16,10 @@ export default function Financials() {
     }
     const navCrumbs: NavElement[] = new Array()
     navCrumbs.push(homeNav)
+
+    const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
+
+    console.log("txnHistory", txnHistory)
 
     //TODOs: 
     //1. show quarterly graph of historical USDC income per source. 

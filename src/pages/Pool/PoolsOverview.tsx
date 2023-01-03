@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Typography, Grid, Stack } from "@mui/material";
+import { Typography, Grid, Stack, Card } from "@mui/material";
 import PoolTable from "../../components/Tables/PoolTable";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import { useActiveNetworkVersion } from "../../state/application/hooks";
@@ -8,13 +8,33 @@ import CustomLinearProgress from "../../components/Progress/CustomLinearProgress
 import { Box } from "@mui/system";
 import PoolMetricsCard from "../../components/Cards/PoolMetricsCard";
 import { POOL_HIDE } from "../../constants";
-import { PoolData } from "../../data/balancer/balancerTypes";
+import { BalancerChartDataItem, BalancerPieChartDataItem, PoolData } from "../../data/balancer/balancerTypes";
+import { getShortPoolName } from '../../utils/getShortPoolName';
+import GenericBarChart from '../../components/Echarts/GenericBarChart';
+import GenericPieChart from '../../components/Echarts/GenericPieChart';
 
 export default function PoolsOverview() {
 
     const poolData = useBalancerPools();
     const [activeNetwork] = useActiveNetworkVersion();
     const filteredPoolDatas = poolData.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
+
+    //Create bar chart data for pool distribution
+    const poolBarChartData : BalancerChartDataItem[] = [];
+    filteredPoolDatas.map((pool) => 
+        poolBarChartData.push(
+            {
+                value: pool.tvlUSD,
+                time: getShortPoolName(pool),
+            }
+        )
+    )
+    //Only get top 20 pools
+    const filteredPoolBarChartData = poolBarChartData.slice(0,19);
+    const filteredPieChartData: BalancerPieChartDataItem[] = filteredPoolBarChartData.map(({value, time}) => ({
+        value: value,
+        name: time,
+    }))
 
     const [topTVLPool, setTopTVLPool] = useState({} as PoolData)
     const [topFeePool, setTopFeePool] = useState({} as PoolData)
@@ -76,6 +96,18 @@ export default function PoolsOverview() {
                             poolTokenData={topFeePool.tokens}
                         />
                     </Stack>
+                </Grid> : null }
+                {filteredPoolBarChartData.length > 1 ?
+                <Grid item xs={10}>
+                    <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                    <Box mb={1}>
+                    <Card>
+                        <GenericBarChart data={filteredPoolBarChartData} rotateAxis={true} />
+                    </Card>
+                    </Box>
+                    <Card>
+                        <GenericPieChart data={filteredPieChartData} height='350px' />
+                    </Card>
                 </Grid> : null }
                 <Grid item xs={10}>
                     <Typography variant="h5" mb={1}>Deployed Liquidity on {activeNetwork.name}</Typography>

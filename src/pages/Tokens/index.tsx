@@ -1,9 +1,12 @@
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Card } from '@mui/material';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useBalancerTokens } from '../../data/balancer/useTokens';
 import TokenTable from '../../components/Tables/TokenTable';
 import { Grid } from '@mui/material';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
+import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
+import GenericBarChart from '../../components/Echarts/GenericBarChart';
+import GenericPieChart from '../../components/Echarts/GenericPieChart';
 
 
 export default function Tokens() {
@@ -12,6 +15,29 @@ export default function Tokens() {
     let tokenDatas = useBalancerTokens();
     tokenDatas = tokenDatas.filter(x => x.tvlUSD < 10000000000)
 
+    const sortedTokenDats = tokenDatas.sort(function (a, b) {
+        return b.tvlUSD - a.tvlUSD;
+    });
+
+
+     //Create bar chart data for pool distribution
+     
+     const poolBarChartData : BalancerChartDataItem[] = [];
+     sortedTokenDats.map((token) => 
+         poolBarChartData.push(
+             {
+                 value: token.tvlUSD,
+                 time: token.name,
+             }
+         )
+     )
+     //Only get top 20 pools
+     const filteredPoolBarChartData = poolBarChartData.slice(0,19);
+     const filteredPieChartData: BalancerPieChartDataItem[] = poolBarChartData.map(({value, time}) => ({
+         value: value,
+         name: time,
+     }))
+
     return (
         <Box sx={{ flexGrow: 2 }}>
             <Grid
@@ -19,6 +45,18 @@ export default function Tokens() {
                 spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
+                {filteredPoolBarChartData.length > 1 ?
+                <Grid item xs={10}>
+                    <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
+                    <Box mb={1}>
+                    <Card>
+                        <GenericBarChart data={filteredPoolBarChartData} rotateAxis={true} />
+                    </Card>
+                    </Box>
+                    <Card>
+                        <GenericPieChart data={filteredPieChartData} height='350px' />
+                    </Card>
+                </Grid> : null }
                 <Grid item xs={10}>
                     <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                 </Grid>
