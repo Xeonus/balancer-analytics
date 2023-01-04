@@ -7,10 +7,9 @@ import { pink } from '@mui/material/colors';
 
 export interface GenericBarChartProps {
     data: BalancerChartDataItem[],
-    rotateAxis?: boolean
 }
 
-export default function GenericBarChart({ data, rotateAxis = false}: GenericBarChartProps) {
+export default function GenericBarChart({ data, }: GenericBarChartProps) {
 
     const theme = useTheme();
     let xData = data.map(el => el.time);
@@ -31,8 +30,7 @@ export default function GenericBarChart({ data, rotateAxis = false}: GenericBarC
         },
         xAxis: {
             type: 'category',
-            data: xData,
-            axisLabel: { interval: 0, rotate: rotateAxis ? 30 : 0 }
+            data: xData
         },
         yAxis: [
             {

@@ -12,6 +12,7 @@ import { BalancerChartDataItem, BalancerPieChartDataItem, PoolData } from "../..
 import { getShortPoolName } from '../../utils/getShortPoolName';
 import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
+import MixedLineBarChart from '../../components/Echarts/MixedLineBarChart';
 
 export default function PoolsOverview() {
 
@@ -25,6 +26,15 @@ export default function PoolsOverview() {
         poolBarChartData.push(
             {
                 value: pool.tvlUSD,
+                time: getShortPoolName(pool),
+            }
+        )
+    )
+    const poolLineChartData : BalancerChartDataItem[] = [];
+    filteredPoolDatas.map((pool) => 
+        poolLineChartData.push(
+            {
+                value: pool.feesUSD,
                 time: getShortPoolName(pool),
             }
         )
@@ -102,7 +112,12 @@ export default function PoolsOverview() {
                     <Typography variant='h5'>Top 20 Pools by TVL</Typography>
                     <Box mb={1}>
                     <Card>
-                        <GenericBarChart data={filteredPoolBarChartData} rotateAxis={true} />
+                        < MixedLineBarChart 
+                            barChartData={filteredPoolBarChartData} 
+                            barChartName={'TVL'} 
+                            lineChartData={poolLineChartData} 
+                            lineChartName={'Trading Fees 24h'} 
+                            rotateAxis={true} />
                     </Card>
                     </Box>
                     <Card>
