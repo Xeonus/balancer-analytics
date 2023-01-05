@@ -21,6 +21,7 @@ export default function useDecoratePools(
     });
 
     const { pools } = sdk;
+    const poolIds = poolDatas?.map(p => p.id, '');
 
     //TODO: remove / refactor chain logic
     const fetchPools = async () => {
@@ -30,12 +31,11 @@ export default function useDecoratePools(
                     (activeNetwork.chainId === '137' ? true : pool.poolType !== 'Element') &&
                     (activeNetwork.chainId === '137' ? true : pool.poolType !== 'AaveLinear') &&
                     (activeNetwork.chainId === '137' ? true :  pool.poolType !== 'LiquidityBootstrapping' ) &&
-                    poolDatas?.find(p => p.id === pool.id) !== null
+                    poolIds ? poolIds?.includes(pool.id) : false
             )
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
-
         const poolList = await Promise.all(sdkPoolList)
-        //console.log("fetchPools:", poolList)
+        console.log("sdk poolList:", poolList)
         return poolList
     }
 

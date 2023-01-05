@@ -50,14 +50,14 @@ export default function Fees() {
     const pools = useBalancerPools(250, startDate, endDate);
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp);
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
-    const decoratedPools = useDecoratePools(yieldPools ? yieldPools : undefined)
+    const decoratedPools = useDecoratePools(yieldPools.length > 10 ? yieldPools : undefined)
     // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
     //     pool.tokens.some(token => 
     //         YIELD_BEARING_TOKENS.includes(token.address)
     //     )
     //     ) : undefined
 
-    
+
 
     //Problem statement: We should distinguish between views of real realized fees -> make a swap fee analysis view that shows the "real" swap fees earned
     //Create an additional aggregated table that ESTIMATES / Makes a forecast on potential fees and its distributions from TODAYS fees!
@@ -181,7 +181,6 @@ export default function Fees() {
                                 <MenuItem value={'365'}>365 days</MenuItem>
                             </Select>
                         </FormControl>
-
                         {showDate ?
                             <Box p={0.5} display="flex" justifyContent="left" >
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -208,27 +207,55 @@ export default function Fees() {
                             </Box> : null}
                     </Box>
                 </Grid>
-                 <Grid item xs={10}>
-                    <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
-                </Grid> 
                 <Grid item xs={10}>
-                    <Box alignItems='left'>
-                    <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
-                    <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
-                    </Box>
+                    <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
                 </Grid>
-                {decoratedPools ?
+            </Grid>
+            <Grid
+                    container
+                    spacing={1}
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <Grid item xs={10}>
+                        <Box alignItems='left'>
+                            <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
+                            <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
+                        </Box>
+                    </Grid>
+                    </Grid>
+            {decoratedPools ?
+                            <Grid
+                            container
+                            spacing={1}
+                            sx={{ justifyContent: 'center' }}
+                        >
                     <Grid item xs={10}>
                         <Card>
                             <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                         </Card>
-                    </Grid> : <CircularProgress size={'small'}/>}
-                <Grid mt={2} item xs={10}>
-                    <Typography variant="h6">Projected Pool Revenue Performance to the DAO</Typography>
-                </Grid>
-                <Grid item xs={10}>
-                    <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
-                </Grid>
+                    </Grid>
+                    <Grid mt={2} item xs={10}>
+                        <Typography variant="h6">Projected Pool Revenue Performance to the DAO</Typography>
+                    </Grid>
+                    <Grid item xs={10}>
+                        <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
+                    </Grid>
+                </Grid> : (<Grid
+                    container
+                    spacing={2}
+                    mt={3}
+                    sx={{ justifyContent: 'center' }}
+                >
+                   <Box display="flex" justifyContent="center" alignItems="center" alignContent="center" flexDirection="column">
+                        <CustomLinearProgress />
+                        <Typography variant="caption">Calculating token yield...</Typography>
+                    </Box>
+                </Grid>)}
+            <Grid
+                container
+                spacing={1}
+                sx={{ justifyContent: 'center' }}
+            >
                 <Grid mt={2} item xs={10}>
                     <Box display="flex" alignItems='center'>
                         <Typography variant="h5">Tokens in Fee Collector Contract</Typography>

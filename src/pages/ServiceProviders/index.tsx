@@ -11,6 +11,8 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from './helpers';
 import ServiceProviderSpendingTable from '../../components/Tables/ServiceProviderSpendingTable';
+import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
+import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 
 
@@ -20,9 +22,9 @@ export default function ServiceProviders() {
     //States
     dayjs.extend(quarterOfYear);
     const currentQuarter = dayjs().quarter();
+    const [activeNetwork] = useActiveNetworkVersion()
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
-    const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
-    const balPriceData = useCoinGeckoSimpleTokenPrices([balAddress]);
+    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
 
 
     //Data
@@ -48,6 +50,13 @@ export default function ServiceProviders() {
 
     return (
         <Box sx={{ flexGrow: 1, justifyContent: "center" }}>
+            <Grid
+                container
+                spacing={2}
+                mt={3}
+                sx={{ justifyContent: 'center' }}
+            >
+            </Grid>
             <Grid
                 container
                 sx={{ justifyContent: 'center' }}

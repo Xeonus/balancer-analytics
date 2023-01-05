@@ -27,7 +27,7 @@ export default function Tokens() {
      tokenBarChartData.push(
              {
                  value: token.tvlUSD,
-                 time: token.name,
+                 time: token.symbol,
              }
          )
      )
@@ -44,7 +44,7 @@ export default function Tokens() {
      tokenLineChartData.push(
              {
                  value: token.volumeUSD,
-                 time: token.name,
+                 time: token.symbol,
              }
          )
      )
