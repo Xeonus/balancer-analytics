@@ -25,6 +25,16 @@
                         "BAL": 12300,
                         "BAL_VESTED": 28050
                     }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 1,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x92df0d6c40edb6b9dce6e3f1ee6031167cbe704d818582deb977fec5452f11fc",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 15600,
+                        "BAL_VESTED": 32400
+                    }
                 }
             ]
         },
@@ -158,6 +168,16 @@
                     "budget_requested": {
                         "USDC": 0,
                         "BAL": 0,
+                        "BAL_VESTED": 0
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 1,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x8e20d769b9674fbea2f749844525bdddb8afcd874ab8b3aafb17c91a46cf7bca",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 84791,
                         "BAL_VESTED": 0
                     }
                 }
