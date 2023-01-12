@@ -9,7 +9,7 @@ export interface GenericBarChartProps {
     data: BalancerChartDataItem[],
 }
 
-export default function GenericBarChart({ data, }: GenericBarChartProps) {
+export default function GenericBarChart({ data }: GenericBarChartProps) {
 
     const theme = useTheme();
     let xData = data.map(el => el.time);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
-import { Budget, ServiceProviderEntry, ServiceProvidersConfig } from '../../types';
+import { ServiceProvidersConfig } from '../../types';
 import { CoingeckoRawData } from '../../data/balancer/useTokens';
 import { createData, Data } from '../../components/Tables/ServiceProviderSpendingTable';
 //Import quarter plugin
