@@ -2,6 +2,9 @@ import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "./
 
 //Mainnet fee collector address
 export const FEE_COLLECTOR_ADDRESS = '0xce88686553686da562ce7cea497ce749da109f9f';
+
+export const FEE_STREAMER = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
+
 //Treasury addresses
 const TREASURY_ADDRESS_MAINNET = '0x10a19e7ee7d7f8a52822f6817de8ea18204f2e4f';
 const TREASURY_ADDRESS_ARBITRUM = '0xaf23dc5983230e9eeaf93280e312e57539d098d0';

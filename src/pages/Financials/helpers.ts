@@ -3,34 +3,144 @@ import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { TransactionHistory } from '../../data/debank/debankTypes';
 
 
-export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory, tokenAddress: string, type: string) {
-    
+export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory, tokenAddress: string, type: string, sender?: string) {
+
     const tnxChartData: BalancerChartDataItem[] = []
     txnHistory.history_list.forEach((el) => {
         let date = dayjs.unix(el.time_at);
-        if (el.cate_id === type ) {
+        if (el.cate_id === type && type === 'receive') {
             el.receives.forEach(
                 receive => {
                     if (tokenAddress === receive.token_id) {
+                        if (sender ? receive.from_addr === sender : true) {
+                            tnxChartData.push(
+                                {
+                                    value: receive.amount,
+                                    time: date.format("YYYY-MM-DD"),
+                                }
+                            )
+                        }
+                    }
+
+                }
+            )
+
+        }
+        if (el.cate_id === null && type === 'send') {
+            el.sends.forEach(
+                send => {
+                    if (tokenAddress === send.token_id) {
                         tnxChartData.push(
                             {
-                                value: receive.amount,
+                                value: - send.amount,
                                 time: date.format("YYYY-MM-DD"),
                             }
                         )
                     }
-                
+
                 }
             )
-            
+
         }
     })
 
     //sort by time
-    //tnxChartData.sort(function(a, b) {
-    //    return new Date(a.time) - new Date(b.time);
-    //});
+    tnxChartData.sort(function (a, b) {
+        const date1 = new Date(a.time)
+        const date2 = new Date(b.time)
+        return date1.getTime() - date2.getTime();
+    })
 
     return tnxChartData;
 
+}
+
+export function getChartDataByQuarter(chartData: BalancerChartDataItem[]) {
+    const quarterData: BalancerChartDataItem[] = [];
+    let quarterSum = 0;
+    let currentQuarter = '';
+
+    chartData.forEach(item => {
+        let quarter = Math.floor((new Date(item.time).getMonth() + 3) / 3);
+        let year = new Date(item.time).getFullYear();
+        let currentQuarterYear = `Q${quarter}-${year}`;
+
+        if (currentQuarter !== currentQuarterYear) {
+            if (currentQuarter !== '') {
+                quarterData.push({
+                    time: currentQuarter,
+                    value: quarterSum,
+                });
+            }
+            currentQuarter = currentQuarterYear;
+            quarterSum = 0;
+        }
+        quarterSum += item.value;
+    });
+
+    // Push the last set of data
+    quarterData.push({
+        time: currentQuarter,
+        value: quarterSum,
+    });
+
+    return quarterData;
+
+}
+
+export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
+    const quarterData: BalancerChartDataItem[] = [];
+    let quarterSum = 0;
+    let currentMonth = '';
+
+    chartData.forEach(item => {
+        let month = new Date(item.time).getMonth();
+        let year = new Date(item.time).getFullYear();
+        let currentMonthYear = `${new Date(item.time).toLocaleString('default', { month: 'short' })}-${year}`;
+
+        if (currentMonth !== currentMonthYear) {
+            if (currentMonth !== '') {
+                quarterData.push({
+                    time: currentMonth,
+                    value: quarterSum,
+                });
+            }
+            currentMonth = currentMonthYear;
+            quarterSum = 0;
+        }
+        quarterSum += item.value;
+    });
+
+    // Push the last set of data
+    quarterData.push({
+        time: currentMonth,
+        value: quarterSum,
+    });
+
+    return quarterData;
+
+}
+
+export function getCumulativeSumTrace(chartData: BalancerChartDataItem[]) {
+
+    const cumulativeChartData: BalancerChartDataItem[] = [];
+
+    let start = new Date(chartData[0].time);
+    let end = new Date(chartData[chartData.length - 1].time);
+
+    while (start <= end) {
+        cumulativeChartData.push({ value: 0, time: start.toISOString().slice(0, 10) });
+        start.setDate(start.getDate() + 1);
+    }
+    let cumulativeSum = 0;
+    cumulativeChartData.forEach(item => {
+        cumulativeSum += item.value
+        const index = chartData.findIndex(obj => obj.time === item.time);
+        if (index && chartData[index]) {
+            cumulativeSum += chartData[index].value
+        }
+        item.value = cumulativeSum
+
+    })
+    return cumulativeChartData;
 }

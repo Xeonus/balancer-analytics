@@ -6,12 +6,16 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import txnJson from '../../data/debank/data/treasuryTxHistory.json'
 import { TransactionHistory } from '../../data/debank/debankTypes';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
-import { extractTransactionsByTokenAndType } from './helpers';
+import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace } from './helpers';
 import GenericBarChart from '../../components/Echarts/GenericBarChart';
+import { useGetTransactions } from '../../data/debank/useGetTransactions';
+import { FEE_COLLECTOR_ADDRESS, FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
+import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
 
 export default function Financials() {
 
     const [activeNetwork] = useActiveNetworkVersion()
+    const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -20,9 +24,14 @@ export default function Financials() {
     const navCrumbs: NavElement[] = new Array()
     navCrumbs.push(homeNav)
 
+    //Load history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
 
-    console.log("txnHistory", txnHistory)
+    //complement with actual data
+    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
+    //txnHistory.history_list.find(el => el.time_at)
+
+    //console.log("txnHistory", txnHistory)
 
     //TODOs: 
     //1. show quarterly graph of historical USDC income per source. 
@@ -35,16 +44,20 @@ export default function Financials() {
     //1. obtain whitelist token data
     //2. aggregate by Quarter
     //3. Feed into multi-bar-chart
-
-    //1. Obtain whitelist chartdata
-
     const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
     const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-    const usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive');
-    console.log("usdcReceived", usdcReceived);
+
+    const usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
+    const quarterlyUSDC = getChartDataByQuarter(usdcReceived);
+    const monthlyUSDC = getChartDataByMonth(usdcReceived)
+    console.log("monthlyUSDC", monthlyUSDC)
+    const cumulativeChartData = getCumulativeSumTrace(usdcReceived);
+    console.log("cumulativeChartData", cumulativeChartData)
+    //console.log("quarterlyUSDC", quarterlyUSDC);
     const wethReceived = extractTransactionsByTokenAndType(txnHistory, weth.toLowerCase(), 'receive');
-    console.log("wethReceived", wethReceived)
+    const quarterlyWETH = getChartDataByQuarter(wethReceived);
+    //console.log("wethReceived", wethReceived)
     //TODO: Load token price data the same way we do it for historical pool data?
 
 
@@ -70,10 +83,13 @@ export default function Financials() {
                 </Grid>
                 <Grid mt={2} item xs={10}>
                     <Card>
-                        <GenericBarChart data={usdcReceived} />
+                        <GenericBarChart data={monthlyUSDC} />
                     </Card>
                     <Card>
-                        <GenericBarChart data={wethReceived} />
+                        <GenericBarChart data={quarterlyWETH} />
+                    </Card>
+                    <Card>
+                        <GenericAreaChart chartData={cumulativeChartData} dataTitle='test' />
                     </Card>
                 </Grid>
             </Grid>
