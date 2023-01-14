@@ -26,13 +26,13 @@ export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory
             )
 
         }
-        if (el.cate_id === null && type === 'send') {
+        if (type === 'send') {
             el.sends.forEach(
                 send => {
                     if (tokenAddress === send.token_id) {
                         tnxChartData.push(
                             {
-                                value: - send.amount,
+                                value: send.amount < 0 ? send.amount : - send.amount,
                                 time: date.format("YYYY-MM-DD"),
                             }
                         )
@@ -121,17 +121,18 @@ export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
 
 }
 
-export function getCumulativeSumTrace(chartData: BalancerChartDataItem[]) {
+export function getCumulativeSumTrace(chartData: BalancerChartDataItem[], start: Date, end: Date) {
 
     const cumulativeChartData: BalancerChartDataItem[] = [];
+    //Create new object to remove pointer reference!
+    let startDate = new Date(start.getTime());
+    let endDate = new Date(end.getTime());
 
-    let start = new Date(chartData[0].time);
-    let end = new Date(chartData[chartData.length - 1].time);
-
-    while (start <= end) {
-        cumulativeChartData.push({ value: 0, time: start.toISOString().slice(0, 10) });
-        start.setDate(start.getDate() + 1);
+    while (startDate <= endDate) {
+        cumulativeChartData.push({ value: 0, time: startDate.toISOString().slice(0, 10) });
+        startDate.setDate(startDate.getDate() + 1);
     }
+
     let cumulativeSum = 0;
     cumulativeChartData.forEach(item => {
         cumulativeSum += item.value
