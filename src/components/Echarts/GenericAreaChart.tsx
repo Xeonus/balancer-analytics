@@ -2,18 +2,19 @@ import ReactEcharts from 'echarts-for-react';
 import { graphic } from 'echarts';
 import { CircularProgress } from '@mui/material';
 import { BalancerChartDataItem} from '../../data/balancer/balancerTypes';
-import { formatDollarAmount } from '../../utils/numbers';
+import { formatAmount, formatDollarAmount } from '../../utils/numbers';
 
 export interface TvlAreaProps {
     chartData: BalancerChartDataItem[],
     dataTitle: string,
+    format?: string,
     backgroundColor?: string,
     height?: string,
 
 }
 
 
-export default function GenericAreaChart({chartData, dataTitle, backgroundColor = '#6a7985', height = '278px'}: TvlAreaProps) {
+export default function GenericAreaChart({chartData, dataTitle, format = '$', backgroundColor = '#6a7985', height = '278px'}: TvlAreaProps) {
 
     let xData = chartData.map(el => el.time);
     let yData = chartData.map(el => el.value);
@@ -51,7 +52,7 @@ export default function GenericAreaChart({chartData, dataTitle, backgroundColor 
                 show: true,
                 axisLabel: {
                     formatter: function(d: number) {
-                        return formatDollarAmount(d);
+                        return format === '$' ? formatDollarAmount(d) : formatAmount(d);
                     }
                 }
             }
@@ -84,7 +85,7 @@ export default function GenericAreaChart({chartData, dataTitle, backgroundColor 
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
+                        return format === '$' ? formatDollarAmount(value) : formatAmount(value);
                     }
                 },
                 data: yData

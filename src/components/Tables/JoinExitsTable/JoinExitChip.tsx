@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles'
 import CurrencyLogo from "../../CurrencyLogo";
 import { formatAmount } from "../../../utils/numbers";
 
-interface JoinExitChipProps {
+export interface JoinExitChipProps {
     amounts: string[], 
     tokenList: string[], 
     size: number

@@ -190,7 +190,7 @@ export interface Zkswap {
 }
 
 export interface TokenDict {
-  eth: Eth
+  [key: string]: Eth
 }
 
 export interface Eth {

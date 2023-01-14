@@ -1,4 +1,4 @@
-import { BalancerSwapFragment } from "../../../apollo/generated/graphql-codegen-generated";
+import { BalancerJoinExitFragment } from "../../../apollo/generated/graphql-codegen-generated";
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -12,7 +12,7 @@ import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Paper from '@mui/material/Paper';
-import { Grid, Link } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
 import { formatDollarAmount } from '../../../utils/numbers';
@@ -20,29 +20,40 @@ import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
+import { green, red } from '@mui/material/colors';
 import { formatTime } from "../../../utils/date";
-import { getEtherscanLink } from "../../../utils";
 import StyledExternalLink from "../../StyledExternalLink";
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import JoinExitChip, { JoinExitChipProps } from "../JoinExitsTable/JoinExitChip";
+import { TransactionHistory, Send2, TokenDict } from "../../../data/debank/debankTypes";
+import { getSPWalletName } from "../../../constants/wallets";
 
 
 interface Data {
-    swapper: string,
-    swap: BalancerSwapFragment,
-    value: string,
-    time: number;
+    action: string,
+    sendReceiveProps: JoinExitChipProps,
+    target: string
+    value: number,
+    time: number,
+    txId: string,
 }
 
 function createData(
-    swapper: string,
-    swap: BalancerSwapFragment,
-    value: string,
+    action: string,
+    sendReceiveProps: JoinExitChipProps,
+    target: string,
+    value: number,
     time: number,
+    txId: string,
 ): Data {
     return {
-        swapper,
-        swap,
+        action,
+        sendReceiveProps,
+        target,
         value,
         time,
+        txId
     };
 }
 
@@ -62,8 +73,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | BalancerSwapFragment },
-    b: { [key in Key]: number | string | BalancerSwapFragment },
+    a: { [key in Key]: number | string | JoinExitChipProps },
+    b: { [key in Key]: number | string | JoinExitChipProps },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -93,22 +104,28 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'swap',
+        id: 'action',
         numeric: false,
         disablePadding: false,
-        label: 'Swap Details',
+        label: 'Operation',
+    },
+    {
+        id: 'sendReceiveProps',
+        numeric: false,
+        disablePadding: false,
+        label: 'Details',
+    },
+    {
+        id: 'target',
+        numeric: false,
+        disablePadding: false,
+        label: 'Wallet',
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
-    },
-    {
-        id: 'swapper',
-        numeric: false,
-        disablePadding: false,
-        label: 'Swapper',
     },
     {
         id: 'time',
@@ -163,8 +180,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function SwapsTable({ swaps }:
-    { swaps: BalancerSwapFragment[] }) {
+export default function TreasuryTransactionTable({ txnHistory }:
+    { txnHistory: TransactionHistory }) {
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('time');
@@ -173,11 +190,11 @@ export default function SwapsTable({ swaps }:
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
 
-    if (!swaps) {
+    if (!txnHistory) {
         return <CircularProgress />;
     }
 
-    if (swaps.length < 1) {
+    if (txnHistory.history_list.length < 1) {
         return (
             <Grid>
                 <CircularProgress />
@@ -185,15 +202,67 @@ export default function SwapsTable({ swaps }:
         );
     }
 
+    //Helper functions
+    function obtainSendReceives(sends: Send2[], receives: any[]) {
+        const sendReceiveProps = {} as JoinExitChipProps
+        if (sends.length > 0) {
+            sendReceiveProps.amounts = sends.map(el => el.amount.toString())
+            sendReceiveProps.size = 25
+            sendReceiveProps.tokenList = sends.map(el => el.token_id)
+        } else {
+            sendReceiveProps.amounts = receives.map(el => el.amount.toString())
+            sendReceiveProps.size = 25
+            sendReceiveProps.tokenList = receives.map(el => el.token_id)
+        }
+        return sendReceiveProps;
+    }
 
-    const sortedSwaps = swaps.sort(function (a, b) {
-        return b.timestamp - a.timestamp;
-    });
+    function obtainSPsSendsReceives(sends: Send2[], receives: any[]) {
+        if (sends.length > 0) {
+            const addresses = sends.map(send => send.to_addr);
+            const SPs = addresses.filter(address => getSPWalletName(address) !== '-');
+            return SPs[0] ? SPs[0] : '-'
+        }
+        if (receives.length > 0) {
+            const addresses = receives.map(receive => receive.to_addr);
+            const SPs = addresses.filter(address => getSPWalletName(address) !== '-');
+            return SPs[0] ? SPs[0] : '-'
+        }
+        return '-';
+    }
 
-    const rows = sortedSwaps.map(el =>
-        createData(el.caller, el, el.valueUSD, el.timestamp)
+    function obtainValue(sends: Send2[], receives: any[], token_dict : TokenDict) {
+        let value = 0
+        if (sends.length > 0) {
+            sends.forEach(send => {
+                    const price = token_dict[send.token_id] ? token_dict[send.token_id].price : 0
+                    value += send.amount * price;
 
-    )
+            })
+        } else {
+            receives.forEach(receive => {
+                //const token = token_dict.find(dict => dict.eth.id === receive.token_id)
+                const price = token_dict[receive.token_id] ? token_dict[receive.token_id].price : 0
+                    value += receive.amount * price;
+
+            })
+        }
+
+        return value;
+
+    }
+
+    //Create Rows
+    const rows = txnHistory.history_list.map(el =>
+        createData(
+            el.cate_id === 'receive' ? 'Receive' : 'Send', 
+            obtainSendReceives(el.sends, el.receives), 
+            getSPWalletName(obtainSPsSendsReceives(el.sends, el.receives)),
+            obtainValue(el.sends, el.receives, txnHistory.token_dict), 
+            el.time_at, 
+            el.id)
+
+    ).filter(row => row.value > 0)
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -243,31 +312,40 @@ export default function SwapsTable({ swaps }:
               rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => {
+                                .map((row, index) => {
                                     return (
                                         <TableRow
                                             hover
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.swap.timestamp * Math.random()}
+                                            key={row.txId + Math.random() * 10}
                                         >
+                                            <TableCell>
+                                                <Box display='flex' alignItems='center' alignContent='center'>
+                                                    <Box mr={1}>
+                                                {row.action === 'Receive' ? <LoginIcon fontSize='small' color='success' /> : <LogoutIcon fontSize='small' color='error' />} 
+                                                </Box>
+                                                <Typography variant='body1' color={row.action === 'Send' ? red[500] : green[500]}>
+                                                    {row.action}
+                                                </Typography>
+                                                </Box>
+                                            </TableCell>
                                             <TableCell
                                                 align="left"
                                             >
-                                                
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
+                                                <JoinExitChip key={row.value + row.txId} amounts={row.sendReceiveProps.amounts} tokenList={row.sendReceiveProps.tokenList} size={35} />
                                             </TableCell>
                                             <TableCell>
-                                                <Link href={getEtherscanLink(row.swapper, 'address', activeNetwork)} target='_blank'>{row.swapper}</Link>
-
+                                                {row.target}
                                             </TableCell>
                                             <TableCell align="right">
-                                                <Box display='flex' alignItems='center' justifyContent='flex-end'>
+                                                {row.value ? formatDollarAmount(row.value) : '-'}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Box display='flex' alignItems='center' alignContent='center' justifyContent='flex-end'>
                                                     {formatTime(`${row.time}`)}
                                                     <Box ml={1}>
-                                                        <StyledExternalLink address={row.swap.tx} type={'transaction'} activeNetwork={activeNetwork} />
+                                                        <StyledExternalLink address={row.txId} type={'transaction'} activeNetwork={activeNetwork} />
                                                     </Box>
                                                 </Box>
                                             </TableCell>

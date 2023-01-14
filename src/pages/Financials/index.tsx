@@ -9,8 +9,22 @@ import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/bala
 import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace } from './helpers';
 import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
-import { FEE_COLLECTOR_ADDRESS, FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
+import { FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
 import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
+import TreasuryTransactionTable from '../../components/Tables/TreasuryTransactionTable';
+import { useGetTotalBalances } from '../../data/debank/useGetTotalBalances';
+import { useGetPortfolio } from '../../data/debank/useGetPortfolio';
+import { Stack } from '@mui/system';
+import MetricsCard from '../../components/Cards/MetricsCard';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import WalletIcon from '@mui/icons-material/Wallet';
+import RunwayGauge from '../../components/Echarts/RunwayGauge/RunwayGauge';
+import spJson from '../ServiceProviders/serviceProviderConfig.json'
+import { ServiceProvidersConfig } from '../../types';
+import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear'
+import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
+import { useGetQuarterlyTotalSpendData } from '../ServiceProviders/helpers';
 
 export default function Financials() {
 
@@ -26,12 +40,31 @@ export default function Financials() {
 
     //Load history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
+    console.log("txnHistory", txnHistory)
 
     //complement with actual data
-    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
-    //txnHistory.history_list.find(el => el.time_at)
+    const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
+    console.log("transactions", transactions)
 
-    //console.log("txnHistory", txnHistory)
+    //Load BAL and USDC Reserves
+    const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
+    const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
+
+    //Obtain wallet total worth and USDC
+    const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+    let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
+    netWorth += walletTokenNetworth;
+    const usdcReserves = totalBalances ? totalBalances.find(el => {
+        if (el.symbol === 'USDC') {
+            return el
+        }
+    })?.amount : 0;
+    const balReserves = totalBalances ? totalBalances.find(el => {
+        if (el.symbol === 'BAL') {
+            return el
+        }
+    })?.amount : 0;
+
 
     //TODOs: 
     //1. show quarterly graph of historical USDC income per source. 
@@ -39,7 +72,7 @@ export default function Financials() {
     //2. show quarterly spendings (past and future for SPs -> use same data as SP page)
     //3. show forecast gauge in months (based on average spendings how far we can go with reserves)
     //4. Show sankey chart of in- and outflows? Breakdown of BAL and USDC
-    
+
     //Obtain quarterly data:
     //1. obtain whitelist token data
     //2. aggregate by Quarter
@@ -48,34 +81,33 @@ export default function Financials() {
     const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
     const bal = '0xba100000625a3754423978a60c9317c58a424e3D';
     const startingUSDCValue = 0 //1164169.82;
+    const startingBAL = 4412176.4
 
 
+    //---USDC: SEND and RECEIVE---
     const usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const quarterlyUSDC = getChartDataByQuarter(usdcReceived);
     const monthlyUSDC = getChartDataByMonth(usdcReceived)
-
+    //USDC Send
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:
     usdcSend[1].value = 0
     console.log("usdcSend", usdcSend)
     const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
-    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
-    const quarterlyBALSpend = getChartDataByQuarter(balSend);
-
-    //BIG TODO: usdcSend and usdcReceive don't have same length! Make sure to adjust length / add entries for the missing array!
+    //---USDC: Cumulative in- and outflows---
     let startDate = new Date(usdcReceived[0].time);
-    let endDate = new Date(usdcReceived[usdcReceived.length-1].time);
+    let endDate = new Date(usdcReceived[usdcReceived.length - 1].time);
     if (startDate > new Date(usdcSend[0].time)) {
         startDate = new Date(usdcSend[0].time)
     }
-    if (endDate < new Date(usdcSend[usdcSend.length-1].time)) {
-        endDate = new Date(usdcSend[usdcSend.length-1].time)
+    if (endDate < new Date(usdcSend[usdcSend.length - 1].time)) {
+        endDate = new Date(usdcSend[usdcSend.length - 1].time)
     }
     const cumulativeIncomeChartData = getCumulativeSumTrace(usdcReceived, startDate, endDate);
     cumulativeIncomeChartData.forEach(item => item.value += startingUSDCValue)
     const cumulativeSpendChartData = getCumulativeSumTrace(usdcSend, startDate, endDate);
-    const netCumulativeUSDCFlow : BalancerChartDataItem[] = [];
+    const netCumulativeUSDCFlow: BalancerChartDataItem[] = [];
     cumulativeIncomeChartData.forEach(item => {
         const index = cumulativeSpendChartData.findIndex(obj => obj.time === item.time);
         let outflow = cumulativeSpendChartData[index] ? cumulativeSpendChartData[index].value : 0
@@ -85,11 +117,55 @@ export default function Financials() {
                 value: item.value + outflow
             }
         )
-        })
+    })
+
+    //---BAL---
+    const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
+    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+
+    const cumulativeBALIncomeChartData = getCumulativeSumTrace(balReceive, startDate, endDate);
+    cumulativeBALIncomeChartData.forEach(item => item.value += startingBAL)
+    const cumulativeBALSpendChartData = getCumulativeSumTrace(balSend, startDate, endDate);
+    const netCumulativeBALFlow: BalancerChartDataItem[] = [];
+    cumulativeBALIncomeChartData.forEach(item => {
+        const index = cumulativeBALSpendChartData.findIndex(obj => obj.time === item.time);
+        let outflow = cumulativeBALSpendChartData[index] ? cumulativeBALSpendChartData[index].value : 0
+        netCumulativeBALFlow.push(
+            {
+                time: item.time,
+                value: item.value + outflow
+            }
+        )
+    })
+
+    //Calculate yearly spend based on current quarter spendings:
+    //States
+    dayjs.extend(quarterOfYear);
+    const currentQuarter = dayjs().quarter();
+    const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
+    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+
+
+    //Data
+    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData)
+    let monthlyUSDCBurn = 0;
+    if (quarterlyPie && quarterlyPie.find(el => el.name === 'USDC')) {
+        const el = quarterlyPie.find(el => el.name === 'USDC');
+        monthlyUSDCBurn = el ? el.value / 3 : 0;
+    }
+
+    //TODO: project based on last 3 month income excluding running month
+    const avgIncome = monthlyUSDC.reduce((a, b) => a + b.value, 0) / monthlyUSDC.length;
+    console.log("monthly USDC burn", monthlyUSDCBurn)
+    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn-avgIncome) : 0;
+    console.log("burnRunway", burnRunWay)
+
+
+
+
+    //---WETH---
     const wethReceived = extractTransactionsByTokenAndType(txnHistory, weth.toLowerCase(), 'receive');
     const quarterlyWETH = getChartDataByQuarter(wethReceived);
-    //console.log("wethReceived", wethReceived)
-    //TODO: Load token price data the same way we do it for historical pool data?
 
 
     return (
@@ -105,13 +181,42 @@ export default function Financials() {
                     </Box>
 
                 </Grid>
-                <Grid mt={2} item xs={10}>
+                <Grid  item xs={10}>
                     <Box display="flex" alignItems="center">
                         <Box>
                             <Typography variant={"h5"}>DAO Real-Time Financial Report Dashboard</Typography>
                         </Box>
                     </Box>
                 </Grid>
+                <Grid
+                    item
+                    xs={10}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Stack direction="row" spacing={1} justifyContent="flex-start">
+                            <MetricsCard
+                                mainMetric={usdcReserves ? usdcReserves : 0}
+                                mainMetricInUSD={true}
+                                metricName='USDC Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+                            <MetricsCard
+                                mainMetric={balReserves ? balReserves : 0}
+                                mainMetricInUSD={false}
+                                mainMetricUnit={" BAL"}
+                                metricName='BAL Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={WalletIcon}
+                            />
+
+
+
+                        </Stack>
+
+                    </Box>
+                </Grid>
+
                 <Grid
                     item
                     mt={2}
@@ -123,22 +228,46 @@ export default function Financials() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid mt={2} item xs={10}>
+                <Grid
+                    item
+                    xs={10}>
                     <Card>
-                        <Typography variant="h6">Monthly Protocol Fee Income (USDC)</Typography>
-                        
+                        <Box p={1}>
+                            <Typography variant="h6">Monthly Protocol Fee Income (USDC)</Typography>
+                        </Box>
                         <GenericBarChart data={monthlyUSDC} />
                     </Card>
                 </Grid>
-                <Grid mt={2} item xs={10}>
-                <Card>
-                    <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
-                        <GenericAreaChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' />
-                    </Card>
+                <Grid
+                    mt={1}
+                    item
+                    xs={10}>
+                    <Box mb={1} display="flex" flexDirection="row" justifyContent="start" alignItems="row">
+                        <Card >
+                            <Box p={1}>
+                                <Typography variant="h6">USDC Funding Runway Projection</Typography>
+                            </Box>
+                            <Box minWidth={'350px'}>
+                                {usdcReserves ?
+                                <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
+                            </Box>
+                        </Card>
+                        <Box ml={2}>
+                            <Card>
+                                <Box p={1} >
+                                    <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
+                                </Box>
+                                <Box minWidth={'600px'}>
+                                    <GenericAreaChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
+                                </Box>
+                            </Card>
+                        </Box>
+
+                    </Box>
                 </Grid>
                 <Grid
                     item
-                    mt={2}
+                    mt={1}
                     xs={10}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
@@ -146,6 +275,37 @@ export default function Financials() {
                             <Typography variant="h6">BAL Flows</Typography>
                         </Box>
                     </Box>
+                </Grid>
+                <Grid
+                    mt={1}
+                    item
+                    xs={10}>
+                    <Card>
+                        <Box p={1}>
+                            <Typography variant="h6">Cumulative BAL Burn (Reserves vs. Outflow)</Typography>
+                        </Box>
+                        <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' />
+                    </Card>
+                </Grid>
+                <Grid
+                    item
+                    mt={1}
+                    xs={10}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Box display="flex" alignItems='center'>
+                            <Typography variant="h6">Transaction History</Typography>
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid
+                    item
+                    mt={2}
+                    xs={10}
+                >
+                    {transactions && transactions.history_list.length > 0 ?
+                        <TreasuryTransactionTable txnHistory={transactions} />
+                        : <CircularProgress />}
                 </Grid>
             </Grid>
         </Box>

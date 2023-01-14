@@ -41,15 +41,20 @@ export default function Polling() {
           backgroundColor: "background.paper",
           boxShadow: 2,
         }}>
-        <Box display="flex" alignContent="center" alignItems="center">
+        <Box  display="flex" alignContent="center" justifyItems={"center"} justifyContent="center" alignItems="center" flexDirection={"row"}>
           <Box>
-            <Link color={mode === 'dark' ? 'white' : 'black'} variant="caption" display="block" underline="none" target="_blank" rel="noopener noreferrer" href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
+            <Link 
+              color={mode === 'dark' ? 'white' : 'black'} 
+              variant="caption" display="block" 
+              underline="none" target="_blank" 
+              rel="noopener noreferrer" 
+              href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
               Synced block: {isMounted ? latestBlock : ' '}
             </Link>
           </Box>
-          <Box ml={0.5}>
+          <Box ml={0.5} mb={1}>
             <CircularProgress
-              size={15}
+              size={10}
               thickness={isMounted ? 22 : 10}
               variant={isMounted ? "determinate" : "indeterminate"}
               value={100}

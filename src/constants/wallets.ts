@@ -6,9 +6,25 @@ export const FEE_COLLECTOR_ADDRESS = '0xce88686553686da562ce7cea497ce749da109f9f
 export const FEE_STREAMER = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
 
 //Service Providers
-export const ORB_WALLET = '0x3B8910F378034FD6E103Df958863e5c684072693'
-export const GRANTS_WALLET = '0xE2c91f3409Ad6d8cE3a2E2eb330790398CB23597'
-export const MAXIS_WALLET = '0x166f54F44F271407f24AA1BE415a730035637325'
+export const SERVICE_PROVIDER_WALLETS = [
+    {
+        name: 'Orb Collective Safe',
+        walletId: '0x3b8910f378034fd6e103df958863e5c684072693',
+    },
+    {
+        name: 'Balancer Grants Safe',
+        walletId: '0xE2c91f3409Ad6d8cE3a2E2eb330790398CB23597',
+    },
+    {
+        name: 'Balancer Maxis Safe',
+        walletId: '0x166f54F44F271407f24AA1BE415a730035637325',
+    }
+]
+
+export function getSPWalletName(walletId: string) {
+    const targetWallet = SERVICE_PROVIDER_WALLETS.find(wallet => wallet.walletId.toLowerCase() === walletId)
+    return targetWallet ? targetWallet.name : '-';
+}
 
 //Treasury addresses
 const TREASURY_ADDRESS_MAINNET = '0x10a19e7ee7d7f8a52822f6817de8ea18204f2e4f';

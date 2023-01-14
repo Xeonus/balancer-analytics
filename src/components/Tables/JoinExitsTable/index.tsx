@@ -115,7 +115,7 @@ const headCells: readonly HeadCell[] = [
     },
     {
         id: 'time',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Time',
     },
