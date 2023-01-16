@@ -157,7 +157,7 @@ export default function Financials() {
     //TODO: project based on last 3 month income excluding running month
     const avgIncome = monthlyUSDC.reduce((a, b) => a + b.value, 0) / monthlyUSDC.length;
     console.log("monthly USDC burn", monthlyUSDCBurn)
-    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn-avgIncome) : 0;
+    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn - avgIncome) : 0;
     console.log("burnRunway", burnRunWay)
 
 
@@ -172,6 +172,9 @@ export default function Financials() {
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
                 spacing={1}
                 sx={{ justifyContent: 'center' }}
             >
@@ -181,7 +184,7 @@ export default function Financials() {
                     </Box>
 
                 </Grid>
-                <Grid  item xs={10}>
+                <Grid item xs={10}>
                     <Box display="flex" alignItems="center">
                         <Box>
                             <Typography variant={"h5"}>DAO Real-Time Financial Report Dashboard</Typography>
@@ -239,32 +242,47 @@ export default function Financials() {
                     </Card>
                 </Grid>
                 <Grid
-                    mt={1}
                     item
                     xs={10}>
-                    <Box mb={1} display="flex" flexDirection="row" justifyContent="start" alignItems="row">
+                    <Card>
+                        <Box p={1}>
+                            <Typography variant="h6">Monthly Protocol Fee Income (USDC)</Typography>
+                        </Box>
+                        <GenericBarChart data={monthlyUSDCSend} />
+                    </Card>
+                </Grid>
+                <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={1}
+                    mt={1}
+                >
+                    <Grid item xs={4}>
                         <Card >
                             <Box p={1}>
                                 <Typography variant="h6">USDC Funding Runway Projection</Typography>
                             </Box>
-                            <Box minWidth={'350px'}>
+                            
                                 {usdcReserves ?
-                                <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
-                            </Box>
+                                    <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
+                           
                         </Card>
-                        <Box ml={2}>
-                            <Card>
-                                <Box p={1} >
-                                    <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
-                                </Box>
-                                <Box minWidth={'600px'}>
-                                    <GenericAreaChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
-                                </Box>
-                            </Card>
-                        </Box>
-
-                    </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Card>
+                            <Box p={1} >
+                                <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
+                            </Box>
+                            
+                                <GenericAreaChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
+                            
+                        </Card>
+                    </Grid>
                 </Grid>
+
+
                 <Grid
                     item
                     mt={1}
