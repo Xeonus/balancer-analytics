@@ -18,6 +18,10 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'Balancer Maxis Safe',
         walletId: '0x166f54F44F271407f24AA1BE415a730035637325',
+    },
+    {
+        name: 'Fjord Proxy',
+        walletId: '0x9a74cbff3f36ff1e433ef88d0ec1cdcd1eb79afa'
     }
 ]
 

@@ -6,7 +6,7 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import txnJson from '../../data/debank/data/treasuryTxHistory.json'
 import { TransactionHistory } from '../../data/debank/debankTypes';
 import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
-import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace } from './helpers';
+import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange } from './helpers';
 import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
 import { FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
@@ -25,11 +25,19 @@ import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 import { useGetQuarterlyTotalSpendData } from '../ServiceProviders/helpers';
+import GenericLineChart from '../../components/Echarts/GenericLineChart';
+import GenericPieChart from '../../components/Echarts/GenericPieChart';
+import { formatDollarAmount } from '../../utils/numbers';
 
 export default function Financials() {
 
     const [activeNetwork] = useActiveNetworkVersion()
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
+    const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+    const bal = '0xba100000625a3754423978a60c9317c58a424e3D';
+    const startingUSDCValue = 0 //1164169.82;
+    const startingBAL = 4412176.4
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -64,6 +72,9 @@ export default function Financials() {
             return el
         }
     })?.amount : 0;
+    //Obtain total Liquid USD value
+
+
 
 
     //TODOs: 
@@ -77,11 +88,7 @@ export default function Financials() {
     //1. obtain whitelist token data
     //2. aggregate by Quarter
     //3. Feed into multi-bar-chart
-    const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-    const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-    const bal = '0xba100000625a3754423978a60c9317c58a424e3D';
-    const startingUSDCValue = 0 //1164169.82;
-    const startingBAL = 4412176.4
+
 
 
     //---USDC: SEND and RECEIVE---
@@ -168,6 +175,34 @@ export default function Financials() {
     const quarterlyWETH = getChartDataByQuarter(wethReceived);
 
 
+    //---Historical Treasury wallet chart---
+    //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth, done)
+    const dailyUSDCIn = getDailyChartDataByDateRange(usdcReceived, startDate, endDate);
+    const dailyUSDCOut = getDailyChartDataByDateRange(usdcSend, startDate, endDate);
+    console.log("dailyUSDCIn", dailyUSDCIn)
+    console.log("dailyUSDCOut", dailyUSDCOut)
+    const historicalData: BalancerChartDataItem[] = [];
+    if (usdcReserves) {
+        let runningAmount = usdcReserves
+    for (let i = dailyUSDCIn.length - 1; i >= 0; i--) {
+        if (i !== dailyUSDCIn.length - 1) {
+            runningAmount = runningAmount - dailyUSDCIn[i].value - dailyUSDCOut[i].value
+        }
+        historicalData.push(
+            {
+                value: runningAmount,
+                time: dailyUSDCIn[i].time
+            }
+        ) 
+    }
+    }
+    historicalData.sort(function (a, b) {
+        const date1 = new Date(a.time)
+        const date2 = new Date(b.time)
+        return date1.getTime() - date2.getTime();
+    })
+
+
     return (
         <Box sx={{ flexGrow: 2 }}>
             <Grid
@@ -196,7 +231,7 @@ export default function Financials() {
                     xs={10}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
-                        <Stack direction="row" spacing={1} justifyContent="flex-start">
+                        <Stack direction="column" spacing={1} justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={usdcReserves ? usdcReserves : 0}
                                 mainMetricInUSD={true}
@@ -212,9 +247,13 @@ export default function Financials() {
                                 mainMetricChange={0}
                                 MetricIcon={WalletIcon}
                             />
-
-
-
+                            <MetricsCard
+                                mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
+                                mainMetricInUSD={true}
+                                metricName='Total Liquid Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={WalletIcon}
+                            />
                         </Stack>
 
                     </Box>
@@ -259,6 +298,25 @@ export default function Financials() {
                     spacing={1}
                     mt={1}
                 >
+                    <Grid item xs={4}> 
+                    <Card>
+                        <Typography>Quarterly Budget: </Typography>
+                        <Typography variant='h5' fontWeight={"bold"}>{formatDollarAmount(quarterlyTotalBudget)}</Typography>
+                            <GenericPieChart data={quarterlyPie} height={'250px'}/>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={6}> 
+                        
+                    </Grid>
+                </Grid>
+                <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={1}
+                    mt={1}
+                >
                     <Grid item xs={4}>
                         <Card >
                             <Box p={1}>
@@ -275,8 +333,8 @@ export default function Financials() {
                             <Box p={1} >
                                 <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
                             </Box>
-                            
-                                <GenericAreaChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
+                                <GenericLineChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
+                                <GenericLineChart chartData={historicalData} dataTitle='USDC Burn' height='300px' />
                             
                         </Card>
                     </Grid>

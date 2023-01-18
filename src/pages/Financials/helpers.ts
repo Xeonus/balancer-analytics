@@ -121,6 +121,21 @@ export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
 
 }
 
+export function getDailyChartDataByDateRange(chartData: BalancerChartDataItem[], start: Date, end: Date) {
+    let dailyData: BalancerChartDataItem[] = [];
+        //Create new object to remove pointer reference!
+        let startDate = new Date(start.getTime());
+        let endDate = new Date(end.getTime());
+  
+    while (startDate <= endDate) {
+      let day = startDate.toISOString().slice(0, 10);
+      let obj = chartData.find(o => o.time === day);
+      dailyData.push(obj ? obj : { time: day, value: 0 });
+      startDate.setDate(startDate.getDate() + 1);
+    }
+    return dailyData;
+  }
+
 export function getCumulativeSumTrace(chartData: BalancerChartDataItem[], start: Date, end: Date) {
 
     const cumulativeChartData: BalancerChartDataItem[] = [];

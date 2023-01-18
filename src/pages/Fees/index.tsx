@@ -47,8 +47,8 @@ export default function Fees() {
     const [endDate, setEndDate] = React.useState(endTimeStamp);
 
     //Load pools and balances
-    const pools = useBalancerPools(250, startDate, endDate);
-    const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp);
+    const pools = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
+    const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
     const decoratedPools = useDecoratePools(yieldPools.length > 10 ? yieldPools : undefined)
     // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
