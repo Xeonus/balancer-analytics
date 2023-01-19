@@ -421,7 +421,7 @@ export default function Financials() {
                             <Box p={1}>
                                 <Typography variant="h6">Cumulative BAL Burn (Reserves vs. Outflow)</Typography>
                             </Box>
-                            <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' height='300px' />
+                            <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='BAL Burn' height='300px' />
                         </Card>
                     </Grid>
                 </Grid>
