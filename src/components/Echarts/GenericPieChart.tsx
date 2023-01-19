@@ -46,7 +46,8 @@ export default function GenericPieChart({ data, height }: GenericPieChartProps) 
                 label: {
                     show: true,
                     color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                    formatter: '{b} ({d}%)'
+                    formatter: '{b} ({d}%)',
+                    fontSize: 10,
                     
                 },
                 emphasis: {

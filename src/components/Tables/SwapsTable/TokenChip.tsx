@@ -38,6 +38,7 @@ export default function TokenChip({swap, size=35} : TokenChipProps) {
                     width: size * 3,
                     borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                     backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
+                    boxShadow: 1,
 
                 }}
             >
@@ -60,6 +61,7 @@ export default function TokenChip({swap, size=35} : TokenChipProps) {
                     width: size * 3,
                     borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                     backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
+                    boxShadow: 1,
 
                 }}
             >

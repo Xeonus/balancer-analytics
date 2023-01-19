@@ -259,7 +259,7 @@ export default function PoolFeeTable({
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ mb: 2 }}>
+      <Paper sx={{ mb: 2, boxShadow: 3  }}>
         <TableContainer>
           <Table
             //sx={{ minWidth: 750 }}

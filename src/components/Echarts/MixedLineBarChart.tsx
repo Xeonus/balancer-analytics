@@ -35,15 +35,19 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
             data: [barChartName, lineChartName]
           },
         grid: {
-            left: '3%',
-            right: '4%',
+            left: '10%',
+            right: '5%',
             bottom: '3%',
             containLabel: true
         },
         xAxis: {
             type: 'category',
             data: xData,
-            axisLabel: { interval: 0, rotate: rotateAxis ? 30 : 0 }
+            axisLabel: { 
+                interval: 0, 
+                rotate: rotateAxis ? 30 : 0,
+                fontSize: 10 
+            }
         },
         yAxis: [
             {
@@ -105,7 +109,8 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                     }
                 },
             },
-        ]
+        ],
+       
     };
 
     return (

@@ -217,7 +217,7 @@ export default function PoolTokenTable({
 
     return (
         <Box sx={{ width: '100%'}}>
-            <Paper elevation={1} sx={{ mb: 2 }}>
+            <Paper elevation={1} sx={{ mb: 2, boxShadow: 3  }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}

@@ -38,6 +38,7 @@ export default function JoinExitChip({amounts, tokenList, size}: JoinExitChipPro
                  width: size * 3,
                  borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                  backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
+                 boxShadow: 1,
      
              }}
              >

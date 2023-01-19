@@ -31,6 +31,8 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCharts/IncomeVsSpendingsMultiBarChart';
 import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
+import SimpleRunwayGauge from '../../components/Echarts/RunwayGauge/SimpleRunwayGauge';
+import { isMobile } from 'react-device-detect';
 
 export default function Financials() {
 
@@ -49,11 +51,20 @@ export default function Financials() {
     const navCrumbs: NavElement[] = new Array()
     navCrumbs.push(homeNav)
 
-    //Load history
+    //Load Txs and history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
-
-    //complement with actual data
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
+
+    //Merge last 20 tx's with historical data
+    const latestTimestamp = Math.max.apply(Math, txnHistory.history_list.map(function(o) { return o.time_at; }))
+    console.log("latestTimestamp", latestTimestamp)
+    const txAdditions = transactions?.history_list.filter(tx => tx.time_at > latestTimestamp );
+    if (txAdditions && txAdditions.length > 0) {
+        txAdditions.forEach(element => {
+            txnHistory.history_list.push(element)
+        });
+    }
+
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
 
@@ -84,9 +95,18 @@ export default function Financials() {
     //console.log("usdcSend", usdcSend)
     //const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
+        //---BAL---
+        const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
+        const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+
     //---USDC: Cumulative in- and outflows---
-    let startDate = new Date(usdcReceived[0].time);
-    let endDate = new Date(usdcReceived[usdcReceived.length - 1].time);
+    let startDateUSDC = new Date(usdcReceived[0].time);
+    let endDateUSDC = new Date(usdcReceived[usdcReceived.length - 1].time);
+    let startDateBAL = new Date(balSend[0].time);
+    let endDateBAL = new Date(balSend[balSend.length - 1].time);
+
+    let startDate = startDateUSDC < startDateBAL ? startDateUSDC : startDateBAL;
+    let endDate = endDateUSDC > endDateBAL ? endDateUSDC : endDateBAL;
     if (startDate > new Date(usdcSend[0].time)) {
         startDate = new Date(usdcSend[0].time)
     }
@@ -112,9 +132,7 @@ export default function Financials() {
     const monthlyUSDCReceived = getMonthlyChartDataByDateRange(usdcReceived, startDate, endDate);
     const monthlyUSDCSend = getMonthlyChartDataByDateRange(usdcSend, startDate, endDate);
 
-    //---BAL---
-    const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
-    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+
     console.log("balSend", balSend)
     const monthlyBALReceived = getMonthlyChartDataByDateRange(balReceive, startDate, endDate);
     const monthlyBALSend = getMonthlyChartDataByDateRange(balSend, startDate, endDate);
@@ -179,7 +197,7 @@ export default function Financials() {
     }
 
     //TODO: project based on last 3 month income excluding running month
-    const avgIncome = monthlyUSDC.reduce((a, b) => a + b.value, 0) / monthlyUSDC.length;
+    const avgIncome = monthlyUSDCReceived.reduce((a, b) => a + b.value, 0) / monthlyUSDCReceived.length;
     const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn - avgIncome) : 0;
 
 
@@ -203,7 +221,7 @@ export default function Financials() {
                     </Box>
 
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={isMobile ? 6 : 10}>
                     <Box display="flex" alignItems="center">
                         <Box>
                             <Typography variant={"h5"}>DAO Real-Time Financial Report Dashboard</Typography>
@@ -213,74 +231,73 @@ export default function Financials() {
 
 
                 <Grid
-                        item
-                        xs={10}
-                    >
-                        <Box display="flex" justifyContent="space-between" alignItems="row">
-                            <Stack 
+                    item
+                    xs={10}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Stack
                             direction={{ xs: 'column', sm: 'row' }}
-                            spacing={{ xs: 2, sm: 2, md: 0.5 }}
+                            spacing={{ xs: 2, sm: 2, md: 1 }}
                             alignItems="left"
                             alignContent="left"
                             justifyContent="flex-start">
-                                <MetricsCard
-                                    mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
-                                    mainMetricInUSD={true}
-                                    metricName='Total Liquid Reserves'
-                                    mainMetricChange={0}
-                                    MetricIcon={AccountBalanceIcon}
-                                />
-                                <MetricsCard
-                                    mainMetric={usdcReserves ? usdcReserves : 0}
-                                    mainMetricInUSD={true}
-                                    metricName='USDC Reserves'
-                                    mainMetricChange={0}
-                                    MetricIcon={CurrencyExchangeIcon}
-                                />
-                                <MetricsCard
-                                    mainMetric={balReserves ? balReserves : 0}
-                                    mainMetricInUSD={false}
-                                    mainMetricUnit={" BAL"}
-                                    metricName='BAL Reserves'
-                                    mainMetricChange={0}
-                                    MetricIcon={WalletIcon}
-                                />
+                            <MetricsCard
+                                mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
+                                mainMetricInUSD={true}
+                                metricName='Total Liquid Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={AccountBalanceIcon}
+                            />
+                            <MetricsCard
+                                mainMetric={usdcReserves ? usdcReserves : 0}
+                                mainMetricInUSD={true}
+                                metricName='USDC Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+                            <MetricsCard
+                                mainMetric={balReserves ? balReserves : 0}
+                                mainMetricInUSD={false}
+                                mainMetricUnit={" BAL"}
+                                metricName='BAL Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={WalletIcon}
+                            />
 
-                            </Stack>
-                        </Box>
-                    </Grid>
+                        </Stack>
+                    </Box>
+                </Grid>
                 <Grid
                     container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
-                    spacing={1}
+                    spacing={2}
                     mt={1}
                 >
-                    
                     <Grid
                         item
-                        xs={5}
+                        xs={isMobile ? 6 : 5}
                     >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1} display="flex" alignItems='center'>
                                 <Typography variant="h6">Projected Spendings by Currency: Q{currentQuarter} {dayjs().year()}</Typography>
                             </Box>
                             <GenericPieChartWithVerticalLegend data={quarterlyPie} height={'200px'} />
-                            
+
                         </Card>
                     </Grid>
                     <Grid
                         item
-                        xs={5}
+                        xs={isMobile ? 6 : 5}
                     >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1} display="flex" alignItems='center'>
                                 <Typography variant="h6">Projected Spendings by Service Provider : Q{currentQuarter} {dayjs().year()}</Typography>
                             </Box>
                             <GenericPieChart data={totalsBySpsPie} height={'200px'} />
-                            
+
                         </Card>
                     </Grid>
                 </Grid>
@@ -297,7 +314,7 @@ export default function Financials() {
                 </Grid>
                 <Grid
                     container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
@@ -305,7 +322,8 @@ export default function Financials() {
                 >
                     <Grid
                         item
-                        xs={5}>
+                        xs={isMobile ? 6 : 5}
+                    >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
                                 <Typography variant="h6">Monthly Protocol Fee Income vs. Spendings (USDC)</Typography>
@@ -321,7 +339,7 @@ export default function Financials() {
                     </Grid>
                     <Grid
                         item
-                        xs={5}
+                        xs={isMobile ? 6 : 5}
                     >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1} >
@@ -333,20 +351,20 @@ export default function Financials() {
                 </Grid>
                 <Grid
                     container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
                     spacing={2}
                     mt={1}
                 >
-                    <Grid item xs={4}>
+                    <Grid item xs={isMobile ? 6 : 4}>
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
                                 <Typography variant="h6">USDC Funding Runway Projection</Typography>
                             </Box>
                             {usdcReserves ?
-                                <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
+                                <SimpleRunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
                         </Card>
                     </Grid>
                     <Grid item xs={6}>
@@ -361,7 +379,7 @@ export default function Financials() {
                 <Grid
                     item
                     mt={1}
-                    xs={10}
+                    xs={isMobile ? 6 : 10}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
@@ -371,14 +389,16 @@ export default function Financials() {
                 </Grid>
                 <Grid
                     container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
                     justifyContent="center"
-                    alignItems="center"
+                    alignItems="left"
+                    alignContent="left"
                     spacing={1}
                 >
                     <Grid
                         item
-                        xs={5}>
+                        xs={isMobile ? 6 : 5}
+                    >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
                                 <Typography variant="h6">Monthly BAL Inflow vs. Spendings</Typography>
@@ -394,15 +414,16 @@ export default function Financials() {
                         </Card>
                     </Grid>
                     <Grid
-                    item
-                    xs={5}>
-                    <Card sx={{ boxShadow: 3 }}>
-                        <Box p={1}>
-                            <Typography variant="h6">Cumulative BAL Burn (Reserves vs. Outflow)</Typography>
-                        </Box>
-                        <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' height='300px' />
-                    </Card>
-                </Grid>
+                        item
+                        xs={isMobile ? 6 : 5}
+                    >
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1}>
+                                <Typography variant="h6">Cumulative BAL Burn (Reserves vs. Outflow)</Typography>
+                            </Box>
+                            <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' height='300px' />
+                        </Card>
+                    </Grid>
                 </Grid>
                 <Grid
                     item
@@ -418,10 +439,10 @@ export default function Financials() {
                 <Grid
                     item
                     mt={1}
-                    xs={10}
+                    xs={isMobile ? 6 : 10}
                 >
                     {transactions && transactions.history_list.length > 0 ?
-                        <TreasuryTransactionTable txnHistory={transactions} />
+                        <TreasuryTransactionTable txnHistory={txnHistory} />
                         : <CircularProgress />}
                 </Grid>
             </Grid>

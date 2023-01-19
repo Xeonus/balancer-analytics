@@ -49,7 +49,7 @@ export default function TokenPage() {
     const navCrumbs: NavElement[] = []
     navCrumbs.push(homeNav)
     navCrumbs.push(tokenNav);
-    
+
 
 
     //Ideas to show richer data:
@@ -123,42 +123,38 @@ export default function TokenPage() {
                     </Grid>
                     <Grid item xs={10}>
                         <Box>
-                        <Card >
-                            <TokenChart tvlData={tvlData} volumeData={volumeData} priceData={priceData} />
-                        </Card>
+                            <Card >
+                                <TokenChart tvlData={tvlData} volumeData={volumeData} priceData={priceData} />
+                            </Card>
                         </Box>
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
-                <Grid item xs={10}>
-                    <Box mt={2}>
-                        <Typography variant="h5">{tokenData.symbol} - Deployed Liquidity Pools </Typography>
-                    </Box>
-                </Grid>
-                <Grid item xs={10}>
-                    <PoolTable poolDatas={poolData} />
-                </Grid>
+                    <Grid item xs={10}>
+                        <Box mt={2}>
+                            <Typography variant="h5">{tokenData.symbol} - Deployed Liquidity Pools </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={10}>
+                        <PoolTable poolDatas={poolData} />
+                    </Grid>
                 </Grid>
                 <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
-                <Grid item xs={10}>
+                    <Grid item xs={10}>
                         <Box mt={2} mb={1}>
                             <Typography variant="h5">Historical Swaps </Typography>
                         </Box>
                     </Grid>
                     <Grid item xs={10} >
-                    <Grid item xs={10}>
-                        <SwapsTable swaps={swaps} />
-                    </Grid>
+                            <SwapsTable swaps={swaps} />
                     </Grid>
                     <Grid item xs={10}>
-                    <Grid item xs={10}>
-                        <Box mt={2} mb={1}>
-                            <Typography variant="h5">Liquidity Provisions </Typography>
-                        </Box>
-                        <JoinExitsTable joinExits={joinExits} />
+                            <Box mt={2} mb={1}>
+                                <Typography variant="h5">Liquidity Provisions </Typography>
+                            </Box>
+                            <JoinExitsTable joinExits={joinExits} />
                     </Grid>
-                    </Grid>
-                    </Grid>
+                </Grid>
             </Box> :
             <Grid
                 container

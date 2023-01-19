@@ -61,7 +61,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [endIndex, setEndIndex] = React.useState(0);
     const [showDate, setShowDate] = React.useState(false);
     const [endDate, setEndDate] = React.useState(dayjs().valueOf());
-    const [timeRange, setTimeRange] = React.useState('0');
+    const [timeRange, setTimeRange] = React.useState('30');
     //data state
     const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
     const [rangedVolumeData, setRangedVolumeData] = React.useState(volumeData);

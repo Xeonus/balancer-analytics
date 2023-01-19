@@ -186,7 +186,7 @@ export default function PoolInfoTable({
 
     return (
         <Box sx={{ width: '100%'}}>
-            <Paper elevation={1}>
+            <Paper elevation={1} sx={{boxShadow: 3 }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}

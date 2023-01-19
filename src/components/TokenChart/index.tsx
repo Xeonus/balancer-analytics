@@ -52,7 +52,7 @@ function a11yProps(index: number) {
 export default function TokenChart({tvlData, volumeData, priceData} : PoolChartProps) {
 
     const [value, setValue] = React.useState(0);
-    const [timeRange, setTimeRange] = React.useState('0');
+    const [timeRange, setTimeRange] = React.useState('30');
 
     React.useEffect(() => {
         if (tvlData.length < Number(timeRange) || timeRange === '0') {
