@@ -6,7 +6,7 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import txnJson from '../../data/debank/data/treasuryTxHistory.json'
 import { TransactionHistory } from '../../data/debank/debankTypes';
 import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
-import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange } from './helpers';
+import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange, getMonthlyChartDataByDateRange } from './helpers';
 import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
 import { FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
@@ -17,6 +17,7 @@ import { useGetPortfolio } from '../../data/debank/useGetPortfolio';
 import { Stack } from '@mui/system';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WalletIcon from '@mui/icons-material/Wallet';
 import RunwayGauge from '../../components/Echarts/RunwayGauge/RunwayGauge';
 import spJson from '../ServiceProviders/serviceProviderConfig.json'
@@ -24,10 +25,12 @@ import { ServiceProvidersConfig } from '../../types';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
-import { useGetQuarterlyTotalSpendData } from '../ServiceProviders/helpers';
+import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from '../ServiceProviders/helpers';
 import GenericLineChart from '../../components/Echarts/GenericLineChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import { formatDollarAmount } from '../../utils/numbers';
+import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCharts/IncomeVsSpendingsMultiBarChart';
+import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
 
 export default function Financials() {
 
@@ -48,13 +51,9 @@ export default function Financials() {
 
     //Load history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
-    console.log("txnHistory", txnHistory)
 
     //complement with actual data
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
-    console.log("transactions", transactions)
-
-    //Load BAL and USDC Reserves
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
 
@@ -72,23 +71,6 @@ export default function Financials() {
             return el
         }
     })?.amount : 0;
-    //Obtain total Liquid USD value
-
-
-
-
-    //TODOs: 
-    //1. show quarterly graph of historical USDC income per source. 
-    //sources: fjord / copper, protocol fees / paybacks / ribbon margin calls / taxations like liquidations
-    //2. show quarterly spendings (past and future for SPs -> use same data as SP page)
-    //3. show forecast gauge in months (based on average spendings how far we can go with reserves)
-    //4. Show sankey chart of in- and outflows? Breakdown of BAL and USDC
-
-    //Obtain quarterly data:
-    //1. obtain whitelist token data
-    //2. aggregate by Quarter
-    //3. Feed into multi-bar-chart
-
 
 
     //---USDC: SEND and RECEIVE---
@@ -99,8 +81,8 @@ export default function Financials() {
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:
     usdcSend[1].value = 0
-    console.log("usdcSend", usdcSend)
-    const monthlyUSDCSend = getChartDataByMonth(usdcSend)
+    //console.log("usdcSend", usdcSend)
+    //const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
     //---USDC: Cumulative in- and outflows---
     let startDate = new Date(usdcReceived[0].time);
@@ -126,9 +108,16 @@ export default function Financials() {
         )
     })
 
+    //Create a consistent monthly chart set for a given time range:
+    const monthlyUSDCReceived = getMonthlyChartDataByDateRange(usdcReceived, startDate, endDate);
+    const monthlyUSDCSend = getMonthlyChartDataByDateRange(usdcSend, startDate, endDate);
+
     //---BAL---
     const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
     const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+    console.log("balSend", balSend)
+    const monthlyBALReceived = getMonthlyChartDataByDateRange(balReceive, startDate, endDate);
+    const monthlyBALSend = getMonthlyChartDataByDateRange(balSend, startDate, endDate);
 
     const cumulativeBALIncomeChartData = getCumulativeSumTrace(balReceive, startDate, endDate);
     cumulativeBALIncomeChartData.forEach(item => item.value += startingBAL)
@@ -145,56 +134,24 @@ export default function Financials() {
         )
     })
 
-    //Calculate yearly spend based on current quarter spendings:
-    //States
-    dayjs.extend(quarterOfYear);
-    const currentQuarter = dayjs().quarter();
-    const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
-    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-
-
-    //Data
-    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData)
-    let monthlyUSDCBurn = 0;
-    if (quarterlyPie && quarterlyPie.find(el => el.name === 'USDC')) {
-        const el = quarterlyPie.find(el => el.name === 'USDC');
-        monthlyUSDCBurn = el ? el.value / 3 : 0;
-    }
-
-    //TODO: project based on last 3 month income excluding running month
-    const avgIncome = monthlyUSDC.reduce((a, b) => a + b.value, 0) / monthlyUSDC.length;
-    console.log("monthly USDC burn", monthlyUSDCBurn)
-    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn - avgIncome) : 0;
-    console.log("burnRunway", burnRunWay)
-
-
-
-
-    //---WETH---
-    const wethReceived = extractTransactionsByTokenAndType(txnHistory, weth.toLowerCase(), 'receive');
-    const quarterlyWETH = getChartDataByQuarter(wethReceived);
-
-
     //---Historical Treasury wallet chart---
     //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth, done)
     const dailyUSDCIn = getDailyChartDataByDateRange(usdcReceived, startDate, endDate);
     const dailyUSDCOut = getDailyChartDataByDateRange(usdcSend, startDate, endDate);
-    console.log("dailyUSDCIn", dailyUSDCIn)
-    console.log("dailyUSDCOut", dailyUSDCOut)
     const historicalData: BalancerChartDataItem[] = [];
     if (usdcReserves) {
         let runningAmount = usdcReserves
-    for (let i = dailyUSDCIn.length - 1; i >= 0; i--) {
-        if (i !== dailyUSDCIn.length - 1) {
-            runningAmount = runningAmount - dailyUSDCIn[i].value - dailyUSDCOut[i].value
-        }
-        historicalData.push(
-            {
-                value: runningAmount,
-                time: dailyUSDCIn[i].time
+        for (let i = dailyUSDCIn.length - 1; i >= 0; i--) {
+            if (i !== dailyUSDCIn.length - 1) {
+                runningAmount = runningAmount - dailyUSDCIn[i].value - dailyUSDCOut[i].value
             }
-        ) 
-    }
+            historicalData.push(
+                {
+                    value: runningAmount,
+                    time: dailyUSDCIn[i].time
+                }
+            )
+        }
     }
     historicalData.sort(function (a, b) {
         const date1 = new Date(a.time)
@@ -203,15 +160,42 @@ export default function Financials() {
     })
 
 
+    //Calculate yearly spend based on current quarter spendings:
+    //States
+    dayjs.extend(quarterOfYear);
+    const currentQuarter = dayjs().quarter();
+    const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
+    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+
+
+    //SP Data
+    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData)
+    const spRows = useGetSPTableEntry(sps, dayjs().year(), currentQuarter, balPriceData);
+    const totalsBySpsPie = getTotalsBySp(spRows);
+    let monthlyUSDCBurn = 0;
+    if (quarterlyPie && quarterlyPie.find(el => el.name === 'USDC')) {
+        const el = quarterlyPie.find(el => el.name === 'USDC');
+        monthlyUSDCBurn = el ? el.value / 3 : 0;
+    }
+
+    //TODO: project based on last 3 month income excluding running month
+    const avgIncome = monthlyUSDC.reduce((a, b) => a + b.value, 0) / monthlyUSDC.length;
+    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn - avgIncome) : 0;
+
+
+    //---WETH---
+    const wethReceived = extractTransactionsByTokenAndType(txnHistory, weth.toLowerCase(), 'receive');
+    const quarterlyWETH = getChartDataByQuarter(wethReceived);
+
+
+
     return (
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
+                sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
+                alignItems="left"
                 spacing={1}
-                sx={{ justifyContent: 'center' }}
             >
                 <Grid item xs={10}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -226,39 +210,80 @@ export default function Financials() {
                         </Box>
                     </Box>
                 </Grid>
+
+
                 <Grid
-                    item
-                    xs={10}
+                        item
+                        xs={10}
+                    >
+                        <Box display="flex" justifyContent="space-between" alignItems="row">
+                            <Stack 
+                            direction={{ xs: 'column', sm: 'row' }}
+                            spacing={{ xs: 2, sm: 2, md: 0.5 }}
+                            alignItems="left"
+                            alignContent="left"
+                            justifyContent="flex-start">
+                                <MetricsCard
+                                    mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='Total Liquid Reserves'
+                                    mainMetricChange={0}
+                                    MetricIcon={AccountBalanceIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={usdcReserves ? usdcReserves : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='USDC Reserves'
+                                    mainMetricChange={0}
+                                    MetricIcon={CurrencyExchangeIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={balReserves ? balReserves : 0}
+                                    mainMetricInUSD={false}
+                                    mainMetricUnit={" BAL"}
+                                    metricName='BAL Reserves'
+                                    mainMetricChange={0}
+                                    MetricIcon={WalletIcon}
+                                />
+
+                            </Stack>
+                        </Box>
+                    </Grid>
+                <Grid
+                    container
+                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={1}
+                    mt={1}
                 >
-                    <Box display="flex" justifyContent="space-between" alignItems="row">
-                        <Stack direction="column" spacing={1} justifyContent="flex-start">
-                            <MetricsCard
-                                mainMetric={usdcReserves ? usdcReserves : 0}
-                                mainMetricInUSD={true}
-                                metricName='USDC Reserves'
-                                mainMetricChange={0}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={balReserves ? balReserves : 0}
-                                mainMetricInUSD={false}
-                                mainMetricUnit={" BAL"}
-                                metricName='BAL Reserves'
-                                mainMetricChange={0}
-                                MetricIcon={WalletIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
-                                mainMetricInUSD={true}
-                                metricName='Total Liquid Reserves'
-                                mainMetricChange={0}
-                                MetricIcon={WalletIcon}
-                            />
-                        </Stack>
-
-                    </Box>
+                    
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1} display="flex" alignItems='center'>
+                                <Typography variant="h6">Projected Spendings by Currency: Q{currentQuarter} {dayjs().year()}</Typography>
+                            </Box>
+                            <GenericPieChartWithVerticalLegend data={quarterlyPie} height={'200px'} />
+                            
+                        </Card>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1} display="flex" alignItems='center'>
+                                <Typography variant="h6">Projected Spendings by Service Provider : Q{currentQuarter} {dayjs().year()}</Typography>
+                            </Box>
+                            <GenericPieChart data={totalsBySpsPie} height={'200px'} />
+                            
+                        </Card>
+                    </Grid>
                 </Grid>
-
                 <Grid
                     item
                     mt={2}
@@ -266,81 +291,73 @@ export default function Financials() {
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">USDC Flows</Typography>
+                            <Typography variant="h6">USDC Expenditures</Typography>
                         </Box>
                     </Box>
                 </Grid>
                 <Grid
-                    item
-                    xs={10}>
-                    <Card>
-                        <Box p={1}>
-                            <Typography variant="h6">Monthly Protocol Fee Income (USDC)</Typography>
-                        </Box>
-                        <GenericBarChart data={monthlyUSDC} />
-                    </Card>
-                </Grid>
-                <Grid
-                    item
-                    xs={10}>
-                    <Card>
-                        <Box p={1}>
-                            <Typography variant="h6">Monthly Protocol Fee Income (USDC)</Typography>
-                        </Box>
-                        <GenericBarChart data={monthlyUSDCSend} />
-                    </Card>
-                </Grid>
-                <Grid
                     container
-                    direction="row"
+                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
                     justifyContent="center"
-                    alignItems="center"
-                    spacing={1}
-                    mt={1}
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={2}
                 >
-                    <Grid item xs={4}> 
-                    <Card>
-                        <Typography>Quarterly Budget: </Typography>
-                        <Typography variant='h5' fontWeight={"bold"}>{formatDollarAmount(quarterlyTotalBudget)}</Typography>
-                            <GenericPieChart data={quarterlyPie} height={'250px'}/>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={6}> 
-                        
-                    </Grid>
-                </Grid>
-                <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    spacing={1}
-                    mt={1}
-                >
-                    <Grid item xs={4}>
-                        <Card >
+                    <Grid
+                        item
+                        xs={5}>
+                        <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
-                                <Typography variant="h6">USDC Funding Runway Projection</Typography>
+                                <Typography variant="h6">Monthly Protocol Fee Income vs. Spendings (USDC)</Typography>
                             </Box>
-                            
-                                {usdcReserves ?
-                                    <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
-                           
+                            <IncomeVsSpendingMultiBarChart
+                                data1={monthlyUSDCReceived}
+                                data2={monthlyUSDCSend}
+                                dataTitle1='Income'
+                                dataTitle2='Spendings'
+                                height='300px'
+                            />
                         </Card>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Card>
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        <Card sx={{ boxShadow: 3 }}>
                             <Box p={1} >
                                 <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
                             </Box>
-                                <GenericLineChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
-                                <GenericLineChart chartData={historicalData} dataTitle='USDC Burn' height='300px' />
-                            
+                            <GenericLineChart chartData={netCumulativeUSDCFlow} dataTitle='USDC Burn' height='300px' />
                         </Card>
                     </Grid>
                 </Grid>
-
-
+                <Grid
+                    container
+                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={2}
+                    mt={1}
+                >
+                    <Grid item xs={4}>
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1}>
+                                <Typography variant="h6">USDC Funding Runway Projection</Typography>
+                            </Box>
+                            {usdcReserves ?
+                                <RunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
+                        </Card>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1}>
+                                <Typography variant="h6">Historical USDC Reserves</Typography>
+                            </Box>
+                            <GenericLineChart chartData={historicalData} dataTitle='USDC Burn' height='300px' />
+                        </Card>
+                    </Grid>
+                </Grid>
                 <Grid
                     item
                     mt={1}
@@ -348,20 +365,44 @@ export default function Financials() {
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">BAL Flows</Typography>
+                            <Typography variant="h6">BAL Expenditures</Typography>
                         </Box>
                     </Box>
                 </Grid>
                 <Grid
-                    mt={1}
+                    container
+                    sx={{ flexDirection: { xs: 'column', md: 'row' }}}
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={1}
+                >
+                    <Grid
+                        item
+                        xs={5}>
+                        <Card sx={{ boxShadow: 3 }}>
+                            <Box p={1}>
+                                <Typography variant="h6">Monthly BAL Inflow vs. Spendings</Typography>
+                            </Box>
+                            <IncomeVsSpendingMultiBarChart
+                                data1={monthlyBALReceived}
+                                data2={monthlyBALSend}
+                                dataTitle1='Income'
+                                dataTitle2='Spendings'
+                                height='300px'
+                                unit='BAL'
+                            />
+                        </Card>
+                    </Grid>
+                    <Grid
                     item
-                    xs={10}>
-                    <Card>
+                    xs={5}>
+                    <Card sx={{ boxShadow: 3 }}>
                         <Box p={1}>
                             <Typography variant="h6">Cumulative BAL Burn (Reserves vs. Outflow)</Typography>
                         </Box>
-                        <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' />
+                        <GenericAreaChart chartData={netCumulativeBALFlow} format='amount' dataTitle='USDC Burn' height='300px' />
                     </Card>
+                </Grid>
                 </Grid>
                 <Grid
                     item
@@ -370,13 +411,13 @@ export default function Financials() {
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">Transaction History</Typography>
+                            <Typography variant="h6">Treasury Transaction History</Typography>
                         </Box>
                     </Box>
                 </Grid>
                 <Grid
                     item
-                    mt={2}
+                    mt={1}
                     xs={10}
                 >
                     {transactions && transactions.history_list.length > 0 ?

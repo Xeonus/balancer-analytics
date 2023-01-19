@@ -80,6 +80,7 @@ export default function ServiceProviders() {
                         </Typography>
                     </Box>
                 </Grid>
+
                 <Grid
                     item
                     mt={2}
@@ -92,55 +93,69 @@ export default function ServiceProviders() {
                     </Box>
                 </Grid>
                 <Grid
-                    item
-                    xs={10}
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={1}
+                    mt={1}
                 >
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        {quarterlyPie ?
+                            <Box >
+                                <Card sx={{ minWidth: '500px' }}>
+                                    <Box p={1}>
+                                        <Typography
+                                            color="textSecondary"
+                                            gutterBottom
+                                            variant="h6"
+                                        >
+                                            Total expenditure for Q{currentQuarter} {dayjs().year()} : {formatDollarAmount(quarterlyTotalBudget)}*
+                                        </Typography>
+
+                                    </Box>
+                                    <GenericPieChart data={quarterlyPie} height='200px' />
+                                    <Box p={1}>
+                                        <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
+                                    </Box>
+                                </Card>
+                            </Box> : <CircularProgress />}
+                    </Grid>
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        {totalsBySpsPie ?
+                            <Box ml={1} >
+                                <Card sx={{ minWidth: '500px' }}>
+                                    <Box p={1}>
+                                        <Typography
+                                            color="textSecondary"
+                                            gutterBottom
+                                            variant="h6"
+                                        >
+                                            Breakdown by SP for Q{currentQuarter} {dayjs().year()}*
+                                        </Typography>
+                                    </Box>
+                                    <GenericPieChart data={totalsBySpsPie} height='200px' />
+                                    <Box p={1}>
+                                        <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
+                                    </Box>
+                                </Card>
+                            </Box> : <CircularProgress />}
+
+                    </Grid>
+
                 </Grid>
                 <Grid
                     item
+                    mt={2}
                     xs={10}
                 >
-                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="row">
-                        <Box mb={1} display="flex" flexDirection="row" justifyContent="space-between" alignItems="row">
-                            {quarterlyPie ?
-                                <Box >
-                                    <Card sx={{ minWidth: '500px' }}>
-                                        <Box p={1}>
-                                            <Typography
-                                                color="textSecondary"
-                                                gutterBottom
-                                                variant="h6"
-                                            >
-                                                Total expenditure for Q{currentQuarter} {dayjs().year()} : {formatDollarAmount(quarterlyTotalBudget)}*
-                                            </Typography>
-
-                                        </Box>
-                                        <GenericPieChart data={quarterlyPie} height='200px' />
-                                        <Box p={1}>
-                                            <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
-                                        </Box>
-                                    </Card>
-                                </Box> : <CircularProgress />}
-                            {totalsBySpsPie ?
-                                <Box ml={1} >
-                                    <Card sx={{ minWidth: '500px' }}>
-                                        <Box p={1}>
-                                            <Typography
-                                                color="textSecondary"
-                                                gutterBottom
-                                                variant="h6"
-                                            >
-                                                Breakdown by SP for Q{currentQuarter} {dayjs().year()}*
-                                            </Typography>
-                                        </Box>
-                                        <GenericPieChart data={totalsBySpsPie} height='200px' />
-                                        <Box p={1}>
-                                            <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
-                                        </Box>
-                                    </Card>
-                                </Box> : <CircularProgress />}
-                        </Box>
-                    </Box>
                     {balPriceData ?
                         <ServiceProviderSpendingTable spRows={spRows} year={dayjs().year()} quarter={currentQuarter} balPriceData={balPriceData} />
                         : null}
@@ -157,32 +172,41 @@ export default function ServiceProviders() {
                     </Box>
                 </Grid>
                 <Grid
-                    item
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={1}
                     mt={1}
-                    xs={10}
                 >
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Box>
-                            {nextQuarterPie ?
-                                <Box >
-                                    <Card sx={{ minWidth: '500px' }}>
-                                        <Box p={1}>
-                                            <Typography
-                                                color="textSecondary"
-                                                gutterBottom
-                                                variant="h6"
-                                            >
-                                                Upcoming spending for Q{nextQuarter} {nextYearEntry} : {formatDollarAmount(netQuarterTotal)}*
-                                            </Typography>
-                                        </Box>
-                                        <GenericPieChart data={nextQuarterPie} height='200px' />
-                                        <Box p={1}>
-                                            <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
-                                        </Box>
-                                    </Card>
-                                </Box> : <CircularProgress />}
-
-                        </Box>
+                    <Grid
+                        item
+                        xs={5}
+                    >
+                        {nextQuarterPie ?
+                            <Box >
+                                <Card sx={{ minWidth: '500px' }}>
+                                    <Box p={1}>
+                                        <Typography
+                                            color="textSecondary"
+                                            gutterBottom
+                                            variant="h6"
+                                        >
+                                            Upcoming spending for Q{nextQuarter} {nextYearEntry} : {formatDollarAmount(netQuarterTotal)}*
+                                        </Typography>
+                                    </Box>
+                                    <GenericPieChart data={nextQuarterPie} height='200px' />
+                                    <Box p={1}>
+                                        <Typography variant="caption">* Based on approved snapshot proposal specifications</Typography>
+                                    </Box>
+                                </Card>
+                            </Box> : <CircularProgress />}
+                    </Grid>
+                    <Grid
+                        item
+                        xs={5}
+                    >
                         {totalsBySpsForecast ?
                             <Box ml={1} >
                                 <Card sx={{ minWidth: '500px' }}>
@@ -201,7 +225,9 @@ export default function ServiceProviders() {
                                     </Box>
                                 </Card>
                             </Box> : <CircularProgress />}
-                    </Box>
+
+                    </Grid>
+
                 </Grid>
                 <Grid
                     item

@@ -23,18 +23,11 @@ export default function GenericLineChart({chartData, dataTitle, format = '$', ba
         color: ['#00DDFF'],
         tooltip: {
             trigger: 'axis',
-            axisPointer: {
-                type: 'cross',
-                label: {
-                    backgroundColor: '#6a7985',
-                }
-            },
-            
-            
+        
         },
         grid: {
-            left: '3%',
-            right: '4%',
+            left: '5%',
+            right: '5%',
             bottom: '3%',
             containLabel: true
         },
@@ -64,7 +57,7 @@ export default function GenericLineChart({chartData, dataTitle, format = '$', ba
             {
               name: dataTitle,
               type: 'line',
-              symbol: 'none',
+              showSymbol: false,
               sampling: 'lttb',
               itemStyle: {
                 color: 'rgb(255, 70, 131)'
@@ -81,9 +74,6 @@ export default function GenericLineChart({chartData, dataTitle, format = '$', ba
                   }
                 ])
               },
-              emphasis: {
-                focus: 'series',
-            },
               tooltip: {
                 valueFormatter: function (value: number) {
                     return format === '$' ? formatDollarAmount(value) : formatAmount(value);
@@ -100,6 +90,7 @@ export default function GenericLineChart({chartData, dataTitle, format = '$', ba
                 option={option}
                 style={{ height: height, width: '100%' }}
                 className={'react_for_echarts'}
+                
             /> : <CircularProgress />
     );
 }

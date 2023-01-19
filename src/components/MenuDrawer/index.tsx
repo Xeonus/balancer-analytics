@@ -159,7 +159,7 @@ const MenuDrawer = ({
                 <Box mt={1} display="flex" justifyContent="center" paddingX={drawerWidth / 6 + 'px'}>
                     <Typography variant="body2" fontWeight={"bold"} >Powered by</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-evenly" paddingX={drawerWidth / 6 + 'px'} paddingY="5px">
+                <Box display="flex" justifyContent="space-evenly" paddingX={drawerWidth / 6 + 'px'} paddingY="20px">
                     <IconButton
                         sx={{
                             ml: 1,

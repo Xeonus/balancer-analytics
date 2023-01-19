@@ -1,4 +1,3 @@
-import { BalancerJoinExitFragment } from "../../../apollo/generated/graphql-codegen-generated";
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -224,7 +223,7 @@ export default function TreasuryTransactionTable({ txnHistory }:
             return SPs[0] ? SPs[0] : '-'
         }
         if (receives.length > 0) {
-            const addresses = receives.map(receive => receive.to_addr);
+            const addresses = receives.map(receive => receive.from_addr);
             const SPs = addresses.filter(address => getSPWalletName(address) !== '-');
             return SPs[0] ? SPs[0] : '-'
         }
@@ -257,7 +256,7 @@ export default function TreasuryTransactionTable({ txnHistory }:
         createData(
             el.cate_id === 'receive' ? 'Receive' : 'Send', 
             obtainSendReceives(el.sends, el.receives), 
-            getSPWalletName(obtainSPsSendsReceives(el.sends, el.receives)),
+            el.sends.length > 0 && el.receives.length > 0 ? 'Multicall' : getSPWalletName(obtainSPsSendsReceives(el.sends, el.receives)),
             obtainValue(el.sends, el.receives, txnHistory.token_dict), 
             el.time_at, 
             el.id)
@@ -295,10 +294,9 @@ export default function TreasuryTransactionTable({ txnHistory }:
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Paper elevation={1} sx={{ mb: 2 }}>
+            <Paper elevation={1} sx={{ mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table
-                        //sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >

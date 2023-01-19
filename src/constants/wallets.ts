@@ -22,6 +22,18 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'Fjord Proxy',
         walletId: '0x9a74cbff3f36ff1e433ef88d0ec1cdcd1eb79afa'
+    },
+    {
+        name: 'Ribbon Vault',
+        walletId: '0x2a6b048eb15c7d4ddca27db4f9a454196898a0fe'
+    },
+    {
+        name: 'Fee Collector Relayer',
+        walletId: '0xe649B71783d5008d10a96b6871e3840a398d4F06'
+    },
+    {
+        name: 'Aave Collector V2',
+        walletId: '0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c'
     }
 ]
 

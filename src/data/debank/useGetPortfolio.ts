@@ -23,6 +23,7 @@ export const useGetPortfolio = (walletId: string) => {
           }
         );
         const json: Portfolio = response.data
+        //console.log("portfolio response json", response.data)
         setPortfolio(json);
       } catch (error) {
         console.error(error);

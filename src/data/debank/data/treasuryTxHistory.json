@@ -195,6 +195,11 @@
                     "amount": 3054.1894803676105,
                     "from_addr": "0xa0b937d5c8e32a80e3a8ed4227cd020221544ee6",
                     "token_id": "0x5afe3855358e112b5647b952709e6165e1c1eeee"
+                },
+                {
+                    "amount": 217549.235104,
+                    "from_addr": "0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c",
+                    "token_id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                 }
             ],
             "sends": [
@@ -204,8 +209,8 @@
                     "token_id": "0xba100000625a3754423978a60c9317c58a424e3d"
                 },
                 {
-                    "amount": 1347636.764896,
-                    "to_addr": "0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c",
+                    "amount": 1565186.000000,
+                    "to_addr": "0x3b8910f378034fd6e103df958863e5c684072693",
                     "token_id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                 }
             ],

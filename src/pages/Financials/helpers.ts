@@ -121,6 +121,42 @@ export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
 
 }
 
+export function getMonthlyChartDataByDateRange(chartData: BalancerChartDataItem[], start: Date, end: Date) {
+        let monthlyData: BalancerChartDataItem[] = [];
+        //Create new object to remove pointer reference!
+        let startDate = new Date(start.getTime());
+        let endDate = new Date(end.getTime());
+        let currentMonth = '';
+        let monthSum = 0
+
+    chartData.forEach(item => {
+        let month = new Date(startDate).getMonth();
+        let year = new Date(startDate).getFullYear();
+        let currentMonthYear = `${new Date(item.time).toLocaleString('default', { month: 'short' })}-${year}`;
+
+        if (currentMonth !== currentMonthYear) {
+            if (currentMonth !== '') {
+                monthlyData.push({
+                    time: currentMonth,
+                    value: monthSum,
+                });
+            }
+            currentMonth = currentMonthYear;
+            monthSum = 0;
+        }
+        monthSum += item.value;
+    });
+
+    // Push the last set of data
+    monthlyData.push({
+        time: currentMonth,
+        value: monthSum,
+    });
+
+    return monthlyData;
+
+}
+
 export function getDailyChartDataByDateRange(chartData: BalancerChartDataItem[], start: Date, end: Date) {
     let dailyData: BalancerChartDataItem[] = [];
         //Create new object to remove pointer reference!
