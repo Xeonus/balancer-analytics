@@ -50,7 +50,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   startTimeStamp: 1619874000,
   appUri: 'https://app.balancer.fi/#/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
-  clientUri: 'https://balancer-v2-analytics.stellate.sh',
+  clientUri: 'https://balancer-v2-decentraliced-analytics.stellate.sh',
   decentralicedClientUri: 'https://gateway.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/GAWNgiGrA9eRce5gha9tWc7q5DPvN3fs5rSJ6tEULFNM',
   alchemyRPCUrl: ALCHEMY_URL,
   alchemyKey: ALCHEMY_KEY,
