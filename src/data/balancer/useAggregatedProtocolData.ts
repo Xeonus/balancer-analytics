@@ -15,6 +15,8 @@ export interface AggregatedProtocolData {
     feesChange: number;
     tvl: number;
     tvlChange: number;
+    swaps24: number;
+    swapsChange: number;
 }
 
 export default function useAggregatedProtocolData() {
@@ -34,6 +36,8 @@ export default function useAggregatedProtocolData() {
     let volumeChange = 0
     let fees24 = 0
     let feeChange = 0
+    let swaps24 = 0
+    let swapsChange = 0
 
     if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl) {
         tvl = protocolData.tvl + protocolArbitrumData.tvl + protocolPolygonData.tvl;
@@ -59,6 +63,14 @@ export default function useAggregatedProtocolData() {
         feeChange = protocolData.feesChange + protocolArbitrumData.feesChange + protocolPolygonData.feesChange;
     }
 
+    if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24) {
+        swaps24 = protocolData.swaps24 + protocolArbitrumData.swaps24 + protocolPolygonData.swaps24;
+    }
+
+    if (protocolData.swapsChange && protocolArbitrumData.swapsChange && protocolPolygonData.swapsChange) {
+        swapsChange = protocolData.swapsChange + protocolArbitrumData.swapsChange + protocolPolygonData.swapsChange;
+    }
+
     return {
         mainnetData: protocolData,
         arbitrumData: protocolArbitrumData,
@@ -69,6 +81,8 @@ export default function useAggregatedProtocolData() {
         feesChange: feeChange,
         tvl,
         tvlChange: tvlChange,
+        swaps24: swaps24,
+        swapsChange: swapsChange,
 
     };
 }

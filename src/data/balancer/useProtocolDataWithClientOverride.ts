@@ -14,6 +14,7 @@ export interface ProtocolData {
     tvl?: number;
     tvlChange?: number;
     swaps24?: number;
+    swapsChange?: number;
     tvlData: BalancerChartDataItem[];
     volumeData: BalancerChartDataItem[];
     swapData: BalancerChartDataItem[];
@@ -103,6 +104,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
     const fees48 = parseFloat(balancer48.totalSwapFee);
     const swaps = parseFloat(balancer.totalSwapCount);
     const swaps24 = parseFloat(balancer24.totalSwapCount);
+    const swaps48 = parseFloat(balancer48.totalSwapCount)
 
     return {
         volume24: volume - volume24,
@@ -112,6 +114,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         fees24: fees - fees24,
         feesChange: (fees - fees24 - (fees24 - fees48)) / (fees24 - fees48),
         swaps24: swaps - swaps24,
+        swapsChange: (swaps - swaps24 - (swaps24 - swaps48)) / (fees24 - swaps48),
         tvlData,
         volumeData,
         swapData,

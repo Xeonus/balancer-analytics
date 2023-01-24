@@ -14,11 +14,35 @@ import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import MixedLineBarChart from '../../components/Echarts/MixedLineBarChart';
 import { isMobile } from 'react-device-detect';
+import NavCrumbs from '../../components/NavCrumbs';
+import { NavElement } from '../../components/NavCrumbs';
 
 export default function PoolsOverview() {
 
-    const poolData = useBalancerPools();
+    
     const [activeNetwork] = useActiveNetworkVersion();
+
+    //Navigation
+    const homeNav: NavElement = {
+        name: 'Home',
+        link: ''
+    }
+    const poolNav: NavElement = {
+        name: 'Chain',
+        link: 'chain'
+    }
+    const tokenNav: NavElement = {
+        name: 'Pools',
+        link: 'pools'
+    }
+    const navCrumbs: NavElement[] = new Array()
+    navCrumbs.push(homeNav)
+    navCrumbs.push(poolNav);
+    navCrumbs.push(tokenNav)
+
+
+    //Load pools
+    const poolData = useBalancerPools();
     const filteredPoolDatas = poolData.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
     //Create bar chart data for pool distribution
@@ -80,6 +104,19 @@ export default function PoolsOverview() {
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
+                spacing={2}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Grid item xs={10} mb={2}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                    </Box>
+
+                </Grid>
+               
+            </Grid>
+            <Grid
+                container
                 sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
                 alignItems="left"
                 spacing={1}
@@ -120,6 +157,7 @@ export default function PoolsOverview() {
                 >
                     <Grid
                         item
+                        ml={1}
                         mt={1}
                         xs={10}
                     >

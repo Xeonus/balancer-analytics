@@ -14,6 +14,10 @@ import PoolTableCompact from "../../components/Tables/PoolTableCompact";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 import SwapsTable from '../../components/Tables/SwapsTable';
+import ExploreCard from '../../components/Cards/ExploreCard';
+import TokenIcon from '@mui/icons-material/Token';
+import WavesIcon from '@mui/icons-material/Waves';
+import { networkPrefix } from '../../utils/networkPrefix';
 
 
 
@@ -92,7 +96,17 @@ export default function Chain() {
                         />
                     </Stack>
                 </Grid>
+                <Grid item mt={1} xs={10}>
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                >
+                    <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />
+                    <ExploreCard linkName='Tokens' linkTarget={networkPrefix(activeNetwork) + 'tokens'} MetricIcon={TokenIcon} />
+                </Stack>
+
             </Grid>
+            </Grid>
+            
             <Grid
                 container
                 spacing={2}
@@ -140,14 +154,14 @@ export default function Chain() {
                     xs={10}
                 >
                     <Grid item xs={10} >
-                    <Box mt={2}>
-                        <Typography variant='h5'>Large Swaps</Typography>
-                    </Box>
+                        <Box mt={2}>
+                            <Typography variant='h5'>Large Swaps</Typography>
+                        </Box>
                     </Grid>
                 </Grid>
                 <Grid item xs={10}>
-                         <SwapsTable swaps={protocolData.whaleSwaps} />
-                        
+                    <SwapsTable swaps={protocolData.whaleSwaps} />
+
                 </Grid>
 
             </Grid>

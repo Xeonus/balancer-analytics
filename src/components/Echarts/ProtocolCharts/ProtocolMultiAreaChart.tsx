@@ -58,7 +58,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
 
 
     //---Hooks for custom time ranges---
-    const [timeRange, setTimeRange] = React.useState('0');
+    const [timeRange, setTimeRange] = React.useState('365');
     //data state
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
     const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);

@@ -21,14 +21,15 @@ const CoinCard = ({
   return (
     <Card
     sx={{
-        maxWidth: '275px',
-        minWidth: '275px'
+      maxWidth: '275px',
+      minWidth: '250px',
+      maxHeight: '150px'
     }}
     >
       <CardContent>
         <Grid
           container
-          spacing={3}
+          spacing={1}
           sx={{ justifyContent: 'space-between' }}
         >
           <Grid item>
@@ -47,7 +48,7 @@ const CoinCard = ({
             </Typography>
           </Grid>
           <Grid item>
-            <CurrencyLogo address={tokenAddress} size='40px' />
+            <CurrencyLogo address={tokenAddress} size='30px' />
           </Grid>
         </Grid>
         <Box

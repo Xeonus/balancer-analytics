@@ -30,6 +30,7 @@ import { networkPrefix } from '../../utils/networkPrefix'
 import Treasury from '../../pages/Treasury';
 import ServiceProviders from '../../pages/ServiceProviders';
 import Financials from '../../pages/Financials';
+import { isMobile } from 'react-device-detect';
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -43,22 +44,23 @@ const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
-}>(({ theme, open }) => ({
+    isMobile?: boolean;
+}>(({ theme, open, isMobile }) => ({
     flexGrow: 1,
     padding: theme.spacing(2),
     transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    marginRight: '25px',
-    marginLeft: `-${drawerWidth - 30}px`,
+    marginRight: isMobile ? '0px' : '25px',
+    marginLeft: isMobile ? `-${drawerWidth}px` : `-${drawerWidth - 30}px`,
     ...(open && {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: '25px',
-        marginRight: '25px',
+        marginLeft: isMobile ? '0px' : '25px',
+        marginRight: isMobile ? '0px' : '25px',
     }),
 }));
 
@@ -214,7 +216,7 @@ function Dashboard() {
                         handleDrawerClose={handleDrawerClose}
                         activeNetwork={activeNetwork}
                     />
-                    <MainContent open={open}>
+                    <MainContent open={open} isMobile={isMobile}>
                         <DrawerHeader />
                         <Routes>
                             <Route path="/" element={<Protocol />} />

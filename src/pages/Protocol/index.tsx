@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { Grid, CircularProgress, Typography, Stack } from '@mui/material';
+import { Grid, CircularProgress, Typography, Stack, Skeleton } from '@mui/material';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
@@ -8,12 +8,17 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
 import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
 import ProtocolMultiAreaChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
+import ExploreCard from '../../components/Cards/ExploreCard';
+import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
+import EtherLogo from '../../assets/svg/ethereum.svg'
+import PolygonLogo from '../../assets/svg/polygon.svg'
 
 
 
@@ -36,16 +41,100 @@ export default function Protocol() {
 
     return (
         <Box sx={{ flexGrow: 2 }}>
-                <Grid
-                    container
-                    spacing={3}
-                    sx={{ justifyContent: 'center' }}
-                >
+            <Grid
+                container
+                spacing={3}
+                sx={{ justifyContent: 'center' }}
+            >
                 <Grid
                     item
                     xs={10}
                 >
-                    <Stack direction="row" spacing={2} justifyContent="flex-start">
+                    <Grid
+                        container
+                        spacing={{ xs: 2, md: 2 }}
+                        columns={{ xs: 4, sm: 8, md: 12 }}
+                        sx={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center' }}
+                    >
+                        <Grid item xs={10} sm={4} md={4}>
+                            {coinData && coinData[balAddress] && coinData[balAddress].usd ?
+                                <CoinCard
+                                    tokenAddress={balAddress}
+                                    tokenName='BAL'
+                                    tokenPrice={coinData[balAddress].usd}
+                                    tokenPriceChange={coinData[balAddress].usd_24h_change}
+
+                                />
+                                : <CircularProgress />}
+
+                        </Grid>
+                        <Grid item xs={10} sm={4} md={4}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
+                                mainMetricInUSD={true}
+                                metricName='Protocol Volume'
+                                mainMetricChange={aggregatedProtocolData.volumeChange}
+                                MetricIcon={EqualizerIcon}
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={10} sm={4} md={4}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.tvl}
+                                mainMetricInUSD={true}
+                                metricName='Protocol TVL'
+                                mainMetricChange={aggregatedProtocolData.tvlChange}
+                                MetricIcon={MonetizationOnIcon}
+                            />
+                        </Grid>
+
+                        <Grid item xs={10} sm={4} md={4}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.fees24}
+                                mainMetricInUSD={true}
+                                metricName='Protocol Fees'
+                                mainMetricChange={aggregatedProtocolData.feesChange}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+                        </Grid>
+
+                        <Grid item xs={10} sm={4} md={4}>
+                            <MetricsCard
+                                mainMetric={mainnetPercentage}
+                                mainMetricInUSD={false}
+                                mainMetricUnit={' %'}
+                                metricName='Mainnet Dominance'
+                                mainMetricChange={mainnetTVLChange}
+                                MetricIcon={PieChartIcon}
+                            />
+                        </Grid>
+                        <Grid item xs={10} sm={4} md={4}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
+                                mainMetricInUSD={false}
+                                metricName='Swaps'
+                                mainMetricChange={aggregatedProtocolData.swapsChange}
+                                MetricIcon={SwapHorizIcon}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+
+
+
+                {/* <Grid
+                    item
+                    xs={10}
+                >
+                    <Stack 
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={{ xs: 2, sm: 2, md: 1 }}
+                        alignItems="left"
+                        alignContent="left"
+                        justifyContent="flex-start">
+                            
                         {coinData && coinData[balAddress] && coinData[balAddress].usd ?
                             <CoinCard
                                 tokenAddress={balAddress}
@@ -85,67 +174,78 @@ export default function Protocol() {
                             MetricIcon={PieChartIcon}
                         />
                     </Stack>
-                </Grid>
+                </Grid>*/}
             </Grid>
-            { protocolData.feeData.length > 10 && arbitrumProtocolData.feeData.length > 10 && polygonProtocolData.feeData.length > 10 ?
-            <Grid
-                container
-                spacing={1}
-                sx={{ justifyContent: 'center' }}
-            >
-                <Grid item mt={1} xs={10}>
+            {protocolData.feeData.length > 10 && arbitrumProtocolData.feeData.length > 10 && polygonProtocolData.feeData.length > 10 ?
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <Grid item mt={1} xs={10}>
                         <Typography variant='h5'>Historical TVL</Typography>
                     </Grid>
                     <Grid item mt={1} xs={10}>
-                            <ProtocolMultiAreaChart
-                                mainnetProtocolData={protocolData}
-                                arbitrumProtocolData={arbitrumProtocolData}
-                                polygonProtocolData={polygonProtocolData}
-                            />
-                            </Grid>
-                
-                <Grid item mt={1} xs={10} >
-                    <Typography variant='h5'>Historical Volume</Typography>
+                        <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                        >
+                            <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
+                            <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                            <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
+                        </Stack>
+
+                    </Grid>
+
+                    <Grid item mt={1} xs={10}>
+                        <ProtocolMultiAreaChart
+                            mainnetProtocolData={protocolData}
+                            arbitrumProtocolData={arbitrumProtocolData}
+                            polygonProtocolData={polygonProtocolData}
+                        />
+                    </Grid>
+
+                    <Grid item mt={1} xs={10} >
+                        <Typography variant='h5'>Historical Volume</Typography>
                     </Grid>
                     <Grid item mt={1} xs={10} >
-                            <ProtocolMultipleBarChart
-                                mainnetProtocolData={protocolData.volumeData}
-                                arbitrumProtocolData={arbitrumProtocolData.volumeData}
-                                polygonProtocolData={polygonProtocolData.volumeData}
-                            />
-                            </Grid>
-                
-                <Grid item mt={1} xs={10} >
-                    <Typography variant='h5'>Historical Fees</Typography>
+                        <ProtocolMultipleBarChart
+                            mainnetProtocolData={protocolData.volumeData}
+                            arbitrumProtocolData={arbitrumProtocolData.volumeData}
+                            polygonProtocolData={polygonProtocolData.volumeData}
+                        />
+                    </Grid>
+
+                    <Grid item mt={1} xs={10} >
+                        <Typography variant='h5'>Historical Fees</Typography>
                     </Grid>
                     <Grid item mt={1} xs={10} >
-                            <ProtocolMultipleBarChart
-                                mainnetProtocolData={protocolData.feeData}
-                                arbitrumProtocolData={arbitrumProtocolData.feeData}
-                                polygonProtocolData={polygonProtocolData.feeData}
-                            />
-                            </Grid>
-                
-                <Grid item mt={1} xs={10} >
-                    <Typography variant='h5'>Historical Swaps</Typography>
+                        <ProtocolMultipleBarChart
+                            mainnetProtocolData={protocolData.feeData}
+                            arbitrumProtocolData={arbitrumProtocolData.feeData}
+                            polygonProtocolData={polygonProtocolData.feeData}
+                        />
+                    </Grid>
+
+                    <Grid item mt={1} xs={10} >
+                        <Typography variant='h5'>Historical Swaps</Typography>
                     </Grid>
                     <Grid item mt={1} xs={10} >
-                            <ProtocolMultipleBarChart
-                                mainnetProtocolData={protocolData.swapData}
-                                arbitrumProtocolData={arbitrumProtocolData.swapData}
-                                polygonProtocolData={polygonProtocolData.swapData}
-                            />
-                            </Grid>
-                
-            </Grid> : <Grid
-            container
-            spacing={2}
-            mt='10%'
-            mb='10%'
-            sx={{ justifyContent: 'center' }}
-        >
-            <CustomLinearProgress />
-        </Grid> }
+                        <ProtocolMultipleBarChart
+                            mainnetProtocolData={protocolData.swapData}
+                            arbitrumProtocolData={arbitrumProtocolData.swapData}
+                            polygonProtocolData={polygonProtocolData.swapData}
+                        />
+                    </Grid>
+
+                </Grid> : <Grid
+                    container
+                    spacing={2}
+                    mt='10%'
+                    mb='10%'
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <CustomLinearProgress />
+                </Grid>}
         </Box>
     );
 }
