@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
+import { DAO_FEE_FACTOR } from '../../../data/balancer/constants';
 
 
 interface Data {
@@ -226,7 +227,7 @@ export default function AggregatedPoolFeeTable({
 
     //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
-    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.5 * 0.25 * time + el.feesEpochUSD / 7 * 0.5 * 0.25 * time, 0)
+    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.5 * DAO_FEE_FACTOR * time + el.feesEpochUSD / 7 * 0.5 * DAO_FEE_FACTOR * time, 0)
 
     //Helper function to calculate daily token yield
     function calculateTokenYieldInUsd(poolData: PoolData) {
@@ -251,10 +252,10 @@ export default function AggregatedPoolFeeTable({
             getShortPoolName(el),
             el.tokens,
             el,
-            el.feesEpochUSD / 7  * time  * 0.5 * 0.25,
-            el.feesEpochUSD / 7   * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el)  * time  * 0.5 * 0.25,
-            calculateTokenYieldInUsd(el)  *time * 0.5 * 0.25 ,
-            100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * 0.25 + calculateTokenYieldInUsd(el)  * time  * 0.5 * 0.25))
+            el.feesEpochUSD / 7  * time  * 0.5 * DAO_FEE_FACTOR,
+            el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR,
+            calculateTokenYieldInUsd(el)  *time * 0.5 * DAO_FEE_FACTOR ,
+            100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR))
     )
 
     const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)

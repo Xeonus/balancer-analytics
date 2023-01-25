@@ -20,3 +20,4 @@ export const ALCHEMY_URL_POLYGON = process.env.REACT_APP_ALCHEMY_URL_POLYGON || 
 export const ALCHEMY_KEY_ARBITRUM = process.env.REACT_APP_ALCHEMY_KEY_ARBITRUM || '';
 export const ALCHEMY_URL_ARBITRUM = process.env.REACT_APP_ALCHEMY_URL_ARBITRUM || '';
 export const DB_KEY = process.env.REACT_APP_DB_KEY || '';
+export const DAO_FEE_FACTOR = 0.35;

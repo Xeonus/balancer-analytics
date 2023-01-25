@@ -81,7 +81,7 @@ export default function Treasury() {
     const ratioPieChartData: BalancerPieChartDataItem[] = []
     ratioPieChartData.push(
         {
-            value: walletTokenNetworth - BALInsuranceWorth,
+            value: walletTokenNetworth - BALinsuranceAmount,
             name: 'Tokens'
         }
     )
@@ -93,7 +93,7 @@ export default function Treasury() {
     )
     ratioPieChartData.push(
         {
-            value: BALInsuranceWorth,
+            value: BALinsuranceAmount,
             name: 'Foundation BAL Insurance'
         }
     )

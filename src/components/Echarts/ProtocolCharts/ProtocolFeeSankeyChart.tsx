@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import CustomLinearProgress from '../../Progress/CustomLinearProgress';
 import { PoolData } from "../../../data/balancer/balancerTypes";
 import { POOL_HIDE, YIELD_BEARING_TOKENS } from '../../../constants';
+import { DAO_FEE_FACTOR } from '../../../data/balancer/constants';
 
 export default function ProtocolFeeSankeyChart({
   poolDatas,
@@ -132,12 +133,12 @@ export default function ProtocolFeeSankeyChart({
         {
           source: 'Fee Collector',
           target: 'Revenue to the DAO',
-          value: tokenYield * 0.5 * 0.25 + swapRevenue * 0.5 * 0.25
+          value: tokenYield * 0.5 * DAO_FEE_FACTOR + swapRevenue * 0.5 * DAO_FEE_FACTOR
         },
         {
           source: 'Fee Collector',
           target: 'Bribes',
-          value: tokenYield * 0.5 * 0.75 + bribeFeesYieldPools * 0.5 * 0.75
+          value: tokenYield * 0.5 * (1 - DAO_FEE_FACTOR) + bribeFeesYieldPools * 0.5 * (1 - DAO_FEE_FACTOR)
         },
         {
           source: 'Swap Fees',
@@ -152,7 +153,7 @@ export default function ProtocolFeeSankeyChart({
         {
           source: 'Fee Collector',
           target: 'Revenue to veBAL holders',
-          value: swapRevenue * 0.5 * 0.75 - bribeFeesYieldPools * 0.5 * 0.75
+          value: swapRevenue * 0.5 * (1 - DAO_FEE_FACTOR) - bribeFeesYieldPools * 0.5 * (1 - DAO_FEE_FACTOR)
         },
       ],
       levels: [
