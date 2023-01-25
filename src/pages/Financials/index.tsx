@@ -95,24 +95,36 @@ export default function Financials() {
     //console.log("usdcSend", usdcSend)
     //const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
-        //---BAL---
-        const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
-        const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+    //---BAL---
+    const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
+    console.log("balReceive", balReceive)
+    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
 
     //---USDC: Cumulative in- and outflows---
-    let startDateUSDC = new Date(usdcReceived[0].time);
-    let endDateUSDC = new Date(usdcReceived[usdcReceived.length - 1].time);
-    let startDateBAL = new Date(balSend[0].time);
-    let endDateBAL = new Date(balSend[balSend.length - 1].time);
+    //FIX: receive and send start and end dates need to be considered!
+    const startDates: Date[] = [
+        new Date(usdcReceived[0].time), 
+        new Date(usdcSend[0].time),
+        new Date(balReceive[0].time),
+        new Date(balSend[0].time)
+    ];
+    
+    startDates.sort((a, b) => a.getTime() - b.getTime())
+    console.log("startDates", startDates)
+    let endDates: Date[] = [
+        new Date(usdcReceived[usdcReceived.length - 1].time),
+        new Date(usdcSend[usdcSend.length - 1].time),
+        new Date(balReceive[balReceive.length - 1].time),
+        new Date(balSend[balSend.length - 1].time),
+    ];
+    endDates.sort((a, b) => a.getTime() - b.getTime())
+    console.log("endDates", endDates)
 
-    let startDate = startDateUSDC < startDateBAL ? startDateUSDC : startDateBAL;
-    let endDate = endDateUSDC > endDateBAL ? endDateUSDC : endDateBAL;
-    if (startDate > new Date(usdcSend[0].time)) {
-        startDate = new Date(usdcSend[0].time)
-    }
-    if (endDate < new Date(usdcSend[usdcSend.length - 1].time)) {
-        endDate = new Date(usdcSend[usdcSend.length - 1].time)
-    }
+    const startDate = startDates[0];
+    const endDate = endDates[endDates.length -1]
+    console.log("endDate", endDate)
+
+
     const cumulativeIncomeChartData = getCumulativeSumTrace(usdcReceived, startDate, endDate);
     cumulativeIncomeChartData.forEach(item => item.value += startingUSDCValue)
     const cumulativeSpendChartData = getCumulativeSumTrace(usdcSend, startDate, endDate);
@@ -131,10 +143,8 @@ export default function Financials() {
     //Create a consistent monthly chart set for a given time range:
     const monthlyUSDCReceived = getMonthlyChartDataByDateRange(usdcReceived, startDate, endDate);
     const monthlyUSDCSend = getMonthlyChartDataByDateRange(usdcSend, startDate, endDate);
-
-
-    console.log("balSend", balSend)
     const monthlyBALReceived = getMonthlyChartDataByDateRange(balReceive, startDate, endDate);
+    console.log("montlyBALReceive", monthlyBALReceived)
     const monthlyBALSend = getMonthlyChartDataByDateRange(balSend, startDate, endDate);
 
     const cumulativeBALIncomeChartData = getCumulativeSumTrace(balReceive, startDate, endDate);

@@ -20,8 +20,18 @@ export default function IncomeVsSpendingMultiBarChart({ data1, data2, dataTitle1
     let xData1 = data1.map(el => el.time);
     let xData2 = data2.map(el => el.time);
     const xData = xData1.length > xData2.length ? xData1 : xData2
-    let yData1 = data1.map(el => el.value);
-    let yData2 = data2.map(el => -el.value);
+    console.log("xData", xData)
+
+    let yData1 = xData.map(time => {
+        let match = data1.find(e => e.time === time);
+        return match ? match : {time: time, value: 0};
+      }).map(el => el.value);
+
+    let yData2 = xData.map(time => {
+        let match = data2.find(e => e.time === time);
+        return match ? match : {time: time, value: 0};
+      }).map(el => - el.value);
+
 
     const option = {
         tooltip: {
