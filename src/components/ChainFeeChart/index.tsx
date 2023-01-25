@@ -23,7 +23,7 @@ export default function ChainFeeChart({feesData }: ChanFeeChartProps) {
     const [endIndex, setEndIndex] = React.useState(0);
     const [showDate, setShowDate] = React.useState(false);
     const [endDate, setEndDate] = React.useState(dayjs().valueOf());
-    const [timeRange, setTimeRange] = React.useState('0');
+    const [timeRange, setTimeRange] = React.useState('30');
     //data state
     const [rangedFeesData, setRangedFeesData] = React.useState(feesData);
 

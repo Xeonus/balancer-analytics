@@ -15,7 +15,7 @@ export default function ServiceProviderCard({ sp } : ServiceProviderCardProps) {
 
     const imgSource = require('../../../assets/png/' + sp.img_ref)
     return (
-        <Card key={sp.name} sx={{ maxWidth: 345}}>
+        <Card key={sp.name} sx={{ maxWidth: 345, boxShadow: 3}}>
             <CardMedia
                 component="img"
                 height="140"

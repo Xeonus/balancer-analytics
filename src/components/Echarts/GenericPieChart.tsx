@@ -17,6 +17,7 @@ export default function GenericPieChart({ data, height }: GenericPieChartProps) 
 
     const theme = useTheme()
 
+    data = data.filter(el => el.value > 0)
     let dataNames = data.map(a => a.name);
 
     //Chart options

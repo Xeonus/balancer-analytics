@@ -54,6 +54,7 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
                 name: 'Total asset fraction',
                 type: 'pie',
                 data: data,
+                //center: ['40%', '50%'],
                 center: ['40%', '50%'],
                 radius: ['50%', '80%'],
                 avoidLabelOverlap: true,
@@ -65,7 +66,6 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
                     },
                     fontSize: 18,
                     fontWeight: 'bold',
-                    
                     formatter: (value: string) => {
                         return formatDollarAmount(sum)
                     }
@@ -79,8 +79,8 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
                 },
             }],
        grid: {
-        containLabel: true
-       }
+        containLabel: true,
+       },
 
 
     };

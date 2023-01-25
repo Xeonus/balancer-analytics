@@ -246,8 +246,8 @@ export default function TokenTable({
     //Table generation
 
     return (
-        <Box sx={{ width: '100%'}}>
-            <Paper elevation={3} sx={{ mb: 2, boxShadow: 3}}>
+        <Box sx={{ width: '100%' }}>
+            <Paper elevation={3} sx={{ mb: 2, boxShadow: 3 }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}

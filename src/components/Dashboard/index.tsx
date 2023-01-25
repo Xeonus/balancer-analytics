@@ -105,13 +105,12 @@ function Dashboard() {
 
     //Color mode cookie
     const cookies = React.useMemo(() => new Cookies(), []);
-    let storedTheme = 'light';
+    let storedTheme = 'dark';
     if (cookies.get('storedTheme') !== null && cookies.get('storedTheme') !== undefined ) {
        storedTheme = cookies.get('storedTheme');
     } else {
-       storedTheme = 'light';
+       storedTheme = 'dark';
     }
-    console.log("cookies", cookies)
 
     //Color mode handler
     const [mode, setMode] = React.useState<'light' | 'dark'>(storedTheme === 'light' ? 'light' : 'dark');

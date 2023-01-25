@@ -121,7 +121,9 @@ export default function PoolsOverview() {
                 alignItems="left"
                 spacing={1}
             >
+                
                 {topTVLPool.address && topFeePool.address ?
+                
                     <Grid item xs={10}>
                         <Stack direction="row" spacing={2} justifyContent="flex-start">
                             <PoolMetricsCard
@@ -194,7 +196,7 @@ export default function PoolsOverview() {
 
                         </Grid>
                     </Grid> : null}
-                <Grid item xs={10}>
+                <Grid item xs={10} mt={1} mb={1}>
                     <Typography variant="h5" mb={1}>Deployed Liquidity on {activeNetwork.name}</Typography>
                     {poolData.length > 10 ?
                         <PoolTable poolDatas={poolData} /> :

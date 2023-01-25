@@ -25,6 +25,7 @@ import { NetworkInfo } from '../../../constants/networks';
 import CurrencyLogo from '../../CurrencyLogo';
 
 import { TokenBalance, TotalTokenBalances } from "../../../data/debank/debankTypes";
+import { getWethTokenAddress } from '../../../data/balancer/useLatestPrices';
 
 interface FeeCollectorTableProps {
     tokenBalances: TotalTokenBalances
@@ -208,6 +209,12 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
     const sortedTokenDatas = filteredTokenDatas.sort(function (a, b) {
         return b.amount * b.price - a.amount * a.price;
     });
+    
+    //Overwrite ETH id with WETH id
+    let eth = sortedTokenDatas.find(el => el.symbol === 'ETH')
+    if(eth){
+        eth.id = getWethTokenAddress(activeNetwork.id)
+    } 
 
     //Calculate TVL to obtain relative ratio
     const tvl = sortedTokenDatas.reduce((acc, el) => acc + el.amount * el.price, 0)
@@ -276,6 +283,7 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
                                             role="number"
                                             tabIndex={-1}
                                             key={row.token.id}
+                                            sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell >
                                                 <Box display="flex" alignItems="center">

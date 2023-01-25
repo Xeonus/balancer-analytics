@@ -107,7 +107,7 @@ export default function ServiceProviders() {
                     >
                         {quarterlyPie ?
                             <Box >
-                                <Card sx={{ minWidth: '500px' }}>
+                                <Card sx={{boxShadow: 3}}>
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"
@@ -131,7 +131,7 @@ export default function ServiceProviders() {
                     >
                         {totalsBySpsPie ?
                             <Box ml={1} >
-                                <Card sx={{ minWidth: '500px' }}>
+                                <Card sx={{boxShadow: 3}}>
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"

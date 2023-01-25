@@ -88,7 +88,7 @@ export default function Protocol() {
                     <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                         >
-                            <Box mr={1} mb={1}>
+                            <Box mr={3} mb={1}>
                             <MetricsCard
                                 mainMetric={aggregatedProtocolData.tvl}
                                 mainMetricInUSD={true}

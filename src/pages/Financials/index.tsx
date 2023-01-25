@@ -247,7 +247,7 @@ export default function Financials() {
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
-                            spacing={{ xs: 2, sm: 2, md: 1 }}
+                            spacing={{ xs: 2, sm: 2, md: 2 }}
                             alignItems="left"
                             alignContent="left"
                             justifyContent="flex-start">
