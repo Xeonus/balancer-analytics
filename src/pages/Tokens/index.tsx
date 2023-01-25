@@ -85,50 +85,54 @@ export default function Tokens() {
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                     </Box>
                 </Grid>
-               
-            </Grid>
-                {filteredPoolBarChartData.length > 1 ?
-                    <Grid
-                        container
-                        sx={{ flexDirection: { xs: 'column', md: 'row' } }}
-                        justifyContent="center"
-                        spacing={2}
-                    >
-                        <Grid
-                            item
-                            mt={1}
-                            xs={10}
-                        >
-                            <Typography variant='h5'>Top 20 Pools by TVL</Typography>
-                        </Grid>
-                        {filteredPoolBarChartData.length > 1 ?
-                            <Grid
-                                item
-                                xs={isMobile ? 6 : 5}
-                            >
-                                <Box mb={1}>
-                                    <Card>
-                                        < MixedLineBarChart
-                                            barChartData={filteredPoolBarChartData}
-                                            barChartName={'TVL'}
-                                            lineChartData={tokenLineChartData}
-                                            lineChartName={'Trading Fees 24h'}
-                                            rotateAxis={true} />
-                                    </Card>
-                                </Box>
 
-                            </Grid> : null}
+            </Grid>
+            {filteredPoolBarChartData.length > 1 ?
+                <Grid
+                    container
+                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                    justifyContent="center"
+                    spacing={2}
+                >
+                    <Grid
+                        item
+                        mt={1}
+                        xs={10}
+                    >
+                        <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                    </Grid>
+                    {filteredPoolBarChartData.length > 1 ?
                         <Grid
                             item
                             xs={isMobile ? 6 : 5}
                         >
-                            <Card>
-                                <GenericPieChart data={filteredPieChartData} height='350px' />
-                            </Card>
+                            <Box mb={1}>
+                                <Card
+                                    sx={{ boxShadow: 3 }}
+                                >
+                                    < MixedLineBarChart
+                                        barChartData={filteredPoolBarChartData}
+                                        barChartName={'TVL'}
+                                        lineChartData={tokenLineChartData}
+                                        lineChartName={'Trading Fees 24h'}
+                                        rotateAxis={true} />
+                                </Card>
+                            </Box>
 
-                        </Grid>
-                    </Grid> : null}
+                        </Grid> : null}
                     <Grid
+                        item
+                        xs={isMobile ? 6 : 5}
+                    >
+                        <Card
+                            sx={{ boxShadow: 3 }}
+                        >
+                            <GenericPieChart data={filteredPieChartData} height='350px' />
+                        </Card>
+
+                    </Grid>
+                </Grid> : null}
+            <Grid
                 container
                 spacing={2}
                 sx={{ justifyContent: 'center' }}
@@ -138,7 +142,7 @@ export default function Tokens() {
                 </Grid>
                 {tokenDatas.length > 10 ?
                     <Grid item xs={10}>
-                            <TokenTable tokenDatas={tokenDatas} />
+                        <TokenTable tokenDatas={tokenDatas} />
                     </Grid>
                     :
                     <Grid
@@ -150,7 +154,7 @@ export default function Tokens() {
                         <CustomLinearProgress />
                     </Grid>
                 }
-                </Grid>
+            </Grid>
         </Box>
     );
 }

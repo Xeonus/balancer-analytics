@@ -24,6 +24,7 @@ import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
+import Stellate from '../../assets/svg/stellate.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
@@ -225,6 +226,7 @@ const MenuDrawer = ({
                             </Box>
                         </Link>
                     </ IconButton>
+                    
                 </Box>
             </Box>
         </Drawer>

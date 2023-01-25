@@ -1,5 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
-import { formatDollarAmount } from '../../../utils/numbers';
+import { formatDollarAmount, formatNumber } from '../../../utils/numbers';
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles'
 import CustomLinearProgress from '../../Progress/CustomLinearProgress';
@@ -28,11 +28,12 @@ interface ProtocolBarChartProps {
     arbitrumData: number[],
     polygonData: number[],
     xAxis: string[],
+    isUSD: boolean,
 }
 
 
 
-export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, xAxis}: ProtocolBarChartProps) {
+export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, xAxis, isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
@@ -74,7 +75,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 type: 'value',
                 axisLabel: {
                     formatter: function(d: number) {
-                        return formatDollarAmount(d);
+                        return isUSD ? formatDollarAmount(d) : formatNumber(d);
                     }
                 }
             }
@@ -99,7 +100,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
                     }
                 },
                 data: mainnetData
@@ -123,7 +124,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
                     }
                 },
                 data: arbitrumData
@@ -146,7 +147,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
                     }
                 },
                 data: polygonData

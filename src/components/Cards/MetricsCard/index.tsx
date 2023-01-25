@@ -30,7 +30,8 @@ const MetricsCard = ({
     sx={{
       maxWidth: '275px',
       minWidth: '250px',
-      maxHeight: '150px'
+      maxHeight: '150px',
+      boxShadow: 3,
     }}
     >
       <CardContent>

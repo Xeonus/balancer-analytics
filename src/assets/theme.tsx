@@ -20,7 +20,7 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
           main: '#d97706',
         },
         background: {
-          paper: alpha('#1e293e', 0.9),
+          paper: alpha('#0f2027', 0.9),
           default: '#162031',
         },
       }),
@@ -31,7 +31,6 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
             transition: 'all 2s linear',
           },
         },
-
       },
     },
   },
@@ -40,7 +39,8 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          background: mode === 'dark' ? "linear-gradient(to right, #141e30, #243b55)" : '',
+          background: mode === 'dark' ? "linear-gradient(to right, #0f2027, #203a43, #2c5364)" : '',
+
 
         },
       },

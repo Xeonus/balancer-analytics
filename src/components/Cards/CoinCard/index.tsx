@@ -1,9 +1,13 @@
-import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CurrencyLogo from '../../CurrencyLogo';
 import { formatDollarAmount } from '../../../utils/numbers';
 import { green } from '@mui/material/colors';
+import { useNavigate } from 'react-router-dom';
+import { useActiveNetworkVersion } from '../../../state/application/hooks';
+import { NetworkInfo } from "../../../constants/networks";
+import { networkPrefix } from '../../../utils/networkPrefix';
 
 export type CoinCardProps = {
   tokenPrice: number,
@@ -12,20 +16,32 @@ export type CoinCardProps = {
   tokenAddress: string,
 }
 
+const getLink = (activeNetwork: NetworkInfo, id: string) => {
+  return networkPrefix(activeNetwork) + 'tokens/' + id;
+}
+
 const CoinCard = ({
   tokenPrice,
   tokenPriceChange,
   tokenName,
   tokenAddress }: CoinCardProps) => {
 
+    let navigate = useNavigate();
+    
+    const [activeNetwork] = useActiveNetworkVersion()
   return (
     <Card
     sx={{
       maxWidth: '275px',
       minWidth: '250px',
-      maxHeight: '150px'
+      maxHeight: '150px',
+      cursor: 'pointer',
+      boxShadow: 3,
     }}
     >
+      <CardActionArea
+      onClick={() => { navigate(`${getLink(activeNetwork, tokenAddress)}/`); }}
+      >
       <CardContent>
         <Grid
           container
@@ -78,6 +94,7 @@ const CoinCard = ({
           </Typography>
         </Box>
       </CardContent>
+      </CardActionArea>
     </Card>
   );
 }

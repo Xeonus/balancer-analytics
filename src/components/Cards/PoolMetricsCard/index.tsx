@@ -29,7 +29,8 @@ export default function PoolMetricsCard({
         <Card
         sx={{
           maxWidth: '275px',
-          minWidth: '250px'
+          minWidth: '250px',
+          boxShadow: 3,
         }}
         >
           <CardContent>

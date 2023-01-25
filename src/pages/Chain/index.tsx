@@ -46,9 +46,9 @@ export default function Chain() {
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
-                spacing={2}
+                spacing={1}
                 sx={{ justifyContent: 'center' }}
-            >
+                >
                 <Grid item xs={10}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
@@ -62,17 +62,16 @@ export default function Chain() {
                         </Box>
                     </Box>
                 </Grid>
-            </Grid>
-            <Grid
-                container
-                spacing={2}
-                sx={{ justifyContent: 'center' }}
-            >
+
+           
                 <Grid
                     item
                     xs={10}
                 >
-                    <Stack direction="row" spacing={2} justifyContent="flex-start">
+                    <Stack 
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={2} 
+                    justifyContent="flex-start">
                         <MetricsCard
                             mainMetric={protocolData.volume24 ? protocolData.volume24 : 0}
                             mainMetricInUSD={true}
@@ -100,18 +99,17 @@ export default function Chain() {
                 <Stack
                     direction={{ xs: 'column', sm: 'row' }}
                 >
+                    <Box mb={1}>
                     <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />
+                    </Box>
+                    <Box mb={1}>
                     <ExploreCard linkName='Tokens' linkTarget={networkPrefix(activeNetwork) + 'tokens'} MetricIcon={TokenIcon} />
+                    </Box>
                 </Stack>
 
             </Grid>
-            </Grid>
             
-            <Grid
-                container
-                spacing={2}
-                sx={{ justifyContent: 'center' }}
-            >
+            
                 <Grid
                     item
                     mt={1}
@@ -142,12 +140,8 @@ export default function Chain() {
                         </Grid>}
                 </Grid>
 
-            </Grid>
-            <Grid
-                container
-                spacing={2}
-                sx={{ justifyContent: 'center' }}
-            >
+
+            
                 <Grid
                     item
                     mt={1}
@@ -163,8 +157,8 @@ export default function Chain() {
                     <SwapsTable swaps={protocolData.whaleSwaps} />
 
                 </Grid>
+                </Grid>
 
-            </Grid>
         </Box>
     );
 }

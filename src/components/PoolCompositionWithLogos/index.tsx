@@ -39,6 +39,7 @@ export default function PoolCompositionWithLogos({ poolData, size = 24 }: PoolCo
                             borderColor: theme.palette.mode === 'dark' ? 'rgb(30, 41, 59)' : 'gb(241, 245, 249)',
                             backgroundColor: theme.palette.mode === 'dark' ? 'rgb(51, 65, 85)' : 'rgb(226, 232, 240)',
                             borderRadius: '0.5rem',
+                            cursor: 'pointer'
                         }}
                     >
                         <Box ml={1}>

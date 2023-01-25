@@ -142,7 +142,9 @@ export default function Fees() {
                     </Box>
                 </Grid>
                 <Grid item xs={10}>
-                    <Card>
+                    <Card
+                        sx={{ boxShadow: 3 }}
+                    >
                         <ChainFeeChart feesData={protocolData.feeData} />
                     </Card>
                 </Grid>
@@ -212,25 +214,27 @@ export default function Fees() {
                 </Grid>
             </Grid>
             <Grid
+                container
+                spacing={1}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Grid item xs={10}>
+                    <Box alignItems='left'>
+                        <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
+                        <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
+                    </Box>
+                </Grid>
+            </Grid>
+            {decoratedPools ?
+                <Grid
                     container
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
                     <Grid item xs={10}>
-                        <Box alignItems='left'>
-                            <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
-                            <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
-                        </Box>
-                    </Grid>
-                    </Grid>
-            {decoratedPools ?
-                            <Grid
-                            container
-                            spacing={1}
-                            sx={{ justifyContent: 'center' }}
+                        <Card
+                            sx={{ boxShadow: 3 }}
                         >
-                    <Grid item xs={10}>
-                        <Card>
                             <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                         </Card>
                     </Grid>
@@ -246,7 +250,7 @@ export default function Fees() {
                     mt={3}
                     sx={{ justifyContent: 'center' }}
                 >
-                   <Box display="flex" justifyContent="center" alignItems="center" alignContent="center" flexDirection="column">
+                    <Box display="flex" justifyContent="center" alignItems="center" alignContent="center" flexDirection="column">
                         <CustomLinearProgress />
                         <Typography variant="caption">Calculating token yield...</Typography>
                     </Box>

@@ -242,6 +242,7 @@ export default function PoolTokenTable({
                                             role="number"
                                             tabIndex={-1}
                                             key={row.token.address}
+                                            sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell
                                                 align="left"

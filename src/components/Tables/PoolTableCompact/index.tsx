@@ -264,6 +264,7 @@ export default function PoolTableCompact({
                       role="number"
                       tabIndex={-1}
                       key={row.name}
+                      sx={{cursor: 'pointer'}}
                     >
                       <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell

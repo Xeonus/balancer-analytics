@@ -38,7 +38,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
     const theme = useTheme()
 
     const option = {
-        color: ['#00DDFF', '#80FFA5', '#37A2FF'],
+        color: ['#00DDFF','#80FFA5', '#37A2FF'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -53,6 +53,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
         legend: {
             data: ['Mainnet', 'Arbitrum', 'Polygon'],
             inactiveColor: "red",
+            icon: 'circle',
             textStyle: {
                 color: theme.palette.mode === 'dark' ? 'white' : 'black'
             },

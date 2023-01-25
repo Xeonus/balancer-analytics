@@ -33,7 +33,7 @@ export function getEtherscanLink(
                 return `${prefix}/address/${data}`;
             }
             case 'block': {
-                return 'https://arbiscan.io/';
+                return `${prefix}/block/${data}`;
             }
             case 'address':
             default: {
@@ -52,7 +52,7 @@ export function getEtherscanLink(
                 return `${prefix}/address/${data}`;
             }
             case 'block': {
-                return 'https://polygonscan.com/';
+                return `${prefix}/block/${data}`;
             }
             case 'address':
             default: {

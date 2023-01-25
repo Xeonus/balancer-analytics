@@ -31,11 +31,12 @@ interface ProtocolAreaChartProps {
     mainnetProtocolData: BalancerChartDataItem[],
     arbitrumProtocolData: BalancerChartDataItem[],
     polygonProtocolData: BalancerChartDataItem[],
+    isUSD : boolean
 }
 
 
 
-export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData}: ProtocolAreaChartProps) {
+export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, isUSD}: ProtocolAreaChartProps) {
 
     const mainnetData = mainnetProtocolData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.map(el => Number(el.value.toFixed(2)));
@@ -128,7 +129,9 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
                 mainnetData={rangedMainnetData} 
                 arbitrumData={rangedArbitrumData} 
                 polygonData={rangedPolygonData} 
-                xAxis={rangedxAxis}/>
+                xAxis={rangedxAxis}
+                isUSD={isUSD}
+                />
             </Card> : <Grid
             container
             spacing={2}

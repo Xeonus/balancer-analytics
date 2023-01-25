@@ -45,33 +45,6 @@ export default function Treasury() {
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
-    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, 1649388375)
-    //console.log("allTransactions", transactions)
-
-    // //TEST
-    // const usdcChartData = transactions?.history_list.map((el) => {
-    //     if (el.receives && el.receives.length > 0 && el.receives[0].token_id === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ) {
-    //         return {
-    //             value: Number(el.receives[0].amount),
-    //             time: unixToDate(el.time_at)
-    //         } 
-    //     }
-    // }).filter(el => el !== undefined);
-    // console.log("usdcChartData", usdcChartData)
-    // const totalsIn = usdcChartData?.reduce((acc, el) => acc + (el?.value ? el.value : 0), 0)
-    // console.log("totals in", totalsIn)
-    // const usdcSendChartData = transactions?.history_list.map((el) => {
-    //     if (el.receives && el.sends.length > 0 && el.sends[0].token_id === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48') {
-    //         return {
-    //             value: Number(el.sends[0].amount),
-    //             time: unixToDate(el.time_at)
-    //         } 
-    //     }
-    // }).filter(el => el !== undefined);
-    // console.log("usdcChartData", usdcSendChartData)
-    // const totals = usdcSendChartData?.reduce((acc, el) => acc + (el?.value ? el.value : 0), 0)
-    // console.log("totals out", totals)
-    // //const { transactions } = useGetRawTransactionData(TREASURY_CONFIG.treasury)
 
     //Obtain wallet total worth and USDC
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
@@ -111,7 +84,7 @@ export default function Treasury() {
     return (
         totalBalances && portfolio ?
             <Box sx={{ flexGrow: 1, justifyContent: "center" }}>
-                
+
                 <Grid
                     container
                     sx={{ justifyContent: 'center' }}
@@ -212,15 +185,20 @@ export default function Treasury() {
                             </Grid>
                         </Grid> : null}
                     <Grid item xs={10}>
-
+                        <Card
+                        sx={{boxShadow: 3}}
+                        >
+                            <Box p={2}>
                         {portfolio ?
                             portfolio.map(pos =>
                                 pos.chain === activeNetwork.debankId ?
-                                <Box key={pos.id + "box"} mb={1}>
+                                    <Box key={pos.id + "box"} mb={1}>
                                         <LiquidityPosition key={pos.id + pos.name} position={pos} />
-                                </Box> : undefined
+                                    </Box> : undefined
                             )
                             : undefined}
+                            </Box>
+                            </Card>
                     </Grid>
                 </Grid>
             </Box> :

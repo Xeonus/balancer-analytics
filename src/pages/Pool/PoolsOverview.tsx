@@ -19,7 +19,7 @@ import { NavElement } from '../../components/NavCrumbs';
 
 export default function PoolsOverview() {
 
-    
+
     const [activeNetwork] = useActiveNetworkVersion();
 
     //Navigation
@@ -113,7 +113,7 @@ export default function PoolsOverview() {
                     </Box>
 
                 </Grid>
-               
+
             </Grid>
             <Grid
                 container
@@ -147,49 +147,53 @@ export default function PoolsOverview() {
                         </Stack>
                     </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
-                <Grid
-                    container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
-                    justifyContent="center"
-                    alignItems="left"
-                    alignContent="left"
-                    spacing={2}
-                >
                     <Grid
-                        item
-                        ml={1}
-                        mt={1}
-                        xs={10}
+                        container
+                        sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                        justifyContent="center"
+                        alignItems="left"
+                        alignContent="left"
+                        spacing={2}
                     >
-                        <Typography variant='h5'>Top 20 Pools by TVL</Typography>
-                    </Grid>
-                    {filteredPoolBarChartData.length > 1 ?
+                        <Grid
+                            item
+                            ml={1}
+                            mt={1}
+                            xs={10}
+                        >
+                            <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                        </Grid>
+                        {filteredPoolBarChartData.length > 1 ?
+                            <Grid
+                                item
+                                xs={isMobile ? 6 : 5}
+                            >
+                                <Box mb={1}>
+                                    <Card
+                                        sx={{ boxShadow: 3 }}
+                                    >
+                                        < MixedLineBarChart
+                                            barChartData={filteredPoolBarChartData}
+                                            barChartName={'TVL'}
+                                            lineChartData={poolLineChartData}
+                                            lineChartName={'Trading Fees 24h'}
+                                            rotateAxis={true} />
+                                    </Card>
+                                </Box>
+
+                            </Grid> : null}
                         <Grid
                             item
                             xs={isMobile ? 6 : 5}
                         >
-                            <Box mb={1}>
-                                <Card>
-                                    < MixedLineBarChart
-                                        barChartData={filteredPoolBarChartData}
-                                        barChartName={'TVL'}
-                                        lineChartData={poolLineChartData}
-                                        lineChartName={'Trading Fees 24h'}
-                                        rotateAxis={true} />
-                                </Card>
-                            </Box>
+                            <Card
+                                sx={{ boxShadow: 3 }}
+                            >
+                                <GenericPieChart data={filteredPieChartData} height='350px' />
+                            </Card>
 
-                        </Grid> : null}
-                    <Grid
-                        item
-                        xs={isMobile ? 6 : 5}
-                    >
-                        <Card>
-                            <GenericPieChart data={filteredPieChartData} height='350px' />
-                        </Card>
-
-                    </Grid>
-                </Grid> : null }
+                        </Grid>
+                    </Grid> : null}
                 <Grid item xs={10}>
                     <Typography variant="h5" mb={1}>Deployed Liquidity on {activeNetwork.name}</Typography>
                     {poolData.length > 10 ?

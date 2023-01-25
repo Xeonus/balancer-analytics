@@ -114,7 +114,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         fees24: fees - fees24,
         feesChange: (fees - fees24 - (fees24 - fees48)) / (fees24 - fees48),
         swaps24: swaps - swaps24,
-        swapsChange: (swaps - swaps24 - (swaps24 - swaps48)) / (fees24 - swaps48),
+        swapsChange: (swaps - swaps24 - (swaps24 - swaps48)) / (swaps24 - swaps48),
         tvlData,
         volumeData,
         swapData,
