@@ -282,7 +282,7 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
                                             onClick={() => { navigate(`${getLink(activeNetwork, row.token.id)}/`); }}
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.token.id}
+                                            key={row.token.id + Math.random()}
                                             sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell >

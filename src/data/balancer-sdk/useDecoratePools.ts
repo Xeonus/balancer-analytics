@@ -35,7 +35,7 @@ export default function useDecoratePools(
             )
         ).sort((a, b) => parseFloat(b.totalLiquidity) - parseFloat(a.totalLiquidity))
         const poolList = await Promise.all(sdkPoolList)
-        console.log("sdk poolList:", poolList)
+        //console.log("sdk poolList:", poolList)
         return poolList
     }
 

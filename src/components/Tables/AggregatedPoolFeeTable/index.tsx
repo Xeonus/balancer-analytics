@@ -258,8 +258,8 @@ export default function AggregatedPoolFeeTable({
             100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR))
     )
 
-    const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
-    console.log("totalPercent", totalPercent)
+    //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
+    //console.log("totalPercent", totalPercent)
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,

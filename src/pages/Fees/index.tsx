@@ -51,13 +51,6 @@ export default function Fees() {
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
     const decoratedPools = useDecoratePools(yieldPools.length > 10 ? yieldPools : undefined)
-    // const yieldTokenPools = decoratedPools ? decoratedPools.filter(pool =>
-    //     pool.tokens.some(token => 
-    //         YIELD_BEARING_TOKENS.includes(token.address)
-    //     )
-    //     ) : undefined
-
-
 
     //Problem statement: We should distinguish between views of real realized fees -> make a swap fee analysis view that shows the "real" swap fees earned
     //Create an additional aggregated table that ESTIMATES / Makes a forecast on potential fees and its distributions from TODAYS fees!
@@ -73,6 +66,12 @@ export default function Fees() {
         balance.amount * balance.price < activeNetwork.feeCollectorThreshold &&
         balance.chain === activeNetwork.debankId) : null;
     const totalAmountBelowThreshold = balancesBelowThreshold ? balancesBelowThreshold.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+
+    //Extract data above 5k and print it to console for DAO fee sweeping
+    // const balancesToSweep = totalBalances ? totalBalances.filter(balance =>
+    //     balance.amount * balance.price >= 5000 &&
+    //     balance.chain === activeNetwork.debankId) : null;
+    // console.log("FEE COLLECTOR: Tokens above $5k on " + activeNetwork.name + " :", balancesToSweep);
 
 
 

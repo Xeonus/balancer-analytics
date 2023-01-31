@@ -23,7 +23,7 @@ export const useGetTotalBalances = (walletId: string) => {
             }
           }
         );
-        //console.log("total token balance response", response)
+        console.log("TOKEN BALANCES: ", response.data)
         const json: TotalTokenBalances = response.data
         setBalances(json);
       } catch (error) {
