@@ -55,7 +55,6 @@ export default function Protocol() {
                         container
                         spacing={{ xs: 2, md: 2 }}
                         columns={{ xs: 4, sm: 2, md: 10 }}
-                        
                     >
                         <Grid item xs={10} sm={4} md={4}>
                             {coinData && coinData[balAddress] && coinData[balAddress].usd ?
@@ -69,9 +68,6 @@ export default function Protocol() {
                                 : <CircularProgress />}
 
                         </Grid>
-                       
-
-                        
                     </Grid>
                 </Grid>
             </Grid>
@@ -85,48 +81,47 @@ export default function Protocol() {
                         <Typography variant='h5'>Historical TVL</Typography>
                     </Grid>
                     <Grid item mt={1} xs={10}>
-                    <Stack
+                        <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                         >
                             <Box mr={3} mb={1}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.tvl}
-                                mainMetricInUSD={true}
-                                metricName='Protocol TVL'
-                                mainMetricChange={aggregatedProtocolData.tvlChange}
-                                MetricIcon={MonetizationOnIcon}
-                            />
+                                <MetricsCard
+                                    mainMetric={aggregatedProtocolData.tvl}
+                                    mainMetricInUSD={true}
+                                    metricName='Protocol TVL'
+                                    mainMetricChange={aggregatedProtocolData.tvlChange}
+                                    MetricIcon={MonetizationOnIcon}
+                                />
                             </Box>
 
                             <Box mr={1} mb={1}>
-                            <MetricsCard
-                                mainMetric={mainnetPercentage}
-                                mainMetricInUSD={false}
-                                mainMetricUnit={' %'}
-                                metricName='Mainnet Dominance'
-                                mainMetricChange={mainnetTVLChange}
-                                MetricIcon={PieChartIcon}
-                            />
+                                <MetricsCard
+                                    mainMetric={mainnetPercentage}
+                                    mainMetricInUSD={false}
+                                    mainMetricUnit={' %'}
+                                    metricName='Mainnet Dominance'
+                                    mainMetricChange={mainnetTVLChange}
+                                    MetricIcon={PieChartIcon}
+                                />
                             </Box>
                         </Stack>
-                        </Grid>
+                    </Grid>
                     <Grid item mt={1} xs={10}>
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                         >
                             <Box mb={1}>
-                            <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
+                                <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
                             </Box>
                             <Box mb={1}>
-                            <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                                <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
                             </Box>
                             <Box mb={1}>
-                            <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
+                                <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
                             </Box>
                         </Stack>
 
                     </Grid>
-
                     <Grid item mt={1} xs={10}>
                         <ProtocolMultiAreaChart
                             mainnetProtocolData={protocolData}
@@ -134,20 +129,19 @@ export default function Protocol() {
                             polygonProtocolData={polygonProtocolData}
                         />
                     </Grid>
-
                     <Grid item mt={1} xs={10} >
                         <Typography variant='h5'>Historical Volume</Typography>
                     </Grid>
                     <Grid item xs={10}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
-                                mainMetricInUSD={true}
-                                metricName='Protocol Volume'
-                                mainMetricChange={aggregatedProtocolData.volumeChange}
-                                MetricIcon={EqualizerIcon}
-                            />
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
+                            mainMetricInUSD={true}
+                            metricName='Protocol Volume'
+                            mainMetricChange={aggregatedProtocolData.volumeChange}
+                            MetricIcon={EqualizerIcon}
+                        />
 
-                        </Grid>
+                    </Grid>
                     <Grid item mt={1} xs={10} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.volumeData}
@@ -156,19 +150,18 @@ export default function Protocol() {
                             isUSD={true}
                         />
                     </Grid>
-
                     <Grid item mt={1} xs={10} >
                         <Typography variant='h5'>Historical Fees</Typography>
                     </Grid>
                     <Grid item xs={10}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.fees24}
-                                mainMetricInUSD={true}
-                                metricName='Protocol Fees'
-                                mainMetricChange={aggregatedProtocolData.feesChange}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-                        </Grid>
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.fees24}
+                            mainMetricInUSD={true}
+                            metricName='Protocol Fees'
+                            mainMetricChange={aggregatedProtocolData.feesChange}
+                            MetricIcon={CurrencyExchangeIcon}
+                        />
+                    </Grid>
                     <Grid item mt={1} xs={10} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.feeData}
@@ -182,14 +175,14 @@ export default function Protocol() {
                         <Typography variant='h5'>Historical Swaps</Typography>
                     </Grid>
                     <Grid item xs={10}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
-                                mainMetricInUSD={false}
-                                metricName='Swaps'
-                                mainMetricChange={swapsChange}
-                                MetricIcon={SwapHorizIcon}
-                            />
-                        </Grid>
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
+                            mainMetricInUSD={false}
+                            metricName='Swaps'
+                            mainMetricChange={swapsChange}
+                            MetricIcon={SwapHorizIcon}
+                        />
+                    </Grid>
                     <Grid item mt={1} xs={10} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.swapData}

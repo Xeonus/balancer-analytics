@@ -52,8 +52,8 @@ const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    marginRight: isMobile ? '0px' : '25px',
-    marginLeft: isMobile ? `-${drawerWidth}px` : `-${drawerWidth - 30}px`,
+    marginRight: isMobile ? '-25px' : '25px',
+    marginLeft: isMobile ? `-${drawerWidth + 25}px` : `-${drawerWidth - 30}px`,
     ...(open && {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
@@ -106,10 +106,10 @@ function Dashboard() {
     //Color mode cookie
     const cookies = React.useMemo(() => new Cookies(), []);
     let storedTheme = 'dark';
-    if (cookies.get('storedTheme') !== null && cookies.get('storedTheme') !== undefined ) {
-       storedTheme = cookies.get('storedTheme');
+    if (cookies.get('storedTheme') !== null && cookies.get('storedTheme') !== undefined) {
+        storedTheme = cookies.get('storedTheme');
     } else {
-       storedTheme = 'dark';
+        storedTheme = 'dark';
     }
 
     //Color mode handler
@@ -186,7 +186,7 @@ function Dashboard() {
                                 >
                                     Analytics
                                 </Typography>
-                                <Typography variant="caption" sx={{color: (mode === 'dark') ? 'white' : 'black',}}>Beta</Typography>
+                                <Typography variant="caption" sx={{ color: (mode === 'dark') ? 'white' : 'black', }}>Beta</Typography>
                                 <Box position="absolute" right="10px" >
                                     <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
 

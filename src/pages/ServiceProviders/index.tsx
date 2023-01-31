@@ -74,9 +74,9 @@ export default function ServiceProviders() {
 
                     </Box>
                     <Box mt={1}>
-                        <Typography variant="body2">Data presented in this dashboard represents approved snapshot
-                            votes only. Any potential savings or adjustments after approal are not
-                            represented in this dataset
+                        <Typography variant="body2">Data in this dashboard represents approved snapshot
+                            votes only. Any potential savings or adjustments after snapshot approval are not
+                            considered in this dataset
                         </Typography>
                     </Box>
                 </Grid>
