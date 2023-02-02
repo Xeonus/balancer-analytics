@@ -5,7 +5,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
-import { FEE_COLLECTOR_ADDRESS, getTreasuryConfig } from "../../constants/wallets";
+import { FEE_COLLECTOR_ADDRESS, getTreasuryConfig, KARPATKEY_SAFE } from "../../constants/wallets";
 import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
 import { useGetPortfolio } from '../../data/debank/useGetPortfolio';
 import StyledExternalLink from '../../components/StyledExternalLink';
@@ -19,6 +19,7 @@ import { useGetTransactions } from "../../data/debank/useGetTransactions";
 import { unixToDate } from "../../utils/date";
 import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
 import { isMobile } from 'react-device-detect';
+import { mergeArrays } from "./helpers";
 
 export default function Treasury() {
 
@@ -46,16 +47,36 @@ export default function Treasury() {
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const { portfolio } = useGetPortfolio(TREASURY_CONFIG.treasury);
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
+    //console.log("treasury balances", totalBalances);
+    const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
+    //console.log("karpatkeyBalances", karpatkeyBalances.totalBalances)
+    const karpatkeyPortfolio = useGetPortfolio(KARPATKEY_SAFE);
 
     //Obtain wallet total worth and USDC
-    const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
+    const walletTokenNetworth = totalBalances && karpatkeyBalances.totalBalances ? 
+        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) 
+        + karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0): 0;
+    const karpatkeyTokenNetworth = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+    let netWorth = portfolio && karpatkeyPortfolio. portfolio ? 
+    portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
+    + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
+     : 0;
+    let karpatkeyNetworth = karpatkeyPortfolio. portfolio ? 
+    karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
     netWorth += walletTokenNetworth;
-    const usdcReserves = totalBalances ? totalBalances.find(el => {
+    const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
         }
     })?.amount : 0;
+
+    const karpatkeyusdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => {
+        if (el.symbol === 'USDC') {
+            return el
+        }
+    })?.amount : 0;
+
+    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves ? usdcReserves + karpatkeyusdcReserves : 0;
 
     //BAL insurance fund
     const BALinsuranceAmount = 500000;
@@ -78,6 +99,17 @@ export default function Treasury() {
             }
             ) : null;
 
+    //Token balances Karpatkey
+    const tokenPieChartDataKarpatkey: BalancerPieChartDataItem[] | null = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.filter(
+        x => x.chain === activeNetwork.debankId &&
+            x.amount * x.price > 10).map((balance) => {
+                return {
+                    value: balance.amount * balance.price,
+                    name: balance.symbol
+                }
+            }
+            ) : null;
+
     const ratioPieChartData: BalancerPieChartDataItem[] = []
     ratioPieChartData.push(
         {
@@ -88,7 +120,13 @@ export default function Treasury() {
     ratioPieChartData.push(
         {
             value: netWorth - walletTokenNetworth,
-            name: 'Liquidity provisions'
+            name: 'Treasury Liquidity provisions'
+        }
+    )
+    ratioPieChartData.push(
+        {
+            value: karpatkeyNetworth,
+            name: 'Karpatkey Liquidity provisions'
         }
     )
     ratioPieChartData.push(
@@ -144,9 +182,9 @@ export default function Treasury() {
                                 MetricIcon={WalletIcon}
                             />
                             <MetricsCard
-                                mainMetric={usdcReserves ? usdcReserves : 0}
+                                mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
                                 mainMetricInUSD={true}
-                                metricName='USDC Reserves'
+                                metricName='Liquid USDC'
                                 mainMetricChange={0}
                                 MetricIcon={CurrencyExchangeIcon}
                             />
@@ -183,7 +221,7 @@ export default function Treasury() {
                             </Box>
 
                         </Grid>
-                        {tokenPieChartData ?
+                        {tokenPieChartData && tokenPieChartDataKarpatkey ?
                         <Grid
                             item
                             xs={isMobile ? 6 : 5}
@@ -198,7 +236,7 @@ export default function Treasury() {
                                         Token distribution
                                     </Typography>
                                 </Box>
-                                <GenericPieChart data={tokenPieChartData} height='295px' />
+                                <GenericPieChart data={mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey)} height='295px' />
                             </Card>
                         </Grid> : null }
                     </Grid>
@@ -210,7 +248,7 @@ export default function Treasury() {
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
-                                <Typography variant="h5">Tokens in Treasury Wallet</Typography>
+                                <Typography variant="h6">Tokens in Treasury Wallet</Typography>
                                 <Box ml={1}>
                                     <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'address'} activeNetwork={activeNetwork} />
                                 </Box>
@@ -222,7 +260,7 @@ export default function Treasury() {
                         <Grid item xs={10}>
                             <FeeCollectorTokenTable tokenBalances={totalBalances} />
                             <Grid mt={2} item xs={10}>
-                                <Typography variant="h5">Liquidity Provisions</Typography>
+                                <Typography variant="h6">Liquidity Provisions</Typography>
                             </Grid>
                         </Grid> : null}
                     <Grid item xs={10}>
@@ -241,6 +279,54 @@ export default function Treasury() {
                             </Box>
                             </Card>
                     </Grid>
+                    <Grid
+                    item
+                    mt={2}
+                    xs={10}>
+                        <Typography variant="h5">Assets Managed by Karpatkey</Typography>
+                    </Grid>
+                    <Grid
+                        item
+                        mt={1}
+                        xs={10}
+                    >
+                        <Box display="flex" justifyContent="space-between" alignItems="row">
+                            <Box display="flex" alignItems='center'>
+                                <Typography variant="h6">Managed Tokens</Typography>
+                                <Box ml={1}>
+                                    <StyledExternalLink address={KARPATKEY_SAFE} type={'address'} activeNetwork={activeNetwork} />
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Grid>
+
+                    {karpatkeyBalances.totalBalances && karpatkeyBalances.totalBalances.length > 0 ?
+                        <Grid item xs={10}>
+                            <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances} />
+                        </Grid> : null}
+                        <Grid
+                    item
+                    mt={2}
+                    xs={10}>
+                        <Typography variant="h6">Managed Liquidity Provisions</Typography>
+                    </Grid>
+                    <Grid item xs={10}>
+                        <Card
+                        sx={{boxShadow: 3}}
+                        >
+                            <Box p={2}>
+                        {karpatkeyPortfolio.portfolio ?
+                            karpatkeyPortfolio.portfolio.map(pos =>
+                                pos.chain === activeNetwork.debankId ?
+                                    <Box key={pos.id + "box"} mb={1}>
+                                        <LiquidityPosition key={pos.id + pos.name} position={pos} />
+                                    </Box> : undefined
+                            )
+                            : undefined}
+                            </Box>
+                            </Card>
+                    </Grid>
+                    
             </Grid>
             :
                     <Grid

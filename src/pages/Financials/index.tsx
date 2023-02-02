@@ -1,15 +1,13 @@
-import * as React from 'react';
-import { Typography, Grid, Box, Card, Divider, CircularProgress } from "@mui/material";
+import { Typography, Grid, Box, Card, CircularProgress } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import txnJson from '../../data/debank/data/treasuryTxHistory.json'
 import { TransactionHistory } from '../../data/debank/debankTypes';
-import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
+import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange, getMonthlyChartDataByDateRange } from './helpers';
-import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
-import { FEE_STREAMER, getTreasuryConfig } from '../../constants/wallets';
+import { FEE_STREAMER, getTreasuryConfig, KARPATKEY_SAFE } from '../../constants/wallets';
 import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
 import TreasuryTransactionTable from '../../components/Tables/TreasuryTransactionTable';
 import { useGetTotalBalances } from '../../data/debank/useGetTotalBalances';
@@ -19,7 +17,6 @@ import MetricsCard from '../../components/Cards/MetricsCard';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WalletIcon from '@mui/icons-material/Wallet';
-import RunwayGauge from '../../components/Echarts/RunwayGauge/RunwayGauge';
 import spJson from '../ServiceProviders/serviceProviderConfig.json'
 import { ServiceProvidersConfig } from '../../types';
 import dayjs from 'dayjs';
@@ -28,7 +25,6 @@ import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGecko
 import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from '../ServiceProviders/helpers';
 import GenericLineChart from '../../components/Echarts/GenericLineChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
-import { formatDollarAmount } from '../../utils/numbers';
 import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCharts/IncomeVsSpendingsMultiBarChart';
 import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
 import SimpleRunwayGauge from '../../components/Echarts/RunwayGauge/SimpleRunwayGauge';
@@ -54,10 +50,12 @@ export default function Financials() {
     //Load Txs and history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
+    const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
+    console.log("transactions", transactions)
 
     //Merge last 20 tx's with historical data
     const latestTimestamp = Math.max.apply(Math, txnHistory.history_list.map(function(o) { return o.time_at; }))
-    console.log("latestTimestamp", latestTimestamp)
+    //console.log("latestTimestamp", latestTimestamp)
     const txAdditions = transactions?.history_list.filter(tx => tx.time_at > latestTimestamp );
     if (txAdditions && txAdditions.length > 0) {
         txAdditions.forEach(element => {
@@ -72,11 +70,22 @@ export default function Financials() {
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
     netWorth += walletTokenNetworth;
-    const usdcReserves = totalBalances ? totalBalances.find(el => {
+    const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
         }
     })?.amount : 0;
+
+    const karpatkeyusdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => {
+        if (el.symbol === 'USDC') {
+            return el
+        }
+    })?.amount : 0;
+
+    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves ? usdcReserves + karpatkeyusdcReserves : 0;
+
+
+
     const balReserves = totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'BAL') {
             return el
@@ -97,7 +106,7 @@ export default function Financials() {
 
     //---BAL---
     const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
-    console.log("balReceive", balReceive)
+    //console.log("balReceive", balReceive)
     const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
 
     //---USDC: Cumulative in- and outflows---
@@ -110,7 +119,7 @@ export default function Financials() {
     ];
     
     startDates.sort((a, b) => a.getTime() - b.getTime())
-    console.log("startDates", startDates)
+    //console.log("startDates", startDates)
     let endDates: Date[] = [
         new Date(usdcReceived[usdcReceived.length - 1].time),
         new Date(usdcSend[usdcSend.length - 1].time),
@@ -118,11 +127,11 @@ export default function Financials() {
         new Date(balSend[balSend.length - 1].time),
     ];
     endDates.sort((a, b) => a.getTime() - b.getTime())
-    console.log("endDates", endDates)
+    //console.log("endDates", endDates)
 
     const startDate = startDates[0];
     const endDate = endDates[endDates.length -1]
-    console.log("endDate", endDate)
+    //console.log("endDate", endDate)
 
 
     const cumulativeIncomeChartData = getCumulativeSumTrace(usdcReceived, startDate, endDate);
@@ -144,7 +153,7 @@ export default function Financials() {
     const monthlyUSDCReceived = getMonthlyChartDataByDateRange(usdcReceived, startDate, endDate);
     const monthlyUSDCSend = getMonthlyChartDataByDateRange(usdcSend, startDate, endDate);
     const monthlyBALReceived = getMonthlyChartDataByDateRange(balReceive, startDate, endDate);
-    console.log("montlyBALReceive", monthlyBALReceived)
+    //console.log("montlyBALReceive", monthlyBALReceived)
     const monthlyBALSend = getMonthlyChartDataByDateRange(balSend, startDate, endDate);
 
     const cumulativeBALIncomeChartData = getCumulativeSumTrace(balReceive, startDate, endDate);
@@ -167,8 +176,8 @@ export default function Financials() {
     const dailyUSDCIn = getDailyChartDataByDateRange(usdcReceived, startDate, endDate);
     const dailyUSDCOut = getDailyChartDataByDateRange(usdcSend, startDate, endDate);
     const historicalData: BalancerChartDataItem[] = [];
-    if (usdcReserves) {
-        let runningAmount = usdcReserves
+    if (totalUSDCReserves) {
+        let runningAmount = totalUSDCReserves
         for (let i = dailyUSDCIn.length - 1; i >= 0; i--) {
             if (i !== dailyUSDCIn.length - 1) {
                 runningAmount = runningAmount - dailyUSDCIn[i].value - dailyUSDCOut[i].value
@@ -208,7 +217,7 @@ export default function Financials() {
 
     //TODO: project based on last 3 month income excluding running month
     const avgIncome = monthlyUSDCReceived.reduce((a, b) => a + b.value, 0) / monthlyUSDCReceived.length;
-    const burnRunWay = usdcReserves ? usdcReserves / (monthlyUSDCBurn - avgIncome) : 0;
+    const burnRunWay = totalUSDCReserves ? totalUSDCReserves / (monthlyUSDCBurn - avgIncome) : 0;
 
 
     //---WETH---
@@ -259,9 +268,9 @@ export default function Financials() {
                                 MetricIcon={AccountBalanceIcon}
                             />
                             <MetricsCard
-                                mainMetric={usdcReserves ? usdcReserves : 0}
+                                mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
                                 mainMetricInUSD={true}
-                                metricName='USDC Reserves'
+                                metricName='Liquid USDC'
                                 mainMetricChange={0}
                                 MetricIcon={CurrencyExchangeIcon}
                             />
@@ -371,9 +380,9 @@ export default function Financials() {
                     <Grid item xs={isMobile ? 6 : 4}>
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
-                                <Typography variant="h6">USDC Funding Runway Projection</Typography>
+                                <Typography variant="h6">Funding Runway Projection (Liquid USDC)</Typography>
                             </Box>
-                            {usdcReserves ?
+                            {totalUSDCReserves ?
                                 <SimpleRunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}
                         </Card>
                     </Grid>

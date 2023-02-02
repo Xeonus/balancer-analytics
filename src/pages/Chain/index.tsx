@@ -48,7 +48,7 @@ export default function Chain() {
                 container
                 spacing={1}
                 sx={{ justifyContent: 'center' }}
-                >
+            >
                 <Grid item xs={10}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
@@ -63,53 +63,51 @@ export default function Chain() {
                     </Box>
                 </Grid>
 
-           
+
                 <Grid
                     item
                     xs={10}
                 >
-                    <Stack 
-                    direction={{ xs: 'column', sm: 'row' }}
-                    spacing={2} 
-                    justifyContent="flex-start">
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={2}
+                        justifyContent="flex-start">
                         <MetricsCard
                             mainMetric={protocolData.volume24 ? protocolData.volume24 : 0}
                             mainMetricInUSD={true}
                             metricName='Volume'
-                            mainMetricChange={protocolData.volumeChange ? protocolData.volumeChange : 0}
+                            mainMetricChange={protocolData.volumeChange ? protocolData.volumeChange * 100 : 0}
                             MetricIcon={EqualizerIcon}
                         />
                         <MetricsCard
                             mainMetric={protocolData.tvl ? protocolData.tvl : 0}
                             mainMetricInUSD={true}
                             metricName='TVL'
-                            mainMetricChange={protocolData.tvlChange ? protocolData.tvlChange : 0}
+                            mainMetricChange={protocolData.tvlChange ? protocolData.tvlChange * 100 : 0}
                             MetricIcon={MonetizationOnIcon}
                         />
                         <MetricsCard
                             mainMetric={protocolData.fees24 ? protocolData.fees24 : 0}
                             mainMetricInUSD={true}
                             metricName='Fees'
-                            mainMetricChange={protocolData.feesChange ? protocolData.feesChange : 0}
+                            mainMetricChange={protocolData.feesChange ? protocolData.feesChange * 100 : 0}
                             MetricIcon={CurrencyExchangeIcon}
                         />
                     </Stack>
                 </Grid>
                 <Grid item mt={1} xs={10}>
-                <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                >
-                    <Box mb={1}>
-                    <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />
-                    </Box>
-                    <Box mb={1}>
-                    <ExploreCard linkName='Tokens' linkTarget={networkPrefix(activeNetwork) + 'tokens'} MetricIcon={TokenIcon} />
-                    </Box>
-                </Stack>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                    >
+                        <Box mb={1}>
+                            <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />
+                        </Box>
+                        <Box mb={1}>
+                            <ExploreCard linkName='Tokens' linkTarget={networkPrefix(activeNetwork) + 'tokens'} MetricIcon={TokenIcon} />
+                        </Box>
+                    </Stack>
 
-            </Grid>
-            
-            
+                </Grid>
                 <Grid
                     item
                     mt={1}
@@ -139,9 +137,6 @@ export default function Chain() {
                             <CustomLinearProgress />
                         </Grid>}
                 </Grid>
-
-
-            
                 <Grid
                     item
                     mt={1}
@@ -157,8 +152,7 @@ export default function Chain() {
                     <SwapsTable swaps={protocolData.whaleSwaps} />
 
                 </Grid>
-                </Grid>
-
+            </Grid>
         </Box>
     );
 }

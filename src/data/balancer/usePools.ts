@@ -160,6 +160,7 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
             createTime: pool.createTime,
             holdersCount: parseInt(pool.holdersCount),
             factory: pool.factory ? pool.factory : '',
+            totalShares: parseInt(pool.totalShares),
         };
     });
 }
@@ -230,7 +231,6 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
         return null
     }
 
-    console.log("amp", pool.amp)
 
     return {
         ...pool,
@@ -271,6 +271,7 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
         createTime: pool.createTime,
         holdersCount: parseInt(pool.holdersCount),
         factory: pool.factory ? pool.factory : '',
+        totalShares: parseInt(pool.totalShares),
 
     };
 }

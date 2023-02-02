@@ -70,7 +70,7 @@ function getTokenPriceValues(tokenAddress: string, tokens24: BalancerTokenFragme
 
 
 
-export function useBalancerTokens(first = 100): TokenData[]  {
+export function useBalancerTokens(first = 100): TokenData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
@@ -140,13 +140,13 @@ export function useBalancerTokens(first = 100): TokenData[]  {
         return [];
     }
 
-    const { tokens, tokens24} = data;
+    const { tokens, tokens24 } = data;
 
     return tokens.map((token) => {
         let tokenData = getTokenValues(token.address, tokens);
         let tokenData24 = getTokenValues(token.address, tokens24);
 
-        let priceData = {price: token.latestUSDPrice ? Number(token.latestUSDPrice) : 0};
+        let priceData = { price: token.latestUSDPrice ? Number(token.latestUSDPrice) : 0 };
         let priceData24 = getTokenPriceValues(token.address, tokens24);
         //override:
         let priceChange = 0
@@ -187,7 +187,7 @@ export function useBalancerTokenData(address: string): TokenData | null {
     return token || null;
 }
 
-export function useBalancerTokenSingleData(address: string) : TokenData | null {
+export function useBalancerTokenSingleData(address: string): TokenData | null {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
@@ -256,45 +256,45 @@ export function useBalancerTokenSingleData(address: string) : TokenData | null 
         return null;
     }
 
-    const { tokens, tokens24} = data;
+    const { tokens, tokens24 } = data;
 
-    const singleToken = tokens.find(t => t.address === address)
-    const singleToken24 = tokens.find(t => t.address === address)
+    //const singleToken = tokens.find(t => t.address === address)
+    //const singleToken24 = tokens.find(t => t.address === address)
 
-        let tokenData = getTokenValues(tokens[0].address, tokens);
-        let tokenData24 = getTokenValues(tokens[0].address, tokens24);
+    let tokenData = getTokenValues(tokens[0].address, tokens);
+    let tokenData24 = getTokenValues(tokens[0].address, tokens24);
 
-        let priceData = {price: tokens[0].latestUSDPrice ? Number(tokens[0].latestUSDPrice) : 0};
-        let priceData24 = getTokenPriceValues(tokens[0].address, tokens24);
-        //override:
-        let priceChange = 0
-        if (coingeckoData && coingeckoData[tokens[0].address]) {
-            tokenData = getTokenValues(tokens[0].address, tokens, coingeckoData);
-            tokenData24 = getTokenValues(tokens[0].address, tokens24, coingeckoData);
-            priceData = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
-            priceData24 = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
-            priceChange = coingeckoData[tokens[0].address].usd_24h_change;
-        }
+    let priceData = { price: tokens[0].latestUSDPrice ? Number(tokens[0].latestUSDPrice) : 0 };
+    let priceData24 = getTokenPriceValues(tokens[0].address, tokens24);
+    //override:
+    let priceChange = 0
+    if (coingeckoData && coingeckoData[tokens[0].address]) {
+        tokenData = getTokenValues(tokens[0].address, tokens, coingeckoData);
+        tokenData24 = getTokenValues(tokens[0].address, tokens24, coingeckoData);
+        priceData = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
+        priceData24 = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
+        priceChange = coingeckoData[tokens[0].address].usd_24h_change;
+    }
 
-        const valueUSDCollected = 0;
+    const valueUSDCollected = 0;
 
-        return {
-            address: tokens[0].address,
-            name: tokens[0].name || '',
-            symbol: tokens[0].symbol || '',
-            exists: true,
-            volumeUSD: tokenData.volume - tokenData24.volume,
-            volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
-            txCount: parseFloat(tokens[0].totalSwapCount),
-            feesUSD: 0,
-            tvlToken: tokenData.tvlToken,
-            tvlUSD: (tokens[0].symbol?.includes('bb-') ? 0 : tokenData.tvl),
-            valueUSDCollected: valueUSDCollected,
-            tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
-            priceUSD: priceData.price,
-            priceUSDChange: priceChange,
-            isCoingeckoPriceSource: priceChange !== 0 ? true : false,
-        };
+    return {
+        address: tokens[0].address,
+        name: tokens[0].name || '',
+        symbol: tokens[0].symbol || '',
+        exists: true,
+        volumeUSD: tokenData.volume - tokenData24.volume,
+        volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
+        txCount: parseFloat(tokens[0].totalSwapCount),
+        feesUSD: 0,
+        tvlToken: tokenData.tvlToken,
+        tvlUSD: (tokens[0].symbol?.includes('bb-') ? 0 : tokenData.tvl),
+        valueUSDCollected: valueUSDCollected,
+        tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
+        priceUSD: priceData.price,
+        priceUSDChange: priceChange,
+        isCoingeckoPriceSource: priceChange !== 0 ? true : false,
+    };
 }
 
 export function useBalancerTokenPageData(address: string): {
@@ -350,7 +350,7 @@ export function useBalancerTokenPageData(address: string): {
 
     const volumeData = snapshots.map((snapshot, idx) => {
 
-        const coingeckoPrevPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => idx === 0 ? 0 : s[0] === snapshots[idx-1].timestamp * 1000) : null;
+        const coingeckoPrevPrice = coingeckoSnapshotData?.prices ? coingeckoSnapshotData?.prices.find(s => idx === 0 ? 0 : s[0] === snapshots[idx - 1].timestamp * 1000) : null;
         let coingeckoPrevVolValue = 0;
         if (coingeckoPrevPrice) {
             coingeckoPrevVolValue = idx === 0 ? 0 : Number(snapshots[idx - 1].totalVolumeNotional) * coingeckoPrevPrice[1];

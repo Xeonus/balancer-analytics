@@ -89,7 +89,7 @@ export default function Protocol() {
                                     mainMetric={aggregatedProtocolData.tvl}
                                     mainMetricInUSD={true}
                                     metricName='Protocol TVL'
-                                    mainMetricChange={aggregatedProtocolData.tvlChange}
+                                    mainMetricChange={aggregatedProtocolData.tvlChange * 100}
                                     MetricIcon={MonetizationOnIcon}
                                 />
                             </Box>
@@ -100,7 +100,7 @@ export default function Protocol() {
                                     mainMetricInUSD={false}
                                     mainMetricUnit={' %'}
                                     metricName='Mainnet Dominance'
-                                    mainMetricChange={mainnetTVLChange}
+                                    mainMetricChange={mainnetTVLChange * 100}
                                     MetricIcon={PieChartIcon}
                                 />
                             </Box>

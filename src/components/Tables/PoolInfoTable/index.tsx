@@ -11,7 +11,7 @@ import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { CircularProgress } from '@mui/material';
-import { formatPercentageAmount } from '../../../utils/numbers';
+import { formatDollarAmount, formatPercentageAmount } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
@@ -164,6 +164,7 @@ export default function PoolInfoTable({
         createData('Contract address', poolData.address),
         createData('Creation Time', dayjs.unix(poolData.createTime).format('DD.MM.YYYY hh:mm:ss')),
         createData('Pool factory', poolData.factory),
+        createData('Price per BPT ($)', formatDollarAmount(poolData.tvlUSD / poolData.totalShares))
     ];
     //Add amp factor if it is a stable pool type
     if (STABLE_POOLS.includes(poolData.poolType)) {

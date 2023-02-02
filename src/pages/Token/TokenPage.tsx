@@ -10,7 +10,7 @@ import CustomLinearProgress from '../../components/Progress/CustomLinearProgress
 import NavCrumbs, { NavElement } from '../../components/NavCrumbs';
 import StyledExternalLink from '../../components/StyledExternalLink';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
-import { useBalancerTokenData, useBalancerTokenSingleData } from '../../data/balancer/useTokens';
+import { useBalancerTokenSingleData } from '../../data/balancer/useTokens';
 import { useBalancerPoolsForToken } from '../../data/balancer/usePools';
 import { useBalancerTokenPageData } from '../../data/balancer/useTokens';
 import CurrencyLogo from '../../components/CurrencyLogo';
@@ -18,7 +18,6 @@ import PoolTable from '../../components/Tables/PoolTable';
 import TokenChart from '../../components/TokenChart';
 import SwapsTable from '../../components/Tables/SwapsTable';
 import JoinExitsTable from '../../components/Tables/JoinExitsTable';
-import { formatNumber } from '../../utils/numbers';
 
 
 
@@ -50,6 +49,7 @@ export default function TokenPage() {
     navCrumbs.push(homeNav)
     navCrumbs.push(tokenNav);
 
+    console.log("tokenData", tokenData)
 
 
     //Ideas to show richer data:
@@ -102,14 +102,6 @@ export default function TokenPage() {
                                 metricName='Token Swaps'
                                 mainMetricChange={0}
                                 MetricIcon={SwapHorizontalCircleIcon}
-
-                            />
-                            <MetricsCard
-                                mainMetric={tokenData.feesUSD}
-                                mainMetricInUSD={true}
-                                metricName='Token Fees'
-                                mainMetricChange={0}
-                                MetricIcon={CurrencyExchangeIcon}
 
                             />
                         </Stack>

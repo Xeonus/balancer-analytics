@@ -63,6 +63,7 @@ export interface PoolData {
     address: string;
     feeTier: number;
     swapFee: number;
+    totalShares: number;
 
     tokens: PoolTokenData[];
 
