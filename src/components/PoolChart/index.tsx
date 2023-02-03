@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { isMobile } from 'react-device-detect';
 
 export interface TabPanelProps {
     children?: React.ReactNode;
@@ -159,12 +160,20 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     return (
 
         <Box >
-            <Box m={1} display="flex" alignItems="center" justifyContent="left" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box 
+                m={1} 
+                display="flex"
+                alignItems={{ xs: 'center', sm: 'flex-start', md: "flex-start" }}
+                justifyContent="flex-start" 
+                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                flexDirection={{ xs: 'column', sm: 'row' }}
+                >
                 <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
                     <Tab label="Volume" {...a11yProps(0)} />
                     <Tab label="TVL" {...a11yProps(1)} />
                     <Tab label="Fees" {...a11yProps(2)} />
                 </Tabs>
+                <Box m={isMobile ? 1 : 0}>
                 <FormControl size="small">
                     <Select
                         sx={{
@@ -172,6 +181,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                             boxShadow: 2,
                             borderRadius: 2,
                             borderColor: 0,
+                            alignSelf: 'flex-end'
                         }}
                         color="primary"
                         labelId="timeRangeSelectLabel"
@@ -193,9 +203,10 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                         <MenuItem value={'1000'}> Custom </MenuItem>
                     </Select>
                 </FormControl>
+                </Box>
 
                 {showDate ?
-                    <Box p={0.5} display="flex" justifyContent="left" >
+                    <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                                 label="Start Date"

@@ -126,13 +126,13 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'DAO Treasury'} />
                 </ListItemButton>
-                <ListItemButton key={'Service Providers'} component={NavLink} to={networkPrefix(activeNetwork) + 'serviceProviders'}>
+                <ListItemButton key={'Service Providers'} component={NavLink} to={'serviceProviders'}>
                     <ListItemIcon>
                         <HandshakeIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Service Providers'} />
                 </ListItemButton>
-                <ListItemButton key={'DAO Financials'} component={NavLink} to={networkPrefix(activeNetwork) + 'financials'}>
+                <ListItemButton key={'DAO Financials'} component={NavLink} to={'financials'}>
                     <ListItemIcon>
                         <RequestQuoteIcon />
                     </ListItemIcon>

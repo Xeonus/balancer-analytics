@@ -20,6 +20,7 @@ import { unixToDate } from "../../utils/date";
 import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
 import { isMobile } from 'react-device-detect';
 import { mergeArrays } from "./helpers";
+import { EthereumNetworkInfo } from "../../constants/networks";
 
 export default function Treasury() {
 
@@ -53,16 +54,16 @@ export default function Treasury() {
     const karpatkeyPortfolio = useGetPortfolio(KARPATKEY_SAFE);
 
     //Obtain wallet total worth and USDC
-    const walletTokenNetworth = totalBalances && karpatkeyBalances.totalBalances ? 
-        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) 
-        + karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0): 0;
+    const walletTokenNetworth = totalBalances && karpatkeyBalances.totalBalances ?
+        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     const karpatkeyTokenNetworth = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    let netWorth = portfolio && karpatkeyPortfolio. portfolio ? 
-    portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
-    + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
-     : 0;
-    let karpatkeyNetworth = karpatkeyPortfolio. portfolio ? 
-    karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+    let netWorth = portfolio && karpatkeyPortfolio.portfolio ?
+        portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
+        + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
+        : 0;
+    let karpatkeyNetworth = karpatkeyPortfolio.portfolio ?
+        karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
     netWorth += walletTokenNetworth;
     const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
@@ -80,7 +81,7 @@ export default function Treasury() {
 
     //BAL insurance fund
     const BALinsuranceAmount = 500000;
-    const balPrice = totalBalances ?  totalBalances.find(el => {
+    const balPrice = totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'BAL') {
             return el
         }
@@ -111,30 +112,39 @@ export default function Treasury() {
             ) : null;
 
     const ratioPieChartData: BalancerPieChartDataItem[] = []
-    ratioPieChartData.push(
-        {
-            value: walletTokenNetworth - BALinsuranceAmount,
-            name: 'Tokens'
-        }
-    )
-    ratioPieChartData.push(
-        {
-            value: netWorth - walletTokenNetworth,
-            name: 'Treasury Liquidity provisions'
-        }
-    )
-    ratioPieChartData.push(
-        {
-            value: karpatkeyNetworth,
-            name: 'Karpatkey Liquidity provisions'
-        }
-    )
-    ratioPieChartData.push(
-        {
-            value: BALinsuranceAmount,
-            name: 'Foundation BAL Insurance'
-        }
-    )
+    if (walletTokenNetworth - BALinsuranceAmount > 0) {
+        ratioPieChartData.push(
+            {
+                value: walletTokenNetworth - BALinsuranceAmount,
+                name: 'Tokens'
+            }
+        )
+    }
+    if (netWorth - walletTokenNetworth > 0) {
+        ratioPieChartData.push(
+            {
+                value: netWorth - walletTokenNetworth,
+                name: 'Treasury Liquidity provisions'
+            }
+        )
+    }
+    if (karpatkeyNetworth > 0) {
+        ratioPieChartData.push(
+            {
+                value: karpatkeyNetworth,
+                name: 'Karpatkey Liquidity provisions'
+            }
+        )
+    }
+    if (activeNetwork === EthereumNetworkInfo) {
+        ratioPieChartData.push(
+            {
+                value: BALinsuranceAmount,
+                name: 'Foundation BAL Insurance'
+            }
+        )
+    }
+    console.log("ratioPieChartData", ratioPieChartData)
 
     return (
         <Box sx={{ flexGrow: 2 }}>
@@ -157,91 +167,91 @@ export default function Treasury() {
                     </Box>
                 </Grid>
             </Grid>
-            { totalBalances && portfolio ?
-            <Grid
-                container
-                sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
-                alignItems="left"
-                spacing={1}
-            >
-                {totalBalances && portfolio ?
-                    <Grid item xs={10}>
-                        <Stack direction="row" spacing={2} justifyContent="flex-start">
-                            <MetricsCard
-                                mainMetric={netWorth}
-                                mainMetricInUSD={true}
-                                metricName='Net Worth'
-                                mainMetricChange={0}
-                                MetricIcon={AccountBalanceIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={walletTokenNetworth}
-                                mainMetricInUSD={true}
-                                metricName='Tokens in Wallet'
-                                mainMetricChange={0}
-                                MetricIcon={WalletIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
-                                mainMetricInUSD={true}
-                                metricName='Liquid USDC'
-                                mainMetricChange={0}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-                        </Stack>
-                    </Grid> : null}
-                {ratioPieChartData ?
-                    <Grid
-                        container
-                        sx={{ flexDirection: { xs: 'column', md: 'row' } }}
-                        justifyContent="center"
-                        alignItems="left"
-                        alignContent="left"
-                        spacing={2}
-                        mt={1}
-                    >
-                        <Grid
-                            item
-                            xs={isMobile ? 6 : 5}
-                        >
-                            <Box mb={1}>
-                                <Card 
-                                sx={{ boxShadow: 3}}>
-                                    <Box p={1}>
-                                        <Typography
-                                            color="textSecondary"
-                                            gutterBottom
-                                            variant="h6"
-                                        >
-                                            Asset Distribution
-                                        </Typography>
-                                    </Box>
-                                    <GenericPieChart data={ratioPieChartData} height='295px' />
-                                </Card>
-                            </Box>
-
-                        </Grid>
-                        {tokenPieChartData && tokenPieChartDataKarpatkey ?
-                        <Grid
-                            item
-                            xs={isMobile ? 6 : 5}
-                        >
-                            <Card sx={{ boxShadow: 3}}>
-                                <Box p={1}>
-                                    <Typography
-                                        color="textSecondary"
-                                        gutterBottom
-                                        variant="h6"
-                                    >
-                                        Token distribution
-                                    </Typography>
-                                </Box>
-                                <GenericPieChart data={mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey)} height='295px' />
-                            </Card>
-                        </Grid> : null }
-                    </Grid>
-                    : null}
+            {totalBalances && portfolio ?
                 <Grid
+                    container
+                    sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
+                    alignItems="left"
+                    spacing={1}
+                >
+                    {totalBalances && portfolio ?
+                        <Grid item xs={10}>
+                            <Stack direction="row" spacing={2} justifyContent="flex-start">
+                                <MetricsCard
+                                    mainMetric={netWorth}
+                                    mainMetricInUSD={true}
+                                    metricName='Net Worth'
+                                    mainMetricChange={0}
+                                    MetricIcon={AccountBalanceIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={walletTokenNetworth}
+                                    mainMetricInUSD={true}
+                                    metricName='Tokens in Wallet'
+                                    mainMetricChange={0}
+                                    MetricIcon={WalletIcon}
+                                />
+                                <MetricsCard
+                                    mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='Liquid USDC'
+                                    mainMetricChange={0}
+                                    MetricIcon={CurrencyExchangeIcon}
+                                />
+                            </Stack>
+                        </Grid> : null}
+                    {ratioPieChartData && ratioPieChartData.length > 0 ?
+                        <Grid
+                            container
+                            sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                            justifyContent="center"
+                            alignItems="left"
+                            alignContent="left"
+                            spacing={2}
+                            mt={1}
+                        >
+                            <Grid
+                                item
+                                xs={isMobile ? 6 : 5}
+                            >
+                                <Box mb={1}>
+                                    <Card
+                                        sx={{ boxShadow: 3 }}>
+                                        <Box p={1}>
+                                            <Typography
+                                                color="textSecondary"
+                                                gutterBottom
+                                                variant="h6"
+                                            >
+                                                Asset Distribution
+                                            </Typography>
+                                        </Box>
+                                        <GenericPieChart data={ratioPieChartData} height='295px' />
+                                    </Card>
+                                </Box>
+
+                            </Grid>
+                            {tokenPieChartData && tokenPieChartData.length > 0 && tokenPieChartDataKarpatkey && tokenPieChartDataKarpatkey.length > 0 ?
+                                <Grid
+                                    item
+                                    xs={isMobile ? 6 : 5}
+                                >
+                                    <Card sx={{ boxShadow: 3 }}>
+                                        <Box p={1}>
+                                            <Typography
+                                                color="textSecondary"
+                                                gutterBottom
+                                                variant="h6"
+                                            >
+                                                Token distribution
+                                            </Typography>
+                                        </Box>
+                                        <GenericPieChart data={mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey)} height='295px' />
+                                    </Card>
+                                </Grid> : null}
+                        </Grid>
+                        : null}
+                    <Grid
                         item
                         mt={1}
                         xs={10}
@@ -265,24 +275,24 @@ export default function Treasury() {
                         </Grid> : null}
                     <Grid item xs={10}>
                         <Card
-                        sx={{boxShadow: 3}}
+                            sx={{ boxShadow: 3 }}
                         >
                             <Box p={2}>
-                        {portfolio ?
-                            portfolio.map(pos =>
-                                pos.chain === activeNetwork.debankId ?
-                                    <Box key={pos.id + "box"} mb={1}>
-                                        <LiquidityPosition key={pos.id + pos.name} position={pos} />
-                                    </Box> : undefined
-                            )
-                            : undefined}
+                                {portfolio && portfolio.length > 0 ?
+                                    portfolio.map(pos =>
+                                        pos.chain === activeNetwork.debankId ?
+                                            <Box key={pos.id + "box"} mb={1}>
+                                                <LiquidityPosition key={pos.id + pos.name} position={pos} />
+                                            </Box> : undefined
+                                    )
+                                    : <Typography>none</Typography>}
                             </Box>
-                            </Card>
+                        </Card>
                     </Grid>
                     <Grid
-                    item
-                    mt={2}
-                    xs={10}>
+                        item
+                        mt={2}
+                        xs={10}>
                         <Typography variant="h5">Assets Managed by Karpatkey</Typography>
                     </Grid>
                     <Grid
@@ -290,6 +300,7 @@ export default function Treasury() {
                         mt={1}
                         xs={10}
                     >
+                        
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
                                 <Typography variant="h6">Managed Tokens</Typography>
@@ -304,40 +315,40 @@ export default function Treasury() {
                         <Grid item xs={10}>
                             <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances} />
                         </Grid> : null}
-                        <Grid
-                    item
-                    mt={2}
-                    xs={10}>
+                    <Grid
+                        item
+                        mt={2}
+                        xs={10}>
                         <Typography variant="h6">Managed Liquidity Provisions</Typography>
                     </Grid>
                     <Grid item xs={10}>
                         <Card
-                        sx={{boxShadow: 3}}
+                            sx={{ boxShadow: 3 }}
                         >
                             <Box p={2}>
-                        {karpatkeyPortfolio.portfolio ?
-                            karpatkeyPortfolio.portfolio.map(pos =>
-                                pos.chain === activeNetwork.debankId ?
-                                    <Box key={pos.id + "box"} mb={1}>
-                                        <LiquidityPosition key={pos.id + pos.name} position={pos} />
-                                    </Box> : undefined
-                            )
-                            : undefined}
+                                {karpatkeyPortfolio.portfolio && karpatkeyPortfolio.portfolio.length > 0 ?
+                                    karpatkeyPortfolio.portfolio.map(pos =>
+                                        pos.chain === activeNetwork.debankId ?
+                                            <Box key={pos.id + "box"} mb={1}>
+                                                <LiquidityPosition key={pos.id + pos.name} position={pos} />
+                                            </Box> : <Typography>none</Typography>
+                                    )
+                                    : <Typography>none</Typography>}
                             </Box>
-                            </Card>
+                        </Card>
                     </Grid>
-                    
-            </Grid>
-            :
-                    <Grid
-                        container
-                        spacing={2}
-                        mt='25%'
-                        sx={{ justifyContent: 'center' }}
-                    >
-                        <CustomLinearProgress />
-                    </Grid>
-                }
+
+                </Grid>
+                :
+                <Grid
+                    container
+                    spacing={2}
+                    mt='25%'
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <CustomLinearProgress />
+                </Grid>
+            }
         </Box>
     );
 }

@@ -42,7 +42,7 @@ const drawerWidth = 240;
 //Color mode
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
-const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile' })<{
     open?: boolean;
     isMobile?: boolean;
 }>(({ theme, open, isMobile }) => ({
@@ -95,7 +95,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 function Dashboard() {
 
     //Drawer logic
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(isMobile ? false : true);
     const handleDrawerOpen = () => {
         setOpen(true);
     };

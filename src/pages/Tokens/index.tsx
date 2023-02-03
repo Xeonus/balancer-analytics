@@ -89,17 +89,20 @@ export default function Tokens() {
             </Grid>
             {filteredPoolBarChartData.length > 1 ?
                 <Grid
-                    container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' } }}
-                    justifyContent="center"
-                    spacing={2}
+                container
+                sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                justifyContent="center"
+                alignItems="left"
+                alignContent="left"
+                spacing={2}
+            >
+                <Grid
+                    item
+                    ml={1}
+                    mt={1}
+                    xs={10}
                 >
-                    <Grid
-                        item
-                        mt={1}
-                        xs={10}
-                    >
-                        <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                        <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
                     </Grid>
                     {filteredPoolBarChartData.length > 1 ?
                         <Grid

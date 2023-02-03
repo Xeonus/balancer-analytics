@@ -238,11 +238,10 @@ export default function PoolTableCompact({
 
   //Table generation
   return (
-    <Box sx={{ width: '100%'}}>
-      <Paper sx={{ mb: 2, boxShadow: 3  }}>
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ mb: 2, boxShadow: 3 }}>
         <TableContainer>
           <Table
-            //sx={{ minWidth: 750 }}
             aria-labelledby="topPools"
             size={'medium'}
           >
@@ -265,12 +264,14 @@ export default function PoolTableCompact({
                       tabIndex={-1}
                       key={row.name}
                       sx={{cursor: 'pointer'}}
+                      
                     >
                       <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
+                        sx={{overflow: 'auto'}}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>

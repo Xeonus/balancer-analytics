@@ -1,4 +1,3 @@
-import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box';
 import { Card, Grid, Typography, Stack } from '@mui/material';
 import MetricsCard from '../../components/Cards/MetricsCard';
@@ -23,7 +22,6 @@ import { networkPrefix } from '../../utils/networkPrefix';
 
 export default function Chain() {
 
-    const theme = useTheme();
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, activeNetwork.startTimeStamp);
     const poolData = useBalancerPools(20);
@@ -43,10 +41,10 @@ export default function Chain() {
     navCrumbs.push(poolNav);
 
     return (
-        <Box sx={{ flexGrow: 2 }}>
+        <Box sx={{ flexGrow: 3, width: '100%' }}>
             <Grid
                 container
-                spacing={1}
+                spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
                 <Grid item xs={10}>
@@ -108,7 +106,7 @@ export default function Chain() {
                     </Stack>
 
                 </Grid>
-                <Grid
+                 <Grid
                     item
                     mt={1}
                     xs={10}
@@ -122,12 +120,20 @@ export default function Chain() {
                         </Card>
                     </Box>
                 </Grid>
+                
                 <Grid item xs={10}>
                     <Box mt={2}>
                         <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
                     </Box>
+                </Grid>
+                
                     {poolData.length >= 1 ?
-                        <PoolTableCompact poolDatas={poolData} /> :
+                    <Grid item xs={10}>
+                    <Box sx={{ maxWidth: '100%' }}>
+                        <PoolTableCompact poolDatas={poolData} />
+                    </Box>
+                    </Grid>
+                    :
                         <Grid
                             container
                             spacing={2}
@@ -136,7 +142,7 @@ export default function Chain() {
                         >
                             <CustomLinearProgress />
                         </Grid>}
-                </Grid>
+                
                 <Grid
                     item
                     mt={1}
@@ -150,9 +156,8 @@ export default function Chain() {
                 </Grid>
                 <Grid item xs={10}>
                     <SwapsTable swaps={protocolData.whaleSwaps} />
-
                 </Grid>
-            </Grid>
+            </Grid> 
         </Box>
     );
 }

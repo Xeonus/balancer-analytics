@@ -20,7 +20,7 @@ export default function IncomeVsSpendingMultiBarChart({ data1, data2, dataTitle1
     let xData1 = data1.map(el => el.time);
     let xData2 = data2.map(el => el.time);
     const xData = xData1.length > xData2.length ? xData1 : xData2
-    console.log("xData", xData)
+    //console.log("xData", xData)
 
     let yData1 = xData.map(time => {
         let match = data1.find(e => e.time === time);

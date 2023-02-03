@@ -125,7 +125,10 @@ export default function PoolsOverview() {
                 {topTVLPool.address && topFeePool.address ?
                 
                     <Grid item xs={10}>
-                        <Stack direction="row" spacing={2} justifyContent="flex-start">
+                    <Stack
+                        direction={{ xs: 'column', sm: 'column',  md: 'row'}}
+                        spacing={2}
+                        justifyContent="flex-start">
                             <PoolMetricsCard
                                 mainMetric={topVolumePool.volumeUSD}
                                 mainMetricInUSD={true}
