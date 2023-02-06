@@ -77,86 +77,92 @@ export default function Tokens() {
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
-                spacing={2}
+                spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid item xs={10}>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                    </Box>
-                </Grid>
-
-            </Grid>
-            {filteredPoolBarChartData.length > 1 ?
                 <Grid
-                container
-                sx={{ flexDirection: { xs: 'column', md: 'row' } }}
-                justifyContent="center"
-                alignItems="left"
-                alignContent="left"
-                spacing={2}
-            >
-                <Grid
-                    item
-                    ml={1}
-                    mt={1}
-                    xs={10}
+                    container
+                    spacing={2}
+                    sx={{ justifyContent: 'center' }}
                 >
-                        <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
+                    <Grid item mt={2} xs={10}>
+                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                            <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                        </Box>
                     </Grid>
-                    {filteredPoolBarChartData.length > 1 ?
-                        <Grid
-                            item
-                            xs={isMobile ? 6 : 5}
-                        >
-                            <Box mb={1}>
-                                <Card
-                                    sx={{ boxShadow: 3 }}
-                                >
-                                    < MixedLineBarChart
-                                        barChartData={filteredPoolBarChartData}
-                                        barChartName={'TVL'}
-                                        lineChartData={tokenLineChartData}
-                                        lineChartName={'Trading Fees 24h'}
-                                        rotateAxis={true} />
-                                </Card>
-                            </Box>
-
-                        </Grid> : null}
                     <Grid
                         item
-                        xs={isMobile ? 6 : 5}
+                        xs={10}
                     >
-                        <Card
-                            sx={{ boxShadow: 3 }}
-                        >
-                            <GenericPieChart data={filteredPieChartData} height='350px' />
-                        </Card>
-
+                        <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
                     </Grid>
-                </Grid> : null}
-            <Grid
-                container
-                spacing={2}
-                sx={{ justifyContent: 'center' }}
-            >
-                <Grid item xs={10} mt={1}>
-                    <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                 </Grid>
-                {tokenDatas.length > 10 ?
-                    <Grid item xs={10}>
-                        <TokenTable tokenDatas={tokenDatas} />
-                    </Grid>
-                    :
+                {filteredPoolBarChartData.length > 1 ?
                     <Grid
                         container
+                        sx={{ direction: { xs: 'column', sm: 'row' } }}
+                        justifyContent="center"
                         spacing={2}
-                        mt='25%'
-                        sx={{ justifyContent: 'center' }}
                     >
-                        <CustomLinearProgress />
+
+                        {filteredPoolBarChartData.length > 1 ?
+                            <Grid
+                                item
+                                xs={10}
+                                sm={5}
+
+                            >
+                                <Box mb={1}>
+                                    <Card
+                                        sx={{ boxShadow: 3 }}
+                                    >
+                                        < MixedLineBarChart
+                                            barChartData={filteredPoolBarChartData}
+                                            barChartName={'TVL'}
+                                            lineChartData={tokenLineChartData}
+                                            lineChartName={'Trading Fees 24h'}
+                                            rotateAxis={true} />
+                                    </Card>
+                                </Box>
+
+                            </Grid> : null}
+                        <Grid
+                            item
+                            xs={10}
+                            sm={5}
+
+                        >
+                            <Card
+                                sx={{ boxShadow: 3 }}
+                            >
+                                <GenericPieChart data={filteredPieChartData} height='350px' />
+                            </Card>
+
+                        </Grid>
+                    </Grid> : null}
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{ justifyContent: 'center' }}
+                >
+                    <Grid item xs={10} mt={1}>
+                        <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                     </Grid>
-                }
+                    {tokenDatas.length > 10 ?
+                        <Grid item xs={10}>
+                            <TokenTable tokenDatas={tokenDatas} />
+                        </Grid>
+                        :
+                        <Grid
+                            container
+                            spacing={2}
+                            mt='25%'
+                            sx={{ justifyContent: 'center' }}
+                        >
+                            <CustomLinearProgress />
+                        </Grid>
+                    }
+                </Grid>
             </Grid>
         </Box>
     );

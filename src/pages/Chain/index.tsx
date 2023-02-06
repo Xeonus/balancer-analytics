@@ -41,19 +41,19 @@ export default function Chain() {
     navCrumbs.push(poolNav);
 
     return (
-        <Box sx={{ flexGrow: 3, width: '100%' }}>
+        <Box sx={{ flexGrow: 2, width: '100%' }}>
             <Grid
                 container
                 spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                     </Box>
 
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box display="flex" alignItems="center">
                         <Box mb={1}>
                             <Typography variant={"h5"}>Chain Metrics ({activeNetwork.name})</Typography>
@@ -64,7 +64,7 @@ export default function Chain() {
 
                 <Grid
                     item
-                    xs={10}
+                    xs={11}
                 >
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
@@ -93,7 +93,7 @@ export default function Chain() {
                         />
                     </Stack>
                 </Grid>
-                <Grid item mt={1} xs={10}>
+                <Grid item mt={1} xs={11}>
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                     >
@@ -106,10 +106,10 @@ export default function Chain() {
                     </Stack>
 
                 </Grid>
-                 <Grid
+                <Grid
                     item
                     mt={1}
-                    xs={10}
+                    xs={11}
                 >
                     <Box mt={2}>
                         <Typography variant='h5'>Historical Performance</Typography>
@@ -120,44 +120,39 @@ export default function Chain() {
                         </Card>
                     </Box>
                 </Grid>
-                
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box mt={2}>
                         <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
                     </Box>
                 </Grid>
-                
-                    {poolData.length >= 1 ?
-                    <Grid item xs={10}>
-                    <Box sx={{ maxWidth: '100%' }}>
-                        <PoolTableCompact poolDatas={poolData} />
-                    </Box>
+                {poolData.length >= 1 ?
+                    <Grid item xs={11}>
+                            <PoolTableCompact poolDatas={poolData} />
                     </Grid>
                     :
-                        <Grid
-                            container
-                            spacing={2}
-                            mt={5}
-                            sx={{ justifyContent: 'center' }}
-                        >
-                            <CustomLinearProgress />
-                        </Grid>}
-                
+                    <Grid
+                        container
+                        spacing={2}
+                        mt={5}
+                        sx={{ justifyContent: 'center' }}
+                    >
+                        <CustomLinearProgress />
+                    </Grid>}
                 <Grid
                     item
                     mt={1}
                     xs={10}
                 >
-                    <Grid item xs={10} >
+                    <Grid item xs={11} >
                         <Box mt={2}>
                             <Typography variant='h5'>Large Swaps</Typography>
                         </Box>
                     </Grid>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <SwapsTable swaps={protocolData.whaleSwaps} />
                 </Grid>
-            </Grid> 
+            </Grid>
         </Box>
     );
 }

@@ -49,7 +49,7 @@ export default function Protocol() {
             >
                 <Grid
                     item
-                    xs={10}
+                    xs={11}
                 >
                     <Grid
                         container
@@ -77,10 +77,10 @@ export default function Protocol() {
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
-                    <Grid item mt={1} xs={10}>
+                    <Grid item mt={1} xs={11}>
                         <Typography variant='h5'>Historical TVL</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={10}>
+                    <Grid item mt={1} xs={11}>
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                         >
@@ -106,7 +106,7 @@ export default function Protocol() {
                             </Box>
                         </Stack>
                     </Grid>
-                    <Grid item mt={1} xs={10}>
+                    <Grid item mt={1} xs={11}>
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                         >
@@ -122,14 +122,14 @@ export default function Protocol() {
                         </Stack>
 
                     </Grid>
-                    <Grid item mt={1} xs={10}>
+                    <Grid item mt={1} xs={11}>
                         <ProtocolMultiAreaChart
                             mainnetProtocolData={protocolData}
                             arbitrumProtocolData={arbitrumProtocolData}
                             polygonProtocolData={polygonProtocolData}
                         />
                     </Grid>
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <Typography variant='h5'>Historical Volume</Typography>
                     </Grid>
                     <Grid item xs={10}>
@@ -142,7 +142,7 @@ export default function Protocol() {
                         />
 
                     </Grid>
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.volumeData}
                             arbitrumProtocolData={arbitrumProtocolData.volumeData}
@@ -150,10 +150,10 @@ export default function Protocol() {
                             isUSD={true}
                         />
                     </Grid>
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <Typography variant='h5'>Historical Fees</Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.fees24}
                             mainMetricInUSD={true}
@@ -162,7 +162,7 @@ export default function Protocol() {
                             MetricIcon={CurrencyExchangeIcon}
                         />
                     </Grid>
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.feeData}
                             arbitrumProtocolData={arbitrumProtocolData.feeData}
@@ -171,7 +171,7 @@ export default function Protocol() {
                         />
                     </Grid>
 
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <Typography variant='h5'>Historical Swaps</Typography>
                     </Grid>
                     <Grid item xs={10}>
@@ -183,7 +183,7 @@ export default function Protocol() {
                             MetricIcon={SwapHorizIcon}
                         />
                     </Grid>
-                    <Grid item mt={1} xs={10} >
+                    <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.swapData}
                             arbitrumProtocolData={arbitrumProtocolData.swapData}

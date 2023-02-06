@@ -250,7 +250,6 @@ export default function TokenTable({
             <Paper elevation={3} sx={{ mb: 2, boxShadow: 3 }}>
                 <TableContainer>
                     <Table
-                        //sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >

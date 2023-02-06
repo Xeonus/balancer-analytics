@@ -100,6 +100,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
+  isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -108,36 +109,42 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: '',
+    isMobileVisible: true,
   },
   {
     id: 'name',
     numeric: false,
     disablePadding: true,
     label: 'Pool Composition',
+    isMobileVisible: false,
   },
   {
     id: 'swapFee',
     numeric: false,
     disablePadding: false,
     label: 'Swap Fee',
+    isMobileVisible: false,
   },
   {
     id: 'volume24',
-    numeric: false,
+    numeric: true,
     disablePadding: false,
     label: 'Volume 24h',
+    isMobileVisible: true,
   },
   {
     id: 'fees',
     numeric: true,
     disablePadding: false,
     label: 'Trading Fees 24h',
+    isMobileVisible: true,
   },
   {
     id: 'tvl',
     numeric: true,
     disablePadding: false,
     label: 'TVL',
+    isMobileVisible: true,
   },
 ];
 
@@ -166,15 +173,22 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            //sx={{ display: {xs: headCell.isMobileVisible ? 'block' : 'none', md: 'block' }}}
+            
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              //sx={{ display: {xs: headCell.isMobileVisible ? 'block' : 'none', md: 'block' }}}
+              
             >
-              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: headCell.label}
+              {headCell.label === '' ? <img 
+                  src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} 
+                  alt="Theme Icon" width="25" />: headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <Box 
+                component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
@@ -235,7 +249,6 @@ export default function PoolTableCompact({
     return networkPrefix(activeNetwork) + 'pools/' + id;
   }
 
-
   //Table generation
   return (
     <Box sx={{ width: '100%' }}>
@@ -266,16 +279,21 @@ export default function PoolTableCompact({
                       sx={{cursor: 'pointer'}}
                       
                     >
-                      <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
+                      <TableCell >
+                        <PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} />
+                      </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
-                        sx={{overflow: 'auto'}}
+                        //sx={{ display: {xs: 'none', md: 'block' }}}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
-                      <TableCell align="left">
+                      <TableCell 
+                        align="left"
+                        //sx={{ display: {xs: 'none', md: 'block' }}}
+                        >
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>

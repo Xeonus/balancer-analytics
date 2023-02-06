@@ -42,25 +42,24 @@ const drawerWidth = 240;
 //Color mode
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
-const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile' })<{
+const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
-    isMobile?: boolean;
-}>(({ theme, open, isMobile }) => ({
+    
+}>(({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(1),
     transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    marginRight: isMobile ? '-25px' : '25px',
-    marginLeft: isMobile ? `-${drawerWidth + 25}px` : `-${drawerWidth - 30}px`,
+    marginLeft: `-${drawerWidth}px`,
     ...(open && {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: isMobile ? '0px' : '25px',
-        marginRight: isMobile ? '0px' : '25px',
+        marginLeft: '0px',
+        marginRight: '0px',
     }),
 }));
 
@@ -215,7 +214,7 @@ function Dashboard() {
                         handleDrawerClose={handleDrawerClose}
                         activeNetwork={activeNetwork}
                     />
-                    <MainContent open={open} isMobile={isMobile}>
+                    <MainContent open={open} >
                         <DrawerHeader />
                         <Routes>
                             <Route path="/" element={<Protocol />} />

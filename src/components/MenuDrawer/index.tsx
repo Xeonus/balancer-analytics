@@ -144,7 +144,7 @@ const MenuDrawer = ({
                 <Polling />
             </Box>
             <Divider />
-            <Box position={"fixed"} bottom="0" maxWidth={drawerWidth + drawerWidth / 6}>
+            <Box  maxWidth={drawerWidth + drawerWidth / 6}>
                 <Box mt={1} display="flex" justifyContent="space-between" paddingX={drawerWidth / 6 + 'px'} paddingY="5px">
 
                     <Link href="https://github.com/Xeonus" target="_blank" rel="noopener noreferrer">
@@ -157,6 +157,7 @@ const MenuDrawer = ({
                         <img src={DiscordIconLight} alt="Discord Icon" width="25" />
                     </Link>
                 </Box>
+                <Divider />
                 <Box mt={1} display="flex" justifyContent="center" paddingX={drawerWidth / 6 + 'px'}>
                     <Typography variant="body2" fontWeight={"bold"} >Powered by</Typography>
                 </Box>
@@ -176,7 +177,8 @@ const MenuDrawer = ({
                             href="https://coingecko.com">
                             <Box display="flex" alignItems="center" alignContent="center">
                                 <Box
-                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    //sx={{ display: { xs: 'none', md: 'flex' } }} 
+                                    >
                                     <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
                                 </Box>
                             </Box>
@@ -198,7 +200,7 @@ const MenuDrawer = ({
                             <Box display="flex" alignItems="center" alignContent="center">
 
                                 <Box
-                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    >
                                     <img src={DebankColor} alt="Debank Logo" width="25" />
                                 </Box>
                             </Box>
@@ -220,7 +222,7 @@ const MenuDrawer = ({
                             <Box display="flex" alignItems="center" alignContent="center">
 
                                 <Box
-                                    sx={{ display: { xs: 'none', md: 'flex' } }} >
+                                    >
                                     <img src={AlchemyBlue} alt="Alchemy Logo" width="25" />
                                 </Box>
                             </Box>
