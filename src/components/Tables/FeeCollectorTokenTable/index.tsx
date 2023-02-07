@@ -98,6 +98,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -106,30 +107,35 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Token',
+        isMobileVisible: true,
     },
     {
         id: 'price',
         numeric: true,
         disablePadding: false,
         label: 'Price',
+        isMobileVisible: false,
     },
     {
         id: 'balance',
         numeric: true,
         disablePadding: false,
         label: 'Balance',
+        isMobileVisible: false,
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
+        isMobileVisible: true,
     },
     {
         id: 'ratio',
         numeric: true,
         disablePadding: false,
         label: 'Contribution',
+        isMobileVisible: false,
     },
 ];
 
@@ -158,6 +164,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -296,12 +303,24 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
                                                     <Typography variant="caption" >({row.token.name})</Typography>
                                                 </Box>
                                             </TableCell>
-                                            <TableCell align="right">{formatDollarAmount(row.price)}</TableCell>
-                                            <TableCell align="right">
-                                                        {formatNumber(row.balance, 2)}
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
+                                                {formatDollarAmount(row.price)}
+                                            </TableCell>
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                >
+                                                {formatNumber(row.balance, 2)}
                                             </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.value)}</TableCell>
-                                            <TableCell align="right">{formatPercentageAmount(row.ratio)}%</TableCell>
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                >{formatPercentageAmount(row.ratio)}%
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}

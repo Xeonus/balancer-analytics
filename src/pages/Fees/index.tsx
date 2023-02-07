@@ -127,30 +127,30 @@ export default function Fees() {
                 spacing={1}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                     </Box>
 
                 </Grid>
-                <Grid mt={2} item xs={10}>
+                <Grid mt={2} item xs={11}>
                     <Box display="flex" alignItems="center">
                         <Box>
                             <Typography variant={"h5"}>Historical Swap Fee Revenue on ({activeNetwork.name})</Typography>
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Card
                         sx={{ boxShadow: 3 }}
                     >
                         <ChainFeeChart feesData={protocolData.feeData} />
                     </Card>
                 </Grid>
-                <Grid mt={2} item xs={10}>
+                <Grid mt={2} item xs={11}>
                     <Typography variant="h5">Historical Pool Contributions to Protocol Revenue</Typography>
                 </Grid>
-                <Grid item xs={10} >
+                <Grid item xs={11} >
                     <Box display="flex" alignItems="center" justifyContent="space-between" >
                         <Typography variant="caption">Historical contributions from earned swap fees based on the chosen time range</Typography>
                         <FormControl size="small">
@@ -208,7 +208,7 @@ export default function Fees() {
                             </Box> : null}
                     </Box>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <PoolFeeTable poolDatas={pools} timeRange={Number(timeRange)} />
                 </Grid>
             </Grid>
@@ -217,7 +217,7 @@ export default function Fees() {
                 spacing={1}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box alignItems='left'>
                         <Typography variant="h5">Projected Revenue Streams ({timeRange === '1' ? '24h' : timeRange + ' days'})</Typography>
                         <Typography variant="caption">Estimations are based on current token yield and 24h swap fee data</Typography>
@@ -230,17 +230,17 @@ export default function Fees() {
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <Card
                             sx={{ boxShadow: 3 }}
                         >
                             <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                         </Card>
                     </Grid>
-                    <Grid mt={2} item xs={10}>
+                    <Grid mt={2} item xs={11}>
                         <Typography variant="h6">Projected Pool Revenue Performance to the DAO</Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
                     </Grid>
                 </Grid> : (<Grid
@@ -259,7 +259,7 @@ export default function Fees() {
                 spacing={1}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid mt={2} item xs={10}>
+                <Grid mt={2} item xs={11}>
                     <Box display="flex" alignItems='center'>
                         <Typography variant="h5">Tokens in Fee Collector Contract</Typography>
                         <Box ml={1}>
@@ -268,7 +268,7 @@ export default function Fees() {
                     </Box>
                     <Typography variant="caption">Collected tokens will be distributed to veBAL holders, bribes and the DAO</Typography>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Typography variant="subtitle1">Tokens to be distributed: {formatDollarAmount(totalAmountAboveThreshold)}</Typography>
                 </Grid>
             </Grid>
@@ -279,23 +279,23 @@ export default function Fees() {
                     sx={{ justifyContent: 'center' }}
                 >
                     {balancesAboveThreshold && balancesAboveThreshold.length > 0 ?
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <FeeCollectorTokenTable tokenBalances={balancesAboveThreshold} />
                         </Grid> :
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <Box ml={1}>
                                 <Typography color='error'>No tokens to be collected</Typography>
                             </Box>
                         </Grid>
                     }
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
 
                         <Typography variant="subtitle1">
                             Tokens below threshold ( &lt; {formatDollarAmount(activeNetwork.feeCollectorThreshold)}) : {formatDollarAmount(totalAmountBelowThreshold)}
                         </Typography>
                     </Grid>
                     {balancesBelowThreshold ?
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <FeeCollectorTokenTable tokenBalances={balancesBelowThreshold} />
                         </Grid> : <Typography>No tokens below threshold</Typography>}
                 </Grid> : (<Grid

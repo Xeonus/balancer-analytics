@@ -1,7 +1,7 @@
 import { Avatar, Card, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useTheme } from '@mui/material/styles'
-import { ChainPortfolio, PortfolioItemList, SupplyTokenList } from "../../data/debank/debankTypes";
+import { ChainPortfolio, PortfolioItemList } from "../../data/debank/debankTypes";
 import { formatDollarAmount, formatNumber } from "../../utils/numbers";
 import PoolCurrencyLogo from "../PoolCurrencyLogo";
 import Table from '@mui/material/Table';
@@ -65,7 +65,12 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                     <TableHead>
                         <TableRow>
                             <TableCell>Pool</TableCell>
-                            <TableCell align="right">Balances</TableCell>
+                            <TableCell 
+                                align="right"
+                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                >
+                                    Balances
+                                </TableCell>
                             <TableCell align="right">USD Value</TableCell>
                         </TableRow>
                     </TableHead>
@@ -78,33 +83,39 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                                 <TableCell sx={{ maxWidth: '50px' }} align="right">
                                     <Box display="flex" alignItems="center">
                                         <PoolCurrencyLogo tokens={row.tokens} />
-                                        <Box ml={1}>
+                                        <Box ml={1}
+                                            sx={{display: {xs: 'none', md: 'table-cell' }}}
+                                        >
                                             <Typography variant="body2" fontWeight={"bold"}>
                                                 {row.description ? row.description : row.names.join(" + ")}
                                             </Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
-                                <TableCell sx={{ maxWidth: '100px' }} align="right">
+                                <TableCell
+                                    sx={{ maxWidth: '100px', display: {xs: 'none', md: 'table-cell' }}}
+                                    align="right"
+                                >
                                     <Box alignItems="row" >
                                         {row.balances.map(balance =>
-                                            <Typography variant="body2">
+                                            <Typography
+                                                variant="body2"
+                                            >
                                                 {formatNumber(balance)} {row.names[row.balances.indexOf(balance)]}
                                             </Typography>
                                         )}
                                     </Box>
                                 </TableCell>
-                                <TableCell align="right">{formatDollarAmount(row.totalAmount)}</TableCell>
+                                <TableCell
+                                    align="right">
+                                    {formatDollarAmount(row.totalAmount)}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
         );
-    }
-
-    const genericPosition = () => {
-
     }
 
     return (

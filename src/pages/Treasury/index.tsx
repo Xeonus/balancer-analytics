@@ -148,35 +148,32 @@ export default function Treasury() {
 
     return (
         <Box sx={{ flexGrow: 2 }}>
-            <Grid
-                container
-                spacing={2}
-                sx={{ justifyContent: 'center' }}
-            >
-                <Grid item xs={10}>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                    </Box>
-
-                </Grid>
-                <Grid mt={2} item xs={10}>
-                    <Box display="flex" alignItems="center">
-                        <Box>
-                            <Typography variant={"h5"}>Treasury Metrics on {activeNetwork.name}</Typography>
-                        </Box>
-                    </Box>
-                </Grid>
-            </Grid>
             {totalBalances && portfolio ?
                 <Grid
                     container
-                    sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
-                    alignItems="left"
                     spacing={1}
+                    sx={{ justifyContent: 'center' }}
                 >
+                    <Grid item xs={11}>
+                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                            <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                        </Box>
+
+                    </Grid>
+                    <Grid mt={2} item xs={11}>
+                        <Box display="flex" alignItems="center">
+                            <Box>
+                                <Typography variant={"h5"}>Treasury Metrics on {activeNetwork.name}</Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+
                     {totalBalances && portfolio ?
-                        <Grid item xs={10}>
-                            <Stack direction="row" spacing={2} justifyContent="flex-start">
+                        <Grid item xs={11}>
+                            <Stack
+                                direction={{ xs: 'column', md: 'row' }}
+                                spacing={2}
+                                justifyContent="flex-start">
                                 <MetricsCard
                                     mainMetric={netWorth}
                                     mainMetricInUSD={true}
@@ -203,16 +200,17 @@ export default function Treasury() {
                     {ratioPieChartData && ratioPieChartData.length > 0 ?
                         <Grid
                             container
-                            sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                            sx={{ direction: { xs: 'column', sm: 'row' } }}
                             justifyContent="center"
                             alignItems="left"
                             alignContent="left"
-                            spacing={2}
-                            mt={1}
+                            spacing={1}
                         >
                             <Grid
                                 item
-                                xs={isMobile ? 6 : 5}
+                                mt={2}
+                                xs={11}
+                                md={5.5}
                             >
                                 <Box mb={1}>
                                     <Card
@@ -234,7 +232,9 @@ export default function Treasury() {
                             {tokenPieChartData && tokenPieChartData.length > 0 && tokenPieChartDataKarpatkey && tokenPieChartDataKarpatkey.length > 0 ?
                                 <Grid
                                     item
-                                    xs={isMobile ? 6 : 5}
+                                    xs={11}
+                                   mt={2}
+                                    md={5.5}
                                 >
                                     <Card sx={{ boxShadow: 3 }}>
                                         <Box p={1}>
@@ -254,7 +254,7 @@ export default function Treasury() {
                     <Grid
                         item
                         mt={1}
-                        xs={10}
+                        xs={11}
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
@@ -267,13 +267,20 @@ export default function Treasury() {
                     </Grid>
 
                     {totalBalances && totalBalances.length > 0 ?
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <FeeCollectorTokenTable tokenBalances={totalBalances} />
-                            <Grid mt={2} item xs={10}>
+                            <Grid
+                                mt={2}
+                                item
+                                xs={11}
+                            >
                                 <Typography variant="h6">Liquidity Provisions</Typography>
                             </Grid>
                         </Grid> : null}
-                    <Grid item xs={10}>
+                    <Grid
+                        item
+                        xs={11}
+                    >
                         <Card
                             sx={{ boxShadow: 3 }}
                         >
@@ -292,15 +299,15 @@ export default function Treasury() {
                     <Grid
                         item
                         mt={2}
-                        xs={10}>
+                        xs={11}>
                         <Typography variant="h5">Assets Managed by Karpatkey</Typography>
                     </Grid>
                     <Grid
                         item
                         mt={1}
-                        xs={10}
+                        xs={11}
                     >
-                        
+
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
                                 <Typography variant="h6">Managed Tokens</Typography>
@@ -312,16 +319,19 @@ export default function Treasury() {
                     </Grid>
 
                     {karpatkeyBalances.totalBalances && karpatkeyBalances.totalBalances.length > 0 ?
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances} />
                         </Grid> : null}
                     <Grid
                         item
                         mt={2}
-                        xs={10}>
+                        xs={11}>
                         <Typography variant="h6">Managed Liquidity Provisions</Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid
+                        item
+                        xs={11}
+                    >
                         <Card
                             sx={{ boxShadow: 3 }}
                         >
@@ -347,8 +357,7 @@ export default function Treasury() {
                     sx={{ justifyContent: 'center' }}
                 >
                     <CustomLinearProgress />
-                </Grid>
-            }
+                </Grid>}
         </Box>
     );
 }

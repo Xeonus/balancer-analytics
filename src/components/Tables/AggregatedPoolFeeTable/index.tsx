@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
@@ -104,6 +103,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 
@@ -113,36 +113,42 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: '',
+        isMobileVisible: true,
     },
     {
         id: 'name',
         numeric: false,
         disablePadding: false,
         label: 'Pool Composition',
+        isMobileVisible: false,
     },
     {
         id: 'poolRevenue',
         numeric: true,
         disablePadding: false,
         label: 'Protocol Swap Fee Revenue',
+        isMobileVisible: true,
     },
     {
         id: 'tokenRevenue',
         numeric: true,
         disablePadding: false,
         label: 'Token Yield Revenue',
+        isMobileVisible: false,
     },
     {
         id: 'protocolRevenue',
         numeric: true,
         disablePadding: false,
         label: 'Protocol Revenue',
+        isMobileVisible: true,
     },
     {
         id: 'contribution',
         numeric: true,
         disablePadding: false,
         label: 'Contribution %',
+        isMobileVisible: false,
     },
 ];
 
@@ -171,6 +177,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -332,6 +339,7 @@ export default function AggregatedPoolFeeTable({
                                                 component="th"
                                                 id={labelId}
                                                 scope="row"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
                                                 <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                                             </TableCell>
@@ -341,7 +349,10 @@ export default function AggregatedPoolFeeTable({
                                                     <CircularProgress size={'20px'} />
                                                 }
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell 
+                                            align="right"
+                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
                                                 {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
                                                     row.tokenRevenue > 0 ?
                                                         formatDollarAmount(row.tokenRevenue) :
@@ -355,7 +366,10 @@ export default function AggregatedPoolFeeTable({
                                                     <CircularProgress size={'20px'} />
                                                 }
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell 
+                                            align="right"
+                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
                                                 {row.contribution > 0 ?
                                                     formatAmount(row.contribution) + '%' :
                                                     <CircularProgress size={'20px'} />

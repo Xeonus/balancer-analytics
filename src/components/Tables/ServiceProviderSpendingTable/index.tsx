@@ -16,7 +16,6 @@ import { formatDollarAmount, formatNumber } from '../../../utils/numbers';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
-import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { CoingeckoRawData } from "../../../data/balancer/useTokens";
 
 
@@ -87,6 +86,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -95,30 +95,35 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Service Provider',
+        isMobileVisible: true,
     },
     {
         id: 'quarterlyUSDC',
         numeric: true,
         disablePadding: false,
         label: 'USDC',
+        isMobileVisible: false,
     },
     {
         id: 'quarterlyBAL',
         numeric: true,
         disablePadding: false,
         label: 'BAL',
+        isMobileVisible: false,
     },
     {
         id: 'quarterlyBALVested',
         numeric: true,
         disablePadding: false,
         label: 'Vested BAL',
+        isMobileVisible: false,
     },
     {
         id: 'quarterlyTotal',
         numeric: true,
         disablePadding: false,
         label: 'Total ($)',
+        isMobileVisible: true,
     },
 ];
 
@@ -147,6 +152,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -182,7 +188,6 @@ export default function ServiceProviderSpendingTable({ spRows, year, quarter, ba
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [activeNetwork] = useActiveNetworkVersion();
 
     if (!spRows) {
         return <CircularProgress />;
@@ -248,15 +253,22 @@ export default function ServiceProviderSpendingTable({ spRows, year, quarter, ba
                                                 </Typography>
                                             </TableCell>
                                             <TableCell
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                                 align="right"
                                             >
                                                 {formatDollarAmount(row.quarterlyUSDC)}
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell 
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                align="right"
+                                            >
                                                 {formatNumber(row.quarterlyBAL, 0)}
                                             </TableCell>
 
-                                            <TableCell align="right">
+                                            <TableCell 
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                align="right"
+                                            >
                                                 {formatNumber(row.quarterlyBALVested, 0)}
                                             </TableCell>
                                             <TableCell align="right">

@@ -99,6 +99,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
+  isMobileVisible: boolean;
 }
 
 
@@ -108,30 +109,35 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: '',
+    isMobileVisible: true,
   },
   {
     id: 'name',
     numeric: false,
     disablePadding: false,
     label: 'Pool Composition',
+    isMobileVisible: false,
   },
   {
     id: 'poolRevenue',
     numeric: true,
     disablePadding: false,
     label: 'Pool Revenue',
+    isMobileVisible: true,
   },
   {
     id: 'protocolRevenue',
     numeric: true,
     disablePadding: false,
     label: 'Protocol Revenue',
+    isMobileVisible: true,
   },
   {
     id: 'contribution',
     numeric: true,
     disablePadding: false,
     label: 'Contribution %',
+    isMobileVisible: false,
   },
 ];
 
@@ -160,6 +166,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -294,10 +301,13 @@ export default function PoolFeeTable({
                         component="th"
                         id={labelId}
                         scope="row"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell 
+                        align="right"
+                        >
                         {row.poolRevenue > 0 ?
                           formatDollarAmount(row.poolRevenue) :
                           <CircularProgress size={'20px'} />
@@ -309,7 +319,10 @@ export default function PoolFeeTable({
                           <CircularProgress size={'20px'} />
                         }
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell 
+                        align="right"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                        >
                         {row.contribution > 0 ?
                           formatAmount(row.contribution) + '%' :
                           <CircularProgress size={'20px'} />

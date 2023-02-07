@@ -99,6 +99,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -107,30 +108,35 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Operation',
+        isMobileVisible: true,
     },
     {
         id: 'sendReceiveProps',
         numeric: false,
         disablePadding: false,
         label: 'Details',
+        isMobileVisible: false,
     },
     {
         id: 'target',
         numeric: false,
         disablePadding: false,
         label: 'Wallet',
+        isMobileVisible: false,
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
+        isMobileVisible: true,
     },
     {
         id: 'time',
         numeric: true,
         disablePadding: false,
         label: 'Time',
+        isMobileVisible: true,
     },
 ];
 
@@ -159,6 +165,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -330,10 +337,13 @@ export default function TreasuryTransactionTable({ txnHistory }:
                                             </TableCell>
                                             <TableCell
                                                 align="left"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
                                                 <JoinExitChip key={row.value + row.txId} amounts={row.sendReceiveProps.amounts} tokenList={row.sendReceiveProps.tokenList} size={35} />
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell
+                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
                                                 {row.target}
                                             </TableCell>
                                             <TableCell align="right">

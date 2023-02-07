@@ -111,10 +111,7 @@ export default function PoolsOverview() {
                     </Box>
 
                 </Grid>
-
-            
                 {topTVLPool.address && topFeePool.address ?
-
                     <Grid item xs={11}>
                         <Stack
                             direction={{ xs: 'column', md: 'row' }}
@@ -151,7 +148,6 @@ export default function PoolsOverview() {
                             <Typography variant='h5'>Top 20 Pools by TVL</Typography>
                         </Grid>
                 {filteredPoolBarChartData.length > 1 ?
-                    
                     <Grid
                         container
                         sx={{ direction: { xs: 'column', sm: 'row' } }}

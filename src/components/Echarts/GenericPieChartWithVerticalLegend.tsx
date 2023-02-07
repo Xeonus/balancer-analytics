@@ -2,7 +2,6 @@ import ReactEcharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
-import { isMobile } from 'react-device-detect'
 
 export interface GenericPieChartWithVerticalLegendProps {
     data: BalancerPieChartDataItem[],
@@ -31,13 +30,13 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
             }
         },
         legend: {
-            orient: 'vertical',
+            orient: 'horizontal',
             type: 'scroll',
-            top: '30%',
+            top: '80%',
             right: '10%',
             align: 'left',
             data: dataNames,
-            show: isMobile ? false : true,
+            show: true,
             textStyle: {
                 color: theme.palette.mode === 'dark' ? 'white' : 'black',
             },
@@ -55,8 +54,8 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
                 type: 'pie',
                 data: data,
                 //center: ['40%', '50%'],
-                center: ['40%', '50%'],
-                radius: ['50%', '80%'],
+                center: ['50%', '35%'],
+                radius: ['40%', '70%'],
                 avoidLabelOverlap: true,
                 label: {
                     position: 'center',
@@ -64,7 +63,7 @@ export default function GenericPieChartWithVerticalLegend({ data, height }: Gene
                     textStyle: {
                         color: theme.palette.mode === 'dark' ? 'white' : 'black',
                     },
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: 'bold',
                     formatter: (value: string) => {
                         return formatDollarAmount(sum)

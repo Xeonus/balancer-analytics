@@ -49,29 +49,27 @@ export default function ServiceProviders() {
     navCrumbs.push(homeNav)
 
     return (
-        <Box sx={{ flexGrow: 1, justifyContent: "center" }}>
+        <Box sx={{ flexGrow: 2, justifyContent: "center" }}>
             <Grid
                 container
-                spacing={2}
-                mt={3}
+                spacing={1}
                 sx={{ justifyContent: 'center' }}
             >
-            </Grid>
-            <Grid
-                container
-                sx={{ justifyContent: 'center' }}
-            >
-                <Grid item xs={10}>
+                <Grid item xs={11}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={'Service Providers'} />
                     </Box>
                 </Grid>
-                <Grid item mt={1} mb={1} xs={10} >
+                <Grid
+                    item
+                    mt={1}
+                    mb={1}
+                    xs={11}
+                >
                     <Box display="flex" alignItems="center">
                         <Box>
                             <Typography variant={"h5"}>Service Provider Dashboard</Typography>
                         </Box>
-
                     </Box>
                     <Box mt={1}>
                         <Typography variant="body2">Data in this dashboard represents approved snapshot
@@ -84,7 +82,7 @@ export default function ServiceProviders() {
                 <Grid
                     item
                     mt={2}
-                    xs={10}
+                    xs={11}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
@@ -94,20 +92,21 @@ export default function ServiceProviders() {
                 </Grid>
                 <Grid
                     container
-                    direction="row"
+                    sx={{ direction: { xs: 'column', sm: 'row' } }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
-                    spacing={1}
-                    mt={1}
+                    spacing={2}
                 >
                     <Grid
                         item
-                        xs={5}
+                        mt={2}
+                        xs={11}
+                        md={5.5}
                     >
                         {quarterlyPie ?
                             <Box >
-                                <Card sx={{boxShadow: 3}}>
+                                <Card sx={{ boxShadow: 3 }}>
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"
@@ -116,7 +115,6 @@ export default function ServiceProviders() {
                                         >
                                             Total expenditure for Q{currentQuarter} {dayjs().year()} : {formatDollarAmount(quarterlyTotalBudget)}*
                                         </Typography>
-
                                     </Box>
                                     <GenericPieChart data={quarterlyPie} height='200px' />
                                     <Box p={1}>
@@ -127,11 +125,13 @@ export default function ServiceProviders() {
                     </Grid>
                     <Grid
                         item
-                        xs={5}
+                        mt={2}
+                        xs={11}
+                        md={5.5}
                     >
                         {totalsBySpsPie ?
-                            <Box ml={1} >
-                                <Card sx={{boxShadow: 3}}>
+                            <Box >
+                                <Card sx={{ boxShadow: 3 }}>
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"
@@ -154,7 +154,7 @@ export default function ServiceProviders() {
                 <Grid
                     item
                     mt={2}
-                    xs={10}
+                    xs={11}
                 >
                     {balPriceData ?
                         <ServiceProviderSpendingTable spRows={spRows} year={dayjs().year()} quarter={currentQuarter} balPriceData={balPriceData} />
@@ -163,7 +163,7 @@ export default function ServiceProviders() {
                 <Grid
                     item
                     mt={2}
-                    xs={10}
+                    xs={11}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
@@ -173,20 +173,21 @@ export default function ServiceProviders() {
                 </Grid>
                 <Grid
                     container
-                    direction="row"
+                    sx={{ direction: { xs: 'column', sm: 'row' } }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
-                    spacing={1}
-                    mt={1}
+                    spacing={2}
                 >
-                    <Grid
+                     <Grid
                         item
-                        xs={5}
+                        mt={2}
+                        xs={11}
+                        md={5.5}
                     >
                         {nextQuarterPie ?
                             <Box >
-                                <Card sx={{ minWidth: '500px' }}>
+                                <Card >
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"
@@ -205,11 +206,13 @@ export default function ServiceProviders() {
                     </Grid>
                     <Grid
                         item
-                        xs={5}
+                        mt={2}
+                        xs={11}
+                        md={5.5}
                     >
                         {totalsBySpsForecast ?
-                            <Box ml={1} >
-                                <Card sx={{ minWidth: '500px' }}>
+                            <Box >
+                                <Card>
                                     <Box p={1}>
                                         <Typography
                                             color="textSecondary"
@@ -225,14 +228,12 @@ export default function ServiceProviders() {
                                     </Box>
                                 </Card>
                             </Box> : <CircularProgress />}
-
                     </Grid>
-
                 </Grid>
                 <Grid
                     item
                     mt={2}
-                    xs={10}
+                    xs={11}
                 >
                     {balPriceData ?
                         <ServiceProviderSpendingTable spRows={spRowsForecast} year={nextYearEntry} quarter={nextQuarter} balPriceData={balPriceData} />
@@ -241,7 +242,7 @@ export default function ServiceProviders() {
                 <Grid
                     item
                     mt={2}
-                    xs={10}
+                    xs={11}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center' mb={1}>
@@ -251,7 +252,7 @@ export default function ServiceProviders() {
                 </Grid>
                 <Grid
                     item
-                    xs={10}
+                    xs={11}
                 >
                     <Grid
                         container
@@ -261,7 +262,12 @@ export default function ServiceProviders() {
                     >
                         {
                             sps.service_provider.map((sp, index) =>
-                                <Grid item xs={10} sm={4} md={4} key={index}>
+                                <Grid
+                                    item
+                                    xs={11}
+                                    sm={4}
+                                    md={4}
+                                    key={index}>
                                     <ServiceProviderCard sp={sp} />
                                 </Grid>
                             )
