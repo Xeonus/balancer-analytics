@@ -186,8 +186,8 @@ export default function PoolInfoTable({
     //Table generation
 
     return (
-        <Box sx={{ width: '100%'}}>
-            <Paper elevation={1} sx={{boxShadow: 3 }}>
+        <Box sx={{ width: '100%' }}>
+            <Paper elevation={1} sx={{ boxShadow: 3 }}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
@@ -210,12 +210,28 @@ export default function PoolInfoTable({
                                             key={row.attribute}
                                         >
                                             <TableCell align="left">
-                                               <Typography sx={{fontWeight: 'bold'}}>
-                                                {row.attribute}
-                                               </Typography>
+                                                <Typography
+                                                    sx={{
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                    {row.attribute}
+                                                </Typography>
                                             </TableCell>
-                                            <TableCell align="left">
-                                               {row.value}
+                                            <TableCell
+                                                align="left"
+                                            >
+                                                <Box
+                                                sx={{
+                                                    overflow: 'auto', 
+                                                    maxWidth: {xs: '250px', md: '900px'} }}
+                                                
+                                                >
+                                                    <Typography
+                                                        variant='body2'
+                                                    >
+                                                        {row.value}
+                                                    </Typography>
+                                                </Box>
                                             </TableCell>
                                         </TableRow>
                                     );

@@ -102,6 +102,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
+  isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -110,36 +111,42 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: '',
+    isMobileVisible: true,
   },
   {
     id: 'name',
     numeric: false,
     disablePadding: false,
     label: 'Pool Composition',
+    isMobileVisible: false,
   },
   {
     id: 'swapFee',
     numeric: false,
     disablePadding: false,
     label: 'Swap Fee',
+    isMobileVisible: false,
   },
   {
     id: 'volume24',
     numeric: true,
     disablePadding: false,
     label: 'Volume 24h',
+    isMobileVisible: true,
   },
   {
     id: 'fees',
     numeric: true,
     disablePadding: false,
     label: 'Trading Fees 24h',
+    isMobileVisible: false,
   },
   {
     id: 'tvl',
     numeric: true,
     disablePadding: false,
     label: 'TVL',
+    isMobileVisible: true,
   },
 ];
 
@@ -168,11 +175,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              //sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
             >
               {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: headCell.label}
               {orderBy === headCell.id ? (
@@ -290,14 +299,21 @@ export default function PoolTable({
                         component="th"
                         id={labelId}
                         scope="row"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell 
+                        align="right"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                        >
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>
+                      <TableCell 
+                        align="right"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                        >{formatDollarAmount(row.fees)}</TableCell>
                       <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                     </TableRow>
                   );

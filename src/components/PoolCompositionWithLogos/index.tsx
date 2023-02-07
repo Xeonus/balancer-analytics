@@ -26,7 +26,14 @@ export default function PoolCompositionWithLogos({ poolData, size = 24 }: PoolCo
 
     poolData.tokens = poolData.tokens.filter((tokens) => tokens.balance < 2596140000000000);
     return (
-        <Box position={"relative"} display="flex" alignItems={"center"}>
+        <Box 
+        position={"relative"} 
+        display="flex" 
+        alignItems={"center"} 
+        sx={{ 
+            overflow: 'auto', 
+            maxWidth: {xs: '250px', md: '900px'} }}
+        >
                 {poolData.tokens.map((token) =>
                 <Box mr={1}>
                     <Avatar

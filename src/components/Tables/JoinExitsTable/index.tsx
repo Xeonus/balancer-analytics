@@ -33,6 +33,7 @@ interface Data {
     joinExit: BalancerJoinExitFragment,
     value: string,
     time: number;
+
 }
 
 function createData(
@@ -92,6 +93,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -100,24 +102,28 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Operation',
+        isMobileVisible: true,
     },
     {
         id: 'joinExit',
         numeric: false,
         disablePadding: false,
         label: 'Details',
+        isMobileVisible: false,
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
+        isMobileVisible: true,
     },
     {
         id: 'time',
         numeric: true,
         disablePadding: false,
         label: 'Time',
+        isMobileVisible: false,
     },
 ];
 
@@ -146,6 +152,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: { xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' } }}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -257,14 +264,15 @@ export default function JoinExitsTable({ joinExits }:
                                             <TableCell>
                                                 <Box display='flex' alignItems='center' alignContent='center'>
                                                     <Box mr={1}>
-                                                {row.action === 'Join' ? <LoginIcon fontSize='small' color='success' /> : <LogoutIcon fontSize='small' color='error' />} 
-                                                </Box>
-                                                <Typography variant='body1' color={row.action === 'Exit' ? red[500] : green[500]}>
-                                                    {row.action}
-                                                </Typography>
+                                                        {row.action === 'Join' ? <LoginIcon fontSize='small' color='success' /> : <LogoutIcon fontSize='small' color='error' />}
+                                                    </Box>
+                                                    <Typography variant='body1' color={row.action === 'Exit' ? red[500] : green[500]}>
+                                                        {row.action}
+                                                    </Typography>
                                                 </Box>
                                             </TableCell>
                                             <TableCell
+                                                sx={{ display: { xs: 'none', md: 'table-cell' } }}
                                                 align="left"
                                             >
                                                 <JoinExitChip key={row.joinExit.amounts + row.joinExit.id} amounts={row.joinExit.amounts} tokenList={row.joinExit.pool.tokensList} size={35} />
@@ -272,8 +280,11 @@ export default function JoinExitsTable({ joinExits }:
                                             <TableCell align="right">
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
                                             </TableCell>
-                                            
-                                            <TableCell align="right">
+
+                                            <TableCell
+                                                align="right"
+                                                sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                                            >
                                                 <Box display='flex' alignItems='center' alignContent='center' justifyContent='flex-end'>
                                                     {formatTime(`${row.time}`)}
                                                     <Box ml={1}>

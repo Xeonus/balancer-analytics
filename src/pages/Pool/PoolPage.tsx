@@ -91,7 +91,7 @@ export default function PoolPage() {
         }
     }
 
-    //TODO: refactor - filter token datas for pool token IDs as those do not contain composable tokens
+    //Filter token datas for pool token IDs as those do not contain composable tokens
     const tokenList = poolData?.tokens.map(token => token.balance < 2596140000000000 ? token.address : '')
     const filteredTokenDatas = tokenDatas.filter(tokenData => tokenList?.includes(tokenData.tokenAddress))
     if (filteredTokenDatas) {
@@ -114,16 +114,24 @@ export default function PoolPage() {
                     spacing={2}
                     sx={{ justifyContent: 'center' }}
                 >
-                    <Grid item xs={10}>
-                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Grid item xs={11}>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            sx={{ justifyContent: { xs: 'flex-start', md: 'space-between' } }}
+                        >
                             <NavCrumbs crumbSet={navCrumbs} destination={getShortPoolName(poolData)} />
                             <StyledExternalLink address={poolData.address} type={'address'} activeNetwork={activeNetwork} />
                         </Box>
-
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
-                            <Box display="flex" alignItems="center">
+                            <Box
+                                display="flex"
+                                sx={{
+                                    flexDirection: { xs: 'column', md: 'row' },
+                                    alignItems: { xs: 'left', md: "center" }
+                                }}>
                                 <Box mr={1}>
                                     <Typography variant={"h5"}>{poolData.poolType} Pool - </Typography>
                                 </Box>
@@ -132,14 +140,17 @@ export default function PoolPage() {
                                     <SwapFee swapFee={poolData.swapFee} size={30} />
                                 </Box>
                             </Box>
-                            <Box display="flex" alignItems="center" flexDirection="row">
+                            <Box sx={{ display: { xs: 'none', md: 'flex' } }} alignItems="center" flexDirection="row">
                                 <StyledLinkButton href={`${activeNetwork.appUri}pool/${poolId}`} name={'Invest'} />
                                 <StyledLinkButton href={`${activeNetwork.appUri}trade/`} name={'Trade'} />
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item xs={10}>
-                        <Stack direction="row" spacing={2} justifyContent="flex-start">
+                    <Grid item xs={11}>
+                        <Stack
+                            direction={{ xs: 'column', md: 'row' }}
+                            spacing={2}
+                            justifyContent="flex-start">
                             <MetricsCard
                                 mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
                                 mainMetricInUSD={true}
@@ -172,21 +183,26 @@ export default function PoolPage() {
                             />
                         </Stack>
                     </Grid>
-                    <Grid mt={2} item xs={10}>
+                    <Grid mt={2} item xs={11}>
                         <Typography variant="h5">Historical Performance </Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <Card>
                             <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
                         </Card>
                     </Grid>
 
-                    <Grid item mt={1} xs={10}>
+                    <Grid item mt={1} xs={11}>
                         <Typography variant="h5">Pool & Token Metrics </Typography>
 
                     </Grid>
                     <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                        <Grid mt={1} item xs={5}>
+                        <Grid
+                            item
+                            mt={1}
+                            xs={10}
+                            md={5}
+                        >
                             <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
                             {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> :
                                 <Box display="flex" alignItems="center" flexDirection="column">
@@ -195,7 +211,12 @@ export default function PoolPage() {
                                 </Box>}
 
                         </Grid>
-                        <Grid mt={1} item xs={5}>
+                        <Grid
+                            item
+                            mt={1}
+                            xs={11}
+                            md={5}
+                        >
                             <PoolInfoTable poolData={poolData} />
                         </Grid>
                     </Grid>

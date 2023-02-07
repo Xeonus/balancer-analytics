@@ -80,36 +80,32 @@ export default function Tokens() {
                 spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid
-                    container
-                    spacing={2}
-                    sx={{ justifyContent: 'center' }}
-                >
-                    <Grid item mt={2} xs={10}>
+                    <Grid item mt={2} xs={11}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                         </Box>
                     </Grid>
                     <Grid
                         item
-                        xs={10}
+                        xs={11}
                     >
                         <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
                     </Grid>
-                </Grid>
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
-                        container
-                        sx={{ direction: { xs: 'column', sm: 'row' } }}
-                        justifyContent="center"
-                        spacing={2}
-                    >
+                    container
+                    sx={{ direction: { xs: 'column', sm: 'row' } }}
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={2}
+                >
 
                         {filteredPoolBarChartData.length > 1 ?
                             <Grid
                                 item
                                 xs={10}
-                                sm={5}
+                                sm={5.5}
 
                             >
                                 <Box mb={1}>
@@ -140,16 +136,11 @@ export default function Tokens() {
 
                         </Grid>
                     </Grid> : null}
-                <Grid
-                    container
-                    spacing={2}
-                    sx={{ justifyContent: 'center' }}
-                >
-                    <Grid item xs={10} mt={1}>
+                    <Grid item xs={11} mt={1}>
                         <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                     </Grid>
                     {tokenDatas.length > 10 ?
-                        <Grid item xs={10}>
+                        <Grid item xs={11}>
                             <TokenTable tokenDatas={tokenDatas} />
                         </Grid>
                         :
@@ -163,7 +154,6 @@ export default function Tokens() {
                         </Grid>
                     }
                 </Grid>
-            </Grid>
         </Box>
     );
 }

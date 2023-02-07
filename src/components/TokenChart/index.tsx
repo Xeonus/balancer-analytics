@@ -93,12 +93,19 @@ export default function TokenChart({tvlData, volumeData, priceData} : PoolChartP
     return (
 
         <Box >
-            <Box m={1} display="flex" justifyContent="left"  sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box m={1} 
+                display="flex"
+                alignItems={{ xs: 'center', sm: 'flex-start', md: "flex-start" }}
+                justifyContent="flex-start" 
+                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                flexDirection={{ xs: 'column', sm: 'row' }}
+                >
                 <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
                     <Tab label="Volume" {...a11yProps(0)} />
                     <Tab label="TVL" {...a11yProps(1)} />
                     <Tab label="Price" {...a11yProps(2)} />
                 </Tabs>
+                <Box sx={{m:{xs: 1, mb: 0}}}>
                 <FormControl size="small">
                 <Select
                 sx={{
@@ -126,6 +133,7 @@ export default function TokenChart({tvlData, volumeData, priceData} : PoolChartP
                     <MenuItem value={'0'}>All time</MenuItem>
                 </Select>
             </FormControl>
+            </Box>
             </Box>
             <TabPanel value={value} index={0}>
                 <GenericBarChart data={rangedVolumeData}/>

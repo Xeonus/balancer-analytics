@@ -90,6 +90,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -98,24 +99,28 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Swap Details',
+        isMobileVisible: true,
     },
     {
         id: 'value',
         numeric: true,
         disablePadding: false,
         label: 'Value',
+        isMobileVisible: true,
     },
     {
         id: 'swapper',
         numeric: false,
         disablePadding: false,
         label: 'Swapper',
+        isMobileVisible: false,
     },
     {
         id: 'time',
         numeric: true,
         disablePadding: false,
         label: 'Time',
+        isMobileVisible: false,
     },
 ];
 
@@ -144,11 +149,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
+                            //sx={{ display: {xs: headCell.isMobileVisible ? 'block' : 'none', md: 'table-cell' }}}
                         >
                             {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : headCell.label}
                             {orderBy === headCell.id ? (
@@ -260,11 +267,16 @@ export default function SwapsTable({ swaps }:
                                             <TableCell align="right">
                                                 {Number(row.value) ? formatDollarAmount(parseInt(row.value)) : '-'}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell
+                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
                                                 <Link href={getEtherscanLink(row.swapper, 'address', activeNetwork)} target='_blank'>{row.swapper}</Link>
 
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                >
                                                 <Box display='flex' alignItems='center' justifyContent='flex-end'>
                                                     {formatTime(`${row.time}`)}
                                                     <Box ml={1}>

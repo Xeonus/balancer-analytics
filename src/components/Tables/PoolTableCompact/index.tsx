@@ -137,7 +137,7 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Trading Fees 24h',
-    isMobileVisible: true,
+    isMobileVisible: false,
   },
   {
     id: 'tvl',
@@ -173,7 +173,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
-            //sx={{ display: {xs: headCell.isMobileVisible ? 'block' : 'none', md: 'block' }}}
+            sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
             
           >
             <TableSortLabel
@@ -286,18 +286,23 @@ export default function PoolTableCompact({
                         component="th"
                         id={labelId}
                         scope="row"
-                        //sx={{ display: {xs: 'none', md: 'block' }}}
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
                       <TableCell 
                         align="left"
-                        //sx={{ display: {xs: 'none', md: 'block' }}}
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
                         >
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.fees)}</TableCell>
+                      <TableCell 
+                        align="right"
+                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                        >
+                          {formatDollarAmount(row.fees)}
+                        </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                     </TableRow>
                   );

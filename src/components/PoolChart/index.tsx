@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { isMobile } from 'react-device-detect';
 
 export interface TabPanelProps {
     children?: React.ReactNode;
@@ -173,7 +172,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
                     <Tab label="TVL" {...a11yProps(1)} />
                     <Tab label="Fees" {...a11yProps(2)} />
                 </Tabs>
-                <Box m={isMobile ? 1 : 0}>
+                <Box sx={{m:{xs: 1, mb: 0}}}>
                 <FormControl size="small">
                     <Select
                         sx={{

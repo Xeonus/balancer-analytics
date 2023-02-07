@@ -67,7 +67,7 @@ export default function Chain() {
                     xs={11}
                 >
                     <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
+                        direction={{ xs: 'column', md: 'row' }}
                         spacing={2}
                         justifyContent="flex-start">
                         <MetricsCard
@@ -95,7 +95,7 @@ export default function Chain() {
                 </Grid>
                 <Grid item mt={1} xs={11}>
                     <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
+                        direction={{ xs: 'column', md: 'row' }}
                     >
                         <Box mb={1}>
                             <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />

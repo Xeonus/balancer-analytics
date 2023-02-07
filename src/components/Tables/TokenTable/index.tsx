@@ -95,6 +95,7 @@ interface HeadCell {
     id: keyof Data;
     label: string;
     numeric: boolean;
+    isMobileVisible: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -103,30 +104,35 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Token',
+        isMobileVisible: true,
     },
     {
         id: 'price',
         numeric: true,
         disablePadding: false,
         label: 'Price',
+        isMobileVisible: true,
     },
     {
         id: 'priceChange',
         numeric: false,
         disablePadding: true,
         label: 'Price Change',
+        isMobileVisible: false,
     },
     {
         id: 'volume24',
         numeric: true,
         disablePadding: false,
         label: 'Volume 24h',
+        isMobileVisible: false,
     },
     {
         id: 'tvl',
         numeric: true,
         disablePadding: false,
         label: 'TVL',
+        isMobileVisible: true,
     },
 ];
 
@@ -155,6 +161,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -282,7 +289,10 @@ export default function TokenTable({
                                                 </Box>
                                             </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.price)}</TableCell>
-                                            <TableCell align="right">
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                            >
                                                 <Box display="flex" alignItems="center">
                                                     {row.priceChange > 0 ?
 
@@ -300,7 +310,12 @@ export default function TokenTable({
                                                     </Typography>
                                                 </Box>
                                             </TableCell>
-                                            <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
+                                            <TableCell 
+                                                align="right"
+                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                >
+                                                    {formatDollarAmount(row.volume24)}
+                                                </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
                                         </TableRow>
                                     );

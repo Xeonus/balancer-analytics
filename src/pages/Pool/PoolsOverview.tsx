@@ -10,10 +10,8 @@ import PoolMetricsCard from "../../components/Cards/PoolMetricsCard";
 import { POOL_HIDE } from "../../constants";
 import { BalancerChartDataItem, BalancerPieChartDataItem, PoolData } from "../../data/balancer/balancerTypes";
 import { getShortPoolName } from '../../utils/getShortPoolName';
-import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import MixedLineBarChart from '../../components/Echarts/MixedLineBarChart';
-import { isMobile } from 'react-device-detect';
 import NavCrumbs from '../../components/NavCrumbs';
 import { NavElement } from '../../components/NavCrumbs';
 
@@ -107,28 +105,21 @@ export default function PoolsOverview() {
                 spacing={2}
                 sx={{ justifyContent: 'center' }}
             >
-                <Grid item xs={10} mb={2}>
+                <Grid item xs={11} mb={2}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                     </Box>
 
                 </Grid>
 
-            </Grid>
-            <Grid
-                container
-                sx={{ flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center' }}
-                alignItems="left"
-                spacing={1}
-            >
-                
+            
                 {topTVLPool.address && topFeePool.address ?
-                
-                    <Grid item xs={10}>
-                    <Stack
-                        direction={{ xs: 'column', sm: 'column',  md: 'row'}}
-                        spacing={2}
-                        justifyContent="flex-start">
+
+                    <Grid item xs={11}>
+                        <Stack
+                            direction={{ xs: 'column', md: 'row' }}
+                            spacing={2}
+                            justifyContent="flex-start">
                             <PoolMetricsCard
                                 mainMetric={topVolumePool.volumeUSD}
                                 mainMetricInUSD={true}
@@ -151,29 +142,31 @@ export default function PoolsOverview() {
                             />
                         </Stack>
                     </Grid> : null}
+                    <Grid
+                            item
+                            ml={1}
+                            mt={1}
+                            xs={11}
+                        >
+                            <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                        </Grid>
                 {filteredPoolBarChartData.length > 1 ?
+                    
                     <Grid
                         container
-                        sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+                        sx={{ direction: { xs: 'column', sm: 'row' } }}
                         justifyContent="center"
                         alignItems="left"
                         alignContent="left"
                         spacing={2}
                     >
-                        <Grid
-                            item
-                            ml={1}
-                            mt={1}
-                            xs={10}
-                        >
-                            <Typography variant='h5'>Top 20 Pools by TVL</Typography>
-                        </Grid>
+                      
                         {filteredPoolBarChartData.length > 1 ?
                             <Grid
                                 item
-                                xs={isMobile ? 6 : 5}
+                                xs={10}
+                                md={5}
                             >
-                                <Box mb={1}>
                                     <Card
                                         sx={{ boxShadow: 3 }}
                                     >
@@ -184,12 +177,11 @@ export default function PoolsOverview() {
                                             lineChartName={'Trading Fees 24h'}
                                             rotateAxis={true} />
                                     </Card>
-                                </Box>
-
-                            </Grid> : null}
+                            </Grid> : null} 
                         <Grid
                             item
-                            xs={isMobile ? 6 : 5}
+                            xs={10}
+                            md={5}
                         >
                             <Card
                                 sx={{ boxShadow: 3 }}
@@ -199,8 +191,14 @@ export default function PoolsOverview() {
 
                         </Grid>
                     </Grid> : null}
-                <Grid item xs={10} mt={1} mb={1}>
-                    <Typography variant="h5" mb={1}>Deployed Liquidity on {activeNetwork.name}</Typography>
+                <Grid
+                    item
+                    xs={11}
+                    mt={1}
+                    mb={1}>
+                    <Typography variant="h5" mb={1}>
+                        Deployed Liquidity on {activeNetwork.name}
+                    </Typography>
                     {poolData.length > 10 ?
                         <PoolTable poolDatas={poolData} /> :
                         <Grid
@@ -212,7 +210,7 @@ export default function PoolsOverview() {
                             <CustomLinearProgress />
                         </Grid>}
                 </Grid>
-            </Grid>
+                </Grid>
         </Box>
     );
 }

@@ -56,7 +56,7 @@ export default function Protocol() {
                         spacing={{ xs: 2, md: 2 }}
                         columns={{ xs: 4, sm: 2, md: 10 }}
                     >
-                        <Grid item xs={10} sm={4} md={4}>
+                        <Grid item xs={11} sm={4} md={4}>
                             {coinData && coinData[balAddress] && coinData[balAddress].usd ?
                                 <CoinCard
                                     tokenAddress={balAddress}
@@ -82,7 +82,7 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11}>
                         <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
+                            direction={{ xs: 'column', md: 'row' }}
                         >
                             <Box mr={3} mb={1}>
                                 <MetricsCard
@@ -108,7 +108,7 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11}>
                         <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
+                            direction={{ xs: 'column', md: 'row' }}
                         >
                             <Box mb={1}>
                                 <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
@@ -132,7 +132,7 @@ export default function Protocol() {
                     <Grid item mt={1} xs={11} >
                         <Typography variant='h5'>Historical Volume</Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
                             mainMetricInUSD={true}
@@ -174,7 +174,7 @@ export default function Protocol() {
                     <Grid item mt={1} xs={11} >
                         <Typography variant='h5'>Historical Swaps</Typography>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
                             mainMetricInUSD={false}
