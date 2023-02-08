@@ -3,6 +3,10 @@ import { BalancerSDK, PoolWithMethods } from '@balancer-labs/sdk';
 import { PoolData } from '../balancer/balancerTypes';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
+interface EmissionData {
+    poolId: string,
+    weeklyBAL: number,
+}
 
 export default function useDecoratePools(
     poolDatas: PoolData[] | undefined
@@ -13,6 +17,9 @@ export default function useDecoratePools(
     const [finalPool, setFinalPool] = useState<PoolWithMethods[]>()
     const [decoratedPools, setDecoratedPools] = useState<PoolData[]>()
     const [activeNetwork] = useActiveNetworkVersion()
+
+    //emissions array
+    const [weeklyArray, setWeeklyArray] = useState<EmissionData[]>();
 
     //Init SDK
     const sdk = new BalancerSDK({
@@ -42,10 +49,21 @@ export default function useDecoratePools(
     const fetchAprData = async (poolList: PoolWithMethods[] | undefined) => {
         let decoratedPools: PoolWithMethods[];
         decoratedPools = []
+        let balArray : EmissionData[] = [];
         if (poolList) {
             const promises = poolList.map(async sdkPool => {
                 try {
                     sdkPool.apr = await pools.apr(sdkPool);
+                    // if (pools.emissionsService) {
+                    //     const emission =  await pools.emissionsService.weekly(sdkPool.id)
+                    //     //console.log("weekly emission for pool, " + sdkPool.id + " is ", emission)
+                    //     balArray.push(
+                    //         {
+                    //             poolId: sdkPool.id,
+                    //             weeklyBAL: emission,
+                    //         }
+                    //     )
+                    // }
                     decoratedPools.push(sdkPool);
                     return sdkPool;
                 } catch (e) {
@@ -58,6 +76,10 @@ export default function useDecoratePools(
             return decoratedPools
         }
     }
+
+    //fetching Method for weekly emissions per pool
+    //1. take pools object, call weeklyEmissionsservice on PoolID, can also be done separately
+    //pools.emissionsService(poolId)
 
     //Load Pools
     const runLoadPools = async () => {

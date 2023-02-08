@@ -85,12 +85,13 @@ export default function Tokens() {
                             <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
                         </Box>
                     </Grid>
+                    {filteredPoolBarChartData.length ?
                     <Grid
                         item
                         xs={11}
                     >
                         <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
-                    </Grid>
+                    </Grid> : null }
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                     container

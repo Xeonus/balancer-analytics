@@ -28,7 +28,6 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCharts/IncomeVsSpendingsMultiBarChart';
 import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
 import SimpleRunwayGauge from '../../components/Echarts/RunwayGauge/SimpleRunwayGauge';
-import { isMobile } from 'react-device-detect';
 
 export default function Financials() {
 

@@ -1,24 +1,20 @@
-import { Typography, Grid, Box, Card, Stack, CircularProgress } from "@mui/material";
+import { Typography, Grid, Box, Card, Stack } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
-import { FEE_COLLECTOR_ADDRESS, getTreasuryConfig, KARPATKEY_SAFE } from "../../constants/wallets";
+import { getTreasuryConfig, KARPATKEY_SAFE } from "../../constants/wallets";
 import { useGetTotalBalances } from "../../data/debank/useGetTotalBalances";
 import { useGetPortfolio } from '../../data/debank/useGetPortfolio';
 import StyledExternalLink from '../../components/StyledExternalLink';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import FeeCollectorTokenTable from "../../components/Tables/FeeCollectorTokenTable";
 import LiquidityPosition from '../../components/LiquidityPosition';
-import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
+import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
-import { useGetTransactions } from "../../data/debank/useGetTransactions";
-import { unixToDate } from "../../utils/date";
-import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
-import { isMobile } from 'react-device-detect';
 import { mergeArrays } from "./helpers";
 import { EthereumNetworkInfo } from "../../constants/networks";
 
@@ -57,7 +53,7 @@ export default function Treasury() {
     const walletTokenNetworth = totalBalances && karpatkeyBalances.totalBalances ?
         totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
         + karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    const karpatkeyTokenNetworth = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+    //const karpatkeyTokenNetworth = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     let netWorth = portfolio && karpatkeyPortfolio.portfolio ?
         portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
         + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)

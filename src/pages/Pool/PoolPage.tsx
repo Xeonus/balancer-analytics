@@ -111,7 +111,7 @@ export default function PoolPage() {
             <Box sx={{ flexGrow: 2 }}>
                 <Grid
                     container
-                    spacing={2}
+                    spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
                     <Grid item xs={11}>
@@ -200,8 +200,8 @@ export default function PoolPage() {
                         <Grid
                             item
                             mt={1}
-                            xs={10}
-                            md={5}
+                            xs={11}
+                            md={5.5}
                         >
                             <PoolTokenTable tokenDatas={poolData.tokens} poolType={poolData.poolType} />
                             {filteredTokenDatas.length === poolData.tokens.length ? <PoolTokenChart poolData={poolData} tokenDatas={filteredTokenDatas} /> :
@@ -215,16 +215,20 @@ export default function PoolPage() {
                             item
                             mt={1}
                             xs={11}
-                            md={5}
+                            md={5.5}
                         >
                             <PoolInfoTable poolData={poolData} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                        <Grid item mt={1} xs={10}>
+                        <Grid 
+                            item 
+                            mt={1} 
+                            xs={11}
+                        >
                             <Typography variant="h5">Historical Swaps </Typography>
                         </Grid>
-                        <Grid item mt={1} xs={10}>
+                        <Grid item xs={11}>
                             <SwapsTable swaps={swaps} />
                         </Grid>
                     </Grid>
@@ -233,7 +237,7 @@ export default function PoolPage() {
                             <Grid item mt={1} xs={10}>
                                 <Typography variant="h5">Liquidity Provisions </Typography>
                             </Grid>
-                            <Grid item xs={10}>
+                            <Grid item xs={11}>
                                 <JoinExitsTable joinExits={joinExits} />
                             </Grid>
                         </Grid> : null}

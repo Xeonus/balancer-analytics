@@ -23,6 +23,7 @@ import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
 import AggregatedPoolFeeTable from '../../components/Tables/AggregatedPoolFeeTable';
 import ProtocolFeeSankeyChart from '../../components/Echarts/ProtocolCharts/ProtocolFeeSankeyChart';
 import PoolFeeTable from '../../components/Tables/PoolFeeTable';
+import { useDecoratePoolsWithEmissions } from '../../data/balancer-sdk/useDecoratePoolsWithEmissions';
 
 export default function Fees() {
 
