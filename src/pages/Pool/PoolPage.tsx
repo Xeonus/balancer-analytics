@@ -35,6 +35,8 @@ export default function PoolPage() {
         (poolData?.tokens || []).map((token) => token.address),
         poolData ? [poolData.id] : [],
     );
+    console.log("swaps", swaps);
+    console.log("joinExits", joinExits);
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -234,7 +236,7 @@ export default function PoolPage() {
                     </Grid>
                     {!STABLE_POOLS.includes(poolData.poolType) ?
                         <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                            <Grid item mt={1} xs={10}>
+                            <Grid item mt={1} xs={11}>
                                 <Typography variant="h5">Liquidity Provisions </Typography>
                             </Grid>
                             <Grid item xs={11}>

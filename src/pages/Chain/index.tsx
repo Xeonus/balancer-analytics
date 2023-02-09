@@ -141,7 +141,7 @@ export default function Chain() {
                 <Grid
                     item
                     mt={1}
-                    xs={10}
+                    xs={11}
                 >
                     <Grid item xs={11} >
                         <Box mt={2}>

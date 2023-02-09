@@ -139,6 +139,7 @@ export default function PoolsOverview() {
                             />
                         </Stack>
                     </Grid> : null}
+                    {filteredPoolBarChartData.length > 1 ?
                     <Grid
                             item
                             ml={1}
@@ -146,7 +147,7 @@ export default function PoolsOverview() {
                             xs={11}
                         >
                             <Typography variant='h5'>Top 20 Pools by TVL</Typography>
-                        </Grid>
+                        </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                         container
