@@ -22,4 +22,6 @@ export async function useDecoratePoolsWithEmissions(poolDatas: PoolData[] | unde
     console.log("totalBalEmissions", totalBalEmissions)
     console.log("balEmissions weekly", weeklyEmissions)
 
+    //fetch gauges for pools
+
 }

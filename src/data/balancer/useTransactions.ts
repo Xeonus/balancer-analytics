@@ -22,7 +22,6 @@ export function useBalancerTransactionData(
     useEffect(() => {
         if (poolIds.length !== ref.current.poolIds.length || addresses.length !== ref.current.addresses.length) {
             ref.current = { poolIds, addresses };
-
             getTokenTransactionData({
                 variables: {
                     addresses,
@@ -35,6 +34,8 @@ export function useBalancerTransactionData(
             });
         }
     }, [poolIds, addresses]);
+
+    console.log("data", data)
 
     const swaps = uniqBy(
         orderBy([...(data?.swapsIn || []), ...(data?.swapsOut || [])], 'timestamp', 'desc'),

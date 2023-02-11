@@ -234,7 +234,7 @@ export default function PoolPage() {
                             <SwapsTable swaps={swaps} />
                         </Grid>
                     </Grid>
-                    {!STABLE_POOLS.includes(poolData.poolType) ?
+                    
                         <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
                             <Grid item mt={1} xs={11}>
                                 <Typography variant="h5">Liquidity Provisions </Typography>
@@ -242,7 +242,7 @@ export default function PoolPage() {
                             <Grid item xs={11}>
                                 <JoinExitsTable joinExits={joinExits} />
                             </Grid>
-                        </Grid> : null}
+                        </Grid>
                 </Grid>
             </Box> :
             (<Grid

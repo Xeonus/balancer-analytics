@@ -117,9 +117,6 @@ export const BalancerJoinExit = gql`
     timestamp
     tx
     type
-    user {
-      id
-    }
     pool {
       id
       tokensList
