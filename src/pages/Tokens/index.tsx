@@ -80,22 +80,24 @@ export default function Tokens() {
                 spacing={3}
                 sx={{ justifyContent: 'center' }}
             >
-                    <Grid item mt={2} xs={11}>
-                        <Box display="flex" alignItems="center" justifyContent="space-between">
-                            <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
-                        </Box>
-                    </Grid>
-                    {filteredPoolBarChartData.length ?
+                <Grid item mt={2} xs={11}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <NavCrumbs crumbSet={navCrumbs} destination={activeNetwork.name} />
+                    </Box>
+                </Grid>
+                {filteredPoolBarChartData.length ?
                     <Grid
                         item
                         xs={11}
                     >
                         <Typography variant='h5'>Top 20 Tokens by TVL</Typography>
-                    </Grid> : null }
+                    </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                     container
-                    sx={{ direction: { xs: 'column', sm: 'row' } }}
+                    sx={{ 
+                        direction: { xs: 'column', sm: 'row' } 
+                    }}
                     justifyContent="center"
                     alignItems="left"
                     alignContent="left"
@@ -104,12 +106,11 @@ export default function Tokens() {
 
                         {filteredPoolBarChartData.length > 1 ?
                             <Grid
-                                item
-                                xs={10}
-                                sm={5.5}
-
-                            >
-                                <Box mb={1}>
+                            item
+                            xs={10}
+                            md={5}
+                        >
+                                
                                     <Card
                                         sx={{ boxShadow: 3 }}
                                     >
@@ -120,13 +121,13 @@ export default function Tokens() {
                                             lineChartName={'Trading Fees 24h'}
                                             rotateAxis={true} />
                                     </Card>
-                                </Box>
+                                
 
                             </Grid> : null}
                         <Grid
                             item
                             xs={10}
-                            sm={5}
+                            md={5}
 
                         >
                             <Card
@@ -137,24 +138,24 @@ export default function Tokens() {
 
                         </Grid>
                     </Grid> : null}
-                    <Grid item xs={11} mt={1}>
-                        <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
-                    </Grid>
-                    {tokenDatas.length > 10 ?
-                        <Grid item xs={11}>
-                            <TokenTable tokenDatas={tokenDatas} />
-                        </Grid>
-                        :
-                        <Grid
-                            container
-                            spacing={2}
-                            mt='25%'
-                            sx={{ justifyContent: 'center' }}
-                        >
-                            <CustomLinearProgress />
-                        </Grid>
-                    }
+                <Grid item xs={11} mt={1}>
+                    <Typography variant="h5" mb={1}>Tokens Overview ({activeNetwork.name})</Typography>
                 </Grid>
+                {tokenDatas.length > 10 ?
+                    <Grid item xs={11}>
+                        <TokenTable tokenDatas={tokenDatas} />
+                    </Grid>
+                    :
+                    <Grid
+                        container
+                        spacing={2}
+                        mt='25%'
+                        sx={{ justifyContent: 'center' }}
+                    >
+                        <CustomLinearProgress />
+                    </Grid>
+                }
+            </Grid>
         </Box>
     );
 }

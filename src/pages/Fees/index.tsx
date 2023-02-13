@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Grid, Box, Card, Divider, CircularProgress } from "@mui/material";
+import { Typography, Grid, Box, Card, Divider } from "@mui/material";
 import { NavElement } from '../../components/NavCrumbs';
 import NavCrumbs from '../../components/NavCrumbs';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
@@ -23,7 +23,6 @@ import useDecoratePools from '../../data/balancer-sdk/useDecoratePools';
 import AggregatedPoolFeeTable from '../../components/Tables/AggregatedPoolFeeTable';
 import ProtocolFeeSankeyChart from '../../components/Echarts/ProtocolCharts/ProtocolFeeSankeyChart';
 import PoolFeeTable from '../../components/Tables/PoolFeeTable';
-import { useDecoratePoolsWithEmissions } from '../../data/balancer-sdk/useDecoratePoolsWithEmissions';
 
 export default function Fees() {
 

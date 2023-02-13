@@ -19,6 +19,7 @@ export const YIELD_BEARING_TOKENS = [
     '0xae37d54ae477268b9997d4161b96b8200755935c', //bb-a-DAI
     '0xae78736cd615f374d3085123a210448e74fc6393', //rETH
     '0xac3e018457b222d93114458476f3e3416abbe38f', //sfrxETH
+    '0xbe9895146f7af43049ca1c1ae358b0541ea49704', //cbETH
     '0x48e6b98ef6329f8f0a30ebb8c7c960330d648085', //bb-am-USD
     '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4', //stMatic
     '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6', //MaticX

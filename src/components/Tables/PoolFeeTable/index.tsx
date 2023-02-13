@@ -32,6 +32,7 @@ import { NetworkInfo } from '../../../constants/networks';
 interface Data {
   name: string;
   poolTokens: PoolTokenData[];
+  tvl: number;
   poolData: PoolData;
   poolRevenue: number;
   protocolRevenue: number;
@@ -41,6 +42,7 @@ interface Data {
 function createData(
   name: string,
   poolTokens: PoolTokenData[],
+  tvl: number,
   poolData: PoolData,
   poolRevenue: number,
   protocolRevenue: number,
@@ -49,6 +51,7 @@ function createData(
   return {
     name,
     poolTokens,
+    tvl,
     poolData,
     poolRevenue,
     protocolRevenue,
@@ -117,6 +120,13 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'Pool Composition',
     isMobileVisible: false,
+  },
+  {
+    id: 'tvl',
+    numeric: true,
+    disablePadding: false,
+    label: 'TVL',
+    isMobileVisible: true,
   },
   {
     id: 'poolRevenue',
@@ -225,7 +235,9 @@ export default function PoolFeeTable({
   const rows = filteredPoolDatas.map(el =>
     createData(
       getShortPoolName(el), 
-      el.tokens, el, 
+      el.tokens, 
+      el.tvlUSD,
+      el, 
       el.feesEpochUSD, 
       el.feesEpochUSD *0.5, 100 / totalFees * el.feesEpochUSD)
   )
@@ -305,18 +317,21 @@ export default function PoolFeeTable({
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
+                      <TableCell align="right">
+                        {formatDollarAmount(row.tvl)}
+                      </TableCell>
                       <TableCell 
                         align="right"
                         >
                         {row.poolRevenue > 0 ?
                           formatDollarAmount(row.poolRevenue) :
-                          <CircularProgress size={'20px'} />
+                          formatDollarAmount(0)
                         }
                       </TableCell>
                       <TableCell align="right">
                         {row.protocolRevenue > 0 ?
                           formatDollarAmount(row.protocolRevenue) :
-                          <CircularProgress size={'20px'} />
+                          formatDollarAmount(0)
                         }
                       </TableCell>
                       <TableCell 
@@ -325,7 +340,7 @@ export default function PoolFeeTable({
                         >
                         {row.contribution > 0 ?
                           formatAmount(row.contribution) + '%' :
-                          <CircularProgress size={'20px'} />
+                          formatDollarAmount(0)
                         }
                       </TableCell>
                     </TableRow>

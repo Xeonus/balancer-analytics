@@ -81,33 +81,40 @@ export default function TokenPage() {
                         </Box>
                     </Grid>
                     <Grid item xs={11}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            spacing={2}
-                            justifyContent="flex-start">
-                            <MetricsCard
-                                mainMetric={tokenData ? tokenData.volumeUSD : 0}
-                                mainMetricInUSD={true}
-                                metricName='Token Volume'
-                                mainMetricChange={tokenData.volumeUSDChange}
-                                MetricIcon={EqualizerIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={tokenData.tvlUSD}
-                                mainMetricInUSD={true}
-                                metricName='Token TVL'
-                                mainMetricChange={tokenData.tvlUSDChange * 100}
-                                MetricIcon={MonetizationOnIcon}
-                            />
-                            <MetricsCard
-                                mainMetric={tokenData.txCount}
-                                mainMetricInUSD={false}
-                                metricName='Token Swaps'
-                                mainMetricChange={0}
-                                MetricIcon={SwapHorizontalCircleIcon}
+                        <Grid
+                            container
+                            columns={{ xs: 4, sm: 8, md: 12 }}
+                            sx={{ justifyContent: { md: 'flex-start', xs: 'center' }, alignContent: 'center' }}
+                        >
+                            <Box m={1}>
+                                <MetricsCard
+                                    mainMetric={tokenData ? tokenData.volumeUSD : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='Token Volume'
+                                    mainMetricChange={tokenData.volumeUSDChange}
+                                    MetricIcon={EqualizerIcon}
+                                />
+                            </Box>
+                            <Box m={1}>
+                                <MetricsCard
+                                    mainMetric={tokenData.tvlUSD}
+                                    mainMetricInUSD={true}
+                                    metricName='Token TVL'
+                                    mainMetricChange={tokenData.tvlUSDChange * 100}
+                                    MetricIcon={MonetizationOnIcon}
+                                />
+                            </Box>
+                            <Box m={1}>
+                                <MetricsCard
+                                    mainMetric={tokenData.txCount}
+                                    mainMetricInUSD={false}
+                                    metricName='Token Swaps'
+                                    mainMetricChange={0}
+                                    MetricIcon={SwapHorizontalCircleIcon}
 
-                            />
-                        </Stack>
+                                />
+                            </Box>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
@@ -141,13 +148,13 @@ export default function TokenPage() {
                         </Box>
                     </Grid>
                     <Grid item xs={11} >
-                            <SwapsTable swaps={swaps} />
+                        <SwapsTable swaps={swaps} />
                     </Grid>
                     <Grid item xs={11}>
-                            <Box mt={2} mb={1}>
-                                <Typography variant="h5">Liquidity Provisions </Typography>
-                            </Box>
-                            <JoinExitsTable joinExits={joinExits} />
+                        <Box mt={2} mb={1}>
+                            <Typography variant="h5">Liquidity Provisions </Typography>
+                        </Box>
+                        <JoinExitsTable joinExits={joinExits} />
                     </Grid>
                 </Grid>
             </Box> :

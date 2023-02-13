@@ -113,68 +113,77 @@ export default function PoolsOverview() {
                 </Grid>
                 {topTVLPool.address && topFeePool.address ?
                     <Grid item xs={11}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            spacing={2}
-                            justifyContent="flex-start">
-                            <PoolMetricsCard
-                                mainMetric={topVolumePool.volumeUSD}
-                                mainMetricInUSD={true}
-                                mainMetricChange={topVolumePool.volumeUSDChange}
-                                metricName={'Top Volume'}
-                                poolTokenData={topVolumePool.tokens}
-                            />
-                            <PoolMetricsCard
-                                mainMetric={topTVLPool.tvlUSD}
-                                mainMetricInUSD={true}
-                                mainMetricChange={topTVLPool.tvlUSDChange}
-                                metricName={'Top TVL'}
-                                poolTokenData={topTVLPool.tokens}
-                            />
-                            <PoolMetricsCard
-                                mainMetric={topFeePool.feesUSD}
-                                mainMetricInUSD={true}
-                                metricName={'Top Fees'}
-                                poolTokenData={topFeePool.tokens}
-                            />
-                        </Stack>
-                    </Grid> : null}
-                    {filteredPoolBarChartData.length > 1 ?
-                    <Grid
-                            item
-                            ml={1}
-                            mt={1}
-                            xs={11}
+                        <Grid
+                            container
+                            columns={{ xs: 4, sm: 8, md: 12 }}
+                            sx={{ justifyContent: { md: 'flex-start', xs: 'center' }, alignContent: 'center' }}
                         >
-                            <Typography variant='h5'>Top 20 Pools by TVL</Typography>
-                        </Grid> : null}
+                            <Box m={1}>
+                                <PoolMetricsCard
+                                    mainMetric={topVolumePool.volumeUSD}
+                                    mainMetricInUSD={true}
+                                    mainMetricChange={topVolumePool.volumeUSDChange}
+                                    metricName={'Top Volume'}
+                                    poolTokenData={topVolumePool.tokens}
+                                />
+                            </Box>
+                            <Box m={1}>
+                                <PoolMetricsCard
+                                    mainMetric={topTVLPool.tvlUSD}
+                                    mainMetricInUSD={true}
+                                    mainMetricChange={topTVLPool.tvlUSDChange}
+                                    metricName={'Top TVL'}
+                                    poolTokenData={topTVLPool.tokens}
+                                />
+                            </Box>
+                            <Box m={1}>
+                                <PoolMetricsCard
+                                    mainMetric={topFeePool.feesUSD}
+                                    mainMetricInUSD={true}
+                                    metricName={'Top Fees'}
+                                    poolTokenData={topFeePool.tokens}
+                                />
+                            </Box>
+                        </Grid>
+                    </Grid> : null}
+                {filteredPoolBarChartData.length > 1 ?
+                    <Grid
+                        item
+                        ml={1}
+                        mt={1}
+                        xs={11}
+                    >
+                        <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                    </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                         container
-                        sx={{ direction: { xs: 'column', sm: 'row' } }}
+                        sx={{
+                            direction: { xs: 'column', sm: 'row' }
+                        }}
                         justifyContent="center"
                         alignItems="left"
                         alignContent="left"
                         spacing={2}
                     >
-                      
+
                         {filteredPoolBarChartData.length > 1 ?
                             <Grid
                                 item
                                 xs={10}
                                 md={5}
                             >
-                                    <Card
-                                        sx={{ boxShadow: 3 }}
-                                    >
-                                        < MixedLineBarChart
-                                            barChartData={filteredPoolBarChartData}
-                                            barChartName={'TVL'}
-                                            lineChartData={poolLineChartData}
-                                            lineChartName={'Trading Fees 24h'}
-                                            rotateAxis={true} />
-                                    </Card>
-                            </Grid> : null} 
+                                <Card
+                                    sx={{ boxShadow: 3 }}
+                                >
+                                    < MixedLineBarChart
+                                        barChartData={filteredPoolBarChartData}
+                                        barChartName={'TVL'}
+                                        lineChartData={poolLineChartData}
+                                        lineChartName={'Trading Fees 24h'}
+                                        rotateAxis={true} />
+                                </Card>
+                            </Grid> : null}
                         <Grid
                             item
                             xs={10}
@@ -207,7 +216,7 @@ export default function PoolsOverview() {
                             <CustomLinearProgress />
                         </Grid>}
                 </Grid>
-                </Grid>
+            </Grid>
         </Box>
     );
 }

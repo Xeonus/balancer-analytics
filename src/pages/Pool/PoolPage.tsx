@@ -149,10 +149,14 @@ export default function PoolPage() {
                         </Box>
                     </Grid>
                     <Grid item xs={11}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            spacing={2}
-                            justifyContent="flex-start">
+                        <Grid
+                            container
+                            columns={{ xs: 4, sm: 8, md: 12 }}
+                            sx={{ justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center' }}
+                        >
+                            <Box
+                            m={1}
+                            >
                             <MetricsCard
                                 mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
                                 mainMetricInUSD={true}
@@ -160,6 +164,10 @@ export default function PoolPage() {
                                 mainMetricChange={volumeUSDChange ? volumeUSDChange : poolData.volumeUSDChange}
                                 MetricIcon={EqualizerIcon}
                             />
+                            </Box>
+                            <Box
+                            m={1}
+                            >
                             <MetricsCard
                                 mainMetric={tvlUSD ? tvlUSD : poolData.tvlUSD}
                                 mainMetricInUSD={true}
@@ -167,6 +175,10 @@ export default function PoolPage() {
                                 mainMetricChange={tvlUSDChange ? tvlUSDChange : poolData.tvlUSDChange * 100}
                                 MetricIcon={MonetizationOnIcon}
                             />
+                            </Box>
+                            <Box
+                            m={1}
+                            >
                             <MetricsCard
                                 mainMetric={swaps24h}
                                 mainMetricInUSD={false}
@@ -175,6 +187,10 @@ export default function PoolPage() {
                                 MetricIcon={SwapHorizontalCircleIcon}
 
                             />
+                            </Box>
+                            <Box
+                            m={1}
+                            >
                             <MetricsCard
                                 mainMetric={feesUSD}
                                 mainMetricInUSD={true}
@@ -183,7 +199,8 @@ export default function PoolPage() {
                                 MetricIcon={CurrencyExchangeIcon}
 
                             />
-                        </Stack>
+                            </Box>
+                        </Grid>
                     </Grid>
                     <Grid mt={2} item xs={11}>
                         <Typography variant="h5">Historical Performance </Typography>
@@ -223,9 +240,9 @@ export default function PoolPage() {
                         </Grid>
                     </Grid>
                     <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                        <Grid 
-                            item 
-                            mt={1} 
+                        <Grid
+                            item
+                            mt={1}
                             xs={11}
                         >
                             <Typography variant="h5">Historical Swaps </Typography>
@@ -234,15 +251,15 @@ export default function PoolPage() {
                             <SwapsTable swaps={swaps} />
                         </Grid>
                     </Grid>
-                    
-                        <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                            <Grid item mt={1} xs={11}>
-                                <Typography variant="h5">Liquidity Provisions </Typography>
-                            </Grid>
-                            <Grid item xs={11}>
-                                <JoinExitsTable joinExits={joinExits} />
-                            </Grid>
+
+                    <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+                        <Grid item mt={1} xs={11}>
+                            <Typography variant="h5">Liquidity Provisions </Typography>
                         </Grid>
+                        <Grid item xs={11}>
+                            <JoinExitsTable joinExits={joinExits} />
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Box> :
             (<Grid

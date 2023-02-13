@@ -249,34 +249,41 @@ export default function Financials() {
                     item
                     xs={11}
                 >
-                    <Stack
-                        direction={{ xs: 'column', md: 'row' }}
-                        spacing={2}
-                        justifyContent="flex-start">
-                        <MetricsCard
-                            mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
-                            mainMetricInUSD={true}
-                            metricName='Total Liquid Reserves'
-                            mainMetricChange={0}
-                            MetricIcon={AccountBalanceIcon}
-                        />
-                        <MetricsCard
-                            mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
-                            mainMetricInUSD={true}
-                            metricName='Liquid USDC'
-                            mainMetricChange={0}
-                            MetricIcon={CurrencyExchangeIcon}
-                        />
-                        <MetricsCard
-                            mainMetric={balReserves ? balReserves : 0}
-                            mainMetricInUSD={false}
-                            mainMetricUnit={" BAL"}
-                            metricName='BAL Reserves'
-                            mainMetricChange={0}
-                            MetricIcon={WalletIcon}
-                        />
+                    <Grid
+                        container
+                        columns={{ xs: 4, sm: 8, md: 12 }}
+                        sx={{ justifyContent: { md: 'flex-start', xs: 'center' }, alignContent: 'center' }}
+                    >
+                        <Box m={1}>
+                            <MetricsCard
+                                mainMetric={walletTokenNetworth ? walletTokenNetworth : 0}
+                                mainMetricInUSD={true}
+                                metricName='Total Liquid Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={AccountBalanceIcon}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <MetricsCard
+                                mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
+                                mainMetricInUSD={true}
+                                metricName='Liquid USDC'
+                                mainMetricChange={0}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <MetricsCard
+                                mainMetric={balReserves ? balReserves : 0}
+                                mainMetricInUSD={false}
+                                mainMetricUnit={" BAL"}
+                                metricName='BAL Reserves'
+                                mainMetricChange={0}
+                                MetricIcon={WalletIcon}
+                            />
+                        </Box>
 
-                    </Stack>
+                    </Grid>
                 </Grid>
                 <Grid
                     container
@@ -363,9 +370,9 @@ export default function Financials() {
                             <Box p={1} >
                                 <Typography variant="h6">Cumulative USDC Burn (Inflow vs Outflow)</Typography>
                             </Box>
-                            <GenericLineChart 
-                                chartData={netCumulativeUSDCFlow} 
-                                dataTitle='USDC Burn' 
+                            <GenericLineChart
+                                chartData={netCumulativeUSDCFlow}
+                                dataTitle='USDC Burn'
                                 height='300px' />
                         </Card>
                     </Grid>

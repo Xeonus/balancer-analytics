@@ -166,32 +166,39 @@ export default function Treasury() {
 
                     {totalBalances && portfolio ?
                         <Grid item xs={11}>
-                            <Stack
-                                direction={{ xs: 'column', md: 'row' }}
-                                spacing={2}
-                                justifyContent="flex-start">
-                                <MetricsCard
-                                    mainMetric={netWorth}
-                                    mainMetricInUSD={true}
-                                    metricName='Net Worth'
-                                    mainMetricChange={0}
-                                    MetricIcon={AccountBalanceIcon}
-                                />
-                                <MetricsCard
-                                    mainMetric={walletTokenNetworth}
-                                    mainMetricInUSD={true}
-                                    metricName='Tokens in Wallet'
-                                    mainMetricChange={0}
-                                    MetricIcon={WalletIcon}
-                                />
-                                <MetricsCard
-                                    mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
-                                    mainMetricInUSD={true}
-                                    metricName='Liquid USDC'
-                                    mainMetricChange={0}
-                                    MetricIcon={CurrencyExchangeIcon}
-                                />
-                            </Stack>
+                            <Grid
+                                container
+                                columns={{ xs: 4, sm: 8, md: 12 }}
+                                sx={{ justifyContent: { md: 'flex-start', xs: 'center' }, alignContent: 'center' }}
+                            >
+                                <Box m={1}>
+                                    <MetricsCard
+                                        mainMetric={netWorth}
+                                        mainMetricInUSD={true}
+                                        metricName='Net Worth'
+                                        mainMetricChange={0}
+                                        MetricIcon={AccountBalanceIcon}
+                                    />
+                                </Box>
+                                <Box m={1}>
+                                    <MetricsCard
+                                        mainMetric={walletTokenNetworth}
+                                        mainMetricInUSD={true}
+                                        metricName='Tokens in Wallet'
+                                        mainMetricChange={0}
+                                        MetricIcon={WalletIcon}
+                                    />
+                                </Box>
+                                <Box m={1}>
+                                    <MetricsCard
+                                        mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
+                                        mainMetricInUSD={true}
+                                        metricName='Liquid USDC'
+                                        mainMetricChange={0}
+                                        MetricIcon={CurrencyExchangeIcon}
+                                    />
+                                </Box>
+                            </Grid>
                         </Grid> : null}
                     {ratioPieChartData && ratioPieChartData.length > 0 ?
                         <Grid
@@ -229,7 +236,7 @@ export default function Treasury() {
                                 <Grid
                                     item
                                     xs={11}
-                                   mt={2}
+                                    mt={2}
                                     md={5.5}
                                 >
                                     <Card sx={{ boxShadow: 3 }}>

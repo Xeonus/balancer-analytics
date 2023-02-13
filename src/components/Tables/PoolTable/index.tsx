@@ -76,8 +76,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string | PoolTokenData[] | PoolData},
-  b: { [key in Key]: number | string | PoolTokenData[] | PoolData},
+  a: { [key in Key]: number | string | PoolTokenData[] | PoolData },
+  b: { [key in Key]: number | string | PoolTokenData[] | PoolData },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -164,8 +164,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       onRequestSort(event, property);
     };
 
-    const theme = useTheme()
-    
+  const theme = useTheme()
+
   return (
     <TableHead>
       <TableRow>
@@ -175,15 +175,15 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
+            sx={{ display: { xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' } }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              //sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
+            //sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
             >
-              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" />: headCell.label}
+              {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -198,9 +198,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function PoolTable({
-    poolDatas
+  poolDatas
 }: {
-    poolDatas?: PoolData[]
+  poolDatas?: PoolData[]
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
@@ -210,18 +210,18 @@ export default function PoolTable({
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();
 
-  if(!poolDatas) {
+  if (!poolDatas) {
     return <CircularProgress />;
   }
 
   if (poolDatas.length === 0) {
     return (
       <Grid>
-      <CircularProgress />
+        <CircularProgress />
       </Grid>
     );
   }
-  
+
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
   const rows = filteredPoolDatas.map(el =>
@@ -264,8 +264,8 @@ export default function PoolTable({
   //Table generation
 
   return (
-    <Box sx={{ width: '100%'}}>
-      <Paper sx={{ mb: 2, boxShadow: 3  }}>
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ mb: 2, boxShadow: 3 }}>
         <TableContainer>
           <Table
             //sx={{ minWidth: 750 }}
@@ -292,29 +292,32 @@ export default function PoolTable({
                       role="number"
                       tabIndex={-1}
                       key={row.poolData.address}
-                      sx={{cursor: 'pointer'}}
+                      sx={{ cursor: 'pointer' }}
                     >
                       <TableCell ><PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
-                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                        sx={{ display: { xs: 'none', md: 'table-cell' } }}
                       >
                         <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
                       </TableCell>
-                      <TableCell 
+                      <TableCell
                         align="right"
-                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
-                        >
+                        sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                      >
                         <SwapFee swapFee={row.swapFee} size={35} />
                       </TableCell>
                       <TableCell align="right">{formatDollarAmount(row.volume24)}</TableCell>
-                      <TableCell 
+                      <TableCell
                         align="right"
-                        sx={{ display: {xs: 'none', md: 'table-cell' }}}
-                        >{formatDollarAmount(row.fees)}</TableCell>
-                      <TableCell align="right">{formatDollarAmount(row.tvl)}</TableCell>
+                        sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                      >{formatDollarAmount(row.fees)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {formatDollarAmount(row.tvl)}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -331,24 +334,24 @@ export default function PoolTable({
           </Table>
         </TableContainer>
         <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-        <Box m={1} display="flex" justifyContent={"flex-start"}>
-        <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Compact view"
-      />
-      </Box>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
+          <Box m={1} display="flex" justifyContent={"flex-start"}>
+            <FormControlLabel
+              control={<Switch checked={dense} onChange={handleChangeDense} />}
+              label="Compact view"
+            />
+          </Box>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Box>
       </Paper>
-      
+
     </Box>
   );
 }
