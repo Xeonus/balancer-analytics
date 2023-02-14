@@ -15,6 +15,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
@@ -24,7 +25,7 @@ import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
-import Stellate from '../../assets/svg/stellate.svg'
+//import Stellate from '../../assets/svg/stellate.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
@@ -110,6 +111,12 @@ const MenuDrawer = ({
                         <TokenIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Tokens'} />
+                </ListItemButton>
+                <ListItemButton key={'BAL Emissions'} component={NavLink} to={'/' + route + 'emissions'}>
+                    <ListItemIcon>
+                        <AutoAwesomeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'BAL Emissions'} />
                 </ListItemButton>
             </List>
             <List>

@@ -47,23 +47,22 @@ export default function useDecoratePools(
     }
 
     const fetchAprData = async (poolList: PoolWithMethods[] | undefined) => {
-        let decoratedPools: PoolWithMethods[];
-        decoratedPools = []
+        let decoratedPools: PoolWithMethods[] = [];
         let balArray : EmissionData[] = [];
         if (poolList) {
             const promises = poolList.map(async sdkPool => {
                 try {
                     sdkPool.apr = await pools.apr(sdkPool);
-                    // if (pools.emissionsService) {
-                    //     const emission =  await pools.emissionsService.weekly(sdkPool.id)
-                    //     //console.log("weekly emission for pool, " + sdkPool.id + " is ", emission)
-                    //     balArray.push(
-                    //         {
-                    //             poolId: sdkPool.id,
-                    //             weeklyBAL: emission,
-                    //         }
-                    //     )
-                    // }
+                    if (pools.emissionsService) {
+                        const emission =  await pools.emissionsService.weekly(sdkPool.id)
+                        //console.log("weekly emission for pool, " + sdkPool.id + " is ", emission)
+                        balArray.push(
+                            {
+                                poolId: sdkPool.id,
+                                weeklyBAL: emission,
+                            }
+                        )
+                    }
                     decoratedPools.push(sdkPool);
                     return sdkPool;
                 } catch (e) {
@@ -73,7 +72,14 @@ export default function useDecoratePools(
             const finalPools = await Promise.all(promises)
             finalPools.map(pool => pool ? decoratedPools.push(pool) : null)
             //console.log("fetchAprData", decoratedPools)
-            return decoratedPools
+            return {
+                decoratedPools, 
+                balArray,
+            }
+        }
+        return {
+            decoratedPools, 
+            balArray,
         }
     }
 
@@ -91,10 +97,11 @@ export default function useDecoratePools(
 
     //Decorate with APRs
     const runLoadAprs = async () => {
-        const pools = await fetchAprData(sdkPool);
-        if (pools) {
-            setFinalPool(pools)
-            //console.log("runLoadAprs", pools)
+        const {decoratedPools, balArray} = await fetchAprData(sdkPool);
+        if (decoratedPools.length > 0 && balArray.length > 0) {
+            setFinalPool(decoratedPools);
+            setWeeklyArray(balArray);
+            //console.log("balArray loaded", balArray)
         }
         setLoadAprs(true);
     };
@@ -120,10 +127,12 @@ export default function useDecoratePools(
         if (loadAprs && loadPools && poolDatas) {
         //console.log("decorated pools", finalPool)
         poolDatas.forEach((pool) => {
-            if (pool && finalPool) {
+            if (pool && finalPool && weeklyArray) {
                 const hit = finalPool.find((el) => el?.id === pool.id)
+                const emissionHit = weeklyArray.find((el) => el?.poolId === pool.id)
                 if (hit && finalPool.indexOf(hit)) {
                     pool.aprSet = hit.apr;
+                    pool.balEmissions = emissionHit?.weeklyBAL;
                     pool.tokens.map(token => {
                         const target = hit.tokens.find(t => t.address === token.address)
                         token.price = target?.token?.latestUSDPrice ? Number(target?.token?.latestUSDPrice) : 0

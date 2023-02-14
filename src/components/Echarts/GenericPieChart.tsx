@@ -1,11 +1,12 @@
 import ReactEcharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
-import { formatDollarAmount } from '../../utils/numbers';
+import { formatDollarAmount, formatNumber } from '../../utils/numbers';
 
 export interface GenericPieChartProps {
     data: BalancerPieChartDataItem[],
-    height: string
+    height: string,
+    isNotUSD?: boolean,
 }
 
 export interface ToolTipParams {
@@ -13,7 +14,7 @@ export interface ToolTipParams {
     data: BalancerPieChartDataItem;
 }
 
-export default function GenericPieChart({ data, height }: GenericPieChartProps) {
+export default function GenericPieChart({ data, height, isNotUSD = false }: GenericPieChartProps) {
 
     const theme = useTheme()
 
@@ -33,7 +34,7 @@ export default function GenericPieChart({ data, height }: GenericPieChartProps) 
             formatter: function (params: ToolTipParams) {
                 return `
                  
-                ${formatDollarAmount(params.data.value)} <br />`
+                ${ isNotUSD ? formatNumber(params.data.value) : formatDollarAmount(params.data.value)} <br />`
             }
         },
         calculable: true,

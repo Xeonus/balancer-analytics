@@ -31,6 +31,7 @@ import Treasury from '../../pages/Treasury';
 import ServiceProviders from '../../pages/ServiceProviders';
 import Financials from '../../pages/Financials';
 import { isMobile } from 'react-device-detect';
+import Emissions from '../../pages/Emissions';
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -221,6 +222,7 @@ function Dashboard() {
                             <Route path={networkPrefix(activeNetwork) + 'chain'} element={<Chain />} />
                             <Route path={networkPrefix(activeNetwork) + 'pools'} element={<PoolsOverview />} />
                             <Route path={networkPrefix(activeNetwork) + 'tokens'} element={<Tokens />} />
+                            <Route path={networkPrefix(activeNetwork) + 'emissions'} element={<Emissions />} />
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                             <Route path={"/:networkID/pools/:poolId"} element={<PoolPage />} />
                             <Route path={"/pools/:poolId"} element={<PoolPage />} />

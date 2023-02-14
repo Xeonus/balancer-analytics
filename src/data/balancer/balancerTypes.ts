@@ -94,6 +94,8 @@ export interface PoolData {
 
     //APR data
     aprSet?: AprSet
+    // BAL emissions
+    balEmissions?: number;
 }
 
 

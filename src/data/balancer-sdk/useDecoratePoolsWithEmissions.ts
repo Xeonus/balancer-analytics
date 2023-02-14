@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { BalancerSDK, PoolWithMethods, balEmissions } from '@balancer-labs/sdk';
+import { useState } from 'react';
+import { BalancerSDK, balEmissions } from '@balancer-labs/sdk';
 import { PoolData } from '../balancer/balancerTypes';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
