@@ -129,21 +129,21 @@ const headCells: readonly HeadCell[] = [
         id: 'poolRevenue',
         numeric: true,
         disablePadding: false,
-        label: 'Protocol Swap Fee Revenue',
+        label: 'DAO Swap Fee Revenue',
         isMobileVisible: true,
     },
     {
         id: 'tokenRevenue',
         numeric: true,
         disablePadding: false,
-        label: 'Token Yield Revenue',
+        label: 'DAO Token Yield Revenue',
         isMobileVisible: false,
     },
     {
         id: 'protocolRevenue',
         numeric: true,
         disablePadding: false,
-        label: 'Protocol Revenue',
+        label: 'DAO Protocol Revenue',
         isMobileVisible: true,
     },
     {
@@ -157,7 +157,7 @@ const headCells: readonly HeadCell[] = [
         id: 'contribution',
         numeric: true,
         disablePadding: false,
-        label: 'Revenue per emission spent',
+        label: 'DAO Revenue per emissions spent',
         isMobileVisible: false,
     },
 ];
@@ -248,18 +248,18 @@ export default function EmissionsTable({
 
     //Helper function to calculate daily token yield
     function calculateTokenYieldInUsd(poolData: PoolData) {
-        let yearlyYield = 0
+        let dailyYield = 0
         if (poolData.aprSet) {
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
                         tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
-                    yearlyYield += tokenYield
+                        dailyYield += tokenYield
                 }
             }
             )
         }
-        return yearlyYield
+        return dailyYield
     }
 
     //Create rows
@@ -271,9 +271,9 @@ export default function EmissionsTable({
             el,
             el.feesEpochUSD / 7  * time  * 0.5 * DAO_FEE_FACTOR,
             el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR,
-            calculateTokenYieldInUsd(el)  *time * 0.5 * DAO_FEE_FACTOR ,
+            calculateTokenYieldInUsd(el)  * time * 0.5 * DAO_FEE_FACTOR ,
             el.balEmissions ? el.balEmissions : 0,
-            el.balEmissions ? (el.balEmissions / (el.feesUSD * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el) * 0.5 * DAO_FEE_FACTOR)) : 0)
+            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR) / el.balEmissions) : 0) : 0)
     )
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
@@ -342,6 +342,7 @@ export default function EmissionsTable({
                                             role="number"
                                             tabIndex={-1}
                                             key={row.poolData.address}
+                                            sx={{ cursor: 'pointer' }}
                                         >
                                             <TableCell >
                                                 <PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} />
@@ -357,7 +358,7 @@ export default function EmissionsTable({
                                             <TableCell align="right">
                                                 {row.poolRevenue > 0 ?
                                                     formatDollarAmount(row.poolRevenue) :
-                                                    <CircularProgress size={'20px'} />
+                                                    0
                                                 }
                                             </TableCell>
                                             <TableCell 
@@ -367,19 +368,19 @@ export default function EmissionsTable({
                                                 {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
                                                     row.tokenRevenue > 0 ?
                                                         formatDollarAmount(row.tokenRevenue) :
-                                                        <CircularProgress size={'20px'} />
+                                                        0
                                                     : '-'
                                                 }
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.protocolRevenue > 0 ?
                                                     formatDollarAmount(row.protocolRevenue) :
-                                                    <CircularProgress size={'20px'} />
+                                                    0
                                                 }
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.balEmissions > 0 ?
-                                                    formatNumber(row.balEmissions) : 0
+                                                    formatDollarAmount(row.balEmissions) : 0
                                                 }
                                             </TableCell>
                                             <TableCell 
@@ -387,8 +388,8 @@ export default function EmissionsTable({
                                             sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
                                                 {row.contribution > 0 ?
-                                                    formatAmount(row.contribution) :
-                                                    <CircularProgress size={'20px'} />
+                                                    formatAmount(row.contribution, 5) :
+                                                    0
                                                 }
                                             </TableCell>
 

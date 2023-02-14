@@ -9,7 +9,8 @@ interface EmissionData {
 }
 
 export default function useDecoratePools(
-    poolDatas: PoolData[] | undefined
+    poolDatas: PoolData[] | undefined,
+    balPrice?: number
 ) {
     const [loadPools, setLoadPools] = useState(Boolean);
     const [loadAprs, setLoadAprs] = useState(Boolean);
@@ -132,7 +133,7 @@ export default function useDecoratePools(
                 const emissionHit = weeklyArray.find((el) => el?.poolId === pool.id)
                 if (hit && finalPool.indexOf(hit)) {
                     pool.aprSet = hit.apr;
-                    pool.balEmissions = emissionHit?.weeklyBAL;
+                    pool.balEmissions = balPrice && emissionHit ? emissionHit?.weeklyBAL * balPrice : emissionHit?.weeklyBAL;
                     pool.tokens.map(token => {
                         const target = hit.tokens.find(t => t.address === token.address)
                         token.price = target?.token?.latestUSDPrice ? Number(target?.token?.latestUSDPrice) : 0
@@ -145,7 +146,7 @@ export default function useDecoratePools(
             //console.log("FINAL decorated pool", decoratedPools)
             console.log("Balancer SDK: successful pool data enrichment")
         }
-    }, [finalPool]);
+    }, [finalPool, balPrice]);
 
     if (decoratedPools) {
         return decoratedPools

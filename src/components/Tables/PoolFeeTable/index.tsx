@@ -305,6 +305,7 @@ export default function PoolFeeTable({
                       role="number"
                       tabIndex={-1}
                       key={row.poolData.address}
+                      sx={{ cursor: 'pointer' }}
                     >
                       <TableCell >
                         <PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} /> 
