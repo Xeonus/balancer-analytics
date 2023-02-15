@@ -253,7 +253,7 @@ export default function EmissionsTable({
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
+                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365
                         dailyYield += tokenYield
                 }
             }

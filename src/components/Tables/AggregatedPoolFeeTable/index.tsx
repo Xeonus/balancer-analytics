@@ -243,7 +243,7 @@ export default function AggregatedPoolFeeTable({
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
+                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365
                     yearlyYield += tokenYield
                 }
             }
@@ -347,7 +347,7 @@ export default function AggregatedPoolFeeTable({
                                             <TableCell align="right">
                                                 {row.poolRevenue > 0 ?
                                                     formatDollarAmount(row.poolRevenue) :
-                                                    <CircularProgress size={'20px'} />
+                                                    formatDollarAmount(0)
                                                 }
                                             </TableCell>
                                             <TableCell 
@@ -357,14 +357,14 @@ export default function AggregatedPoolFeeTable({
                                                 {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
                                                     row.tokenRevenue > 0 ?
                                                         formatDollarAmount(row.tokenRevenue) :
-                                                        <CircularProgress size={'20px'} />
+                                                        formatDollarAmount(0)
                                                     : '-'
                                                 }
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.protocolRevenue > 0 ?
                                                     formatDollarAmount(row.protocolRevenue) :
-                                                    <CircularProgress size={'20px'} />
+                                                    formatDollarAmount(0)
                                                 }
                                             </TableCell>
                                             <TableCell 
@@ -373,7 +373,7 @@ export default function AggregatedPoolFeeTable({
                                             >
                                                 {row.contribution > 0 ?
                                                     formatAmount(row.contribution) + '%' :
-                                                    <CircularProgress size={'20px'} />
+                                                    '-'
                                                 }
                                             </TableCell>
 

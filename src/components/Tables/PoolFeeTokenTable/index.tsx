@@ -223,9 +223,9 @@ export default function PoolFeeTokenTable({
         let tokenYield = 0
         if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
             if (isTimed) {
-                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365 * time
+                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365 * time
             } else {
-                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * token.balance * token.price / 365
+                tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365
             }
           yearlyYield += tokenYield
         }

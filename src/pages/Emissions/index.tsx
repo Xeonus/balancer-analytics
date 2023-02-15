@@ -24,6 +24,8 @@ import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGecko
 import CoinCard from '../../components/Cards/CoinCard';
 import { DAO_FEE_FACTOR } from '../../data/balancer/constants';
 import { formatPercentageAmount } from '../../utils/numbers';
+import { getBalTokenAddress } from '../../data/balancer/useLatestPrices';
+import { EthereumNetworkInfo } from '../../constants/networks';
 
 export default function Emissions() {
 
@@ -49,7 +51,7 @@ export default function Emissions() {
     navCrumbs.push(tokenNav)
 
     //TODO: obtain form contants
-    const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
+    const balAddress = getBalTokenAddress(activeNetwork.id);
     //Data
     const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
     const balPrice = coinData && coinData[balAddress] ? coinData[balAddress].usd : 0;
@@ -79,6 +81,7 @@ export default function Emissions() {
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const filteredPoolDatas = yieldPools.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
     const decoratedPools = useDecoratePools(filteredPoolDatas.length > 10 ? filteredPoolDatas : undefined, balPrice)
+    console.log("decoratedPools", decoratedPools)
 
     const priceDecoratedPools: PoolData[] = [];
     if (decoratedPools && balPrice) {
@@ -121,6 +124,7 @@ export default function Emissions() {
 
     return (
         <Box sx={{ flexGrow: 2 }}>
+            {activeNetwork === EthereumNetworkInfo ?
             <Grid
                 container
                 spacing={2}
@@ -180,7 +184,7 @@ export default function Emissions() {
                         xs={11}
                     >
                         <Typography variant='h5'>
-                            Top 20 Pools by Emissions on {activeNetwork.name}
+                            Top 20 Pools by Weekly Emissions on {activeNetwork.name}
                         </Typography>
                     </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
@@ -208,7 +212,7 @@ export default function Emissions() {
                                         barChartData={filteredPoolBarChartData}
                                         barChartName={'BAL Emissions'}
                                         lineChartData={poolLineChartData}
-                                        lineChartName={'Trading Fees 24h'}
+                                        lineChartName={'Trading Fees 7d'}
                                         rotateAxis={true} />
                                 </Card>
                             </Grid> : null}
@@ -246,7 +250,24 @@ export default function Emissions() {
                             <CustomLinearProgress />
                         </Grid>}
                 </Grid>
-            </Grid>
+            </Grid> 
+            : 
+            <Grid
+            container
+            spacing={2}
+            sx={{ justifyContent: 'center' }}
+        >
+            <Grid
+                        item
+                        ml={1}
+                        mt={1}
+                        xs={11}
+                    >
+                        <Typography variant='h5'>
+                            Emissions table currently not supported on {activeNetwork.name}
+                        </Typography>
+                    </Grid>
+        </Grid>}
         </Box>
     );
 }
