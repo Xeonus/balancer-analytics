@@ -30,15 +30,17 @@ export interface ToolTipParams {
 interface ProtocolAreaChartProps {
     mainnetProtocolData: ProtocolData,
     arbitrumProtocolData: ProtocolData,
-    polygonProtocolData: ProtocolData
+    polygonProtocolData: ProtocolData,
+    gnosisProtocolData: ProtocolData,
 }
 
 
 
-export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData}: ProtocolAreaChartProps) {
+export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, gnosisProtocolData}: ProtocolAreaChartProps) {
 
     const mainnetData = mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+    let gnosisData = gnosisProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
     //add preceeding zero values based on mainnet size to later deployed chains
     if (mainnetData && arbitrumData) {
         const diffSize = mainnetData.length - arbitrumData.length;
@@ -63,6 +65,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
     const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);
     const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
+    const [rangedGnosisData, setrangedGnosisData] = React.useState(gnosisData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
     React.useEffect(() => {
@@ -70,11 +73,13 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
+            setrangedGnosisData(gnosisData)
             setRangedxAxis(mainnetxAxisData)
         } else {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(timeRange)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
+            setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
     }, [timeRange]);
@@ -85,10 +90,12 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
+            setrangedGnosisData(gnosisData);
         } else if (mainnetData.length >= Number(event.target.value)) {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(event.target.value)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(event.target.value)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(event.target.value)))
+            setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
         }
     };
 
@@ -128,6 +135,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
                 mainnetData={rangedMainnetData} 
                 arbitrumData={rangedArbitrumData} 
                 polygonData={rangedPolygonData} 
+                gnosisData={rangedGnosisData}
                 xAxis={rangedxAxis}/>
             </Card> : <Grid
             container

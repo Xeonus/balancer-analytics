@@ -22,8 +22,14 @@ export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) =>
             } else {
                 return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/${address}/logo.png`
             }
+            case SupportedNetwork.GNOSIS:
+                if (address === '0x7ef541e2a22058048904fe5744f9c7e4c57af717') {
+                    return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png`
+                } else {
+                    return `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/xdai/assets/${address}/logo.png`
+                }
         default:
-            return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`
+            return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/xdai/assets/${address}/logo.png`
     }
 }
 

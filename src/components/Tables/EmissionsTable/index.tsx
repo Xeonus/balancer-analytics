@@ -216,7 +216,7 @@ export default function EmissionsTable({
     timeRange?: number
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('contribution');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('protocolRevenue');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -269,11 +269,11 @@ export default function EmissionsTable({
             getShortPoolName(el),
             el.tokens,
             el,
-            el.feesEpochUSD / 7  * time  * 0.5 * DAO_FEE_FACTOR,
-            el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR,
-            calculateTokenYieldInUsd(el)  * time * 0.5 * DAO_FEE_FACTOR ,
+            el.feesEpochUSD / 7  * time  * 0.5 ,
+            el.feesEpochUSD / 7   * time * 0.5  + calculateTokenYieldInUsd(el)  * time  * 0.5,
+            calculateTokenYieldInUsd(el)  * time * 0.5,
             el.balEmissions ? el.balEmissions : 0,
-            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR) / el.balEmissions) : 0) : 0)
+            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 + calculateTokenYieldInUsd(el)  * time  * 0.5) / el.balEmissions) : 0) : 0)
     )
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)

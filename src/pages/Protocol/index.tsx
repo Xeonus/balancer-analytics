@@ -10,8 +10,8 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
-import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient } from '../../apollo/client';
+import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
+import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient, gnosisBlockClient, gnosisClient } from '../../apollo/client';
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
 import ProtocolMultiAreaChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
@@ -19,6 +19,7 @@ import ExploreCard from '../../components/Cards/ExploreCard';
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
+import GnosisLogo from '../../assets/svg/gnosis.svg'
 
 
 
@@ -33,6 +34,7 @@ export default function Protocol() {
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
+    const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient);
 
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
@@ -46,7 +48,24 @@ export default function Protocol() {
                 container
                 spacing={3}
                 sx={{ justifyContent: 'center' }}
+            ><Grid item mt={1} xs={11}>
+            <Stack
+                direction={{ xs: 'column', md: 'row' }}
             >
+                <Box mb={1}>
+                    <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
+                </Box>
+                <Box mb={1}>
+                    <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                </Box>
+                <Box mb={1}>
+                    <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
+                </Box>
+                <Box mb={1}>
+                    <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
+                </Box>
+            </Stack>
+        </Grid>
                 <Grid
                     item
                     xs={11}
@@ -77,6 +96,7 @@ export default function Protocol() {
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
+                    
                     <Grid item mt={1} xs={11}>
                         <Typography variant='h5'>Historical TVL</Typography>
                     </Grid>
@@ -106,27 +126,13 @@ export default function Protocol() {
                             </Box>
                         </Stack>
                     </Grid>
-                    <Grid item mt={1} xs={11}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                        >
-                            <Box mb={1}>
-                                <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
-                            </Box>
-                            <Box mb={1}>
-                                <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
-                            </Box>
-                            <Box mb={1}>
-                                <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
-                            </Box>
-                        </Stack>
-
-                    </Grid>
+                    
                     <Grid item mt={1} xs={11}>
                         <ProtocolMultiAreaChart
                             mainnetProtocolData={protocolData}
                             arbitrumProtocolData={arbitrumProtocolData}
                             polygonProtocolData={polygonProtocolData}
+                            gnosisProtocolData={gnosisProtocolData}
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
@@ -147,6 +153,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.volumeData}
                             arbitrumProtocolData={arbitrumProtocolData.volumeData}
                             polygonProtocolData={polygonProtocolData.volumeData}
+                            gnosisProtocolData={gnosisProtocolData.volumeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -167,6 +174,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.feeData}
                             arbitrumProtocolData={arbitrumProtocolData.feeData}
                             polygonProtocolData={polygonProtocolData.feeData}
+                            gnosisProtocolData={gnosisProtocolData.feeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -188,6 +196,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.swapData}
                             arbitrumProtocolData={arbitrumProtocolData.swapData}
                             polygonProtocolData={polygonProtocolData.swapData}
+                            gnosisProtocolData={gnosisProtocolData.swapData}
                             isUSD={false}
                         />
                     </Grid>

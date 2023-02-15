@@ -1,11 +1,12 @@
 
 import { FormControl, Select, MenuItem, Avatar, Divider, SelectChangeEvent } from "@mui/material"
 import { Box } from "@mui/system"
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../../constants/networks"
+import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
+import GnosisLogo from '../../assets/svg/gnosis.svg'
 import { useNavigate } from "react-router-dom";
 
 export default function NetworkSelector() {
@@ -25,7 +26,11 @@ export default function NetworkSelector() {
         } else if (chainId === ArbitrumNetworkInfo.chainId) {
             update(ArbitrumNetworkInfo)
             navigate('/arbitrum/chain');
+        } else if (chainId === GnosisNetworkInfo.chainId) {
+            update(GnosisNetworkInfo)
+            navigate('/gnosis/chain');
         }
+        
     };
 
     return (
@@ -94,6 +99,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Arbitrum
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={GnosisNetworkInfo.chainId} key="arb">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={GnosisLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Gnosis
                         </Box>
                     </Box>
                 </MenuItem>

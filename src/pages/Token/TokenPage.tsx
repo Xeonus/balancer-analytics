@@ -132,7 +132,7 @@ export default function TokenPage() {
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
-                    <Grid item xs={10}>
+                    <Grid item xs={11}>
                         <Box mt={2}>
                             <Typography variant="h5">{tokenData.symbol} - Deployed Liquidity Pools </Typography>
                         </Box>

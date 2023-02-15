@@ -2,6 +2,8 @@
 import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
+import GNOSIS_LOGO_URL from '../assets/svg/polygon.svg'
+
 import {
   ALCHEMY_KEY,
   ALCHEMY_KEY_ARBITRUM, ALCHEMY_KEY_POLYGON, 
@@ -14,6 +16,7 @@ export enum SupportedNetwork {
   ETHEREUM,
   ARBITRUM,
   POLYGON,
+  GNOSIS,
 }
 
 export type NetworkInfo = {
@@ -106,8 +109,32 @@ export const PolygonNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
+export const GnosisNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.GNOSIS,
+  chainId: '100',
+  coingeckoId: 'xdai-ecosystem',
+  debankId: 'gnosis',
+  balAddress: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
+  feeCollectorThreshold: 5000,
+  route: 'gnosis',
+  name: 'Gnosis',
+  startTimeStamp: 1673807871,
+  appUri: 'https://app.balancer.fi/#/gnosis-chain/',
+  //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
+  clientUri: 'https://balancer-gnosis-chain-v2-analytics.stellate.sh',
+  decentralicedClientUri: '',
+  alchemyRPCUrl: ALCHEMY_URL_POLYGON,
+  alchemyKey: ALCHEMY_KEY_POLYGON,
+  bgColor: '#8247e5',
+  primaryColor: '#0d8e74',
+  secondaryColor: '#FB7876',
+  imageURL: GNOSIS_LOGO_URL,
+  blurb: 'Beta',
+}
+
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
   PolygonNetworkInfo,
+  GnosisNetworkInfo,
 ]
