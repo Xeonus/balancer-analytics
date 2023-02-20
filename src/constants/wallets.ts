@@ -5,6 +5,8 @@ export const FEE_COLLECTOR_ADDRESS = '0xce88686553686da562ce7cea497ce749da109f9f
 
 export const FEE_STREAMER = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
 
+export const FEE_STREAMER_2 = '0x7c68c42de679ffb0f16216154c996c354cf1161b';
+
 //Service Providers
 export const SERVICE_PROVIDER_WALLETS = [
     {
@@ -30,6 +32,10 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'Fee Collector Relayer',
         walletId: '0xe649B71783d5008d10a96b6871e3840a398d4F06'
+    },
+    {
+        name: 'DAO Fee Sweeper',
+        walletId: '0x7c68c42De679ffB0f16216154C996C354cF1161B'
     },
     {
         name: 'Aave Collector V2',

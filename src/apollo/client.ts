@@ -22,7 +22,7 @@ export const blockClient = new ApolloClient({
 
 export const client = new ApolloClient({
     //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
-    uri: 'https://balancer-v2-decentraliced-analytics.stellate.sh/',
+    uri: 'https://balancer-v2-analytics.stellate.sh/',
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
