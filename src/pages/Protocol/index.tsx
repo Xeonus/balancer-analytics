@@ -46,26 +46,10 @@ export default function Protocol() {
         <Box sx={{ flexGrow: 2 }}>
             <Grid
                 container
-                spacing={3}
+                spacing={2}
                 sx={{ justifyContent: 'center' }}
-            ><Grid item mt={1} xs={11}>
-            <Stack
-                direction={{ xs: 'column', md: 'row' }}
             >
-                <Box mb={1}>
-                    <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
-                </Box>
-                <Box mb={1}>
-                    <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
-                </Box>
-                <Box mb={1}>
-                    <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
-                </Box>
-                <Box mb={1}>
-                    <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
-                </Box>
-            </Stack>
-        </Grid>
+                
                 <Grid
                     item
                     xs={11}
@@ -89,6 +73,24 @@ export default function Protocol() {
                         </Grid>
                     </Grid>
                 </Grid>
+                <Grid item mt={1} xs={11}>
+                    <Stack
+                        direction={{ xs: 'column', md: 'row' }}
+                    >
+                        <Box mb={1}>
+                            <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
+                        </Box>
+                        <Box mb={1}>
+                            <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                        </Box>
+                        <Box mb={1}>
+                            <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
+                        </Box>
+                        <Box mb={1}>
+                            <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
+                        </Box>
+                    </Stack>
+                </Grid>
             </Grid>
             {protocolData.feeData.length > 10 && arbitrumProtocolData.feeData.length > 10 && polygonProtocolData.feeData.length > 10 ?
                 <Grid
@@ -96,7 +98,7 @@ export default function Protocol() {
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
-                    
+
                     <Grid item mt={1} xs={11}>
                         <Typography variant='h5'>Historical TVL</Typography>
                     </Grid>
@@ -126,7 +128,7 @@ export default function Protocol() {
                             </Box>
                         </Stack>
                     </Grid>
-                    
+
                     <Grid item mt={1} xs={11}>
                         <ProtocolMultiAreaChart
                             mainnetProtocolData={protocolData}

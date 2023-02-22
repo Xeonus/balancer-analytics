@@ -41,7 +41,8 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
 
     const mainnetData = mainnetProtocolData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.map(el => Number(el.value.toFixed(2)));
-    let gnosisData = gnosisProtocolData.map(el => Number(el.value.toFixed(2)));
+    
+
     //add preceeding zero values based on mainnet size to later deployed chains
     if (mainnetData && arbitrumData) {
         const diffSize = mainnetData.length - arbitrumData.length;
@@ -55,6 +56,14 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
         const diffSize = mainnetData.length - polygonData.length;
         const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
         polygonData = zeroArray.concat(polygonData);
+    }
+
+    let gnosisData = gnosisProtocolData.map(el => Number(el.value.toFixed(2)));
+
+    if (mainnetData && gnosisData) {
+        const diffSize = mainnetData.length - gnosisData.length;
+        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
+        gnosisData = zeroArray.concat(gnosisData);
     }
 
     //Generic x-Axis
