@@ -7,7 +7,7 @@ import { TransactionHistory } from '../../data/debank/debankTypes';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange, getMonthlyChartDataByDateRange } from './helpers';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
-import { FEE_STREAMER, getTreasuryConfig, KARPATKEY_SAFE } from '../../constants/wallets';
+import { FEE_STREAMER, FEE_STREAMER_2, getTreasuryConfig, KARPATKEY_SAFE } from '../../constants/wallets';
 import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
 import TreasuryTransactionTable from '../../components/Tables/TreasuryTransactionTable';
 import { useGetTotalBalances } from '../../data/debank/useGetTotalBalances';
@@ -50,7 +50,7 @@ export default function Financials() {
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
-    console.log("transactions", transactions)
+    //console.log("transactions", transactions)
 
     //Merge last 20 tx's with historical data
     const latestTimestamp = Math.max.apply(Math, txnHistory.history_list.map(function (o) { return o.time_at; }))
@@ -93,7 +93,10 @@ export default function Financials() {
 
 
     //---USDC: SEND and RECEIVE---
-    const usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
+    //TODO: FIX with address array for last argument
+    let usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
+    const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
+    usdcReceived = usdcReceived.concat(usdcReceived2);
     const quarterlyUSDC = getChartDataByQuarter(usdcReceived);
     const monthlyUSDC = getChartDataByMonth(usdcReceived)
     //USDC Send
@@ -171,16 +174,14 @@ export default function Financials() {
     })
 
     //---Historical Treasury wallet chart---
-    //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth, done)
+    //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth)
     const dailyUSDCIn = getDailyChartDataByDateRange(usdcReceived, startDate, endDate);
     const dailyUSDCOut = getDailyChartDataByDateRange(usdcSend, startDate, endDate);
     const historicalData: BalancerChartDataItem[] = [];
     if (totalUSDCReserves) {
         let runningAmount = totalUSDCReserves
         for (let i = dailyUSDCIn.length - 1; i >= 0; i--) {
-            if (i !== dailyUSDCIn.length - 1) {
                 runningAmount = runningAmount - dailyUSDCIn[i].value - dailyUSDCOut[i].value
-            }
             historicalData.push(
                 {
                     value: runningAmount,

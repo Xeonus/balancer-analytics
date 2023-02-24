@@ -56,7 +56,7 @@ export default function PoolPage() {
     //Swaps
     let swaps24h = 0;
     let swaps24hChange = 0;
-    if (swaps.length > 10) {
+    if (swaps.length >= 3) {
         swaps24h = swaps.filter(swap => swap.timestamp >= (Date.now() - 24 * 3600000) / 1000).length;
         const swaps48hTo24h = swaps.filter(swap => swap.timestamp >= (Date.now() - 48 * 3600000) / 1000 && swap.timestamp <= (Date.now() - 24 * 3600000) / 1000).length;
         swaps24hChange = swaps24h * 100 / swaps48hTo24h - 100;
@@ -65,7 +65,7 @@ export default function PoolPage() {
     //Fees
     let feesUSD = 0;
     let feesUSDChange = 0;
-    if (feesData.length > 10) {
+    if (feesData.length >= 3) {
         feesUSD = feesData[feesData.length - 1].value;
         if (feesData[feesData.length - 2]) {
             feesUSDChange = 100 / feesData[feesData.length - 2].value * feesData[feesData.length - 1].value - 100
@@ -76,7 +76,7 @@ export default function PoolPage() {
     //Volume
     let volumeUSD = 0;
     let volumeUSDChange = 0;
-    if (volumeData.length > 3) {
+    if (volumeData.length >= 3) {
         volumeUSD = volumeData[feesData.length - 1].value;
         if (volumeData[volumeData.length - 2]) {
             volumeUSDChange = 100 / volumeData[volumeData.length - 2].value * volumeData[volumeData.length - 1].value - 100
@@ -86,7 +86,7 @@ export default function PoolPage() {
     //TVL
     let tvlUSD = 0;
     let tvlUSDChange = 0;
-    if (tvlData.length > 3) {
+    if (tvlData.length >= 3) {
         tvlUSD = tvlData[tvlData.length - 1].value;
         if (tvlData[tvlData.length - 2]) {
             tvlUSDChange = 100 / tvlData[tvlData.length - 2].value * tvlData[tvlData.length - 1].value - 100

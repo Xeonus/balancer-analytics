@@ -27,18 +27,19 @@ interface ProtocolBarChartProps {
     mainnetData: number[],
     arbitrumData: number[],
     polygonData: number[],
+    gnosisData: number[],
     xAxis: string[],
     isUSD: boolean,
 }
 
 
 
-export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, xAxis, isUSD}: ProtocolBarChartProps) {
+export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, gnosisData, xAxis, isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
     const option = {
-        color: ['#00DDFF','#80FFA5', '#37A2FF'],
+        color: ['#00DDFF','#80FFA5', '#37A2FF', '#0d8e74'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -51,7 +52,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
             
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Gnosis'],
             inactiveColor: "red",
             textStyle:{
                 color: theme.palette.mode === 'dark' ? 'white' : 'black'
@@ -151,6 +152,29 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                     }
                 },
                 data: polygonData
+            },
+            {
+                name: 'Gnosis',
+                type: 'bar',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                itemStyle: {
+                    opacity: 0.95,
+                    color: 'rgb(13, 142, 116)'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
+                    }
+                },
+                data: gnosisData
             },
         ]
     };

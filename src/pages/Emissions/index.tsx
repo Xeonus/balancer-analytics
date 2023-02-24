@@ -238,7 +238,7 @@ export default function Emissions() {
                         Weekly Emission Efficiency on {activeNetwork.name}
                         
                     </Typography>
-                    <Typography variant="caption">Estimations are projected for weekly emissions and revenue to the DAO after fee cut of {formatPercentageAmount(DAO_FEE_FACTOR * 100)} %</Typography>
+                    <Typography variant="caption">Estimations are projected for weekly emissions and revenue to the Fee Collector</Typography>
                     {decoratedPools && decoratedPools.length > 10 && balPrice > 0 ?
                         <EmissionsTable poolDatas={decoratedPools} timeRange={7} /> :
                         <Grid
