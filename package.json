@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.4",
-    "@balancer-labs/sdk": "^0.1.44",
+    "@balancer-labs/sdk": "^1.0.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@graphql-codegen/add": "^3.2.3",

@@ -76,7 +76,7 @@ export default function Treasury() {
     const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves ? usdcReserves + karpatkeyusdcReserves : 0;
 
     //BAL insurance fund
-    const BALinsuranceAmount = 500000;
+    const BALinsuranceAmount = 12500000;
     const balPrice = totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'BAL') {
             return el

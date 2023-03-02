@@ -14,9 +14,22 @@ export const YIELD_BEARING_TOKENS = [
     '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', //wstETH
     '0x5979d7b546e38e414f7e9822514be443a4800529', //wstETH (Arb)
     '0xa13a9247ea42d743238089903570127dda72fe44', //bb-a-USD
+    '0xd093fa4fb80d09bb30817fdcd442d4d02ed3e5de', //a-USDC
     '0x2f4eb100552ef93840d5adc30560e5513dfffacb', //bb-a-USDT
     '0x82698aecc9e28e9bb27608bd52cf57f704bd1b83', //bb-a-USDC
     '0xae37d54ae477268b9997d4161b96b8200755935c', //bb-a-DAI
+    '0x3c640f0d3036ad85afa2d5a9e32be651657b874f', //bb-e-USDT
+    '0xd4e7c1f3da1144c9e2cfd1b015eda7652b4a4399', //bb-e-USDC
+    '0xeb486af868aeb3b6e53066abc9623b1041b42bc0', //bb-e-DAI
+    '0x50cf90b954958480b8df7958a9e965752f627124', //bb-e-USD-BPT
+    '0x4a82b580365cff9b146281ab72500957a849abdc', //bb-g-USDC
+    '0xe03af00fabe8401560c1ff7d242d622a5b601573', //bb-g-DAI
+    '0x5bae72b75caab1f260d21bc028c630140607d6e8', //bb-rf-USDC
+    '0x894c82800526e0391e709c0983a5aea3718b7f6d', //bb-rf-USDT
+    '0xe1fb90d0d3b47e551d494d7ebe8f209753526b01', //bb-rf-DAI
+    '0x178e029173417b1f9c8bc16dcec6f697bc323746', //bb-am-DAI
+    '0xf93579002dbe8046c43fefe86ec78b1112247bb8', //bb-am-USDC
+    '0xff4ce5aaab5a627bf82f4a571ab1ce94aa365ea6', //bb-am-USDT
     '0xae78736cd615f374d3085123a210448e74fc6393', //rETH
     '0xac3e018457b222d93114458476f3e3416abbe38f', //sfrxETH
     '0xbe9895146f7af43049ca1c1ae358b0541ea49704', //cbETH

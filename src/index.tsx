@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ApplicationUpdater from './state/application/updater';
 import { Provider } from 'react-redux';

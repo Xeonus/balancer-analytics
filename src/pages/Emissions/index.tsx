@@ -80,12 +80,13 @@ export default function Emissions() {
     //Load pools and balances
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const filteredPoolDatas = yieldPools.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
-    const decoratedPools = useDecoratePools(filteredPoolDatas.length > 10 ? filteredPoolDatas : undefined, balPrice)
+    let decoratedPools = useDecoratePools(filteredPoolDatas.length > 10 ? filteredPoolDatas : undefined, balPrice)
     console.log("decoratedPools", decoratedPools)
 
     const priceDecoratedPools: PoolData[] = [];
     if (decoratedPools && balPrice) {
         decoratedPools.map(pool => pool.balEmissions = pool.balEmissions ? pool.balEmissions * balPrice : 0)
+        decoratedPools = decoratedPools.filter(pool => pool.balEmissions && pool.balEmissions > 0);
     }
 
     //Create bar chart data for pool distribution

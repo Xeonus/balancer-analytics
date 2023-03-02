@@ -99,7 +99,7 @@ export default function ProtocolFeeSankeyChart({
           name: 'Fee Collector'
         },
         {
-          name: 'Bribes'
+          name: 'Voting Incentives'
         },
         {
           name: 'Revenue to veBAL holders'
@@ -137,7 +137,7 @@ export default function ProtocolFeeSankeyChart({
         },
         {
           source: 'Fee Collector',
-          target: 'Bribes',
+          target: 'Voting Incentives',
           value: tokenYield * 0.5 * (1 - DAO_FEE_FACTOR) + bribeFeesYieldPools * 0.5 * (1 - DAO_FEE_FACTOR)
         },
         {

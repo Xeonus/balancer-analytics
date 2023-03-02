@@ -6,9 +6,8 @@ Balancer V2 analytics
 An open sourced interface for Balancer V2 analytics - reimagined by Xeonus
 
 
-
-Info URL: https://info.balancer.xeonus.io/#/
-Prototype / testing build: https://balancer-analytics-prototype.web.app
+Release URL: https://balancer.defilytica.com
+Deprecated URL: https://info.balancer.xeonus.io/#/
 
 ## Development
 

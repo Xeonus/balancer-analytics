@@ -2,7 +2,7 @@
 import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
-import GNOSIS_LOGO_URL from '../assets/svg/polygon.svg'
+import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
 
 import {
   ALCHEMY_KEY,
