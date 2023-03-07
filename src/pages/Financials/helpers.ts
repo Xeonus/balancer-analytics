@@ -54,9 +54,7 @@ export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory
         const date2 = new Date(b.time)
         return date1.getTime() - date2.getTime();
     })
-
     return tnxChartData;
-
 }
 
 export function getChartDataByQuarter(chartData: BalancerChartDataItem[]) {
@@ -81,15 +79,12 @@ export function getChartDataByQuarter(chartData: BalancerChartDataItem[]) {
         }
         quarterSum += item.value;
     });
-
     // Push the last set of data
     quarterData.push({
         time: currentQuarter,
         value: quarterSum,
     });
-
     return quarterData;
-
 }
 
 export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
@@ -114,15 +109,12 @@ export function getChartDataByMonth(chartData: BalancerChartDataItem[]) {
         }
         quarterSum += item.value;
     });
-
     // Push the last set of data
     quarterData.push({
         time: currentMonth,
         value: quarterSum,
     });
-
     return quarterData;
-
 }
 
 export function getMonthlyChartDataByDateRange(chartData: BalancerChartDataItem[], start: Date, end: Date) {
@@ -134,8 +126,8 @@ export function getMonthlyChartDataByDateRange(chartData: BalancerChartDataItem[
         let monthSum = 0
 
     chartData.forEach(item => {
-        let month = new Date(startDate).getMonth();
-        let year = new Date(startDate).getFullYear();
+        let month = new Date(item.time).getMonth();
+        let year = new Date(item.time).getFullYear();
         let currentMonthYear = `${new Date(item.time).toLocaleString('default', { month: 'short' })}-${year}`;
 
         if (currentMonth !== currentMonthYear) {

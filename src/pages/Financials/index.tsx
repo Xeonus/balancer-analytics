@@ -97,18 +97,14 @@ export default function Financials() {
     let usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
     usdcReceived = usdcReceived.concat(usdcReceived2);
-    const quarterlyUSDC = getChartDataByQuarter(usdcReceived);
-    const monthlyUSDC = getChartDataByMonth(usdcReceived)
     //USDC Send
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:
     usdcSend[1].value = 0
-    //console.log("usdcSend", usdcSend)
     //const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
     //---BAL---
     const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
-    //console.log("balReceive", balReceive)
     const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
 
     //---USDC: Cumulative in- and outflows---
@@ -121,7 +117,6 @@ export default function Financials() {
     ];
 
     startDates.sort((a, b) => a.getTime() - b.getTime())
-    //console.log("startDates", startDates)
     let endDates: Date[] = [
         new Date(usdcReceived[usdcReceived.length - 1].time),
         new Date(usdcSend[usdcSend.length - 1].time),
@@ -129,11 +124,8 @@ export default function Financials() {
         new Date(balSend[balSend.length - 1].time),
     ];
     endDates.sort((a, b) => a.getTime() - b.getTime())
-    //console.log("endDates", endDates)
-
     const startDate = startDates[0];
     const endDate = endDates[endDates.length - 1]
-    //console.log("endDate", endDate)
 
 
     const cumulativeIncomeChartData = getCumulativeSumTrace(usdcReceived, startDate, endDate);
@@ -176,6 +168,7 @@ export default function Financials() {
     //---Historical Treasury wallet chart---
     //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth)
     const dailyUSDCIn = getDailyChartDataByDateRange(usdcReceived, startDate, endDate);
+    //console.log("dailyUsdcIn", dailyUSDCIn)
     const dailyUSDCOut = getDailyChartDataByDateRange(usdcSend, startDate, endDate);
     const historicalData: BalancerChartDataItem[] = [];
     if (totalUSDCReserves) {

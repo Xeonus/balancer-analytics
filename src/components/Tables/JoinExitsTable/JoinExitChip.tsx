@@ -40,7 +40,10 @@ export default function JoinExitChip({amounts, tokenList, size}: JoinExitChipPro
             >
         {tokenList.map((token => 
             Number(amounts[tokenList.indexOf(token)]) > 0 ?
-            <Box mr={1}>
+            <Box 
+                mr={1}
+                key={token + Math.random() * 100 + amounts[tokenList.indexOf(token)]}
+            >
                 
              <Avatar
              key={token + Math.random() * 10 + amounts[tokenList.indexOf(token)]}
