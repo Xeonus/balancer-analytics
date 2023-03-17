@@ -30,12 +30,25 @@ export const YIELD_BEARING_TOKENS = [
     '0x178e029173417b1f9c8bc16dcec6f697bc323746', //bb-am-DAI
     '0xf93579002dbe8046c43fefe86ec78b1112247bb8', //bb-am-USDC
     '0xff4ce5aaab5a627bf82f4a571ab1ce94aa365ea6', //bb-am-USDT
+    '0x2ff1a9dbdacd55297452cfd8a4d94724bc22a5f7', //bb-i-USDT
+    '0xbc0f2372008005471874e426e86ccfae7b4de79d', //bb-i-USDC
+    '0xdba274b4d04097b90a72b62467d828cefd708037', //bb-i-DAI
+    '0x7966c5bae631294d7cffcea5430b78c2f76db6fa', //sAPE
+    '0x126e7643235ec0ab9c103c507642dc3f4ca23c66', //bb-s-stkAPE
     '0xae78736cd615f374d3085123a210448e74fc6393', //rETH
     '0xac3e018457b222d93114458476f3e3416abbe38f', //sfrxETH
     '0xbe9895146f7af43049ca1c1ae358b0541ea49704', //cbETH
+    '0x93ef1ea305d11a9b2a3ebb9bb4fcc34695292e7d', //qETH
     '0x48e6b98ef6329f8f0a30ebb8c7c960330d648085', //bb-am-USD
     '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4', //stMatic
     '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6', //MaticX
+    '0xfedb19ec000d38d92af4b21436870f115db22725', //bb-ag-USD
+    '0x41211bba6d37f5a74b22e667533f080c7c7f3f13', //bb-ag-XDAI
+    '0xd16f72b02da5f51231fde542a8b9e2777a478c88', //bb-ag-USDT
+    '0xe7f88d7d4ef2eb18fcf9dd7216ba7da1c46f3dd6', //bb-ag-USDC
+    '0xffff76a3280e95dc855696111c2562da09db2ac0', //bb-ag-GNO
+    '0xbb9cd48d33033f5effbedec9dd700c7d7e1dcf50', //bb-ag-WETH
+    '0xd4015683b8153666190e0b2bec352580ebc4caca', //bb-ag-WBTC
 
 
 ]

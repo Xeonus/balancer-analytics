@@ -294,10 +294,14 @@ export default function Fees() {
                             Tokens below threshold ( &lt; {formatDollarAmount(activeNetwork.feeCollectorThreshold)}) : {formatDollarAmount(totalAmountBelowThreshold)}
                         </Typography>
                     </Grid>
-                    {balancesBelowThreshold ?
+                    {balancesBelowThreshold && balancesBelowThreshold.length > 0 ?
                         <Grid item xs={11}>
                             <FeeCollectorTokenTable tokenBalances={balancesBelowThreshold} />
-                        </Grid> : <Typography>No tokens below threshold</Typography>}
+                        </Grid> : <Grid item xs={11}>
+                            <Box ml={1}>
+                                <Typography color='error'>No tokens below threshold</Typography>
+                            </Box>
+                        </Grid>}
                 </Grid> : (<Grid
                     container
                     spacing={2}

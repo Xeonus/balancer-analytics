@@ -1211,13 +1211,12 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@balancer-labs/sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@balancer-labs/sdk/-/sdk-1.0.0.tgz#b0a32faf3aaa50f8e02eb474711fd09747b63393"
-  integrity sha512-FC7mf6k6hL7FXk46MBy1iQLETqesItFEXvbWCzez4fPBZYaMqqm93XzA0aTrzObLOu2MOHPusU8a+PduV9VGcQ==
+"@balancer-labs/sdk@^1.0.1-beta.29":
+  version "1.0.1-beta.29"
+  resolved "https://registry.yarnpkg.com/@balancer-labs/sdk/-/sdk-1.0.1-beta.29.tgz#14eb4f87b63d8a68571f96a5275185b0b4266315"
+  integrity sha512-LSUz2vXfbRYBu2MtLcdRKUNhgS7geFlrmXYrciumHrlOxGz+cKe4sZBpUpI2X2mF39e5PVes3MDtUW90R1xbfA==
   dependencies:
-    "@balancer-labs/sor" "^4.1.1-beta.3"
-    "@balancer-labs/typechain" "^1.0.0"
+    "@balancer-labs/sor" "^4.1.1-beta.6"
     "@ethersproject/abi" "^5.4.0"
     "@ethersproject/abstract-signer" "^5.4.0"
     "@ethersproject/address" "^5.4.0"
@@ -1233,17 +1232,12 @@
     json-to-graphql-query "^2.2.4"
     lodash "^4.17.21"
 
-"@balancer-labs/sor@^4.1.1-beta.3":
-  version "4.1.1-beta.3"
-  resolved "https://registry.yarnpkg.com/@balancer-labs/sor/-/sor-4.1.1-beta.3.tgz#8f716f0776b83bc78fb302eccb917b7abcaa6575"
-  integrity sha512-9lAQ9JYrmTjpY61RrfNtlFSlq37cK5DXcUNL0zRrVSLFCSQAyBbVIayZfXhft50kkHrpU1zPaPdaLn8zBTYwfw==
+"@balancer-labs/sor@^4.1.1-beta.6":
+  version "4.1.1-beta.6"
+  resolved "https://registry.yarnpkg.com/@balancer-labs/sor/-/sor-4.1.1-beta.6.tgz#4f7ed160c26829525e1ccc8d918923c8f371e3fa"
+  integrity sha512-Bfeqa2XZJowjSqLr0bv6ndKY4FOIR+upOWt0ILSzNNd2MLXiklWklg6TeAvTZXknOC+1zDCyiPUjEH+YfvA2Zw==
   dependencies:
     isomorphic-fetch "^2.2.1"
-
-"@balancer-labs/typechain@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@balancer-labs/typechain/-/typechain-1.0.0.tgz#823eb13b9e166f7b50334c9d70d9ade81344f5c9"
-  integrity sha512-/fWxh4UgmHxtRt5e1anVeF8COo6FBNF28X8bd0/55SIdRDyaW7TMC7K4Jbuy58IcaERmEqi089lABlEgoeiWTQ==
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
