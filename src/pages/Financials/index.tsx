@@ -84,7 +84,7 @@ export default function Financials() {
         }
     })?.amount : 0;
 
-    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves ? usdcReserves + karpatkeyusdcReserves : 0;
+    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves : usdcReserves;
 
 
 
