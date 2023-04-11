@@ -133,6 +133,7 @@ export default function useDecoratePools(
                 const emissionHit = weeklyArray.find((el) => el?.poolId === pool.id)
                 if (hit && finalPool.indexOf(hit)) {
                     pool.aprSet = hit.apr;
+                    pool.isInRecoveryMode = hit.isInRecoveryMode
                     pool.balEmissions = balPrice && emissionHit ? emissionHit?.weeklyBAL * balPrice : emissionHit?.weeklyBAL;
                     pool.tokens.map(token => {
                         const target = hit.tokens.find(t => t.address === token.address)

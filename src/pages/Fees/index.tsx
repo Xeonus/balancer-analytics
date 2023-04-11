@@ -51,6 +51,8 @@ export default function Fees() {
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const { totalBalances } = useGetTotalBalances(FEE_COLLECTOR_ADDRESS);
     const decoratedPools = useDecoratePools(yieldPools.length > 10 ? yieldPools : undefined)
+    //Remove pools that are in recovery mode
+    const filteredPools = decoratedPools?.filter(pool => ! pool.isInRecoveryMode)
 
     //Problem statement: We should distinguish between views of real realized fees -> make a swap fee analysis view that shows the "real" swap fees earned
     //Create an additional aggregated table that ESTIMATES / Makes a forecast on potential fees and its distributions from TODAYS fees!
@@ -224,7 +226,7 @@ export default function Fees() {
                     </Box>
                 </Grid>
             </Grid>
-            {decoratedPools ?
+            {filteredPools ?
                 <Grid
                     container
                     spacing={1}
@@ -234,14 +236,14 @@ export default function Fees() {
                         <Card
                             sx={{ boxShadow: 3 }}
                         >
-                            <ProtocolFeeSankeyChart poolDatas={decoratedPools} timeRange={Number(timeRange)} />
+                            <ProtocolFeeSankeyChart poolDatas={filteredPools} timeRange={Number(timeRange)} />
                         </Card>
                     </Grid>
                     <Grid mt={2} item xs={11}>
                         <Typography variant="h6">Projected Pool Revenue Performance to the DAO</Typography>
                     </Grid>
                     <Grid item xs={11}>
-                        <AggregatedPoolFeeTable poolDatas={decoratedPools} timeRange={Number(timeRange)} />
+                        <AggregatedPoolFeeTable poolDatas={filteredPools} timeRange={Number(timeRange)} />
                     </Grid>
                 </Grid> : (<Grid
                     container

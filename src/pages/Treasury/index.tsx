@@ -73,7 +73,7 @@ export default function Treasury() {
         }
     })?.amount : 0;
 
-    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves ? usdcReserves + karpatkeyusdcReserves : 0;
+    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves : usdcReserves;
 
     //BAL insurance fund
     const BALinsuranceAmount = 1250000;

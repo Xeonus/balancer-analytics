@@ -96,6 +96,8 @@ export interface PoolData {
     aprSet?: AprSet
     // BAL emissions
     balEmissions?: number;
+    //Recovery mode?
+    isInRecoveryMode?: boolean;
 }
 
 
