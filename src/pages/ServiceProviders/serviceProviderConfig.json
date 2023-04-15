@@ -1,5 +1,5 @@
 {
-    "service_provider":[
+    "service_provider": [
         {
             "name": "Balancer Maxis",
             "short_description": "The Balancer Maxis are a passionate group of Balancer community contributors. A center of excellence that keeps the Balancer ecosystem operating at a first class level.",
@@ -34,6 +34,17 @@
                         "USDC": 0,
                         "BAL": 15600,
                         "BAL_VESTED": 32400
+                    }
+                },
+                {
+                    "year": 2023,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xcc65b6c599b11446da7074768b99a3a1dcc246705a090f6747f56c0719846a48",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 42150,
+                        "ETH": 5,
+                        "BAL_VESTED": 5130
                     }
                 }
             ]
@@ -94,7 +105,6 @@
                         "BAL_VESTED": 0
                     }
                 }
-                
             ]
         },
         {
