@@ -47,7 +47,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   coingeckoId: 'ethereum',
   debankId: 'eth',
   balAddress: '0xba100000625a3754423978a60c9317c58a424e3d',
-  feeCollectorThreshold: 10000,
+  feeCollectorThreshold: 5000,
   route: '',
   name: 'Ethereum',
   startTimeStamp: 1619874000,
