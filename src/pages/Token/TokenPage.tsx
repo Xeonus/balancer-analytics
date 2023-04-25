@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom';
-import { Typography, Box, Card, Grid, Stack } from "@mui/material";
+import { Typography, Box, Card, Grid } from "@mui/material";
 import { useBalancerTransactionData } from "../../data/balancer/useTransactions";
 import MetricsCard from '../../components/Cards/MetricsCard';
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import SwapHorizontalCircleIcon from '@mui/icons-material/SwapHorizontalCircle';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';

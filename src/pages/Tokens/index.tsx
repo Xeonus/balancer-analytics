@@ -5,10 +5,8 @@ import TokenTable from '../../components/Tables/TokenTable';
 import { Grid } from '@mui/material';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
 import { BalancerChartDataItem, BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
-import GenericBarChart from '../../components/Echarts/GenericBarChart';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import MixedLineBarChart from '../../components/Echarts/MixedLineBarChart';
-import { isMobile } from 'react-device-detect'
 import NavCrumbs from '../../components/NavCrumbs';
 import { NavElement } from '../../components/NavCrumbs';
 

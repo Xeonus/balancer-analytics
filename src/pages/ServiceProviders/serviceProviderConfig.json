@@ -50,6 +50,24 @@
             ]
         },
         {
+            "name": "Beethoven-X DAO",
+            "site_url": "https://beets.fi/",
+            "short_description": "Since becoming a Friendly Fork, Beethoven-X and Balancer have developed a strong working relationship, marked by the successful launch of a joint venture on Optimism. As a Service Provider the Beethoven-X team will further strengthen that relationship by providing expert services for protocol development and marketing.",
+            "img_ref": "beethoven-x-dao_small.png",
+            "budgets": [
+                {
+                    "year": 2023,
+                    "quarter": 2,
+                    "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x686cfe15ffd35178814276eaff348b791bfd8fd1684e2731f222e9881df61279",
+                    "budget_requested": {
+                        "USDC": 0,
+                        "BAL": 20100,
+                        "BAL_VESTED": 0
+                    }
+                }
+            ]
+        },
+        {
             "name": "Orb Collective",
             "site_url": "",
             "short_description": "Orb is an experienced and passionate team of professionals who are dedicated to propelling Balancers growth. Orbs mission is simple: to scale global utilization of the Balancer Protocol, and continue to cultivate the Balancer ecosystem for the next decade of innovation in DeFi.",

@@ -11,7 +11,6 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from './helpers';
 import ServiceProviderSpendingTable from '../../components/Tables/ServiceProviderSpendingTable';
-import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 
 
@@ -258,7 +257,7 @@ export default function ServiceProviders() {
                         container
                         spacing={{ xs: 2, md: 2 }}
                         columns={{ xs: 4, sm: 8, md: 12 }}
-                        sx={{ justifyContent: 'center', alignContent: 'center' }}
+                        sx={{ justifyContent: 'center', alignContent: 'center', mb: 2 }}
                     >
                         {
                             sps.service_provider.map((sp, index) =>

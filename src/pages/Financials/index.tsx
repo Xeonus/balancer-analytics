@@ -47,11 +47,11 @@ export default function Financials() {
 
     //Load Txs and history
     const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
-    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
+    const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
 
     //Transaction checker
-    const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, 1680288107)
+    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, 1680288107)
     //console.log("transactions", transactions)
 
     //Merge last 20 tx's with historical data

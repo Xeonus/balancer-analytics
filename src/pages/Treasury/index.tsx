@@ -1,4 +1,4 @@
-import { Typography, Grid, Box, Card, Stack } from "@mui/material";
+import { Typography, Grid, Box, Card } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -64,12 +64,16 @@ export default function Treasury() {
     const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
+        } else {
+            return 0
         }
     })?.amount : 0;
 
     const karpatkeyusdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
+        } else {
+            return 0
         }
     })?.amount : 0;
 
@@ -77,12 +81,12 @@ export default function Treasury() {
 
     //BAL insurance fund
     const BALinsuranceAmount = 1250000;
-    const balPrice = totalBalances ? totalBalances.find(el => {
-        if (el.symbol === 'BAL') {
-            return el
-        }
-    })?.price : 0;
-    const BALInsuranceWorth = BALinsuranceAmount * (balPrice ? balPrice : 0);
+    // const balPrice = totalBalances ? totalBalances.find(el => {
+    //     if (el.symbol === 'BAL') {
+    //         return el
+    //     }
+    // })?.price : 0;
+    //const BALInsuranceWorth = BALinsuranceAmount * (balPrice ? balPrice : 0);
 
 
     //Token Balances Pie Chart
