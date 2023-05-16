@@ -244,7 +244,6 @@ export default function EmissionsTable({
 
     //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
-    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.5 * DAO_FEE_FACTOR * time + el.feesEpochUSD / 7 * 0.5 * DAO_FEE_FACTOR * time, 0)
 
     //Helper function to calculate daily token yield
     function calculateTokenYieldInUsd(poolData: PoolData) {
@@ -253,7 +252,7 @@ export default function EmissionsTable({
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365
+                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address]  / 100 / 100 * poolData.tvlUSD / 365
                         dailyYield += tokenYield
                 }
             }
@@ -270,10 +269,10 @@ export default function EmissionsTable({
             el.tokens,
             el,
             el.feesEpochUSD / 7  * time  * 0.5 ,
-            el.feesEpochUSD / 7   * time * 0.5  + calculateTokenYieldInUsd(el)  * time  * 0.5,
-            calculateTokenYieldInUsd(el)  * time * 0.5,
+            el.feesEpochUSD / 7   * time * 0.5  + calculateTokenYieldInUsd(el)  * time  ,
+            calculateTokenYieldInUsd(el)  * time ,
             el.balEmissions ? el.balEmissions : 0,
-            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 + calculateTokenYieldInUsd(el)  * time  * 0.5) / el.balEmissions) : 0) : 0)
+            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 + calculateTokenYieldInUsd(el)  * time  ) / el.balEmissions) : 0) : 0)
     )
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)

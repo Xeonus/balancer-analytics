@@ -113,7 +113,7 @@ export const GnosisNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.GNOSIS,
   chainId: '100',
   coingeckoId: 'xdai-ecosystem',
-  debankId: 'gnosis',
+  debankId: 'xdai',
   balAddress: '0x7eF541E2a22058048904fE5744f9c7E4C57AF717',
   feeCollectorThreshold: 5000,
   route: 'gnosis',

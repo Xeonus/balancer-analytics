@@ -234,16 +234,17 @@ export default function AggregatedPoolFeeTable({
 
     //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
-    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el) * 0.5 * DAO_FEE_FACTOR * time + el.feesEpochUSD / 7 * 0.5 * DAO_FEE_FACTOR * time, 0)
+    const totalRevenue = filteredPoolDatas.reduce((acc, el) => acc + calculateTokenYieldInUsd(el)  * DAO_FEE_FACTOR * time + el.feesEpochUSD / 7 * 0.5 * DAO_FEE_FACTOR * time, 0)
 
     //Helper function to calculate daily token yield
+    //IMPORTANT: SDK provides token APR as pure staking APR for the entire TVL based on the token fraction
     function calculateTokenYieldInUsd(poolData: PoolData) {
         let yearlyYield = 0
         if (poolData.aprSet) {
             poolData.tokens.forEach((token) => {
                 let tokenYield = 0
                 if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365
+                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] / 100 / 100 * poolData.tvlUSD / 365
                     yearlyYield += tokenYield
                 }
             }
@@ -260,9 +261,9 @@ export default function AggregatedPoolFeeTable({
             el.tokens,
             el,
             el.feesEpochUSD / 7  * time  * 0.5 * DAO_FEE_FACTOR,
-            el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR,
-            calculateTokenYieldInUsd(el)  *time * 0.5 * DAO_FEE_FACTOR ,
-            100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time  * 0.5 * DAO_FEE_FACTOR))
+            el.feesEpochUSD / 7   * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time * DAO_FEE_FACTOR,
+            calculateTokenYieldInUsd(el)  *time * DAO_FEE_FACTOR ,
+            100 / totalRevenue * (el.feesEpochUSD / 7  * time * 0.5 * DAO_FEE_FACTOR + calculateTokenYieldInUsd(el)  * time * DAO_FEE_FACTOR))
     )
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)

@@ -26,7 +26,7 @@ export default function ProtocolFeeSankeyChart({
       poolData.tokens.forEach((token) => {
         let tokenYield = 0
         if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-          tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * token.balance * token.price / 365 * timeRange
+          tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address] * 2 / 100 / 100 * poolData.tvlUSD / 365 * timeRange
           income += tokenYield
         }
       }
