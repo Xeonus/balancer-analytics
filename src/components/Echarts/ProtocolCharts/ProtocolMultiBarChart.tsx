@@ -133,6 +133,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
                     >
                         <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                         <Divider />
+                        <MenuItem value={'7'}> 7 days</MenuItem>
                         <MenuItem value={'30'}> 30 days</MenuItem>
                         <MenuItem value={'90'}>90 days</MenuItem>
                         <MenuItem value={'180'}>180 days</MenuItem>
