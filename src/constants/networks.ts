@@ -3,6 +3,7 @@ import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
 import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
+import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
 
 import {
   ALCHEMY_KEY,
@@ -16,6 +17,7 @@ export enum SupportedNetwork {
   ETHEREUM,
   ARBITRUM,
   POLYGON,
+  ZKEVM,
   GNOSIS,
 }
 
@@ -109,6 +111,29 @@ export const PolygonNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
+export const PolygonZkEVMNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.ZKEVM,
+  chainId: '1101',
+  coingeckoId: 'polygon-zkevm',
+  debankId: 'zkevm',
+  balAddress: '0x120eF59b80774F02211563834d8E3b72cb1649d6',
+  feeCollectorThreshold: 5000,
+  route: 'zkevm',
+  name: 'Polygon zkEVM',
+  startTimeStamp: 1685990897,
+  appUri: 'https://app.balancer.fi/#/zkevm/',
+  //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
+  clientUri: 'https://balancer-polygon-zkevm-v2-analytics.stellate.sh',
+  decentralicedClientUri: '',
+  alchemyRPCUrl: ALCHEMY_URL_POLYGON,
+  alchemyKey: ALCHEMY_KEY_POLYGON,
+  bgColor: '#a176e8',
+  primaryColor: '#620df3',
+  secondaryColor: '#FB7876',
+  imageURL: ZKEVM_LOGO_URL,
+  blurb: 'Beta',
+}
+
 export const GnosisNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.GNOSIS,
   chainId: '100',
@@ -136,5 +161,6 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
   PolygonNetworkInfo,
+  PolygonZkEVMNetworkInfo,
   GnosisNetworkInfo,
 ]

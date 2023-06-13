@@ -4,7 +4,13 @@ import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { SupportedChainId } from '@uniswap/sdk-core';
-import { ArbitrumNetworkInfo, GnosisNetworkInfo, NetworkInfo, PolygonNetworkInfo } from './../constants/networks';
+import {
+    ArbitrumNetworkInfo,
+    GnosisNetworkInfo,
+    NetworkInfo,
+    PolygonNetworkInfo,
+    PolygonZkEVMNetworkInfo
+} from './../constants/networks';
 
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -44,6 +50,25 @@ export function getEtherscanLink(
 
     if (networkVersion === PolygonNetworkInfo) {
         prefix = 'https://polygonscan.com/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === PolygonZkEVMNetworkInfo) {
+        prefix = 'https://zkevm.polygonscan.com';
         switch (type) {
             case 'transaction': {
                 return `${prefix}/tx/${data}`;

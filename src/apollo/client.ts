@@ -121,6 +121,35 @@ export const arbitrumClient = new ApolloClient({
       },
     },
   })
+
+export const polygonZKEVMClient = new ApolloClient({
+    //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
+    uri: 'https://balancer-polygon-zkevm-v2-analytics.stellate.sh',
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
   
   export const polygonBlockClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks',

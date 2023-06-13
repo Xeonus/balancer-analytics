@@ -24,6 +24,7 @@ export default function Chain() {
 
     const [activeNetwork] = useActiveNetworkVersion()
     const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, activeNetwork.startTimeStamp);
+    console.log("active Network", protocolData)
     const poolData = useBalancerPools(20);
 
 

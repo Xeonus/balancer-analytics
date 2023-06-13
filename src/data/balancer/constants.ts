@@ -15,6 +15,7 @@ export const PERSONAL_GRAPH_KEY = process.env.REACT_APP_PERSONAL_GRAPH_KEY || ''
 export const INFURA_KEY = process.env.REACT_APP_INFURA_KEY || '';
 export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY || '';
 export const ALCHEMY_URL = process.env.REACT_APP_ALCHEMY_URL || '';
+export const ALCHEMY_URL_ZKEVM = process.env.REACT_APP_ALCHEMY_URL_ZKEVM || '';
 export const ALCHEMY_KEY_POLYGON = process.env.REACT_APP_ALCHEMY_KEY_POLYGON || '';
 export const ALCHEMY_URL_POLYGON = process.env.REACT_APP_ALCHEMY_URL_POLYGON || '';
 export const ALCHEMY_KEY_ARBITRUM = process.env.REACT_APP_ALCHEMY_KEY_ARBITRUM || '';

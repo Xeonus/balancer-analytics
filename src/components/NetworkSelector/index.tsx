@@ -1,12 +1,19 @@
 
 import { FormControl, Select, MenuItem, Avatar, Divider, SelectChangeEvent } from "@mui/material"
 import { Box } from "@mui/system"
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from "../../constants/networks"
+import {
+    ArbitrumNetworkInfo,
+    EthereumNetworkInfo,
+    GnosisNetworkInfo,
+    PolygonNetworkInfo,
+    PolygonZkEVMNetworkInfo
+} from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
+import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
 import { useNavigate } from "react-router-dom";
 
 export default function NetworkSelector() {
@@ -29,6 +36,9 @@ export default function NetworkSelector() {
         } else if (chainId === GnosisNetworkInfo.chainId) {
             update(GnosisNetworkInfo)
             navigate('/gnosis/chain');
+        } else if (chainId === PolygonZkEVMNetworkInfo.chainId) {
+            update(PolygonZkEVMNetworkInfo)
+            navigate('/zkevm/chain');
         }
         
     };
@@ -83,6 +93,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Polygon
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={PolygonZkEVMNetworkInfo.chainId} key="zkevm">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={PolygonZkevmLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Polygon zkEVM
                         </Box>
                     </Box>
                 </MenuItem>

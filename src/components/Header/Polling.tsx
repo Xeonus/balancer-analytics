@@ -3,8 +3,10 @@ import { useTheme } from '@mui/material/styles'
 import { green, orange } from '@mui/material/colors';
 import { useActiveNetworkVersion, useSubgraphStatus } from '../../state/application/hooks'
 import { getEtherscanLink } from '../../utils'
-import { EthereumNetworkInfo } from '../../constants/networks'
+import {EthereumNetworkInfo, PolygonZkEVMNetworkInfo} from '../../constants/networks'
 import { Link, CircularProgress, Box, IconButton } from '@mui/material'
+import useLatestAlchemyBlock from "../../data/blocks/useLatestAlchemyBlock";
+import {ALCHEMY_URL_ZKEVM} from "../../data/balancer/constants";
 
 
 export default function Polling() {
@@ -14,6 +16,10 @@ export default function Polling() {
   const [status] = useSubgraphStatus()
   const [isMounted, setIsMounted] = useState(true)
   const latestBlock = activeNetwork === EthereumNetworkInfo ? status.headBlock : status.syncedBlock
+    //TODO: Fix logic for all chains here!
+    const latestAlchemyBlock = useLatestAlchemyBlock(ALCHEMY_URL_ZKEVM)
+    const activeBlock = (latestAlchemyBlock && activeNetwork === PolygonZkEVMNetworkInfo ) ? latestAlchemyBlock : latestBlock
+    console.log("alchemy block", latestAlchemyBlock)
 
   useEffect(
     () => {
@@ -48,8 +54,8 @@ export default function Polling() {
               variant="caption" display="block" 
               underline="none" target="_blank" 
               rel="noopener noreferrer" 
-              href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
-              Synced block: {isMounted ? latestBlock : ' '}
+              href={activeBlock ? getEtherscanLink(activeBlock.toString(), 'block', activeNetwork) : ''}>
+              Synced block: {isMounted ? activeBlock : ' '}
             </Link>
           </Box>
           <Box ml={0.5} mb={1}>
