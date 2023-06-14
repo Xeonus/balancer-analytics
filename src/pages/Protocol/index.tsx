@@ -10,8 +10,22 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
-import { arbitrumClient, arbitrumBlockClient, polygonClient, polygonBlockClient, gnosisBlockClient, gnosisClient } from '../../apollo/client';
+import {
+    ArbitrumNetworkInfo,
+    EthereumNetworkInfo,
+    GnosisNetworkInfo,
+    PolygonNetworkInfo,
+    PolygonZkEVMNetworkInfo
+} from '../../constants/networks';
+import {
+    arbitrumClient,
+    arbitrumBlockClient,
+    polygonClient,
+    polygonBlockClient,
+    gnosisBlockClient,
+    gnosisClient,
+    polygonZKEVMBlockClient, polygonZKEVMClient
+} from '../../apollo/client';
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
 import ProtocolMultiAreaChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
@@ -19,6 +33,7 @@ import ExploreCard from '../../components/Cards/ExploreCard';
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
+import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 
 
@@ -34,6 +49,7 @@ export default function Protocol() {
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
+    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient);
 
     //Mainnet dominance
@@ -82,6 +98,9 @@ export default function Protocol() {
                         </Box>
                         <Box mb={1}>
                             <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                        </Box>
+                        <Box mb={1}>
+                            <ExploreCard linkName='Polygon zkEVM' linkTarget={'zkevm/chain'} svgPath={PolygonZkEVMLogo} />
                         </Box>
                         <Box mb={1}>
                             <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
@@ -134,6 +153,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData}
                             arbitrumProtocolData={arbitrumProtocolData}
                             polygonProtocolData={polygonProtocolData}
+                            polygonZkEVMProtocolData={polygonZkEVMProtocolData}
                             gnosisProtocolData={gnosisProtocolData}
                         />
                     </Grid>
@@ -155,6 +175,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.volumeData}
                             arbitrumProtocolData={arbitrumProtocolData.volumeData}
                             polygonProtocolData={polygonProtocolData.volumeData}
+                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.volumeData}
                             gnosisProtocolData={gnosisProtocolData.volumeData}
                             isUSD={true}
                         />
@@ -176,6 +197,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.feeData}
                             arbitrumProtocolData={arbitrumProtocolData.feeData}
                             polygonProtocolData={polygonProtocolData.feeData}
+                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.feeData}
                             gnosisProtocolData={gnosisProtocolData.feeData}
                             isUSD={true}
                         />
@@ -198,6 +220,7 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.swapData}
                             arbitrumProtocolData={arbitrumProtocolData.swapData}
                             polygonProtocolData={polygonProtocolData.swapData}
+                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.swapData}
                             gnosisProtocolData={gnosisProtocolData.swapData}
                             isUSD={false}
                         />

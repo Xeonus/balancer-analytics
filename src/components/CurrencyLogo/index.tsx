@@ -54,7 +54,7 @@ export default function CurrencyLogo({
     const tempSources: { [address: string]: string } = useMemo(() => {
         return {
             [`${address}`]:
-                `https://raw.githubusercontent.com/balancer-labs/assets/${assetLoc}/assets/${address}.png`,
+                `https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/${address}.png`,
         }
     }, [address, assetLoc])
 

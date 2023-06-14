@@ -128,7 +128,7 @@ export default function NetworkSelector() {
                         </Box>
                     </Box>
                 </MenuItem>
-                <MenuItem value={GnosisNetworkInfo.chainId} key="arb">
+                <MenuItem value={GnosisNetworkInfo.chainId} key="gnosis">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
                             <Avatar
