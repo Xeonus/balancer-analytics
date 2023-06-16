@@ -81,7 +81,6 @@ export default function Emissions() {
     const yieldPools = useBalancerPools(250, startTimestamp, endTimeStamp).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const filteredPoolDatas = yieldPools.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
     let decoratedPools = useDecoratePools(filteredPoolDatas.length > 10 ? filteredPoolDatas : undefined, balPrice)
-    console.log("decoratedPools", decoratedPools)
 
     const priceDecoratedPools: PoolData[] = [];
     if (decoratedPools && balPrice) {

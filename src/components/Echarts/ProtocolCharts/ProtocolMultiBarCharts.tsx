@@ -155,7 +155,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 data: polygonData
             },
             {
-                name: 'Polygon',
+                name: 'Polygon zkEVM',
                 type: 'bar',
                 stack: 'Total',
                 smooth: true,

@@ -61,7 +61,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
     let polygonZkEVMData = polygonZkEVMProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
 
     if (mainnetData && polygonZkEVMData) {
-        const diffSize = mainnetData.length - polygonData.length;
+        const diffSize = mainnetData.length - polygonZkEVMData.length;
         const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
         polygonZkEVMData = zeroArray.concat(polygonZkEVMData);
     }
@@ -83,7 +83,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
     const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);
     const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
-    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonData);
+    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonZkEVMData);
     const [rangedGnosisData, setrangedGnosisData] = React.useState(gnosisData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
@@ -99,7 +99,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(timeRange)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
-            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonData.length - Number(timeRange)))
+            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(timeRange)))
             setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }

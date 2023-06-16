@@ -13,7 +13,7 @@ export async function useDecoratePoolStats(
   const [activeNetwork] = useActiveNetworkVersion()
   const sdk = new BalancerSDK({
     network: Number(activeNetwork.chainId),
-    rpcUrl: activeNetwork.chainId === '1' ? `${ALCHEMY_URL}` : `${ALCHEMY_URL?.replace('eth-mainnet', 'polygon-mainnet.g')}`,
+    rpcUrl: activeNetwork.alchemyRPCUrl,
   });
 
   const { pools } = sdk;

@@ -115,7 +115,7 @@ export const PolygonZkEVMNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ZKEVM,
   chainId: '1101',
   coingeckoId: 'polygon-zkevm',
-  debankId: 'zkevm',
+  debankId: 'pze',
   balAddress: '0x120eF59b80774F02211563834d8E3b72cb1649d6',
   feeCollectorThreshold: 5000,
   route: 'zkevm',

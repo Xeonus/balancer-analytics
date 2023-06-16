@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import { EthereumNetworkInfo, SupportedNetwork } from "../../constants/networks";
 import { isAddress } from '../../utils';
 import { Avatar } from '@mui/material';
+import useGetTokenLists, {TokenListToken, TokenList} from "../../data/balancer/useGetTokenList";
 
 
 export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) => {
@@ -22,6 +23,8 @@ export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) =>
             } else {
                 return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/${address}/logo.png`
             }
+        case SupportedNetwork.ZKEVM:
+                return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygonzkevm/assets/${address}/logo.png`
         case SupportedNetwork.GNOSIS:
             if (address === '0x7eF541E2a22058048904fE5744f9c7E4C57AF717') {
                 return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png`
@@ -33,6 +36,18 @@ export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) =>
     }
 }
 
+const getLogoURIByAddressAndChainId = (
+    tokenList: TokenList | undefined,
+    address: string,
+    chainId: number
+): string  => {
+    if (tokenList) {
+        const foundToken = tokenList.tokens.find((token) => token.address === address);
+        return foundToken?.logoURI ? foundToken?.logoURI : '';
+    }
+    return '';
+};
+
 export default function CurrencyLogo({
     address,
     size = '24px',
@@ -43,12 +58,7 @@ export default function CurrencyLogo({
 
     const [activeNetwork] = useActiveNetworkVersion();
     const theme = useTheme();
-
-    //Balancer coin repository asset location
-    let assetLoc = 'master';
-    if (activeNetwork !== EthereumNetworkInfo) {
-        assetLoc = 'refactor-for-multichain'
-    }
+    const tokenList = useGetTokenLists();
 
     //Secondary assets are loaded through Balancer
     const tempSources: { [address: string]: string } = useMemo(() => {
@@ -56,7 +66,7 @@ export default function CurrencyLogo({
             [`${address}`]:
                 `https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/${address}.png`,
         }
-    }, [address, assetLoc])
+    }, [address])
 
     //Token image sources
     const srcs: string[] = useMemo(() => {
@@ -65,10 +75,10 @@ export default function CurrencyLogo({
 
         if (checkSummed && address) {
             const override = tempSources[address]
-            return [getTokenLogoURL(checkSummed, activeNetwork.id), override]
+            return [getLogoURIByAddressAndChainId(tokenList, checkSummed, activeNetwork.id), override]
         }
         return []
-    }, [address, tempSources, activeNetwork.id])
+    }, [address, tempSources, tokenList, activeNetwork.id])
 
     //Return an avatar for the default source, or an avatar as a child if default source is empty!
     return <Avatar

@@ -75,7 +75,28 @@ export default function Protocol() {
                         spacing={{ xs: 2, md: 2 }}
                         columns={{ xs: 4, sm: 2, md: 10 }}
                     >
-                        <Grid item xs={11} sm={4} md={4}>
+                        <Grid item mt={1} xs={11}>
+                            <Stack
+                                direction={{ xs: 'column', md: 'row' }}
+                            >
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Polygon zkEVM' linkTarget={'zkevm/chain'} svgPath={PolygonZkEVMLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
+                                </Box>
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={11} sm={4} md={4} mb={2}>
                             {coinData && coinData[balAddress] && coinData[balAddress].usd ?
                                 <CoinCard
                                     tokenAddress={balAddress}
@@ -89,27 +110,7 @@ export default function Protocol() {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item mt={1} xs={11}>
-                    <Stack
-                        direction={{ xs: 'column', md: 'row' }}
-                    >
-                        <Box mb={1}>
-                            <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
-                        </Box>
-                        <Box mb={1}>
-                            <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
-                        </Box>
-                        <Box mb={1}>
-                            <ExploreCard linkName='Polygon zkEVM' linkTarget={'zkevm/chain'} svgPath={PolygonZkEVMLogo} />
-                        </Box>
-                        <Box mb={1}>
-                            <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
-                        </Box>
-                        <Box mb={1}>
-                            <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
-                        </Box>
-                    </Stack>
-                </Grid>
+
             </Grid>
             {protocolData.feeData.length > 10 && arbitrumProtocolData.feeData.length > 10 && polygonProtocolData.feeData.length > 10 ?
                 <Grid

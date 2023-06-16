@@ -53,7 +53,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon ZkEVM', 'Gnosis'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -210,7 +210,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
                         return formatDollarAmount(value)
                     }
                 },
-                data: polygonData
+                data: polygonZkEVMData
             },
             {
                 name: 'Gnosis',
