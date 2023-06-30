@@ -22,7 +22,7 @@ const updatePathForNetwork = (network: NetworkInfo, currentPath: string) => {
     let newPath;
     if (network === EthereumNetworkInfo) {
         newPath = `/${pathParts[pathParts.length - 1]}`;
-    } else if (pathParts.length <= 2) {
+    } else if (pathParts.length <= 2 && pathParts[pathParts.length - 1] === '') {
         newPath = `/${network.route.toLowerCase()}/chain`;
     } else {
         newPath = `/${network.route.toLowerCase()}/${pathParts[pathParts.length - 1]}`;
