@@ -49,6 +49,13 @@ export const YIELD_BEARING_TOKENS = [
     '0xffff76a3280e95dc855696111c2562da09db2ac0', //bb-ag-GNO
     '0xbb9cd48d33033f5effbedec9dd700c7d7e1dcf50', //bb-ag-WETH
     '0xd4015683b8153666190e0b2bec352580ebc4caca', //bb-ag-WBTC
+    '0xb23c20efce6e24acca0cef9b7b7aa196b84ec942', //rETH zkevm
+    '0x5d8cff95d7a57c0bf50b30b43c7cc0d52825d4a9', //wstETH zkevm
+    '0x16c9a4d841e88e52b51936106010f27085a529ec', //bbo-USDC
+    '0x4b718e0e2fea1da68b763cd50c446fba03ceb2ea', //bbo-USDT
+    '0xe274c9deb6ed34cfe4130f8d0a8a948dea5bb286', //bbo-USD
+    '0x3a6789fc7c05a83cfdff5d2f9428ad9868b4ff85', //woUSDC
+    '0x550d3bb1f77f97e4debb45d4f817d7b9f9a1affb', //woUSDT
 
 
 ]

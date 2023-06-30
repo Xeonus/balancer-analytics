@@ -3,69 +3,74 @@ import { useTheme } from '@mui/material/styles'
 import { green, orange } from '@mui/material/colors';
 import { useActiveNetworkVersion, useSubgraphStatus } from '../../state/application/hooks'
 import { getEtherscanLink } from '../../utils'
-import { EthereumNetworkInfo } from '../../constants/networks'
+import {EthereumNetworkInfo, PolygonZkEVMNetworkInfo} from '../../constants/networks'
 import { Link, CircularProgress, Box, IconButton } from '@mui/material'
+import useLatestAlchemyBlock from "../../data/blocks/useLatestAlchemyBlock";
+import {ALCHEMY_URL_ZKEVM} from "../../data/balancer/constants";
 
 
 export default function Polling() {
-  const theme = useTheme()
-  const mode = theme.palette.mode;
-  const [activeNetwork] = useActiveNetworkVersion()
-  const [status] = useSubgraphStatus()
-  const [isMounted, setIsMounted] = useState(true)
-  const latestBlock = activeNetwork === EthereumNetworkInfo ? status.headBlock : status.syncedBlock
+    const theme = useTheme()
+    const mode = theme.palette.mode;
+    const [activeNetwork] = useActiveNetworkVersion()
+    const [status] = useSubgraphStatus()
+    const [isMounted, setIsMounted] = useState(true)
+    const latestBlock = activeNetwork === EthereumNetworkInfo ? status.headBlock : status.syncedBlock
+    //TODO: Fix logic for all chains here!
+    const latestAlchemyBlock = useLatestAlchemyBlock(ALCHEMY_URL_ZKEVM)
+    const activeBlock = (latestAlchemyBlock && activeNetwork === PolygonZkEVMNetworkInfo ) ? latestAlchemyBlock : latestBlock
 
-  useEffect(
-    () => {
-      const timer1 = setTimeout(() => setIsMounted(true), 1000)
+    useEffect(
+        () => {
+            const timer1 = setTimeout(() => setIsMounted(true), 1000)
 
-      // this will clear Timeout when component unmount like in willComponentUnmount
-      return () => {
-        setIsMounted(false)
-        clearTimeout(timer1)
-      }
-    },
-    [status] //useEffect will run only one time
-    //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
-  )
+            // this will clear Timeout when component unmount like in willComponentUnmount
+            return () => {
+                setIsMounted(false)
+                clearTimeout(timer1)
+            }
+        },
+        [status] //useEffect will run only one time
+        //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
+    )
 
-  return (
+    return (
 
-    <Box display="flex" alignItems="center" justifyContent="space-between" paddingY="20px">
-      <IconButton
-        sx={{
-          mr: 1,
-          animationDuration: 2,
-          height: 25,
-          borderRadius: 1,
-          backgroundColor: "background.paper",
-          boxShadow: 2,
-        }}>
-        <Box  display="flex" alignContent="center" justifyItems={"center"} justifyContent="center" alignItems="center" flexDirection={"row"}>
-          <Box>
-            <Link 
-              color={mode === 'dark' ? 'white' : 'black'} 
-              variant="caption" display="block" 
-              underline="none" target="_blank" 
-              rel="noopener noreferrer" 
-              href={latestBlock ? getEtherscanLink(latestBlock.toString(), 'block', activeNetwork) : ''}>
-              Synced block: {isMounted ? latestBlock : ' '}
-            </Link>
-          </Box>
-          <Box ml={0.5} mb={1}>
-            <CircularProgress
-              size={10}
-              thickness={isMounted ? 22 : 10}
-              variant={isMounted ? "determinate" : "indeterminate"}
-              value={100}
-              sx={{
-                color: isMounted ? green[500] : orange[500]
-              }}
-            />
-          </Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" paddingY="20px">
+            <IconButton
+                sx={{
+                    mr: 1,
+                    animationDuration: 2,
+                    height: 25,
+                    borderRadius: 1,
+                    backgroundColor: "background.paper",
+                    boxShadow: 2,
+                }}>
+                <Box  display="flex" alignContent="center" justifyItems={"center"} justifyContent="center" alignItems="center" flexDirection={"row"}>
+                    <Box>
+                        <Link
+                            color={mode === 'dark' ? 'white' : 'black'}
+                            variant="caption" display="block"
+                            underline="none" target="_blank"
+                            rel="noopener noreferrer"
+                            href={activeBlock ? getEtherscanLink(activeBlock.toString(), 'block', activeNetwork) : ''}>
+                            Synced block: {isMounted ? activeBlock : ' '}
+                        </Link>
+                    </Box>
+                    <Box ml={0.5} mb={1}>
+                        <CircularProgress
+                            size={10}
+                            thickness={isMounted ? 22 : 10}
+                            variant={isMounted ? "determinate" : "indeterminate"}
+                            value={100}
+                            sx={{
+                                color: isMounted ? green[500] : orange[500]
+                            }}
+                        />
+                    </Box>
+                </Box>
+            </IconButton>
         </Box>
-      </IconButton>
-    </Box>
 
-  )
+    )
 }

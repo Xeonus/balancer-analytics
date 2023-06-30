@@ -2,7 +2,13 @@ import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { healthClient } from './../../apollo/client';
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from '../../constants/networks';
+import {
+    ArbitrumNetworkInfo,
+    EthereumNetworkInfo,
+    GnosisNetworkInfo,
+    PolygonNetworkInfo,
+    PolygonZkEVMNetworkInfo
+} from '../../constants/networks';
 
 export const SUBGRAPH_HEALTH = gql`
     query health($name: Bytes) {
@@ -51,12 +57,14 @@ export function useFetchedSubgraphStatus(): {
         variables: {
             name:
                 activeNetwork === EthereumNetworkInfo
-                    ? 'blocklytics/ethereum-blocks'
-                    : activeNetwork === ArbitrumNetworkInfo
-                    ? 'ianlapham/uniswap-arbitrum-one'
-                    : activeNetwork === PolygonNetworkInfo
-                    ? 'ianlapham/polygon-blocks'
-                    : 'x0swapsubgraph/xdai-blocks'
+                ? 'blocklytics/ethereum-blocks'
+                : activeNetwork === ArbitrumNetworkInfo
+                ? 'ianlapham/uniswap-arbitrum-one'
+                : activeNetwork === PolygonNetworkInfo
+                ? 'ianlapham/polygon-blocks'
+                : activeNetwork === PolygonZkEVMNetworkInfo
+                ? 'query/48427/bleu-polygon-zkevm-blocks/version/latest'
+                :'x0swapsubgraph/xdai-blocks'
         },
     });
 

@@ -28,18 +28,19 @@ interface ProtocolAreaChartProps {
     mainnetData: number[],
     arbitrumData: number[],
     polygonData: number[],
+    polygonZkEVMData: number[],
     gnosisData: number[],
     xAxis: string[],
 }
 
 
-export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonData, gnosisData,  xAxis }: ProtocolAreaChartProps) {
+export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData,  xAxis }: ProtocolAreaChartProps) {
 
 
     const theme = useTheme()
 
     const option = {
-        color: ['#00DDFF','#80FFA5', '#37A2FF', '#0d8e74'],
+        color: ['#00DDFF','#80FFA5', '#37A2FF', '#37A2FF',  '#0d8e74'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -52,7 +53,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Gnosis'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -178,6 +179,38 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
                     }
                 },
                 data: polygonData
+            },
+            {
+                name: 'Polygon zkEVM',
+                type: 'line',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.95,
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(64,4,129)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(0,80,148)'
+                        }
+                    ])
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
+                data: polygonZkEVMData
             },
             {
                 name: 'Gnosis',

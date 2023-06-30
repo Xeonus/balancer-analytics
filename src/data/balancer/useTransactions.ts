@@ -35,8 +35,6 @@ export function useBalancerTransactionData(
         }
     }, [poolIds, addresses]);
 
-    console.log("data", data)
-
     const swaps = uniqBy(
         orderBy([...(data?.swapsIn || []), ...(data?.swapsOut || [])], 'timestamp', 'desc'),
         (swap) => swap.id,
