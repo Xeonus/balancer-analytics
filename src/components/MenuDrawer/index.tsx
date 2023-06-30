@@ -1,8 +1,8 @@
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles'
+import {keyframes, useTheme} from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import { Drawer, Box, Link } from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -26,6 +26,8 @@ import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
 //import Stellate from '../../assets/svg/stellate.svg'
+import BeetsIcon from '../../assets/png/beets-icon-large.png';
+import AuraIcon from '../../assets/png/AURA_ISO_colors.png';
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
@@ -37,6 +39,36 @@ export type MenuDrawerProps = {
     handleDrawerClose: any,
     activeNetwork: NetworkInfo,
 }
+
+const glowingBeets = keyframes`
+  0% {
+    background-color: #9c4339;
+    box-shadow: 0 0 5px #9c4339;
+  }
+  50% {
+    background-color: #a9564b;
+    box-shadow: 0 0 20px #a9564b;
+  }
+  100% {
+    background-color: #9c4339;
+    box-shadow: 0 0 5px #9c4339;
+  }
+`;
+
+const glowingAura = keyframes`
+  0% {
+    background-color: #8a2be2;
+    box-shadow: 0 0 5px #8a2be2;
+  }
+  50% {
+    background-color: #9c46ff;
+    box-shadow: 0 0 20px #9c46ff;
+  }
+  100% {
+    background-color: #8a2be2;
+    box-shadow: 0 0 5px #8a2be2;
+  }
+`;
 
 const MenuDrawer = ({
     drawerWidth,
@@ -125,7 +157,7 @@ const MenuDrawer = ({
                     <ListItemIcon>
                         <MonetizationOnIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'Protocol Revenue'} />
+                    <ListItemText primary={'Revenue Projections'} />
                 </ListItemButton>
                 <ListItemButton key={'DAO Treasury'} component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'}>
                     <ListItemIcon>
@@ -145,8 +177,68 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'DAO Financials'} />
                 </ListItemButton>
+                <Divider />
+                <ListItem>
+                    <Box mt={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                            onClick={() => {window.open('https://beets.defilytica.com', '_blank')}}
+                            sx={{
+                                backgroundColor: '#989799',
+                                borderRadius: '30px',
+                                minWidth: '180px',
+                                border: 'none',
+                                color: '#eeeeee',
+                                cursor: 'pointer',
+                                display: 'inline-block',
+                                fontFamily: 'sans-serif',
+                                padding: '5px 15px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                    animation: `${glowingBeets} 1300ms infinite`,
+                                },
+                            }}
+
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                                <img src={BeetsIcon} alt="Beets Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Beets Analytics</Typography>
+                            </Box>
+                        </Button>
+                    </Box>
+                </ListItem>
+                <ListItem>
+                    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                            onClick={() => {window.open('https://aura.defilytica.com', '_blank')}}
+                            sx={{
+                                backgroundColor: '#7905ef',
+                                minWidth: '180px',
+                                borderRadius: '30px',
+                                border: 'none',
+                                color: '#eeeeee',
+                                cursor: 'pointer',
+                                display: 'inline-block',
+                                fontFamily: 'sans-serif',
+                                padding: '5px 15px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                    animation: `${glowingAura} 1300ms infinite`,
+                                },
+                            }}
+
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <img src={AuraIcon} alt="Aura Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Aura Analytics</Typography>
+                            </Box>
+                        </Button>
+                    </Box>
+                </ListItem>
             </List>
             <Divider />
+
             <Box display="flex" justifyContent="space-between" paddingX={drawerWidth / 6 + 'px'}>
                 <Polling />
             </Box>
@@ -184,7 +276,7 @@ const MenuDrawer = ({
                             href="https://coingecko.com">
                             <Box display="flex" alignItems="center" alignContent="center">
                                 <Box
-                                    //sx={{ display: { xs: 'none', md: 'flex' } }} 
+                                    //sx={{ display: { xs: 'none', md: 'flex' } }}
                                     >
                                     <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
                                 </Box>
@@ -235,7 +327,7 @@ const MenuDrawer = ({
                             </Box>
                         </Link>
                     </ IconButton>
-                    
+
                 </Box>
             </Box>
         </Drawer>
