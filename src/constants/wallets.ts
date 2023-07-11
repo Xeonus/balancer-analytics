@@ -10,15 +10,15 @@ export const FEE_STREAMER_2 = '0x7c68c42de679ffb0f16216154c996c354cf1161b';
 //Service Providers
 export const SERVICE_PROVIDER_WALLETS = [
     {
-        name: 'Orb Collective Safe',
+        name: 'Orb Collective Gnosis Safe',
         walletId: '0x3b8910f378034fd6e103df958863e5c684072693',
     },
     {
-        name: 'Balancer Grants Safe',
+        name: 'Balancer Grants Gnosis Safe',
         walletId: '0xE2c91f3409Ad6d8cE3a2E2eb330790398CB23597',
     },
     {
-        name: 'Balancer Maxis Safe',
+        name: 'Balancer Maxis Gnosis Safe',
         walletId: '0x166f54F44F271407f24AA1BE415a730035637325',
     },
     {
@@ -40,6 +40,14 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'Aave Collector V2',
         walletId: '0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c'
+    },
+    {
+        name: 'Beethoven-X DAO',
+        walletId: '0x811912c19eEF91b9Dc3cA52fc426590cFB84FC86'
+    },
+    {
+        name: 'Balancer OpCo Gnosis Safe',
+        walletId: '0x3B8910F378034FD6E103Df958863e5c684072693',
     }
 ]
 

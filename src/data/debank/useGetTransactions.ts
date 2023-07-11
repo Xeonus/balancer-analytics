@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import isDev from '../../constants';
-import { DB_KEY } from '../balancer/constants';
 import { TransactionHistory } from './debankTypes';
-import debankPortfolio from '../mocks/debank-complexPortfolioChain.json'
 import debankTransactions from './data/treasuryTxHistory.json'
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 

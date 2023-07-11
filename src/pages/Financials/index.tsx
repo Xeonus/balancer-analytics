@@ -51,8 +51,8 @@ export default function Financials() {
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
 
     //Transaction checker
-    //const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, 1680288107)
-    //console.log("transactions", transactions)
+    // const { transactions } = useGetLocalTransactions(TREASURY_CONFIG.treasury, 1683381620)
+    // console.log("transactions", transactions)
 
     //Merge last 20 tx's with historical data
     const latestTimestamp = Math.max.apply(Math, txnHistory.history_list.map(function (o) { return o.time_at; }))

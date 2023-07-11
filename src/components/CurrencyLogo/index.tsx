@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { useTheme } from '@mui/material/styles'
-import { EthereumNetworkInfo, SupportedNetwork } from "../../constants/networks";
+import { SupportedNetwork } from "../../constants/networks";
 import { isAddress } from '../../utils';
 import { Avatar } from '@mui/material';
-import useGetTokenLists, {TokenListToken, TokenList} from "../../data/balancer/useGetTokenList";
+import useGetTokenLists, {TokenList} from "../../data/balancer/useGetTokenList";
 
 
 export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) => {
