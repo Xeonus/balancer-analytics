@@ -85,6 +85,8 @@ export default function Financials() {
 
     const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves : usdcReserves;
 
+    console.log("totalUSDCReserves", totalUSDCReserves)
+
 
 
     const balReserves = totalBalances ? totalBalances.find(el => {
@@ -210,9 +212,21 @@ export default function Financials() {
         monthlyUSDCBurn = el ? el.value / 3 : 0;
     }
 
-    //TODO: project based on last 3 month income excluding running month
-    const avgIncome = monthlyUSDCReceived.reduce((a, b) => a + b.value, 0) / monthlyUSDCReceived.length;
-    const burnRunWay = totalUSDCReserves ? totalUSDCReserves / (monthlyUSDCBurn - avgIncome) : 0;
+    // Calculate the average income from the last three months (excluding the current month)
+    const lastThreeMonthsIncome = monthlyUSDCReceived.slice(-4, -1); // Get the last three months
+    const totalIncomeExcludingCurrentMonth = lastThreeMonthsIncome.reduce((total, item) => total + item.value, 0);
+    const avgIncomeExcludingCurrentMonth = totalIncomeExcludingCurrentMonth / 3;
+
+// Calculate the burn runway
+    const burnRunWay =
+        totalUSDCReserves && monthlyUSDCBurn - avgIncomeExcludingCurrentMonth > 0
+            ? totalUSDCReserves / (monthlyUSDCBurn - avgIncomeExcludingCurrentMonth)
+            : 24;
+
+    console.log("burnRunWay", burnRunWay)
+    console.log("monthlyUSDCBurn", monthlyUSDCBurn)
+    console.log("quarterlyTotalBudget", quarterlyTotalBudget)
+    console.log("avgIncomeExcludingCurrentMonth", avgIncomeExcludingCurrentMonth)
 
 
     //---WETH---
@@ -389,7 +403,7 @@ export default function Financials() {
                     >
                         <Card sx={{ boxShadow: 3 }}>
                             <Box p={1}>
-                                <Typography variant="h6">Funding Runway Projection (Liquid USDC)</Typography>
+                                <Typography variant="h6">Funding runway for USDC Payments</Typography>
                             </Box>
                             {totalUSDCReserves ?
                                 <SimpleRunwayGauge runwayInMonths={burnRunWay} dataTitle='Funding Reserves' height='300px' /> : <CircularProgress />}

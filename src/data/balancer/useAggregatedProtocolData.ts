@@ -5,11 +5,11 @@ import {
     ArbitrumNetworkInfo,
     PolygonNetworkInfo,
     GnosisNetworkInfo,
-    PolygonZkEVMNetworkInfo
+    PolygonZkEVMNetworkInfo, AvalancheNetworkInfo
 } from '../../constants/networks';
 import {
     arbitrumBlockClient,
-    arbitrumClient,
+    arbitrumClient, avalancheBlockClient, avalancheClient,
     gnosisBlockClient,
     gnosisClient,
     polygonBlockClient,
@@ -39,6 +39,7 @@ export default function useAggregatedProtocolData() {
     const protocolPolygonData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
     const protocolPolygonZkEVMData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
     const protocolGnosisData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient)
+    const protocolDataAvalanche = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, AvalancheNetworkInfo.startTimeStamp, avalancheBlockClient, avalancheClient)
 
 
     if (!protocolData && !protocolArbitrumData && !protocolPolygonData && !protocolPolygonZkEVMData && !protocolGnosisData) {
@@ -55,36 +56,36 @@ export default function useAggregatedProtocolData() {
     let swaps24 = 0
     let swapsChange = 0
 
-    if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl && protocolPolygonZkEVMData.tvl && protocolGnosisData.tvl) {
-        tvl = protocolData.tvl + protocolArbitrumData.tvl + protocolPolygonData.tvl + protocolPolygonZkEVMData.tvl + protocolGnosisData.tvl;
+    if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl && protocolPolygonZkEVMData.tvl && protocolGnosisData.tvl && protocolDataAvalanche.tvl) {
+        tvl = protocolData.tvl + protocolArbitrumData.tvl + protocolPolygonData.tvl + protocolPolygonZkEVMData.tvl + protocolGnosisData.tvl + protocolDataAvalanche.tvl;
     }
 
-    if (protocolData.tvlChange && protocolArbitrumData.tvlChange && protocolPolygonData.tvlChange && protocolPolygonZkEVMData.tvlChange && protocolGnosisData.tvlChange) {
-        tvlChange = protocolData.tvlChange + protocolArbitrumData.tvlChange + protocolPolygonZkEVMData.tvlChange + protocolPolygonData.tvlChange + protocolGnosisData.tvlChange;
+    if (protocolData.tvlChange && protocolArbitrumData.tvlChange && protocolPolygonData.tvlChange && protocolPolygonZkEVMData.tvlChange && protocolGnosisData.tvlChange && protocolDataAvalanche.tvlChange) {
+        tvlChange = protocolData.tvlChange + protocolArbitrumData.tvlChange + protocolPolygonZkEVMData.tvlChange + protocolPolygonData.tvlChange + protocolGnosisData.tvlChange + protocolDataAvalanche.tvlChange;
     }
 
-    if (protocolData.volume24 && protocolArbitrumData.volume24 && protocolPolygonData.volume24  && protocolPolygonZkEVMData.volume24 && protocolGnosisData.volume24) {
-        volume = protocolData.volume24 + protocolArbitrumData.volume24 + protocolPolygonData.volume24 + protocolPolygonZkEVMData.volume24 + protocolGnosisData.volume24;
+    if (protocolData.volume24 && protocolArbitrumData.volume24 && protocolPolygonData.volume24  && protocolPolygonZkEVMData.volume24 && protocolGnosisData.volume24 && protocolDataAvalanche.volume24) {
+        volume = protocolData.volume24 + protocolArbitrumData.volume24 + protocolPolygonData.volume24 + protocolPolygonZkEVMData.volume24 + protocolGnosisData.volume24 + protocolDataAvalanche.volume24;
     }
-    if (protocolData.volumeChange && protocolArbitrumData.volumeChange && protocolPolygonData.volumeChange  && protocolPolygonZkEVMData.volumeChange&& protocolGnosisData.volumeChange) {
-        volumeChange = protocolData.volumeChange + protocolArbitrumData.volumeChange + protocolPolygonData.volumeChange + protocolPolygonZkEVMData.volumeChange + protocolGnosisData.volumeChange;
-    }
-
-
-    if (protocolData.fees24 && protocolArbitrumData.fees24 && protocolPolygonData.fees24 && protocolPolygonZkEVMData.fees24 && protocolGnosisData.fees24) {
-        fees24 = protocolData.fees24 + protocolArbitrumData.fees24 + protocolPolygonData.fees24 + protocolPolygonZkEVMData.fees24 + protocolGnosisData.fees24;
+    if (protocolData.volumeChange && protocolArbitrumData.volumeChange && protocolPolygonData.volumeChange  && protocolPolygonZkEVMData.volumeChange&& protocolGnosisData.volumeChange && protocolDataAvalanche.volumeChange) {
+        volumeChange = protocolData.volumeChange + protocolArbitrumData.volumeChange + protocolPolygonData.volumeChange + protocolPolygonZkEVMData.volumeChange + protocolGnosisData.volumeChange + protocolDataAvalanche.volumeChange;
     }
 
-    if (protocolData.feesChange && protocolArbitrumData.feesChange && protocolPolygonData.feesChange && protocolPolygonZkEVMData.feesChange && protocolGnosisData.feesChange) {
-        feeChange = protocolData.feesChange + protocolArbitrumData.feesChange + protocolPolygonData.feesChange + protocolPolygonZkEVMData.feesChange  + protocolGnosisData.feesChange;
+
+    if (protocolData.fees24 && protocolArbitrumData.fees24 && protocolPolygonData.fees24 && protocolPolygonZkEVMData.fees24 && protocolGnosisData.fees24 && protocolDataAvalanche.fees24) {
+        fees24 = protocolData.fees24 + protocolArbitrumData.fees24 + protocolPolygonData.fees24 + protocolPolygonZkEVMData.fees24 + protocolGnosisData.fees24 + protocolDataAvalanche.fees24;
     }
 
-    if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24 && protocolPolygonZkEVMData.swaps24 && protocolGnosisData.swaps24) {
-        swaps24 = protocolData.swaps24 + protocolArbitrumData.swaps24 + protocolPolygonData.swaps24 + protocolPolygonZkEVMData.swaps24 + protocolGnosisData.swaps24;
+    if (protocolData.feesChange && protocolArbitrumData.feesChange && protocolPolygonData.feesChange && protocolPolygonZkEVMData.feesChange && protocolGnosisData.feesChange && protocolDataAvalanche.feesChange) {
+        feeChange = protocolData.feesChange + protocolArbitrumData.feesChange + protocolPolygonData.feesChange + protocolPolygonZkEVMData.feesChange  + protocolGnosisData.feesChange + protocolDataAvalanche.feesChange;
     }
 
-    if (protocolData.swapsChange && protocolArbitrumData.swapsChange && protocolPolygonData.swapsChange && protocolPolygonZkEVMData.swapsChange && protocolGnosisData.swapsChange) {
-        swapsChange = protocolData.swapsChange + protocolArbitrumData.swapsChange + protocolPolygonData.swapsChange +  protocolPolygonZkEVMData.swapsChange + protocolGnosisData.swapsChange;
+    if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24 && protocolPolygonZkEVMData.swaps24 && protocolGnosisData.swaps24 && protocolDataAvalanche.swaps24) {
+        swaps24 = protocolData.swaps24 + protocolArbitrumData.swaps24 + protocolPolygonData.swaps24 + protocolPolygonZkEVMData.swaps24 + protocolGnosisData.swaps24 + protocolDataAvalanche.swaps24;
+    }
+
+    if (protocolData.swapsChange && protocolArbitrumData.swapsChange && protocolPolygonData.swapsChange && protocolPolygonZkEVMData.swapsChange && protocolGnosisData.swapsChange && protocolDataAvalanche.swapsChange) {
+        swapsChange = protocolData.swapsChange + protocolArbitrumData.swapsChange + protocolPolygonData.swapsChange +  protocolPolygonZkEVMData.swapsChange + protocolGnosisData.swapsChange + protocolDataAvalanche.swapsChange;
     }
 
     return {

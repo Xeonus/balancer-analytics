@@ -30,17 +30,24 @@ interface ProtocolAreaChartProps {
     polygonData: number[],
     polygonZkEVMData: number[],
     gnosisData: number[],
+    avalancheData: number[],
     xAxis: string[],
 }
 
 
-export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData,  xAxis }: ProtocolAreaChartProps) {
+export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData, avalancheData,  xAxis }: ProtocolAreaChartProps) {
 
 
     const theme = useTheme()
 
     const option = {
-        color: ['#00DDFF','#80FFA5', '#37A2FF', '#37A2FF',  '#0d8e74'],
+        color: [
+            '#00DDFF',
+            '#80FFA5',
+            '#37A2FF',
+            '#37A2FF',
+            '#0d8e74',
+            '#F01B36'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -53,7 +60,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -243,6 +250,38 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
                     }
                 },
                 data: gnosisData
+            },
+            {
+                name: 'Avalanche',
+                type: 'line',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.95,
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(245, 2, 2)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(214, 79, 79)'
+                        }
+                    ])
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
+                data: avalancheData
             },
         ]
     };

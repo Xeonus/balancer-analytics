@@ -1,11 +1,11 @@
-import { useActiveNetworkVersion } from '../../state/application/hooks';
-import { healthClient } from './../../apollo/client';
-import { useQuery } from '@apollo/client';
+import {useActiveNetworkVersion} from '../../state/application/hooks';
+import {healthClient} from '../../apollo/client';
+import {useQuery} from '@apollo/client';
 import gql from 'graphql-tag';
 import {
     ArbitrumNetworkInfo,
+    AvalancheNetworkInfo,
     EthereumNetworkInfo,
-    GnosisNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
@@ -51,20 +51,22 @@ export function useFetchedSubgraphStatus(): {
 } {
     const [activeNetwork] = useActiveNetworkVersion();
 
-    const { loading, error, data } = useQuery<HealthResponse>(SUBGRAPH_HEALTH, {
+    const {loading, error, data} = useQuery<HealthResponse>(SUBGRAPH_HEALTH, {
         client: healthClient,
         fetchPolicy: 'network-only',
         variables: {
             name:
                 activeNetwork === EthereumNetworkInfo
-                ? 'blocklytics/ethereum-blocks'
-                : activeNetwork === ArbitrumNetworkInfo
-                ? 'ianlapham/uniswap-arbitrum-one'
-                : activeNetwork === PolygonNetworkInfo
-                ? 'ianlapham/polygon-blocks'
-                : activeNetwork === PolygonZkEVMNetworkInfo
-                ? 'query/48427/bleu-polygon-zkevm-blocks/version/latest'
-                :'x0swapsubgraph/xdai-blocks'
+                    ? 'blocklytics/ethereum-blocks'
+                    : activeNetwork === ArbitrumNetworkInfo
+                        ? 'ianlapham/uniswap-arbitrum-one'
+                        : activeNetwork === PolygonNetworkInfo
+                            ? 'ianlapham/polygon-blocks'
+                            : activeNetwork === PolygonZkEVMNetworkInfo
+                                ? 'query/48427/bleu-polygon-zkevm-blocks/version/latest'
+                                : activeNetwork === AvalancheNetworkInfo
+                                    ? 'lynnshaoyu/avalanche-blocks'
+                                    : 'x0swapsubgraph/xdai-blocks'
         },
     });
 

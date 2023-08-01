@@ -6,7 +6,8 @@ import {
     EthereumNetworkInfo,
     GnosisNetworkInfo, NetworkInfo,
     PolygonNetworkInfo,
-    PolygonZkEVMNetworkInfo
+    PolygonZkEVMNetworkInfo,
+    AvalancheNetworkInfo
 } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
@@ -14,6 +15,7 @@ import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
+import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import {useLocation, useNavigate} from "react-router-dom";
 
 const updatePathForNetwork = (network: NetworkInfo, currentPath: string) => {
@@ -58,6 +60,10 @@ export default function NetworkSelector() {
         } else if (chainId === PolygonZkEVMNetworkInfo.chainId) {
             update(PolygonZkEVMNetworkInfo)
             const newPath = updatePathForNetwork(PolygonZkEVMNetworkInfo, location.pathname)
+            navigate(newPath)
+        } else if (chainId === AvalancheNetworkInfo.chainId) {
+            update(AvalancheNetworkInfo)
+            const newPath = updatePathForNetwork(AvalancheNetworkInfo, location.pathname)
             navigate(newPath)
         }
 
@@ -161,6 +167,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Gnosis
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={AvalancheNetworkInfo.chainId} key="avalanche">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={AvalancheLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Avalanche
                         </Box>
                     </Box>
                 </MenuItem>

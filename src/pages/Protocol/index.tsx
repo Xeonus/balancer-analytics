@@ -11,7 +11,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import {
-    ArbitrumNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo,
     EthereumNetworkInfo,
     GnosisNetworkInfo,
     PolygonNetworkInfo,
@@ -24,7 +24,7 @@ import {
     polygonBlockClient,
     gnosisBlockClient,
     gnosisClient,
-    polygonZKEVMBlockClient, polygonZKEVMClient
+    polygonZKEVMBlockClient, polygonZKEVMClient, avalancheBlockClient, avalancheClient
 } from '../../apollo/client';
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
 import ProtocolMultiAreaChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
@@ -35,6 +35,7 @@ import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
+import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 
 
 
@@ -51,6 +52,7 @@ export default function Protocol() {
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
     const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient);
+    const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, AvalancheNetworkInfo.startTimeStamp, avalancheBlockClient, avalancheClient);
 
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
@@ -78,6 +80,7 @@ export default function Protocol() {
                         <Grid item mt={1} xs={11}>
                             <Stack
                                 direction={{ xs: 'column', md: 'row' }}
+                                justifyContent="space-between"
                             >
                                 <Box mb={1}>
                                     <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
@@ -93,6 +96,9 @@ export default function Protocol() {
                                 </Box>
                                 <Box mb={1}>
                                     <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Avalanche' linkTarget={'avalanche/chain'} svgPath={AvalancheLogo} />
                                 </Box>
                             </Stack>
                         </Grid>
@@ -156,6 +162,7 @@ export default function Protocol() {
                             polygonProtocolData={polygonProtocolData}
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData}
                             gnosisProtocolData={gnosisProtocolData}
+                            avalancheProtocolData={avalancheProtocolData}
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
@@ -178,6 +185,7 @@ export default function Protocol() {
                             polygonProtocolData={polygonProtocolData.volumeData}
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.volumeData}
                             gnosisProtocolData={gnosisProtocolData.volumeData}
+                            avalancheProtocolData={avalancheProtocolData.volumeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -200,6 +208,7 @@ export default function Protocol() {
                             polygonProtocolData={polygonProtocolData.feeData}
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.feeData}
                             gnosisProtocolData={gnosisProtocolData.feeData}
+                            avalancheProtocolData={avalancheProtocolData.feeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -223,6 +232,7 @@ export default function Protocol() {
                             polygonProtocolData={polygonProtocolData.swapData}
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.swapData}
                             gnosisProtocolData={gnosisProtocolData.swapData}
+                            avalancheProtocolData={avalancheProtocolData.swapData}
                             isUSD={false}
                         />
                     </Grid>

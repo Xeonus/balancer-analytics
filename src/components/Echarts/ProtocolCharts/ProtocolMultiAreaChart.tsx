@@ -33,11 +33,12 @@ interface ProtocolAreaChartProps {
     polygonProtocolData: ProtocolData,
     polygonZkEVMProtocolData: ProtocolData
     gnosisProtocolData: ProtocolData,
+    avalancheProtocolData: ProtocolData,
 }
 
 
 
-export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData}: ProtocolAreaChartProps) {
+export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData}: ProtocolAreaChartProps) {
 
     const mainnetData = mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
@@ -74,6 +75,14 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
         gnosisData = zeroArray.concat(gnosisData);
     }
 
+    let avalancheData = avalancheProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+
+    if (mainnetData && avalancheData) {
+        const diffSize = mainnetData.length - avalancheData.length;
+        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
+        avalancheData = zeroArray.concat(avalancheData);
+    }
+
     const mainnetxAxisData = mainnetProtocolData.tvlData.map(el => el.time);
 
 
@@ -85,6 +94,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
     const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
     const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonZkEVMData);
     const [rangedGnosisData, setrangedGnosisData] = React.useState(gnosisData);
+    const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
     React.useEffect(() => {
@@ -94,6 +104,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedPolygonData(polygonData);
             setrangedPolygonZkEVMData(polygonZkEVMData);
             setrangedGnosisData(gnosisData)
+            setrangedAvalanchenData(avalancheData)
             setRangedxAxis(mainnetxAxisData)
         } else {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
@@ -101,6 +112,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
             setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(timeRange)))
             setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(timeRange)))
+            setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
     }, [timeRange]);
@@ -113,12 +125,14 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
             setrangedPolygonData(polygonData);
             setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisData(gnosisData);
+            setrangedAvalanchenData(avalancheData)
         } else if (mainnetData.length >= Number(event.target.value)) {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(event.target.value)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(event.target.value)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(event.target.value)))
             setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(event.target.value)))
             setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
+            setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
         }
     };
 
@@ -160,6 +174,7 @@ export default function ProtocolMultiAreaChart({mainnetProtocolData, arbitrumPro
                 polygonData={rangedPolygonData}
                 polygonZkEVMData={rangedPolygonZkEVMData}
                 gnosisData={rangedGnosisData}
+                avalancheData={rangedAvalancheData}
                 xAxis={rangedxAxis}/>
             </Card> : <Grid
             container

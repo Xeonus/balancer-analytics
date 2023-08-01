@@ -312,7 +312,7 @@
       "name": "Three Rocks: Integrations Team",
       "short_description": "The Three Rocks integrations team consists of talented and dedicated devs formerly part of Orb Collective. After Orb's sunsetting in Summer 2023, they formed their own SP.",
       "site_url": "https://daoism.systems/",
-      "img_ref": "daoismSystems.png",
+      "img_ref": "default.png",
       "budgets": [
         {
           "year": 2023,
