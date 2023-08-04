@@ -58,7 +58,7 @@ export interface PoolData {
     id: string;
     name: string;
     symbol: string;
-    
+
     // basic token info
     address: string;
     feeTier: number;
@@ -150,27 +150,77 @@ export interface AprSet {
     protocolApr: number
     min: number
     max: number
-  }
-  
-  export interface TokenAprs {
+}
+
+export interface TokenAprs {
     total: number
     breakdown: TokenBreakdown
-  }
-  
-  export interface TokenBreakdown {
+}
+
+export interface TokenBreakdown {
     [key: string]: number
-  }
-  
-  export interface StakingApr {
+}
+
+export interface StakingApr {
     min: number
     max: number
-  }
-  
-  export interface RewardAprs {
+}
+
+export interface RewardAprs {
     total: number
     breakdown: RewardsBreakdown
-  }
-  
-  export interface RewardsBreakdown {
+}
+
+export interface RewardsBreakdown {
     [key: string]: number
-  }
+}
+
+export interface BalancerStakingGauges {
+    address: string;
+    network: string;
+    isKilled: boolean;
+    addedTimestamp: number;
+    relativeWeightCap: string | null;
+    pool: {
+        id: string;
+        address: string;
+        poolType: string;
+        symbol: string;
+        tokens: {
+            address: string;
+            weight: string | null;
+            symbol: string;
+        }[];
+    };
+    tokenLogoURIs: {
+        [address: string]: string;
+    };
+    workingSupply: string;
+    totalSupply: string;
+    aprSet?: AprSet;
+    userVotingPower?: number;
+    recipient: string;
+    boost: string;
+    workingBalance: string;
+    userBalance: number;
+    max_boost: string;
+    min_VeBAL: string;
+    voteCount: number;
+    valuePerVote: number;
+    totalRewards: number;
+    userValue: number;
+}
+
+export interface SimplePoolTokenData {
+    address: string;
+    weight: string | null;
+    symbol: string;
+}
+
+export interface SimplePoolData {
+    id: string;
+    address: string;
+    poolType: string;
+    symbol: string;
+    tokens: SimplePoolTokenData[];
+}

@@ -12,6 +12,7 @@ export type CoinCardProps = {
   mainMetricUnit? : string,
   mainMetricChange?: number,
   metricName: string,
+  metricDecimals?: number;
   MetricIcon: OverridableComponent<SvgIconTypeMap<{}, "svg">>
 }
 
@@ -21,6 +22,7 @@ const MetricsCard = ({
   mainMetricUnit,
   mainMetricChange,
   metricName,
+  metricDecimals,
   MetricIcon }: CoinCardProps) => {
 
   const metricUnit = mainMetricUnit ? mainMetricUnit : '';
@@ -52,7 +54,7 @@ const MetricsCard = ({
               color="textPrimary"
               variant="h6"
             >
-              {mainMetricInUSD ? formatDollarAmount(mainMetric) : formatNumber(mainMetric, 0) + metricUnit}
+              {mainMetricInUSD ? formatDollarAmount(mainMetric, metricDecimals) : formatNumber(mainMetric, metricDecimals) + metricUnit}
             </Typography>
           </Grid>
           <Grid item>

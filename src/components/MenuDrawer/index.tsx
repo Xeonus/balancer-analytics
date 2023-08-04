@@ -25,6 +25,7 @@ import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
+import {Handshake} from "@mui/icons-material";
 //import Stellate from '../../assets/svg/stellate.svg'
 import BeetsIcon from '../../assets/png/beets-icon-large.png';
 import AuraIcon from '../../assets/png/AURA_ISO_colors.png';
@@ -149,6 +150,12 @@ const MenuDrawer = ({
                         <AutoAwesomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={'BAL Emissions'} />
+                </ListItemButton>
+                <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
+                    <ListItemIcon>
+                        <Handshake />
+                    </ListItemIcon>
+                    <ListItemText primary={'Voting Incentives'} />
                 </ListItemButton>
             </List>
             <List>
