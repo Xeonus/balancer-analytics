@@ -5,12 +5,12 @@ import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { SupportedChainId } from '@uniswap/sdk-core';
 import {
-    ArbitrumNetworkInfo, AvalancheNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
     GnosisNetworkInfo,
     NetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
-} from './../constants/networks';
+} from '../constants/networks';
 
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -107,6 +107,25 @@ export function getEtherscanLink(
 
     if (networkVersion === AvalancheNetworkInfo) {
         prefix = 'https://snowtrace.io/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === BaseNetworkInfo) {
+        prefix = 'https://basescan.org/';
         switch (type) {
             case 'transaction': {
                 return `${prefix}/tx/${data}`;

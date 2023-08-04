@@ -31,11 +31,20 @@ interface ProtocolAreaChartProps {
     polygonZkEVMData: number[],
     gnosisData: number[],
     avalancheData: number[],
+    baseData: number[],
     xAxis: string[],
 }
 
 
-export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData, avalancheData,  xAxis }: ProtocolAreaChartProps) {
+export default function ProtocolTVLCharts({
+                                              mainnetData,
+                                              arbitrumData,
+                                              polygonData,
+                                              polygonZkEVMData,
+                                              gnosisData,
+                                              avalancheData,
+                                              baseData,
+                                              xAxis }: ProtocolAreaChartProps) {
 
 
     const theme = useTheme()
@@ -47,7 +56,8 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
             '#37A2FF',
             '#37A2FF',
             '#0d8e74',
-            '#F01B36'],
+            '#F01B36',
+            '#0021a2'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -60,7 +70,7 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -282,6 +292,38 @@ export default function ProtocolTVLCharts({ mainnetData, arbitrumData, polygonDa
                     }
                 },
                 data: avalancheData
+            },
+            {
+                name: 'Base',
+                type: 'line',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.95,
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(0,25,178)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(4,0,255)'
+                        }
+                    ])
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
+                data: baseData
             },
         ]
     };

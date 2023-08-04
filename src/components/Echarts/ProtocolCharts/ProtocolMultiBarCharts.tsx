@@ -30,13 +30,22 @@ interface ProtocolBarChartProps {
     polygonZkEVMData: number [],
     avalancheData: number[],
     gnosisData: number[],
+    baseData: number[],
     xAxis: string[],
     isUSD: boolean,
 }
 
 
 
-export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData, avalancheData, xAxis, isUSD}: ProtocolBarChartProps) {
+export default function ProtocolMultiBarCharts({mainnetData,
+                                                   arbitrumData,
+                                                   polygonData,
+                                                   polygonZkEVMData,
+                                                   gnosisData,
+                                                   avalancheData,
+                                                   baseData,
+                                                   xAxis,
+                                                   isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
@@ -47,7 +56,8 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
             '#37A2FF',
             '#37A2FF',
             '#0d8e74',
-            '#F01B36'],
+            '#F01B36',
+            '#0021a2'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -60,7 +70,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
             
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base'],
             inactiveColor: "red",
             textStyle:{
                 color: theme.palette.mode === 'dark' ? 'white' : 'black'
@@ -229,6 +239,29 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                     }
                 },
                 data: avalancheData
+            },
+            {
+                name: 'Base',
+                type: 'bar',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                itemStyle: {
+                    opacity: 0.95,
+                    color: 'rgb(0,25,178)'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
+                    }
+                },
+                data: baseData
             },
         ]
     };

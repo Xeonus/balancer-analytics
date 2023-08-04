@@ -11,7 +11,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import {
-    ArbitrumNetworkInfo, AvalancheNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
     EthereumNetworkInfo,
     GnosisNetworkInfo,
     PolygonNetworkInfo,
@@ -24,7 +24,7 @@ import {
     polygonBlockClient,
     gnosisBlockClient,
     gnosisClient,
-    polygonZKEVMBlockClient, polygonZKEVMClient, avalancheBlockClient, avalancheClient
+    polygonZKEVMBlockClient, polygonZKEVMClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient
 } from '../../apollo/client';
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
 import ProtocolMultiAreaChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiAreaChart';
@@ -36,6 +36,7 @@ import PolygonLogo from '../../assets/svg/polygon.svg'
 import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../assets/svg/base.svg'
 
 
 
@@ -53,6 +54,7 @@ export default function Protocol() {
     const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient);
     const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, AvalancheNetworkInfo.startTimeStamp, avalancheBlockClient, avalancheClient);
+    const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, BaseNetworkInfo.startTimeStamp, baseBlockClient, baseClient);
 
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
@@ -99,6 +101,9 @@ export default function Protocol() {
                                 </Box>
                                 <Box mb={1}>
                                     <ExploreCard linkName='Avalanche' linkTarget={'avalanche/chain'} svgPath={AvalancheLogo} />
+                                </Box>
+                                <Box mb={1}>
+                                    <ExploreCard linkName='Base' linkTarget={'base/chain'} svgPath={BaseLogo} />
                                 </Box>
                             </Stack>
                         </Grid>
@@ -163,6 +168,7 @@ export default function Protocol() {
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData}
                             gnosisProtocolData={gnosisProtocolData}
                             avalancheProtocolData={avalancheProtocolData}
+                            baseProtocolData={baseProtocolData}
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
@@ -186,6 +192,7 @@ export default function Protocol() {
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.volumeData}
                             gnosisProtocolData={gnosisProtocolData.volumeData}
                             avalancheProtocolData={avalancheProtocolData.volumeData}
+                            baseProtocolData={baseProtocolData.volumeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -209,6 +216,7 @@ export default function Protocol() {
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.feeData}
                             gnosisProtocolData={gnosisProtocolData.feeData}
                             avalancheProtocolData={avalancheProtocolData.feeData}
+                            baseProtocolData={baseProtocolData.feeData}
                             isUSD={true}
                         />
                     </Grid>
@@ -233,6 +241,7 @@ export default function Protocol() {
                             polygonZkEVMProtocolData={polygonZkEVMProtocolData.swapData}
                             gnosisProtocolData={gnosisProtocolData.swapData}
                             avalancheProtocolData={avalancheProtocolData.swapData}
+                            baseProtocolData={baseProtocolData.swapData}
                             isUSD={false}
                         />
                     </Grid>

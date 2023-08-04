@@ -7,7 +7,7 @@ import {
     GnosisNetworkInfo, NetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo,
-    AvalancheNetworkInfo
+    AvalancheNetworkInfo, BaseNetworkInfo
 } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
@@ -16,6 +16,7 @@ import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../assets/svg/base.svg'
 import {useLocation, useNavigate} from "react-router-dom";
 
 const updatePathForNetwork = (network: NetworkInfo, currentPath: string) => {
@@ -64,6 +65,10 @@ export default function NetworkSelector() {
         } else if (chainId === AvalancheNetworkInfo.chainId) {
             update(AvalancheNetworkInfo)
             const newPath = updatePathForNetwork(AvalancheNetworkInfo, location.pathname)
+            navigate(newPath)
+        } else if (chainId === BaseNetworkInfo.chainId) {
+            update(BaseNetworkInfo)
+            const newPath = updatePathForNetwork(BaseNetworkInfo, location.pathname)
             navigate(newPath)
         }
 
@@ -183,6 +188,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Avalanche
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={BaseNetworkInfo.chainId} key="base">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={BaseLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Base
                         </Box>
                     </Box>
                 </MenuItem>

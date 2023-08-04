@@ -5,6 +5,7 @@ import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
 import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
 import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
 import AVALANCHE_LOGO_URL from '../assets/svg/avalancheLogo.svg'
+import BASE_LOGO_URL from '../assets/svg/base.svg'
 
 import {
   ALCHEMY_KEY,
@@ -21,6 +22,7 @@ export enum SupportedNetwork {
   GNOSIS,
   ZKEVM,
   AVALANCHE,
+  BASE,
 }
 
 export type NetworkInfo = {
@@ -182,11 +184,35 @@ export const AvalancheNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
+export const BaseNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.BASE,
+  chainId: '8453',
+  coingeckoId: 'base',
+  debankId: 'base',
+  balAddress: '',
+  feeCollectorThreshold: 5000,
+  route: 'base',
+  name: 'Base',
+  startTimeStamp: 1690495200,
+  appUri: 'https://app.balancer.fi/#/avalanche/',
+  //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
+  clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
+  decentralicedClientUri: '',
+  alchemyRPCUrl: ' https://mainnet.base.org ',
+  alchemyKey: '',
+  bgColor: '#0030a6',
+  primaryColor: '#0027a2',
+  secondaryColor: '#005094',
+  imageURL: BASE_LOGO_URL,
+  blurb: 'Beta',
+}
+
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
   PolygonNetworkInfo,
   PolygonZkEVMNetworkInfo,
   GnosisNetworkInfo,
-  AvalancheNetworkInfo
+  AvalancheNetworkInfo,
+  BaseNetworkInfo
 ]

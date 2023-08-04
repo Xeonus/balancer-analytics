@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import {
     ArbitrumNetworkInfo,
     AvalancheNetworkInfo,
+    BaseNetworkInfo,
     EthereumNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
@@ -66,7 +67,9 @@ export function useFetchedSubgraphStatus(): {
                                 ? 'query/48427/bleu-polygon-zkevm-blocks/version/latest'
                                 : activeNetwork === AvalancheNetworkInfo
                                     ? 'lynnshaoyu/avalanche-blocks'
-                                    : 'x0swapsubgraph/xdai-blocks'
+                                    : activeNetwork === BaseNetworkInfo
+                                        ? 'query/48427/bleu-base-blocks/version/latest'
+                                        : 'x0swapsubgraph/xdai-blocks'
         },
     });
 

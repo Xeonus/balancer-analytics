@@ -34,12 +34,20 @@ interface ProtocolAreaChartProps {
     polygonZkEVMProtocolData: BalancerChartDataItem[],
     gnosisProtocolData: BalancerChartDataItem[],
     avalancheProtocolData: BalancerChartDataItem[],
+    baseProtocolData: BalancerChartDataItem[],
     isUSD : boolean
 }
 
 
 
-export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData, isUSD}: ProtocolAreaChartProps) {
+export default function ProtocolMultiBarChart({mainnetProtocolData,
+                                                  arbitrumProtocolData,
+                                                  polygonProtocolData,
+                                                  polygonZkEVMProtocolData,
+                                                  gnosisProtocolData,
+                                                  avalancheProtocolData,
+                                                  baseProtocolData,
+                                                  isUSD}: ProtocolAreaChartProps) {
 
     const mainnetData = mainnetProtocolData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.map(el => Number(el.value.toFixed(2)));
@@ -84,6 +92,14 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
         avalancheData = zeroArray.concat(avalancheData);
     }
 
+    let baseData = baseProtocolData.map(el => Number(el.value.toFixed(2)));
+
+    if (mainnetData && baseData) {
+        const diffSize = mainnetData.length - baseData.length;
+        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
+        baseData = zeroArray.concat(baseData);
+    }
+
     //Generic x-Axis
     const mainnetxAxisData = mainnetProtocolData.map(el => el.time);
 
@@ -96,6 +112,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
     const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonData);
     const [rangedGnosisData, setrangedGnosisnData] = React.useState(gnosisData);
     const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
+    const [rangedBaseData, setRangedBasenData] = React.useState(baseData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
     React.useEffect(() => {
@@ -106,6 +123,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
             setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisnData(gnosisData)
             setrangedAvalanchenData(avalancheData)
+            setRangedBasenData(baseData)
             setRangedxAxis(mainnetxAxisData)
         } else {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
@@ -114,6 +132,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
             setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(timeRange)))
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(timeRange)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(timeRange)))
+            setRangedBasenData(baseData.slice(baseData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
     }, [timeRange]);
@@ -126,6 +145,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
             setrangedPolygonData(polygonData);
             setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisnData(gnosisData);
+            setRangedBasenData(baseData)
             setrangedAvalanchenData(avalancheData)
         } else if (mainnetData.length >= Number(event.target.value)) {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(event.target.value)))
@@ -134,6 +154,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
             setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(event.target.value)))
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
+            setRangedBasenData(baseData.slice(baseData.length - Number(event.target.value)))
         }
     };
 
@@ -177,6 +198,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData, arbitrumProt
                 polygonZkEVMData={rangedPolygonZkEVMData}
                 gnosisData={rangedGnosisData}
                 avalancheData={rangedAvalancheData}
+                baseData={rangedBaseData}
                 xAxis={rangedxAxis}
                 isUSD={isUSD}
                 />
