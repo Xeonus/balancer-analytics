@@ -22,6 +22,8 @@ import StyledLinkButton from '../../components/Buttons/StyledLinkButton';
 import SwapsTable from '../../components/Tables/SwapsTable';
 import JoinExitsTable from '../../components/Tables/JoinExitsTable';
 import { STABLE_POOLS } from '../../constants';
+import useGetPoolUserBalances from "../../data/balancer/useGetPoolUserBalances";
+import PoolShareLeaderboard from "../../components/Tables/PoolShareLeaderboard";
 
 
 
@@ -35,8 +37,9 @@ export default function PoolPage() {
         (poolData?.tokens || []).map((token) => token.address),
         poolData ? [poolData.id] : [],
     );
-    console.log("swaps", swaps);
-    console.log("joinExits", joinExits);
+    const usersBalances = useGetPoolUserBalances(poolId);
+
+
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -238,6 +241,12 @@ export default function PoolPage() {
                         >
                             <PoolInfoTable poolData={poolData} />
                         </Grid>
+                    </Grid>
+                    <Grid item mt={1} xs={11}>
+                        <Typography variant="h5">Top (Unstaked) BPT Holders </Typography>
+                    </Grid>
+                    <Grid item mt={1} xs={11}>
+                        <PoolShareLeaderboard leaderboardInfo={usersBalances} pricePerBPT={poolData.tvlUSD / poolData.totalShares}/>
                     </Grid>
                     <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
                         <Grid

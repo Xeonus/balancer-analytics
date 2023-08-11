@@ -127,6 +127,17 @@ query GetUserWalletPoolData($userAddress: String!, $block: Int!) {
   }
 }
 
+query GetUserPoolBalances($poolId: ID!) {
+    pool(id: $poolId) {
+        shares(where: {balance_gt: "0"}, orderBy: balance, orderDirection: desc) {
+            userAddress {
+                id
+            }
+            balance
+        }
+    }
+}
+
 query GetPoolChartData($poolId: String!, $startTimestamp: Int!) {
     poolSnapshots(first: 1000, orderBy: timestamp, orderDirection: asc, where: {pool: $poolId, timestamp_gte: $startTimestamp}) {
         id

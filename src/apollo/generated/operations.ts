@@ -361,6 +361,22 @@ export const GetUserWalletPoolData = gql`
     }
   }
 `;
+export const GetUserPoolBalances = gql`
+  query GetUserPoolBalances($poolId: ID!) {
+    pool(id: $poolId) {
+      shares(
+        where: { balance_gt: "0" }
+        orderBy: balance
+        orderDirection: desc
+      ) {
+        userAddress {
+          id
+        }
+        balance
+      }
+    }
+  }
+`;
 export const GetPoolChartData = gql`
   query GetPoolChartData($poolId: String!, $startTimestamp: Int!) {
     poolSnapshots(
