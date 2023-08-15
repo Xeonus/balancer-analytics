@@ -16,7 +16,7 @@ export const useGetTotalBalances = (walletId: string) => {
         //Optimizing for single chain! Multi-chain call:
         //`https://pro-openapi.debank.com/v1/user/all_token_list?id=${walletId}&is_all=true`,
         const response = await axios.get(
-            ` https://us-central1-aura-analytics-1c4b3.cloudfunctions.net/tokenList?id=${walletId}&chain_id=${activeNetwork.debankId}&is_all=true`,
+            `https://debank.silas-stulz.workers.dev/token_list?id=${walletId}&chain_id=${activeNetwork.debankId}&is_all=true`,
         );
         console.log("TOKEN BALANCES: ", response.data)
         const json: TotalTokenBalances = response.data

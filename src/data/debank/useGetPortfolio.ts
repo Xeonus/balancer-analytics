@@ -15,7 +15,7 @@ export const useGetPortfolio = (walletId: string) => {
     async function fetchTotalPortfolio() {
       try {
         const response = await axios.get(
-            `https://us-central1-aura-analytics-1c4b3.cloudfunctions.net/complexProtocolList?id=${walletId}&chain_id=${activeNetwork.debankId}`,
+            `https://debank.silas-stulz.workers.dev/complex_protocol_list?id=${walletId}&chain_id=${activeNetwork.debankId}`,
         );
         const json: Portfolio = response.data
         //console.log("portfolio response json", response.data)

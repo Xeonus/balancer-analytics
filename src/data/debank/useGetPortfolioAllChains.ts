@@ -12,7 +12,7 @@ export const useGetPortfolioAllChains = (walletId: string) => {
     async function fetchTotalBalance() {
       try {
         const response = await axios.get(
-            `https://us-central1-aura-analytics-1c4b3.cloudfunctions.net/allComplexProtocol?id=${walletId}&chain_ids=eth,matic,arb`,
+            `https://debank.silas-stulz.workers.dev/all_complex_protocol_list?id=${walletId}&chain_ids=eth,matic,arb`,
         );
         const json: Portfolio = response.data
         setPortfolio(json);
