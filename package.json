@@ -23,7 +23,6 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/identicon.js": "^2.3.1",
     "@types/jest": "^29.2.6",
-    "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
@@ -45,12 +44,12 @@
     "identicon.js": "^2.3.3",
     "jsbi": "^4.3.0",
     "json-loader": "^0.5.7",
-    "lodash": "^4.17.21",
     "node-vibrant": "^3.2.1-alpha.1",
     "numbro": "^2.3.6",
     "polished": "^4.2.2",
     "prettier": "^2.8.3",
     "react": "^18.2.0",
+    "react-csv": "^2.2.2",
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
@@ -92,6 +91,7 @@
     ]
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^2.16.4"
+    "@graphql-codegen/cli": "^2.16.4",
+    "@types/react-csv": "^1.1.3"
   }
 }

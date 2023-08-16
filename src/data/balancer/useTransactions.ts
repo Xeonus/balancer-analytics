@@ -4,7 +4,6 @@ import {
     useGetTransactionDataLazyQuery,
 } from '../../apollo/generated/graphql-codegen-generated';
 import { useEffect, useRef } from 'react';
-import { orderBy, uniqBy, groupBy, sumBy, map } from 'lodash';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 
 export function useBalancerTransactionData(
@@ -35,22 +34,56 @@ export function useBalancerTransactionData(
         }
     }, [poolIds, addresses]);
 
-    const swaps = uniqBy(
-        orderBy([...(data?.swapsIn || []), ...(data?.swapsOut || [])], 'timestamp', 'desc'),
-        (swap) => swap.id,
-    );
+    console.log("data", data);
 
-    const groupedByPair = groupBy(swaps, (swap) => `${swap.tokenInSym} -> ${swap.tokenOutSym}`);
-    const swapPairVolumes = map(groupedByPair, (swaps, key) => {
-        return {
-            name: key,
-            value: sumBy(swaps, (swap) => parseFloat(swap.valueUSD)),
-        };
-    });
+    const swaps = uniqSwaps([...(data?.swapsIn || []), ...(data?.swapsOut || [])]);
+
+    const groupedByPair = groupSwapsByPair(swaps);
+    const swapPairVolumes = getSwapPairVolumes(groupedByPair);
 
     return {
         swaps,
         joinExits: data?.joinExits || [],
         swapPairVolumes,
     };
+}
+
+function uniqSwaps(swaps: BalancerSwapFragment[]): BalancerSwapFragment[] {
+    const uniqueSwaps: BalancerSwapFragment[] = [];
+    const seenIds = new Set<string>();
+
+    for (const swap of swaps) {
+        if (!seenIds.has(swap.id)) {
+            seenIds.add(swap.id);
+            uniqueSwaps.push(swap);
+        }
+    }
+
+    return uniqueSwaps;
+}
+
+function groupSwapsByPair(swaps: BalancerSwapFragment[]): { [key: string]: BalancerSwapFragment[] } {
+    const groupedByPair: { [key: string]: BalancerSwapFragment[] } = {};
+
+    for (const swap of swaps) {
+        const key = `${swap.tokenInSym} -> ${swap.tokenOutSym}`;
+        if (!groupedByPair[key]) {
+            groupedByPair[key] = [];
+        }
+        groupedByPair[key].push(swap);
+    }
+
+    return groupedByPair;
+}
+
+function getSwapPairVolumes(groupedByPair: { [key: string]: BalancerSwapFragment[] }): { name: string; value: number }[] {
+    const swapPairVolumes: { name: string; value: number }[] = [];
+
+    for (const key in groupedByPair) {
+        const swaps = groupedByPair[key];
+        const totalValue = swaps.reduce((total, swap) => total + parseFloat(swap.valueUSD), 0);
+        swapPairVolumes.push({ name: key, value: totalValue });
+    }
+
+    return swapPairVolumes;
 }

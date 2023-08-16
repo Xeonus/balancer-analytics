@@ -1,3 +1,44 @@
 {
-  "possibleTypes": {}
+  "possibleTypes": {
+    "GqlPoolAprValue": ["GqlPoolAprRange", "GqlPoolAprTotal"],
+    "GqlPoolBase": [
+      "GqlPoolElement",
+      "GqlPoolGyro",
+      "GqlPoolLinear",
+      "GqlPoolLiquidityBootstrapping",
+      "GqlPoolMetaStable",
+      "GqlPoolPhantomStable",
+      "GqlPoolStable",
+      "GqlPoolWeighted"
+    ],
+    "GqlPoolFeaturedPoolGroupItem": [
+      "GqlFeaturePoolGroupItemExternalLink",
+      "GqlPoolMinimal"
+    ],
+    "GqlPoolNestedUnion": ["GqlPoolLinearNested", "GqlPoolPhantomStableNested"],
+    "GqlPoolTokenBase": [
+      "GqlPoolToken",
+      "GqlPoolTokenLinear",
+      "GqlPoolTokenPhantomStable"
+    ],
+    "GqlPoolTokenPhantomStableNestedUnion": [
+      "GqlPoolToken",
+      "GqlPoolTokenLinear"
+    ],
+    "GqlPoolTokenUnion": [
+      "GqlPoolToken",
+      "GqlPoolTokenLinear",
+      "GqlPoolTokenPhantomStable"
+    ],
+    "GqlPoolUnion": [
+      "GqlPoolElement",
+      "GqlPoolGyro",
+      "GqlPoolLinear",
+      "GqlPoolLiquidityBootstrapping",
+      "GqlPoolMetaStable",
+      "GqlPoolPhantomStable",
+      "GqlPoolStable",
+      "GqlPoolWeighted"
+    ]
+  }
 }

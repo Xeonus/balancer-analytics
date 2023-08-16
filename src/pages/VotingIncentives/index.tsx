@@ -15,11 +15,11 @@ import {useGetHiddenHandHistoricalIncentives} from "../../data/hidden-hand/useGe
 import {BALANCER_TIMESTAMPS} from "../../data/hidden-hand/constants";
 import { BalancerStakingGauges } from "../../data/balancer/balancerTypes";
 import { decorateGaugesWithIncentives } from "./helpers";
-import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges";
 import IncentivesTable from "../../components/Tables/IncentivesTable";
 import HistoricalIncentivesTable from "../../components/Tables/HistoricalIncentivesTable";
 import HiddenHandCard from "../../components/Cards/HiddenHandCard";
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -77,7 +77,7 @@ export default function VotingIncentives() {
     // const currentHiddenHandData = useGetHiddenHandVotingIncentives();
     //const { address } = useAccount();
     //const addressRewards = useGetHiddenHandRewards(address ? address : '')
-    const gaugeData = useGetBalancerStakingGauges();
+    const gaugeData = useGetBalancerV3StakingGauges();
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -106,7 +106,7 @@ export default function VotingIncentives() {
             const fullyDecoratedGauges = decorateGaugesWithIncentives(gaugeData, hiddenHandData.incentives)
             setDecoratedGagues(fullyDecoratedGauges)
         }
-    }, [currentRoundNew, gaugeData, hiddenHandData.incentives]);
+    }, [currentRoundNew, JSON.stringify(gaugeData), hiddenHandData.incentives]);
 
     const handleEpochChange = (event: SelectChangeEvent<number>) => {
         setCurrentRoundNew(Number(event.target.value));
@@ -291,7 +291,7 @@ export default function VotingIncentives() {
                                     key={currentRoundNew}
                                     gaugeDatas={hiddenHandData.incentives.data} />
                             ) : decoratedGauges && decoratedGauges.length > 0 ? (
-                                <IncentivesTable gaugeDatas={decoratedGauges} />
+                                <IncentivesTable gaugeDatas={decoratedGauges} currentRound={currentRoundNew} />
                             ) : (
                                 <CircularProgress />
                             )}

@@ -11,7 +11,7 @@ interface PoolCompositionProps {
 export default function GaugeComposition({ poolData, size = 24 }: PoolCompositionProps) {
     const theme = useTheme();
 
-    const filteredTokens = poolData.tokens.filter((token) => token.weight !== null);
+    const filteredTokens = poolData.tokens.filter((token) => token.symbol !== null);
 
     return (
         <Box position="relative" display="flex" alignItems="center">
@@ -47,7 +47,7 @@ export default function GaugeComposition({ poolData, size = 24 }: PoolCompositio
                             <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">
                                 {token.symbol}
                             </Typography>
-                            {poolData.poolType === 'Weighted' && token.weight !== null ? (
+                            {poolData.poolType === 'WEIGHTED' && token.weight !== null ? (
                                 <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} variant="caption">
                                     {Number((parseFloat(token.weight) * 100).toFixed(0))}%
                                 </Typography>
