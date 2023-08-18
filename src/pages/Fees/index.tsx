@@ -56,7 +56,7 @@ export default function Fees() {
 
     //Problem statement: We should distinguish between views of real realized fees -> make a swap fee analysis view that shows the "real" swap fees earned
     //Create an additional aggregated table that ESTIMATES / Makes a forecast on potential fees and its distributions from TODAYS fees!
-    //Therefore load pools 2 times, once with custom time range and once for 24h range to make 2 views!
+    //Therefore, load pools 2 times, once with custom time range and once for 24h range to make 2 views!
 
     //Clean up data and retrieve total amounts
     const balancesAboveThreshold = totalBalances ? totalBalances.filter(balance =>

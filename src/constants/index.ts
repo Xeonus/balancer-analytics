@@ -62,6 +62,9 @@ export const YIELD_BEARING_TOKENS = [
     '0xf7d9281e8e363584973f946201b82ba72c965d27', //yyAVAX
     '0xea67626e1f0b59e0d172a04f5702ef90bcdf440c', // bb-a-USDT AVAX
     '0xeb496161099d45b3ea4892408ef745c6182eb56e', // bb-a-USDC AVAX
+    '0xeb466342c4d449bc9f53a865d5cb90586f405215', //axlUSDC BASE
+    '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22', //cbETH BASE
+    '0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c', //rETH BASE
 
 
 

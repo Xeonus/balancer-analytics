@@ -198,7 +198,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
   decentralicedClientUri: '',
-  alchemyRPCUrl: ' https://mainnet.base.org ',
+  alchemyRPCUrl: 'https://gateway.tenderly.co/public/base',
   alchemyKey: '',
   bgColor: '#0030a6',
   primaryColor: '#0027a2',

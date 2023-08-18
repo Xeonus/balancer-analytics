@@ -9,6 +9,7 @@ import { useActiveNetworkVersion } from '../../state/application/hooks';
 export const useGetTotalBalances = (walletId: string) => {
   const [balances, setBalances] = useState<TotalTokenBalances | null>(null);
   const [activeNetwork] = useActiveNetworkVersion()
+  console.log("debank active network")
 
   useEffect(() => {
     async function fetchTotalBalance() {
@@ -35,9 +36,9 @@ export const useGetTotalBalances = (walletId: string) => {
       console.log("PRODUCTION: fetching data from Debank")
       fetchTotalBalance();
     }
-  }, [walletId]);
+  }, [activeNetwork.debankId, walletId]);
 
-  const totalBalances = balances ? balances.filter(balance => balance.is_core || (balance.is_core === false && YIELD_BEARING_TOKENS.includes(balance.id))) : null;
+  const totalBalances = balances ? balances.filter(balance => balance.is_core || (!balance.is_core && YIELD_BEARING_TOKENS.includes(balance.id))) : null;
 
   return { totalBalances };
 };

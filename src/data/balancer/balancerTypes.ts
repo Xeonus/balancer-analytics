@@ -59,7 +59,7 @@ export interface PoolData {
     name: string;
     symbol: string;
 
-    // basic token info
+    // basic info
     address: string;
     feeTier: number;
     swapFee: number;
@@ -98,7 +98,10 @@ export interface PoolData {
     balEmissions?: number;
     //Recovery mode?
     isInRecoveryMode?: boolean;
+
 }
+
+
 
 
 export interface PoolDataUser extends PoolData {
