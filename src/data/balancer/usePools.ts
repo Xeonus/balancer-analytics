@@ -285,6 +285,7 @@ export function useBalancerPoolPageData(poolId: string): {
     tvlData: BalancerChartDataItem[];
     volumeData: BalancerChartDataItem[];
     feesData: BalancerChartDataItem[];
+    protocolFeesData: BalancerChartDataItem[];
     tokenDatas: { tokenAddress: string, coingeckoRawData: CoingeckoSnapshotPriceData }[];
 } {
     const [activeNetwork] = useActiveNetworkVersion();
@@ -332,7 +333,7 @@ export function useBalancerPoolPageData(poolId: string): {
 
 
     if (!data || !coingeckoSnapshotData) {
-        return { tvlData: [], volumeData: [], feesData: [], tokenDatas: [] };
+        return { tvlData: [], volumeData: [], feesData: [], tokenDatas: [], protocolFeesData: []};
     }
 
     //console.log("coingeckoRawData", coingeckoSnapshotData)
@@ -400,12 +401,23 @@ export function useBalancerPoolPageData(poolId: string): {
         };
     });
 
+    const protocolFeesData = poolSnapshots.map((snapshot, idx) => {
+        const prevValue = idx === 0 ? 0 : parseFloat(poolSnapshots[idx - 1].protocolFee || '0');
+        const value = parseFloat(snapshot.protocolFee || '0');
+
+        return {
+            value: value - prevValue > 0 ? value - prevValue : 0,
+            time: unixToDate(snapshot.timestamp),
+        };
+    });
+
     const tokenDatas = coingeckoSnapshotData;
 
     return {
         tvlData,
         volumeData,
         feesData,
+        protocolFeesData,
         tokenDatas,
     };
 }

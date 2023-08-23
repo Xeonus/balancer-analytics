@@ -37,15 +37,8 @@ interface ProtocolBarChartProps {
 
 
 
-export default function ProtocolMultiBarCharts({mainnetData,
-                                                   arbitrumData,
-                                                   polygonData,
-                                                   polygonZkEVMData,
-                                                   gnosisData,
-                                                   avalancheData,
-                                                   baseData,
-                                                   xAxis,
-                                                   isUSD}: ProtocolBarChartProps) {
+export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData,
+                                                   avalancheData, baseData, xAxis, isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
@@ -66,8 +59,8 @@ export default function ProtocolMultiBarCharts({mainnetData,
                     backgroundColor: '#6a7985',
                 }
             },
-            
-            
+
+
         },
         legend: {
             data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base'],
@@ -112,7 +105,7 @@ export default function ProtocolMultiBarCharts({mainnetData,
                 areaStyle: {
                     opacity: 0.95,
                     color: 'rgb(0, 221, 255)'
-                    
+
                 },
                 emphasis: {
                     focus: 'series'
@@ -136,7 +129,7 @@ export default function ProtocolMultiBarCharts({mainnetData,
                 areaStyle: {
                     opacity: 0.95,
                     color: 'rgb(128, 255, 165)'
-                    
+
                 },
                 emphasis: {
                     focus: 'series'
@@ -269,7 +262,7 @@ export default function ProtocolMultiBarCharts({mainnetData,
     const onChartHover = (params: any) => {
         console.log('Chart mouse trigger params:', params);
       };
-    
+
       const onEvents = {
         mousemove: onChartHover,
       };

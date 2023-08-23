@@ -9,6 +9,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
@@ -197,13 +198,37 @@ export default function Protocol() {
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Fees</Typography>
+                        <Typography variant='h5'>Historical Collected Protocol Fees</Typography>
+                    </Grid>
+                    <Grid item xs={11}>
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.protocolFees24 ? aggregatedProtocolData.protocolFees24 : 0}
+                            mainMetricInUSD={true}
+                            metricName='Protocol Fees'
+                            mainMetricChange={aggregatedProtocolData.protocolFeesChange}
+                            MetricIcon={RequestQuoteIcon}
+                        />
+                    </Grid>
+                    <Grid item mt={1} xs={11} >
+                        <ProtocolMultipleBarChart
+                            mainnetProtocolData={protocolData.protocolFeeData}
+                            arbitrumProtocolData={arbitrumProtocolData.protocolFeeData}
+                            polygonProtocolData={polygonProtocolData.protocolFeeData}
+                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.protocolFeeData}
+                            gnosisProtocolData={gnosisProtocolData.protocolFeeData}
+                            avalancheProtocolData={avalancheProtocolData.protocolFeeData}
+                            baseProtocolData={baseProtocolData.protocolFeeData}
+                            isUSD={true}
+                        />
+                    </Grid>
+                    <Grid item mt={1} xs={11} >
+                        <Typography variant='h5'>Historical Trading Fees</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.fees24}
                             mainMetricInUSD={true}
-                            metricName='Protocol Fees'
+                            metricName='Trading Fees'
                             mainMetricChange={aggregatedProtocolData.feesChange}
                             MetricIcon={CurrencyExchangeIcon}
                         />

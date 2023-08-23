@@ -172,6 +172,7 @@ export const BalancerPool = gql`
     totalSwapVolume
     totalSwapFee
     totalLiquidity
+    totalProtocolFee
     totalShares
     swapsCount
     holdersCount
@@ -196,6 +197,7 @@ export const BalancerPoolSnapshot = gql`
     totalShares
     swapVolume
     swapFees
+    protocolFee
     timestamp
   }
 `;
@@ -274,6 +276,7 @@ export const BalancerSnapshot = gql`
     poolCount
     totalLiquidity
     totalSwapCount
+    totalProtocolFee
     totalSwapVolume
     totalSwapFee
   }
@@ -745,6 +748,7 @@ export const GetProtocolData = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -752,6 +756,7 @@ export const GetProtocolData = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -759,6 +764,7 @@ export const GetProtocolData = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -937,6 +943,7 @@ export const GetPoolChartData = gql`
       amounts
       swapVolume
       swapFees
+      protocolFee
       timestamp
       swapsCount
       holdersCount
@@ -964,6 +971,7 @@ export const BalancerPoolSwapFeeSnapshot = gql`
       id
       amounts
       totalShares
+      protocolFee
       swapVolume
       swapFees
       timestamp
@@ -996,6 +1004,7 @@ export const BalancerProtocolData = gql`
       totalLiquidity
       totalSwapVolume
       totalSwapFee
+      totalProtocolFee
       poolCount
       totalSwapCount
     }

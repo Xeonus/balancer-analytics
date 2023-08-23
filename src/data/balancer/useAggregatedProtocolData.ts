@@ -26,7 +26,9 @@ export interface AggregatedProtocolData {
     volume: number;
     volumeChange: number;
     fees24: number;
+    protocolFees24: number;
     feesChange: number;
+    protocolFeesChange: number;
     tvl: number;
     tvlChange: number;
     swaps24: number;
@@ -53,7 +55,9 @@ export default function useAggregatedProtocolData() {
     let volume = 0
     let volumeChange = 0
     let fees24 = 0
+    let protocolFees24 = 0
     let feeChange = 0
+    let protocolFeesChange = 0
     let swaps24 = 0
     let swapsChange = 0
 
@@ -87,10 +91,22 @@ export default function useAggregatedProtocolData() {
             protocolPolygonZkEVMData.fees24 + protocolGnosisData.fees24 + protocolDataAvalanche.fees24 + protocolDataBase.fees24;
     }
 
+    if (protocolData.protocolFees24 && protocolArbitrumData.protocolFees24 && protocolPolygonData.protocolFees24 && protocolPolygonZkEVMData.protocolFees24 &&
+        protocolGnosisData.protocolFees24 && protocolDataAvalanche.protocolFees24 && protocolDataBase.protocolFees24) {
+        protocolFees24 = protocolData.protocolFees24 + protocolArbitrumData.protocolFees24 + protocolPolygonData.protocolFees24 +
+            protocolPolygonZkEVMData.protocolFees24 + protocolGnosisData.protocolFees24 + protocolDataAvalanche.protocolFees24 + protocolDataBase.protocolFees24;
+    }
+
     if (protocolData.feesChange && protocolArbitrumData.feesChange && protocolPolygonData.feesChange &&
         protocolPolygonZkEVMData.feesChange && protocolGnosisData.feesChange && protocolDataAvalanche.feesChange && protocolDataBase.feesChange) {
         feeChange = protocolData.feesChange + protocolArbitrumData.feesChange + protocolPolygonData.feesChange +
             protocolPolygonZkEVMData.feesChange  + protocolGnosisData.feesChange + protocolDataAvalanche.feesChange + protocolDataBase.feesChange;
+    }
+
+    if (protocolData.protocolFeesChange && protocolArbitrumData.protocolFeesChange && protocolPolygonData.protocolFeesChange &&
+        protocolPolygonZkEVMData.protocolFeesChange && protocolGnosisData.protocolFeesChange && protocolDataAvalanche.protocolFeesChange && protocolDataBase.protocolFeesChange) {
+        protocolFeesChange = protocolData.protocolFeesChange + protocolArbitrumData.protocolFeesChange + protocolPolygonData.protocolFeesChange +
+            protocolPolygonZkEVMData.protocolFeesChange  + protocolGnosisData.protocolFeesChange + protocolDataAvalanche.protocolFeesChange + protocolDataBase.protocolFeesChange;
     }
 
     if (protocolData.swaps24 && protocolArbitrumData.swaps24 && protocolPolygonData.swaps24 && protocolPolygonZkEVMData.swaps24 &&
@@ -114,7 +130,9 @@ export default function useAggregatedProtocolData() {
         volume: volume,
         volumeChange: volumeChange,
         fees24: fees24,
+        protocolFees24: protocolFees24,
         feesChange: feeChange,
+        protocolFeesChange: protocolFeesChange,
         tvl,
         tvlChange: tvlChange,
         swaps24: swaps24,

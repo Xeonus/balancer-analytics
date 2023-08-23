@@ -4,6 +4,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -11,6 +12,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -18,6 +20,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -144,6 +147,7 @@ query GetPoolChartData($poolId: String!, $startTimestamp: Int!) {
         amounts
         swapVolume
         swapFees
+        protocolFee
         timestamp
         swapsCount
         holdersCount
@@ -167,6 +171,7 @@ query BalancerPoolSwapFeeSnapshot($startTimestamp: Int!, $endTimeStamp: Int!) {
            id
         amounts
         totalShares
+        protocolFee
         swapVolume
         swapFees
         timestamp
@@ -207,6 +212,7 @@ query BalancerProtocolData(
         totalLiquidity
         totalSwapVolume
         totalSwapFee
+        totalProtocolFee
         poolCount
         totalSwapCount
     }
@@ -358,6 +364,7 @@ fragment BalancerPool on Pool {
     totalSwapVolume
     totalSwapFee
     totalLiquidity
+    totalProtocolFee
     totalShares
     swapsCount
     holdersCount
@@ -488,6 +495,7 @@ fragment BalancerPoolSnapshot on PoolSnapshot {
     totalShares
     swapVolume
     swapFees
+    protocolFee
     timestamp
 }
 
@@ -705,6 +713,7 @@ fragment BalancerSnapshot on BalancerSnapshot {
     poolCount
     totalLiquidity
     totalSwapCount
+    totalProtocolFee
     totalSwapVolume
     totalSwapFee
 }

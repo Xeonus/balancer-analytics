@@ -9473,6 +9473,7 @@ export type GetProtocolDataQuery = {
     totalLiquidity: string;
     totalSwapCount: string;
     totalSwapFee: string;
+    totalProtocolFee?: string | null;
     totalSwapVolume: string;
     poolCount: number;
   }>;
@@ -9481,6 +9482,7 @@ export type GetProtocolDataQuery = {
     totalLiquidity: string;
     totalSwapCount: string;
     totalSwapFee: string;
+    totalProtocolFee?: string | null;
     totalSwapVolume: string;
     poolCount: number;
   }>;
@@ -9489,6 +9491,7 @@ export type GetProtocolDataQuery = {
     totalLiquidity: string;
     totalSwapCount: string;
     totalSwapFee: string;
+    totalProtocolFee?: string | null;
     totalSwapVolume: string;
     poolCount: number;
   }>;
@@ -9499,6 +9502,7 @@ export type GetProtocolDataQuery = {
     poolCount: number;
     totalLiquidity: string;
     totalSwapCount: string;
+    totalProtocolFee?: string | null;
     totalSwapVolume: string;
     totalSwapFee: string;
   }>;
@@ -9714,6 +9718,7 @@ export type GetPoolDataQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -9748,6 +9753,7 @@ export type GetPoolDataQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -9820,6 +9826,7 @@ export type GetPoolChartDataQuery = {
     amounts: Array<string>;
     swapVolume: string;
     swapFees: string;
+    protocolFee?: string | null;
     timestamp: number;
     swapsCount: string;
     holdersCount: string;
@@ -9847,6 +9854,7 @@ export type BalancerPoolSwapFeeSnapshotQuery = {
     id: string;
     amounts: Array<string>;
     totalShares: string;
+    protocolFee?: string | null;
     swapVolume: string;
     swapFees: string;
     timestamp: number;
@@ -9881,6 +9889,7 @@ export type BalancerProtocolDataQuery = {
     totalLiquidity: string;
     totalSwapVolume: string;
     totalSwapFee: string;
+    totalProtocolFee?: string | null;
     poolCount: number;
     totalSwapCount: string;
   }>;
@@ -10042,6 +10051,7 @@ export type BalancerPoolFragment = {
   totalSwapVolume: string;
   totalSwapFee: string;
   totalLiquidity: string;
+  totalProtocolFee?: string | null;
   totalShares: string;
   swapsCount: string;
   holdersCount: string;
@@ -10101,6 +10111,7 @@ export type GetBalancerPoolsQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -10144,6 +10155,7 @@ export type GetBalancerPoolQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -10178,6 +10190,7 @@ export type GetBalancerPoolQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -10267,6 +10280,7 @@ export type BalancerPoolSnapshotsQuery = {
     totalShares: string;
     swapVolume: string;
     swapFees: string;
+    protocolFee?: string | null;
     timestamp: number;
     pool: { __typename: "Pool"; id: string };
   }>;
@@ -10278,6 +10292,7 @@ export type BalancerPoolSnapshotFragment = {
   totalShares: string;
   swapVolume: string;
   swapFees: string;
+  protocolFee?: string | null;
   timestamp: number;
   pool: { __typename: "Pool"; id: string };
 };
@@ -10367,6 +10382,7 @@ export type BalancePortfolioDataQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -10410,6 +10426,7 @@ export type BalancePortfolioDataQuery = {
     totalSwapVolume: string;
     totalSwapFee: string;
     totalLiquidity: string;
+    totalProtocolFee?: string | null;
     totalShares: string;
     swapsCount: string;
     holdersCount: string;
@@ -10634,6 +10651,7 @@ export type GetBalancerSnapshotsQuery = {
     poolCount: number;
     totalLiquidity: string;
     totalSwapCount: string;
+    totalProtocolFee?: string | null;
     totalSwapVolume: string;
     totalSwapFee: string;
   }>;
@@ -10646,6 +10664,7 @@ export type BalancerSnapshotFragment = {
   poolCount: number;
   totalLiquidity: string;
   totalSwapCount: string;
+  totalProtocolFee?: string | null;
   totalSwapVolume: string;
   totalSwapFee: string;
 };
@@ -10855,6 +10874,7 @@ export const BalancerPoolFragmentDoc = gql`
     totalSwapVolume
     totalSwapFee
     totalLiquidity
+    totalProtocolFee
     totalShares
     swapsCount
     holdersCount
@@ -10879,6 +10899,7 @@ export const BalancerPoolSnapshotFragmentDoc = gql`
     totalShares
     swapVolume
     swapFees
+    protocolFee
     timestamp
   }
 `;
@@ -10957,6 +10978,7 @@ export const BalancerSnapshotFragmentDoc = gql`
     poolCount
     totalLiquidity
     totalSwapCount
+    totalProtocolFee
     totalSwapVolume
     totalSwapFee
   }
@@ -11883,6 +11905,7 @@ export const GetProtocolDataDocument = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -11890,6 +11913,7 @@ export const GetProtocolDataDocument = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -11897,6 +11921,7 @@ export const GetProtocolDataDocument = gql`
       totalLiquidity
       totalSwapCount
       totalSwapFee
+      totalProtocolFee
       totalSwapVolume
       poolCount
     }
@@ -12490,6 +12515,7 @@ export const GetPoolChartDataDocument = gql`
       amounts
       swapVolume
       swapFees
+      protocolFee
       timestamp
       swapsCount
       holdersCount
@@ -12569,6 +12595,7 @@ export const BalancerPoolSwapFeeSnapshotDocument = gql`
       id
       amounts
       totalShares
+      protocolFee
       swapVolume
       swapFees
       timestamp
@@ -12653,6 +12680,7 @@ export const BalancerProtocolDataDocument = gql`
       totalLiquidity
       totalSwapVolume
       totalSwapFee
+      totalProtocolFee
       poolCount
       totalSwapCount
     }

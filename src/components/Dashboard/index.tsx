@@ -33,6 +33,7 @@ import Financials from '../../pages/Financials';
 import { isMobile } from 'react-device-detect';
 import Emissions from '../../pages/Emissions';
 import VotingIncentives from '../../pages/VotingIncentives';
+import Reports from "../../pages/Reports";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -46,7 +47,7 @@ const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
-    
+
 }>(({ theme, open }) => ({
     flexGrow: 1,
     marginTop: theme.spacing(1),
@@ -226,6 +227,7 @@ function Dashboard() {
                             <Route path={networkPrefix(activeNetwork) + 'pools'} element={<PoolsOverview />} />
                             <Route path={networkPrefix(activeNetwork) + 'tokens'} element={<Tokens />} />
                             <Route path={networkPrefix(activeNetwork) + 'emissions'} element={<Emissions />} />
+                            <Route path={networkPrefix(activeNetwork) + 'reports'} element={<Reports />} />
                             <Route path={networkPrefix(activeNetwork) + 'voting-incentives'}
                                    element={<VotingIncentives/>}/>
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}

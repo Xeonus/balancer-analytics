@@ -10,7 +10,9 @@ export interface ProtocolData {
     volume24?: number;
     volumeChange?: number;
     fees24?: number;
+    protocolFees24?: number;
     feesChange?: number;
+    protocolFeesChange?: number;
     tvl?: number;
     tvlChange?: number;
     swaps24?: number;
@@ -19,6 +21,7 @@ export interface ProtocolData {
     volumeData: BalancerChartDataItem[];
     swapData: BalancerChartDataItem[];
     feeData: BalancerChartDataItem[];
+    protocolFeeData: BalancerChartDataItem[];
     whaleSwaps: BalancerSwapFragment[];
 }
 
@@ -47,7 +50,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
 
 
     if (!data) {
-        return { tvlData: [], volumeData: [], swapData: [], feeData: [], whaleSwaps: [] };
+        return { tvlData: [], volumeData: [], swapData: [], feeData: [], protocolFeeData: [], whaleSwaps: [] };
     }
 
     const snapshots = data.balancerSnapshots;
@@ -94,12 +97,29 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         };
     });
 
+    const protocolFeeData = snapshots.map((snapshot, idx) => {
+        let prevValue = 0;
+        if (idx !== 0) {
+            const previousFee = snapshots[idx - 1].totalProtocolFee;
+            prevValue = previousFee ? parseFloat(previousFee) : 0;
+        }
+        const value = parseFloat(snapshot.totalProtocolFee || '0');
+
+        return {
+            value: Math.max(value - prevValue, 0),
+            time: unixToDate(snapshot.timestamp),
+        };
+    });
+
     const tvl = parseFloat(balancer.totalLiquidity);
     const tvl24 = parseFloat(balancer24.totalLiquidity);
     const volume = parseFloat(balancer.totalSwapVolume);
     const volume24 = parseFloat(balancer24.totalSwapVolume);
     const volume48 = parseFloat(balancer48.totalSwapVolume);
     const fees = parseFloat(balancer.totalSwapFee);
+    const protocolFees = parseFloat(balancer.totalProtocolFee || '0');
+    const protocolFees24 = parseFloat(balancer24.totalProtocolFee || '0')
+    const protocolFees48 = parseFloat(balancer48.totalProtocolFee || '0')
     const fees24 = parseFloat(balancer24.totalSwapFee);
     const fees48 = parseFloat(balancer48.totalSwapFee);
     const swaps = parseFloat(balancer.totalSwapCount);
@@ -112,6 +132,8 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         tvl,
         tvlChange: (tvl - tvl24) / tvl24,
         fees24: fees - fees24,
+        protocolFees24: protocolFees - protocolFees24,
+        protocolFeesChange: (protocolFees - protocolFees24 - (protocolFees24 - protocolFees48)) / (protocolFees24 - protocolFees48),
         feesChange: (fees - fees24 - (fees24 - fees48)) / (fees24 - fees48),
         swaps24: swaps - swaps24,
         swapsChange: (swaps - swaps24 - (swaps24 - swaps48)) / (swaps24 - swaps48),
@@ -119,6 +141,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         volumeData,
         swapData,
         feeData,
+        protocolFeeData,
         whaleSwaps: data.whaleSwaps,
     };
 }

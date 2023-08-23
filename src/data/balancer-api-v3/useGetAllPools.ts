@@ -4,7 +4,7 @@ import {balancerV3APIClient} from "../../apollo/client";
 import {useGetAllPoolsQuery} from "../../apollo/generated/graphql-codegen-generated";
 import {GlobalAPRStats, PoolDataUnified, PoolTokenDataUnified} from "./balancerUnifiedTypes";
 
-export default function useGetBalancerV3StakingGauges() : PoolDataUnified[] {
+export default function useGetBalancerV3StakingGauges() : PoolDataUnified[] | undefined {
     const { data, loading, error } = useGetAllPoolsQuery(
         {
             client: balancerV3APIClient,
@@ -21,7 +21,7 @@ export default function useGetBalancerV3StakingGauges() : PoolDataUnified[] {
     if (data && data.poolGetPools.length > 0) {
         const { poolGetPools  } = data;
 
-        return poolGetPools.map((pool) => {
+        /*return poolGetPools.map((pool) => {
             return {
                 ...pool,
                     //Basic Info
@@ -55,7 +55,7 @@ export default function useGetBalancerV3StakingGauges() : PoolDataUnified[] {
                     totalLiquidity: pool.dynamicData.totalLiquidity,
                     globalAPRStats: GlobalAPRStats;
             }
-        })
+        })*/
     }
 
 }
