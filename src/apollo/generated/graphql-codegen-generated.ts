@@ -9400,7 +9400,9 @@ export type GetPoolSnapshotsQuery = {
   }>;
 };
 
-export type GetAllPoolsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetAllPoolsQueryVariables = Exact<{
+  chainIn?: InputMaybe<Array<GqlChain> | GqlChain>;
+}>;
 
 export type GetAllPoolsQuery = {
   __typename: "Query";
@@ -9416,6 +9418,7 @@ export type GetAllPoolsQuery = {
       address: string;
       name: string;
       weight?: string | null;
+      isMainToken: boolean;
       symbol: string;
       decimals: number;
       id: string;
@@ -11762,11 +11765,9 @@ export type GetPoolSnapshotsQueryResult = Apollo.QueryResult<
   GetPoolSnapshotsQueryVariables
 >;
 export const GetAllPoolsDocument = gql`
-  query GetAllPools {
+  query GetAllPools($chainIn: [GqlChain!]) {
     poolGetPools(
-      where: {
-        chainIn: [MAINNET, ARBITRUM, POLYGON, OPTIMISM, GNOSIS, AVALANCHE, BASE]
-      }
+      where: { chainIn: $chainIn }
       orderBy: totalLiquidity
       orderDirection: desc
     ) {
@@ -11779,6 +11780,7 @@ export const GetAllPoolsDocument = gql`
         address
         name
         weight
+        isMainToken
         symbol
         decimals
         id
@@ -11860,6 +11862,7 @@ export const GetAllPoolsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllPoolsQuery({
  *   variables: {
+ *      chainIn: // value for 'chainIn'
  *   },
  * });
  */

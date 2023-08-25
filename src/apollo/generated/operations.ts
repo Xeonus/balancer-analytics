@@ -653,11 +653,9 @@ export const GetPoolSnapshots = gql`
   }
 `;
 export const GetAllPools = gql`
-  query GetAllPools {
+  query GetAllPools($chainIn: [GqlChain!]) {
     poolGetPools(
-      where: {
-        chainIn: [MAINNET, ARBITRUM, POLYGON, OPTIMISM, GNOSIS, AVALANCHE, BASE]
-      }
+      where: { chainIn: $chainIn }
       orderBy: totalLiquidity
       orderDirection: desc
     ) {
@@ -670,6 +668,7 @@ export const GetAllPools = gql`
         address
         name
         weight
+        isMainToken
         symbol
         decimals
         id

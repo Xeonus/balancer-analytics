@@ -28,12 +28,14 @@ import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
 import { DAO_FEE_FACTOR } from '../../../data/balancer/constants';
+import {PoolDataUnified, PoolTokenDataUnified} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
+import PoolCompositionUnified from "../../PoolCompositionUnified";
 
 
 interface Data {
     name: string;
-    poolTokens: PoolTokenData[];
-    poolData: PoolData;
+    poolTokens: PoolTokenDataUnified[];
+    poolData: PoolDataUnified;
     poolRevenue: number;
     protocolRevenue: number;
     tokenRevenue: number;
@@ -43,8 +45,8 @@ interface Data {
 
 function createData(
     name: string,
-    poolTokens: PoolTokenData[],
-    poolData: PoolData,
+    poolTokens: PoolTokenDataUnified[],
+    poolData: PoolDataUnified,
     poolRevenue: number,
     protocolRevenue: number,
     tokenRevenue: number,
@@ -79,8 +81,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | PoolTokenData[] | PoolData },
-    b: { [key in Key]: number | string | PoolTokenData[] | PoolData },
+    a: { [key in Key]: number | string | PoolTokenDataUnified[] | PoolDataUnified },
+    b: { [key in Key]: number | string | PoolTokenDataUnified[] | PoolDataUnified },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -212,7 +214,7 @@ export default function EmissionsTable({
     poolDatas,
     timeRange
 }: {
-    poolDatas?: PoolData[],
+    poolDatas?: PoolDataUnified[],
     timeRange?: number
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
@@ -237,7 +239,7 @@ export default function EmissionsTable({
         );
     }
 
-    const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 100);
+    const filteredPoolDatas = poolDatas.filter((x) => !!x && x.poolType !== 'LIQUIDITY_BOOTSTRAPPING' && !POOL_HIDE.includes(x.poolId) && x.totalLiquidity > 100);
 
     //Data to be averaged -> TODO: make dependency from parent!
 
@@ -265,14 +267,15 @@ export default function EmissionsTable({
     const rows = filteredPoolDatas.map(el =>
         //createData(getShortPoolName(el), el.tokens, el, calculateTokenYieldInUsd(el, true), calculateTokenYieldInUsd(el, true) * 0.5, calculateTokenYieldInUsd(el))
         createData(
-            getShortPoolName(el),
+            el.name,
             el.tokens,
             el,
-            el.feesEpochUSD / 7  * time  * 0.5 ,
-            el.feesEpochUSD / 7   * time * 0.5  + calculateTokenYieldInUsd(el)  * time  ,
-            calculateTokenYieldInUsd(el)  * time ,
-            el.balEmissions ? el.balEmissions : 0,
-            el.feesUSD > 0 ? (el.balEmissions ? ((el.feesEpochUSD / 7   * time * 0.5 + calculateTokenYieldInUsd(el)  * time  ) / el.balEmissions) : 0) : 0)
+            el.fees24h,
+            el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR,
+            el.yieldCapture24h  * time,
+            el.globalAPRStats ? el.globalAPRStats.nativeRewardAPRs.min : 0,
+            el.yieldCapture24h * DAO_FEE_FACTOR * time / (el.globalAPRStats ? el.globalAPRStats.nativeRewardAPRs.min : 0),
+        )
     )
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
@@ -337,7 +340,7 @@ export default function EmissionsTable({
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={() => { navigate(`${getLink(activeNetwork, row.poolData.id)}/`); }}
+                                            onClick={() => { navigate(`${getLink(activeNetwork, row.poolData.poolId)}/`); }}
                                             role="number"
                                             tabIndex={-1}
                                             key={row.poolData.address}
@@ -352,7 +355,7 @@ export default function EmissionsTable({
                                                 scope="row"
                                                 sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
-                                                <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} />
+                                                <PoolCompositionUnified key={row.poolData.poolId} poolData={row.poolData} size={35} />
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.poolRevenue > 0 ?
@@ -360,7 +363,7 @@ export default function EmissionsTable({
                                                     0
                                                 }
                                             </TableCell>
-                                            <TableCell 
+                                            <TableCell
                                             align="right"
                                             sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
@@ -382,7 +385,7 @@ export default function EmissionsTable({
                                                     formatDollarAmount(row.balEmissions) : 0
                                                 }
                                             </TableCell>
-                                            <TableCell 
+                                            <TableCell
                                             align="right"
                                             sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >

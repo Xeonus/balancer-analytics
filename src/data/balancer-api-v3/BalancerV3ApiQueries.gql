@@ -434,9 +434,9 @@ query GetPoolSnapshots($poolId: String!, $range: GqlPoolSnapshotDataRange!) {
     }
 }
 
-query GetAllPools{
+query GetAllPools($chainIn: [GqlChain!]){
     poolGetPools(
-        where: {chainIn: [MAINNET, ARBITRUM, POLYGON, OPTIMISM, GNOSIS, AVALANCHE, BASE]}
+        where: {chainIn: $chainIn}
         orderBy: totalLiquidity
         orderDirection: desc
     ) {
@@ -449,6 +449,7 @@ query GetAllPools{
             address
             name
             weight
+            isMainToken
             symbol
             decimals
             id

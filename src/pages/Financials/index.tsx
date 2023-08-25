@@ -27,6 +27,7 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCharts/IncomeVsSpendingsMultiBarChart';
 import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
 import SimpleRunwayGauge from '../../components/Echarts/RunwayGauge/SimpleRunwayGauge';
+import {useGetAddressTransactionsHistorically} from "../../data/firebase/useGetAddressTransactionsHistorically";
 
 export default function Financials() {
 
@@ -46,7 +47,12 @@ export default function Financials() {
     navCrumbs.push(homeNav)
 
     //Load Txs and history
-    const txnHistory: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
+    const txnHistoryFromFile: TransactionHistory = JSON.parse(JSON.stringify(txnJson));
+    const txnHistory: TransactionHistory | null = useGetAddressTransactionsHistorically(TREASURY_CONFIG.treasury)
+    //Pass internal token dict for token resolving
+    if (txnHistory) {
+        txnHistory.token_dict = txnHistoryFromFile.token_dict
+    }
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
 
@@ -55,13 +61,17 @@ export default function Financials() {
     // console.log("transactions", transactions)
 
     //Merge last 20 tx's with historical data
-    const latestTimestamp = Math.max.apply(Math, txnHistory.history_list.map(function (o) { return o.time_at; }))
-    //console.log("latestTimestamp", latestTimestamp)
-    const txAdditions = transactions?.history_list.filter(tx => tx.time_at > latestTimestamp);
-    if (txAdditions && txAdditions.length > 0) {
-        txAdditions.forEach(element => {
-            txnHistory.history_list.push(element)
-        });
+    if (txnHistory && txnHistory.history_list) {
+        const latestTimestamp = Math.max.apply(Math, txnHistory ? txnHistory.history_list.map(function (o) {
+            return o.time_at;
+        }) : [0])
+        //console.log("latestTimestamp", latestTimestamp)
+        const txAdditions = transactions?.history_list.filter(tx => tx.time_at > latestTimestamp);
+        if (txAdditions && txAdditions.length > 0 && txnHistory && txnHistory.history_list) {
+            txAdditions.forEach(element => {
+                txnHistory.history_list.push(element)
+            });
+        }
     }
 
     const { totalBalances } = useGetTotalBalances(TREASURY_CONFIG.treasury);
@@ -97,14 +107,16 @@ export default function Financials() {
 
 
     //---USDC: SEND and RECEIVE---
-    //TODO: FIX with address array for last argument
-    let usdcReceived = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
+    let usdcReceived =  extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
     usdcReceived = usdcReceived.concat(usdcReceived2);
     //USDC Send
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:
-    usdcSend[1].value = 0
+    if (usdcSend.length > 2) {
+        usdcSend[1].value = 0
+    }
+
     //const monthlyUSDCSend = getChartDataByMonth(usdcSend)
 
     //---BAL---
@@ -112,24 +124,28 @@ export default function Financials() {
     const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
 
     //---USDC: Cumulative in- and outflows---
-    //FIX: receive and send start and end dates need to be considered!
+// FIX: receive and send start and end dates need to be considered!
     const startDates: Date[] = [
-        new Date(usdcReceived[0].time),
-        new Date(usdcSend[0].time),
-        new Date(balReceive[0].time),
-        new Date(balSend[0].time)
+        ...(usdcReceived.length > 0 ? [new Date(usdcReceived[0].time)] : []),
+        ...(usdcSend.length > 0 ? [new Date(usdcSend[0].time)] : []),
+        ...(balReceive.length > 0 ? [new Date(balReceive[0].time)] : []),
+        ...(balSend.length > 0 ? [new Date(balSend[0].time)] : []),
     ];
 
-    startDates.sort((a, b) => a.getTime() - b.getTime())
-    let endDates: Date[] = [
-        new Date(usdcReceived[usdcReceived.length - 1].time),
-        new Date(usdcSend[usdcSend.length - 1].time),
-        new Date(balReceive[balReceive.length - 1].time),
-        new Date(balSend[balSend.length - 1].time),
+    startDates.sort((a, b) => a.getTime() - b.getTime());
+
+    const endDates: Date[] = [
+        ...(usdcReceived.length > 0 ? [new Date(usdcReceived[usdcReceived.length - 1].time)] : []),
+        ...(usdcSend.length > 0 ? [new Date(usdcSend[usdcSend.length - 1].time)] : []),
+        ...(balReceive.length > 0 ? [new Date(balReceive[balReceive.length - 1].time)] : []),
+        ...(balSend.length > 0 ? [new Date(balSend[balSend.length - 1].time)] : []),
     ];
-    endDates.sort((a, b) => a.getTime() - b.getTime())
-    const startDate = startDates[0];
-    const endDate = endDates[endDates.length - 1]
+
+    endDates.sort((a, b) => a.getTime() - b.getTime());
+
+    const startDate = startDates.length > 0 ? startDates[0] : new Date();
+    const endDate = endDates.length > 0 ? endDates[endDates.length - 1] : new Date();
+
 
 
     const cumulativeIncomeChartData = getCumulativeSumTrace(usdcReceived, startDate, endDate);
@@ -227,6 +243,7 @@ export default function Financials() {
     console.log("monthlyUSDCBurn", monthlyUSDCBurn)
     console.log("quarterlyTotalBudget", quarterlyTotalBudget)
     console.log("avgIncomeExcludingCurrentMonth", avgIncomeExcludingCurrentMonth)
+    console.log("txnHistory", txnHistory)
 
 
     //---WETH---
@@ -489,7 +506,7 @@ export default function Financials() {
                     mt={1}
                     xs={11}
                 >
-                    {transactions && transactions.history_list.length > 0 ?
+                    {txnHistory && txnHistory.history_list.length > 1 ?
                         <TreasuryTransactionTable txnHistory={txnHistory} />
                         : <CircularProgress />}
                 </Grid>

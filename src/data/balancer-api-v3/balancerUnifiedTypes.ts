@@ -13,6 +13,7 @@ export interface PoolDataUnified {
     //Dynamic Data
     swapFee: number,
     totalShares: number,
+    fees24h: number,
     volume24h: number,
     yieldCapture24h: number,
     totalLiquidity: number,
@@ -29,6 +30,7 @@ export interface GlobalAPRStats {
     hasRewardAPR: boolean
     nativeRewardAPRs: NativeRewardAPRs,
     nativeTotalRewardAPR: number,
+    thirdPartyAPR: number,
     swapAPR: number,
 
 }
@@ -41,5 +43,5 @@ export interface PoolTokenDataUnified {
     isMainToken: boolean;
     name: string;
     symbol: string;
-    weight: string;
+    weight: number;
 }
