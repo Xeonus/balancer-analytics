@@ -14,7 +14,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import SummarizeIcon from '@mui/icons-material/Summarize';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -187,7 +187,7 @@ const MenuDrawer = ({
                 </ListItemButton>
                 <ListItemButton key={'Reports'} component={NavLink} to={'reports'}>
                     <ListItemIcon>
-                        <RequestQuoteIcon />
+                        <AssessmentIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Reports'} />
                 </ListItemButton>

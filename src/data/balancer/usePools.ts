@@ -21,16 +21,18 @@ function getPoolValues(
     startunixTime: number,
     endunixTime: number,
     poolSwapFeeSnapshots?: BalancerPoolSnapshotFragment[],
-): { tvl: number; volume: number; swapCount: number; fees: number, feesEpoch: number, poolType: string | null | undefined } {
+): { tvl: number; volume: number; swapCount: number; fees: number, feesEpoch: number, protcolFeesEpoch: number, poolType: string | null | undefined } {
     const pool = pools.find((pool) => poolId === pool.id);
     let epochFees = 0;
+    let epochProtocolFees = 0;
     if (poolSwapFeeSnapshots) {
         const feeData = getEpochSwapFees(poolId, startunixTime, endunixTime, poolSwapFeeSnapshots);
         epochFees = feeData.swapFee;
+        epochProtocolFees = feeData.protocolFee
     }
 
     if (!pool || pool.poolType === 'AaveLinear') {
-        return { tvl: 0, volume: 0, swapCount: 0, fees: 0, feesEpoch: 0, poolType: '' };
+        return { tvl: 0, volume: 0, swapCount: 0, fees: 0, feesEpoch: 0, protcolFeesEpoch: 0, poolType: '' };
     }
 
     //console.log("pool", pool);
@@ -40,6 +42,7 @@ function getPoolValues(
         volume: parseFloat(pool.totalSwapVolume),
         fees: parseFloat(pool.totalSwapFee),
         feesEpoch: epochFees,
+        protcolFeesEpoch: epochProtocolFees,
         swapCount: parseFloat(pool.swapsCount),
         poolType: pool.poolType,
     };
@@ -50,27 +53,34 @@ function getEpochSwapFees(
     startTimeStamp: number,
     endTimeStamp: number,
     poolSnapshots: BalancerPoolSnapshotFragment[],
-): { swapFee: number } {
+): { swapFee: number, protocolFee: number } {
     let snapshotFee = 0;
+    let snapshotProtocolFee = 0;
+    let startProtocolFee = 0;
+    let endProtocolFee = 0;
     let startFee = 0;
     let endFee = 0;
     poolSnapshots.forEach((pool) => {
         if (pool.pool.id === poolId) {
             if (pool.timestamp === endTimeStamp) {
-                endFee = Number(pool.swapFees);
+                endFee = Number(pool.swapFees)
+                endProtocolFee = Number(pool.protocolFee);
             }
             if (pool.timestamp === startTimeStamp) {
                 startFee = Number(pool.swapFees);
+                startProtocolFee = Number(pool.protocolFee);
             }
         }
 
     })
     if (endFee === 0 || startFee === 0) {
         snapshotFee = 0;
+        snapshotProtocolFee = 0
     } else {
         snapshotFee = startFee - endFee;
+        snapshotProtocolFee = startProtocolFee - endProtocolFee
     }
-    return { swapFee: snapshotFee };
+    return { swapFee: snapshotFee, protocolFee: snapshotProtocolFee };
 }
 
 
@@ -150,6 +160,7 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
             //volumeUSDChange: 100 / poolData24.volume * poolData.volume,
             feesUSD: poolData.fees - poolData24.fees,
             feesEpochUSD: poolData.feesEpoch,
+            protocolFeesEpocUSD: poolData.protcolFeesEpoch,
             tvlUSD: poolData.tvl,
             tvlUSDChange: (poolData.tvl - poolData24.tvl) / poolData24.tvl,
             //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,
@@ -261,6 +272,7 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
         //volumeUSDChange: 100 / poolData24.volume * poolData.volume,
         feesUSD: parseFloat(pool.totalSwapFee) - parseFloat(pool24.totalSwapFee),
         feesEpochUSD: 0,
+        protocolFeesEpocUSD: 0,
         tvlUSD: parseFloat(pool.totalLiquidity),
         tvlUSDChange: (parseFloat(pool.totalLiquidity) - parseFloat(pool24.totalLiquidity)) / parseFloat(pool24.totalLiquidity),
         //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,

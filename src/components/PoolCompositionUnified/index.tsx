@@ -45,7 +45,7 @@ export default function PoolCompositionUnified({ poolData, size = 24 }: PoolComp
                     >
                         <Box display="flex" justifyContent="space-between" ml={1.5} mr={1.5}>
                             <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} mr={0.25} sx={{ fontWeight: 'bold' }} variant="caption">{token.symbol}</Typography>
-                            {poolData.poolType === 'Weighted' ?
+                            {poolData.poolType === 'WEIGHTED' ?
                                 <Typography color={theme.palette.mode === 'dark' ? 'white' : 'black'} variant="caption">{Number((token.weight * 100).toFixed(0))}%</Typography>
                                 : null}
                         </Box>

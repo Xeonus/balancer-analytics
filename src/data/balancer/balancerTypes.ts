@@ -83,6 +83,7 @@ export interface PoolData {
     //Fees
     feesUSD: number;
     feesEpochUSD: number;
+    protocolFeesEpocUSD: number;
 
     //Additional pool info
     poolType: string;

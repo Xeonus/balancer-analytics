@@ -30,6 +30,7 @@ import { NetworkInfo } from '../../../constants/networks';
 import { DAO_FEE_FACTOR } from '../../../data/balancer/constants';
 import {PoolDataUnified, PoolTokenDataUnified} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
 import PoolCompositionUnified from "../../PoolCompositionUnified";
+import PoolCurrencyLogoUnified from "../../PoolCurrencyLogoUnified";
 
 
 interface Data {
@@ -221,7 +222,7 @@ export default function EmissionsTable({
     const [orderBy, setOrderBy] = React.useState<keyof Data>('protocolRevenue');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(true);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
@@ -347,7 +348,7 @@ export default function EmissionsTable({
                                             sx={{ cursor: 'pointer' }}
                                         >
                                             <TableCell >
-                                                <PoolCurrencyLogo tokens={row.poolTokens} size={'25px'} />
+                                                <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'} />
                                             </TableCell>
                                             <TableCell
                                                 component="th"
