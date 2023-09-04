@@ -168,6 +168,8 @@ export type AmpUpdate_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -177,6 +179,7 @@ export type AmpUpdate_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -797,6 +800,8 @@ export type CircuitBreaker_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -806,6 +811,7 @@ export type CircuitBreaker_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -1754,7 +1760,7 @@ export interface GqlTokenCandlestickChartDataItem {
   timestamp: Scalars["Int"];
 }
 
-export type GqlTokenChartDataRange = "SEVEN_DAY" | "THIRTY_DAY";
+export type GqlTokenChartDataRange = "NINETY_DAY" | "SEVEN_DAY" | "THIRTY_DAY";
 
 export interface GqlTokenData {
   __typename: "GqlTokenData";
@@ -1821,10 +1827,17 @@ export interface GqlUserSwapVolumeFilter {
   tokenOutIn?: InputMaybe<Array<Scalars["String"]>>;
 }
 
+export interface GqlVeBalUserData {
+  __typename: "GqlVeBalUserData";
+  balance: Scalars["AmountHumanReadable"];
+  rank?: Maybe<Scalars["Int"]>;
+}
+
 export interface GqlVotingGauge {
   __typename: "GqlVotingGauge";
   addedTimestamp?: Maybe<Scalars["Int"]>;
   address: Scalars["Bytes"];
+  childGaugeAddress?: Maybe<Scalars["Bytes"]>;
   isKilled: Scalars["Boolean"];
   relativeWeightCap?: Maybe<Scalars["String"]>;
 }
@@ -1977,6 +1990,8 @@ export type GradualWeightUpdate_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -1986,6 +2001,7 @@ export type GradualWeightUpdate_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -2167,6 +2183,8 @@ export type JoinExit_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -2176,6 +2194,7 @@ export type JoinExit_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -2326,6 +2345,8 @@ export type LatestPrice_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -2335,6 +2356,7 @@ export type LatestPrice_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -2579,6 +2601,7 @@ export interface Pool {
   address: Scalars["Bytes"];
   alpha?: Maybe<Scalars["BigDecimal"]>;
   amp?: Maybe<Scalars["BigInt"]>;
+  ampUpdates?: Maybe<Array<AmpUpdate>>;
   baseToken?: Maybe<Scalars["Bytes"]>;
   beta?: Maybe<Scalars["BigDecimal"]>;
   c?: Maybe<Scalars["BigDecimal"]>;
@@ -2598,6 +2621,7 @@ export interface Pool {
   lambda?: Maybe<Scalars["BigDecimal"]>;
   lastJoinExitAmp?: Maybe<Scalars["BigInt"]>;
   lastPostJoinExitInvariant?: Maybe<Scalars["BigDecimal"]>;
+  latestAmpUpdate?: Maybe<AmpUpdate>;
   lowerTarget?: Maybe<Scalars["BigDecimal"]>;
   mainIndex?: Maybe<Scalars["Int"]>;
   managementAumFee?: Maybe<Scalars["BigDecimal"]>;
@@ -2622,7 +2646,12 @@ export interface Pool {
   sqrtAlpha?: Maybe<Scalars["BigDecimal"]>;
   sqrtBeta?: Maybe<Scalars["BigDecimal"]>;
   strategyType: Scalars["Int"];
+  /** Indicates if a pool can be swapped against. Combines multiple sources, including offchain curation */
   swapEnabled: Scalars["Boolean"];
+  /** External indication from an offchain permissioned actor */
+  swapEnabledCurationSignal?: Maybe<Scalars["Boolean"]>;
+  /** The native swapEnabled boolean. internal to the pool. Only applies to Gyro, LBPs and InvestmentPools */
+  swapEnabledInternal?: Maybe<Scalars["Boolean"]>;
   swapFee: Scalars["BigDecimal"];
   swaps?: Maybe<Array<Swap>>;
   swapsCount: Scalars["BigInt"];
@@ -2635,6 +2664,7 @@ export interface Pool {
   tokensList: Array<Scalars["Bytes"]>;
   totalAumFeeCollectedInBPT?: Maybe<Scalars["BigDecimal"]>;
   totalLiquidity: Scalars["BigDecimal"];
+  totalLiquiditySansBPT?: Maybe<Scalars["BigDecimal"]>;
   totalProtocolFee?: Maybe<Scalars["BigDecimal"]>;
   totalProtocolFeePaidInBPT?: Maybe<Scalars["BigDecimal"]>;
   totalShares: Scalars["BigDecimal"];
@@ -2651,6 +2681,14 @@ export interface Pool {
   weightUpdates?: Maybe<Array<GradualWeightUpdate>>;
   wrappedIndex?: Maybe<Scalars["Int"]>;
   z?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface PoolAmpUpdatesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<AmpUpdate_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<AmpUpdate_Filter>;
 }
 
 export interface PoolCircuitBreakersArgs {
@@ -2803,6 +2841,8 @@ export type PoolContract_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -2812,6 +2852,7 @@ export type PoolContract_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -2961,6 +3002,8 @@ export type PoolHistoricalLiquidity_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -2970,6 +3013,7 @@ export type PoolHistoricalLiquidity_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -3107,6 +3151,8 @@ export type PoolShare_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -3116,6 +3162,7 @@ export type PoolShare_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -3301,6 +3348,8 @@ export type PoolSnapshot_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -3310,6 +3359,7 @@ export type PoolSnapshot_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -3648,6 +3698,8 @@ export type PoolToken_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -3657,6 +3709,7 @@ export type PoolToken_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -3712,6 +3765,7 @@ export interface Pool_Filter {
   alpha_not?: InputMaybe<Scalars["BigDecimal"]>;
   alpha_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   amp?: InputMaybe<Scalars["BigInt"]>;
+  ampUpdates_?: InputMaybe<AmpUpdate_Filter>;
   amp_gt?: InputMaybe<Scalars["BigInt"]>;
   amp_gte?: InputMaybe<Scalars["BigInt"]>;
   amp_in?: InputMaybe<Array<Scalars["BigInt"]>>;
@@ -3850,6 +3904,27 @@ export interface Pool_Filter {
   lastPostJoinExitInvariant_lte?: InputMaybe<Scalars["BigDecimal"]>;
   lastPostJoinExitInvariant_not?: InputMaybe<Scalars["BigDecimal"]>;
   lastPostJoinExitInvariant_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  latestAmpUpdate?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_?: InputMaybe<AmpUpdate_Filter>;
+  latestAmpUpdate_contains?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_contains_nocase?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_ends_with?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_gt?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_gte?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_in?: InputMaybe<Array<Scalars["String"]>>;
+  latestAmpUpdate_lt?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_lte?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_contains?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_ends_with?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  latestAmpUpdate_not_starts_with?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_starts_with?: InputMaybe<Scalars["String"]>;
+  latestAmpUpdate_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   lowerTarget?: InputMaybe<Scalars["BigDecimal"]>;
   lowerTarget_gt?: InputMaybe<Scalars["BigDecimal"]>;
   lowerTarget_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -4056,6 +4131,14 @@ export interface Pool_Filter {
   strategyType_not?: InputMaybe<Scalars["Int"]>;
   strategyType_not_in?: InputMaybe<Array<Scalars["Int"]>>;
   swapEnabled?: InputMaybe<Scalars["Boolean"]>;
+  swapEnabledCurationSignal?: InputMaybe<Scalars["Boolean"]>;
+  swapEnabledCurationSignal_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  swapEnabledCurationSignal_not?: InputMaybe<Scalars["Boolean"]>;
+  swapEnabledCurationSignal_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  swapEnabledInternal?: InputMaybe<Scalars["Boolean"]>;
+  swapEnabledInternal_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  swapEnabledInternal_not?: InputMaybe<Scalars["Boolean"]>;
+  swapEnabledInternal_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   swapEnabled_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   swapEnabled_not?: InputMaybe<Scalars["Boolean"]>;
   swapEnabled_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
@@ -4144,6 +4227,14 @@ export interface Pool_Filter {
   totalAumFeeCollectedInBPT_not?: InputMaybe<Scalars["BigDecimal"]>;
   totalAumFeeCollectedInBPT_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalLiquidity?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalLiquiditySansBPT_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalLiquiditySansBPT_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalLiquidity_gt?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_gte?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
@@ -4293,6 +4384,7 @@ export type Pool_OrderBy =
   | "address"
   | "alpha"
   | "amp"
+  | "ampUpdates"
   | "baseToken"
   | "beta"
   | "c"
@@ -4312,6 +4404,13 @@ export type Pool_OrderBy =
   | "lambda"
   | "lastJoinExitAmp"
   | "lastPostJoinExitInvariant"
+  | "latestAmpUpdate"
+  | "latestAmpUpdate__endAmp"
+  | "latestAmpUpdate__endTimestamp"
+  | "latestAmpUpdate__id"
+  | "latestAmpUpdate__scheduledTimestamp"
+  | "latestAmpUpdate__startAmp"
+  | "latestAmpUpdate__startTimestamp"
   | "lowerTarget"
   | "mainIndex"
   | "managementAumFee"
@@ -4339,6 +4438,8 @@ export type Pool_OrderBy =
   | "sqrtBeta"
   | "strategyType"
   | "swapEnabled"
+  | "swapEnabledCurationSignal"
+  | "swapEnabledInternal"
   | "swapFee"
   | "swaps"
   | "swapsCount"
@@ -4351,6 +4452,7 @@ export type Pool_OrderBy =
   | "tokensList"
   | "totalAumFeeCollectedInBPT"
   | "totalLiquidity"
+  | "totalLiquiditySansBPT"
   | "totalProtocolFee"
   | "totalProtocolFeePaidInBPT"
   | "totalShares"
@@ -4535,6 +4637,8 @@ export type PriceRateProvider_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -4544,6 +4648,7 @@ export type PriceRateProvider_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -4714,6 +4819,7 @@ export interface Query {
   userInternalBalances: Array<UserInternalBalance>;
   users: Array<User>;
   veBalGetTotalSupply: Scalars["AmountHumanReadable"];
+  veBalGetUser: GqlVeBalUserData;
   veBalGetUserBalance: Scalars["AmountHumanReadable"];
   veBalGetVotingList: Array<GqlVotingPool>;
 }
@@ -5887,6 +5993,8 @@ export type SwapFeeUpdate_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -5896,6 +6004,7 @@ export type SwapFeeUpdate_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -6128,6 +6237,8 @@ export type Swap_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -6137,6 +6248,7 @@ export type Swap_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -6330,6 +6442,8 @@ export type TokenPrice_OrderBy =
   | "poolId__sqrtBeta"
   | "poolId__strategyType"
   | "poolId__swapEnabled"
+  | "poolId__swapEnabledCurationSignal"
+  | "poolId__swapEnabledInternal"
   | "poolId__swapFee"
   | "poolId__swapsCount"
   | "poolId__symbol"
@@ -6339,6 +6453,7 @@ export type TokenPrice_OrderBy =
   | "poolId__tauBetaY"
   | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalLiquiditySansBPT"
   | "poolId__totalProtocolFee"
   | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
@@ -6731,6 +6846,8 @@ export type Token_OrderBy =
   | "pool__sqrtBeta"
   | "pool__strategyType"
   | "pool__swapEnabled"
+  | "pool__swapEnabledCurationSignal"
+  | "pool__swapEnabledInternal"
   | "pool__swapFee"
   | "pool__swapsCount"
   | "pool__symbol"
@@ -6740,6 +6857,7 @@ export type Token_OrderBy =
   | "pool__tauBetaY"
   | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalLiquiditySansBPT"
   | "pool__totalProtocolFee"
   | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
@@ -8770,14 +8888,14 @@ export const GetTokenDataDocument = gql`
   query GetTokenData($block24: Block_height!, $first: Int!) {
     tokens: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
     ) {
       ...BalancerToken
     }
     tokens24: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
       block: $block24
     ) {

@@ -261,14 +261,14 @@ export const GetTokenData = gql`
   query GetTokenData($block24: Block_height!, $first: Int!) {
     tokens: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
     ) {
       ...BalancerToken
     }
     tokens24: tokens(
       first: $first
-      orderBy: totalBalanceUSD
+      orderBy: totalVolumeUSD
       orderDirection: desc
       block: $block24
     ) {

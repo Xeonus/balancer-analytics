@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, PoolData } from './balancerTypes';
 import { CoingeckoSnapshotPriceData } from './useTokens';
+import { DateTime } from 'luxon';
 
 function getPoolValues(
     poolId: string,
@@ -73,19 +74,17 @@ function getEpochSwapFees(
 }
 
 
-//Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
-const today = new Date();
-//Set timestamps if none is given:
-today.setUTCHours(0,0,0,0);
-const startTimestamp = Math.floor(today.getTime() / 1000)
+//Poolsnapshots are taken OO:OO UTC.
+// Get the current UTC time
+const currentUTCTime = DateTime.utc();
+const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
 
-const weekAgo = new Date();
-weekAgo.setDate(today.getDate() - 1);
-weekAgo.setUTCHours(0,0,0,0);
-const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
+// Get the UTC time for a week ago
+const weekAgoUTCTime = currentUTCTime.minus({ days: 7 });
+const endTimestamp = Math.floor(weekAgoUTCTime.startOf('day').toMillis() / 1000);
 
 
-export function useBalancerPools(first = 250, startunixTime = startTimestamp, endunixTime = endTimeStamp): PoolData[] {
+export function useBalancerPools(first = 250, startunixTime = startTimestamp, endunixTime = endTimestamp): PoolData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks } = useBlocksFromTimestamps([t24, t48, tWeek]);
