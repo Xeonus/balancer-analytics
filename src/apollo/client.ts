@@ -77,7 +77,7 @@ export const arbitrumClient = new ApolloClient({
       },
     },
   })
-  
+
   export const arbitrumBlockClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks',
     cache: new InMemoryCache(),
@@ -226,7 +226,7 @@ export const polygonZKEVMBlockClient = new ApolloClient({
   })
 
 export const avalancheBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/lynnshaoyu/avalanche-blocks',
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/avalanche-blocks',
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {

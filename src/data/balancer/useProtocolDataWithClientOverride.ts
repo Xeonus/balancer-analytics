@@ -30,7 +30,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
     );
 
     useEffect(() => {
-        if (block24) {
+        if (block24 && block48) {
             getProcotolData({
                 variables: {
                     startTimestamp: startTimestamp,
@@ -44,7 +44,7 @@ export function useBalancerChainProtocolData(clientUri: string, startTimestamp: 
         }
     }, [block24]);
 
-    
+
 
     if (!data) {
         return { tvlData: [], volumeData: [], swapData: [], feeData: [], whaleSwaps: [] };

@@ -69,7 +69,7 @@ export default function Protocol() {
                 spacing={2}
                 sx={{ justifyContent: 'center' }}
             >
-                
+
                 <Grid
                     item
                     xs={11}
