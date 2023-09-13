@@ -183,6 +183,36 @@ query BalancerPoolSwapFeeSnapshot($startTimestamp: Int!, $endTimeStamp: Int!) {
         }
 }
 
+query BalancerPoolProtocolFeeSnapshots($startTimestamp: Int!, $endTimeStamp: Int!) {
+        poolSnapshots(
+            first: 1000
+            orderBy: protocolFee
+            orderDirection: desc
+            where: { timestamp_in: [$startTimestamp, $endTimeStamp] }
+        ) {
+           id
+        amounts
+        totalShares
+        protocolFee
+        swapVolume
+        swapFees
+        timestamp
+        swapsCount
+        holdersCount
+        pool {
+            id
+          address
+          totalProtocolFeePaidInBPT
+          tokens {
+            symbol
+            address
+            paidProtocolFees
+          }
+        }
+        }
+}
+
+
 fragment LatestPrice on LatestPrice {
     asset
     pricingAsset

@@ -982,6 +982,39 @@ export const BalancerPoolSwapFeeSnapshot = gql`
     }
   }
 `;
+export const BalancerPoolProtocolFeeSnapshots = gql`
+  query BalancerPoolProtocolFeeSnapshots(
+    $startTimestamp: Int!
+    $endTimeStamp: Int!
+  ) {
+    poolSnapshots(
+      first: 1000
+      orderBy: protocolFee
+      orderDirection: desc
+      where: { timestamp_in: [$startTimestamp, $endTimeStamp] }
+    ) {
+      id
+      amounts
+      totalShares
+      protocolFee
+      swapVolume
+      swapFees
+      timestamp
+      swapsCount
+      holdersCount
+      pool {
+        id
+        address
+        totalProtocolFeePaidInBPT
+        tokens {
+          symbol
+          address
+          paidProtocolFees
+        }
+      }
+    }
+  }
+`;
 export const BalancerProtocolData = gql`
   query BalancerProtocolData(
     $skip: Int

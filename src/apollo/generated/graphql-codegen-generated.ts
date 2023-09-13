@@ -9867,6 +9867,39 @@ export type BalancerPoolSwapFeeSnapshotQuery = {
   }>;
 };
 
+export type BalancerPoolProtocolFeeSnapshotsQueryVariables = Exact<{
+  startTimestamp: Scalars["Int"];
+  endTimeStamp: Scalars["Int"];
+}>;
+
+export type BalancerPoolProtocolFeeSnapshotsQuery = {
+  __typename: "Query";
+  poolSnapshots: Array<{
+    __typename: "PoolSnapshot";
+    id: string;
+    amounts: Array<string>;
+    totalShares: string;
+    protocolFee?: string | null;
+    swapVolume: string;
+    swapFees: string;
+    timestamp: number;
+    swapsCount: string;
+    holdersCount: string;
+    pool: {
+      __typename: "Pool";
+      id: string;
+      address: string;
+      totalProtocolFeePaidInBPT?: string | null;
+      tokens?: Array<{
+        __typename: "PoolToken";
+        symbol: string;
+        address: string;
+        paidProtocolFees?: string | null;
+      }> | null;
+    };
+  }>;
+};
+
 export type LatestPriceFragment = {
   __typename: "LatestPrice";
   asset: string;
@@ -12661,6 +12694,91 @@ export type BalancerPoolSwapFeeSnapshotLazyQueryHookResult = ReturnType<
 export type BalancerPoolSwapFeeSnapshotQueryResult = Apollo.QueryResult<
   BalancerPoolSwapFeeSnapshotQuery,
   BalancerPoolSwapFeeSnapshotQueryVariables
+>;
+export const BalancerPoolProtocolFeeSnapshotsDocument = gql`
+  query BalancerPoolProtocolFeeSnapshots(
+    $startTimestamp: Int!
+    $endTimeStamp: Int!
+  ) {
+    poolSnapshots(
+      first: 1000
+      orderBy: protocolFee
+      orderDirection: desc
+      where: { timestamp_in: [$startTimestamp, $endTimeStamp] }
+    ) {
+      id
+      amounts
+      totalShares
+      protocolFee
+      swapVolume
+      swapFees
+      timestamp
+      swapsCount
+      holdersCount
+      pool {
+        id
+        address
+        totalProtocolFeePaidInBPT
+        tokens {
+          symbol
+          address
+          paidProtocolFees
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useBalancerPoolProtocolFeeSnapshotsQuery__
+ *
+ * To run a query within a React component, call `useBalancerPoolProtocolFeeSnapshotsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBalancerPoolProtocolFeeSnapshotsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBalancerPoolProtocolFeeSnapshotsQuery({
+ *   variables: {
+ *      startTimestamp: // value for 'startTimestamp'
+ *      endTimeStamp: // value for 'endTimeStamp'
+ *   },
+ * });
+ */
+export function useBalancerPoolProtocolFeeSnapshotsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    BalancerPoolProtocolFeeSnapshotsQuery,
+    BalancerPoolProtocolFeeSnapshotsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    BalancerPoolProtocolFeeSnapshotsQuery,
+    BalancerPoolProtocolFeeSnapshotsQueryVariables
+  >(BalancerPoolProtocolFeeSnapshotsDocument, options);
+}
+export function useBalancerPoolProtocolFeeSnapshotsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    BalancerPoolProtocolFeeSnapshotsQuery,
+    BalancerPoolProtocolFeeSnapshotsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    BalancerPoolProtocolFeeSnapshotsQuery,
+    BalancerPoolProtocolFeeSnapshotsQueryVariables
+  >(BalancerPoolProtocolFeeSnapshotsDocument, options);
+}
+export type BalancerPoolProtocolFeeSnapshotsQueryHookResult = ReturnType<
+  typeof useBalancerPoolProtocolFeeSnapshotsQuery
+>;
+export type BalancerPoolProtocolFeeSnapshotsLazyQueryHookResult = ReturnType<
+  typeof useBalancerPoolProtocolFeeSnapshotsLazyQuery
+>;
+export type BalancerPoolProtocolFeeSnapshotsQueryResult = Apollo.QueryResult<
+  BalancerPoolProtocolFeeSnapshotsQuery,
+  BalancerPoolProtocolFeeSnapshotsQueryVariables
 >;
 export const BalancerProtocolDataDocument = gql`
   query BalancerProtocolData(

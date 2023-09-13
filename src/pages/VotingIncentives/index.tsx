@@ -259,7 +259,7 @@ export default function VotingIncentives() {
                                                      mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
                                         : <CircularProgress/>}
                                 </Box>
-                                <Box mr={1}>
+                                {/* <Box mr={1}>
                                     {historicalData ?
                                         <MetricsCard
                                             mainMetric={1 + (emissionPerVote - incentivePerVote) / emissionPerVote}
@@ -267,7 +267,7 @@ export default function VotingIncentives() {
                                             metricDecimals={4}
                                             MetricIcon={Handshake}/>
                                         : <CircularProgress/>}
-                                </Box>
+                                </Box> */}
                             </Grid>
                         </Grid>
                         {hiddenHandData.incentives === null ? (

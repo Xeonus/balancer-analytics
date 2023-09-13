@@ -38,6 +38,7 @@ import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
+import {smoothData} from "../../utils/data";
 
 
 
@@ -187,13 +188,13 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
-                            mainnetProtocolData={protocolData.volumeData}
-                            arbitrumProtocolData={arbitrumProtocolData.volumeData}
-                            polygonProtocolData={polygonProtocolData.volumeData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.volumeData}
-                            gnosisProtocolData={gnosisProtocolData.volumeData}
-                            avalancheProtocolData={avalancheProtocolData.volumeData}
-                            baseProtocolData={baseProtocolData.volumeData}
+                            mainnetProtocolData={smoothData(protocolData.volumeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.volumeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.volumeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.volumeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.volumeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.volumeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.volumeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>
@@ -211,13 +212,13 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
-                            mainnetProtocolData={protocolData.protocolFeeData}
-                            arbitrumProtocolData={arbitrumProtocolData.protocolFeeData}
-                            polygonProtocolData={polygonProtocolData.protocolFeeData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.protocolFeeData}
-                            gnosisProtocolData={gnosisProtocolData.protocolFeeData}
-                            avalancheProtocolData={avalancheProtocolData.protocolFeeData}
-                            baseProtocolData={baseProtocolData.protocolFeeData}
+                            mainnetProtocolData={smoothData(protocolData.protocolFeeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.protocolFeeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.protocolFeeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.protocolFeeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.protocolFeeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.protocolFeeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.protocolFeeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>
@@ -235,13 +236,13 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
-                            mainnetProtocolData={protocolData.feeData}
-                            arbitrumProtocolData={arbitrumProtocolData.feeData}
-                            polygonProtocolData={polygonProtocolData.feeData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.feeData}
-                            gnosisProtocolData={gnosisProtocolData.feeData}
-                            avalancheProtocolData={avalancheProtocolData.feeData}
-                            baseProtocolData={baseProtocolData.feeData}
+                            mainnetProtocolData={smoothData(protocolData.feeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.feeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.feeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.feeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.feeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.feeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.feeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>
