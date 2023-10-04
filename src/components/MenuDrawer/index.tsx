@@ -26,6 +26,7 @@ import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
+import DefilyticaIcon from '../../assets/png/defilytica.png'
 import {Handshake} from "@mui/icons-material";
 //import Stellate from '../../assets/svg/stellate.svg'
 import BeetsIcon from '../../assets/png/beets-icon-large.png';
@@ -69,6 +70,21 @@ const glowingAura = keyframes`
   100% {
     background-color: #8a2be2;
     box-shadow: 0 0 5px #8a2be2;
+  }
+`;
+
+const glowingTools = keyframes`
+  0% {
+    background-color: #0f42ea;
+    box-shadow: 0 0 5px #2154c5;
+  }
+  50% {
+    background-color: #1e3bc7;
+    box-shadow: 0 0 20px #2b49a9;
+  }
+  100% {
+    background-color: #445dab;
+    box-shadow: 0 0 5px #4a5994;
   }
 `;
 
@@ -247,6 +263,35 @@ const MenuDrawer = ({
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <img src={AuraIcon} alt="Aura Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
                                 <Typography variant="caption" sx={{ color: '#eeeeee' }}>Aura Analytics</Typography>
+                            </Box>
+                        </Button>
+                    </Box>
+                </ListItem>
+                <ListItem>
+                    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                            onClick={() => {window.open('https://defilytica.tools', '_blank')}}
+                            sx={{
+                                backgroundColor: '#2a46ef',
+                                minWidth: '180px',
+                                borderRadius: '30px',
+                                border: 'none',
+                                color: '#eeeeee',
+                                cursor: 'pointer',
+                                display: 'inline-block',
+                                fontFamily: 'sans-serif',
+                                padding: '5px 15px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                    animation: `${glowingTools} 1300ms infinite`,
+                                },
+                            }}
+
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <img src={DefilyticaIcon} alt="Tools Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>DeFilytica Tools</Typography>
                             </Box>
                         </Button>
                     </Box>
