@@ -18,6 +18,7 @@ import CoinCard from '../../components/Cards/CoinCard';
 import {EthereumNetworkInfo} from '../../constants/networks';
 import useGetAllPools from "../../data/balancer-api-v3/useGetAllPools";
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 
 export default function Emissions() {
 
@@ -59,7 +60,14 @@ export default function Emissions() {
     const now = Math.round(new Date().getTime() / 1000)
     const totalBalEmissions = balEmissions.between(now, now + 365 * 86400)
     const weeklyEmissions = balEmissions.weekly(now)
-    const globalPools = useGetAllPools([activeNetwork.v3NetworkID as GqlChain]);
+    let globalPools = useGetAllPools([activeNetwork.v3NetworkID as GqlChain]);
+    const gaugeData = useGetBalancerV3StakingGauges();
+
+    if (globalPools && gaugeData) {
+        globalPools = globalPools.filter(pool =>
+            gaugeData.some(gauge => gauge.pool.address === pool.address)
+        );
+    }
 
     //Create bar chart data for pool distribution
     const poolBarChartData: BalancerChartDataItem[] = [];
@@ -67,7 +75,7 @@ export default function Emissions() {
         globalPools.map((pool) =>
             poolBarChartData.push(
                 {
-                    value: pool.globalAPRStats ? pool.globalAPRStats.nativeRewardAPRs.min : 0,
+                    value: pool.globalAPRStats && balPrice ? pool.globalAPRStats.nativeRewardAPRs.min * pool.totalLiquidity / 365 * 7 * balPrice : 0,
                     time: pool.name,
                 }
             )
@@ -212,7 +220,7 @@ export default function Emissions() {
                     <Typography variant="caption">Estimations are projected for weekly emissions and revenue to the Fee
                         Collector</Typography>
                     {globalPools && globalPools.length > 10 && balPrice > 0 ?
-                        <EmissionsTable poolDatas={globalPools} timeRange={7}/> :
+                        <EmissionsTable poolDatas={globalPools} timeRange={7} balPrice={balPrice}/> :
                         <Grid
                             container
                             spacing={2}

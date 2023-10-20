@@ -213,10 +213,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 export default function EmissionsTable({
     poolDatas,
-    timeRange
+    timeRange,
+    balPrice
 }: {
     poolDatas?: PoolDataUnified[],
     timeRange?: number
+    balPrice?: number
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('protocolRevenue');
@@ -245,7 +247,6 @@ export default function EmissionsTable({
     //Data to be averaged -> TODO: make dependency from parent!
 
 
-    //TODO: bugfix propagation / no useeffect allowed here
     //Calculate TVL to obtain relative ratio
 
     //Helper function to calculate daily token yield
@@ -271,11 +272,11 @@ export default function EmissionsTable({
             el.name,
             el.tokens,
             el,
-            el.fees24h,
-            el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR,
+            el.fees24h * time,
+            el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR * time,
             el.yieldCapture24h  * time,
-            el.globalAPRStats ? el.globalAPRStats.nativeRewardAPRs.min : 0,
-            el.yieldCapture24h * DAO_FEE_FACTOR * time / (el.globalAPRStats ? el.globalAPRStats.nativeRewardAPRs.min : 0),
+            el.globalAPRStats && balPrice ? el.globalAPRStats.nativeRewardAPRs.min * el.totalLiquidity / 365 * 7 * balPrice : 0,
+            (el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR * time) / (el.globalAPRStats && balPrice ? el.globalAPRStats.nativeRewardAPRs.min * el.totalLiquidity / 365 * 7 * balPrice : 0),
         )
     )
 
