@@ -13,7 +13,7 @@ export default function PoolCompositionUnified({ poolData, size = 24 }: PoolComp
 
     const theme = useTheme();
 
-    poolData.tokens = poolData.tokens.filter((tokens) => tokens.isMainToken);
+    poolData.tokens = poolData.tokens.filter((token) => ! token.symbol.includes('BPT') && ! token.symbol.includes('/') || token.isMainToken)
     return (
         <Box position={"relative"} display="flex" alignItems={"center"}>
             <AvatarGroup max={4}

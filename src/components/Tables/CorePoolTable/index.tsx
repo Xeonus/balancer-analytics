@@ -9,60 +9,64 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid, Typography } from '@mui/material';
+import {Avatar, CircularProgress, Grid, Typography} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import { PoolData, PoolTokenData } from '../../../data/balancer/balancerTypes';
-import { getShortPoolName } from '../../../utils/getShortPoolName';
-import { CircularProgress } from '@mui/material';
-import { formatAmount, formatDollarAmount, formatNumber } from '../../../utils/numbers';
-import PoolCurrencyLogo from '../../PoolCurrencyLogo';
-import { POOL_HIDE, YIELD_BEARING_TOKENS } from '../../../constants/index'
+import {visuallyHidden} from '@mui/utils';
+import {PoolData} from '../../../data/balancer/balancerTypes';
+import {formatAmount, formatDollarAmount} from '../../../utils/numbers';
+import {POOL_HIDE, YIELD_BEARING_TOKENS} from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
-import { useTheme } from '@mui/material/styles'
-import PoolComposition from '../../PoolComposition'
-import { useNavigate } from 'react-router-dom';
-import { networkPrefix } from '../../../utils/networkPrefix';
-import { useActiveNetworkVersion } from '../../../state/application/hooks';
-import { NetworkInfo } from '../../../constants/networks';
-import { DAO_FEE_FACTOR } from '../../../data/balancer/constants';
+import {useTheme} from '@mui/material/styles'
+import {useNavigate} from 'react-router-dom';
+import {networkPrefix} from '../../../utils/networkPrefix';
+import {useActiveNetworkVersion} from '../../../state/application/hooks';
+import {
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
+    EthereumNetworkInfo,
+    GnosisNetworkInfo,
+    NetworkInfo,
+    PolygonNetworkInfo, PolygonZkEVMNetworkInfo
+} from '../../../constants/networks';
+import {DAO_FEE_FACTOR} from '../../../data/balancer/constants';
 import {PoolDataUnified, PoolTokenDataUnified} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
 import PoolCompositionUnified from "../../PoolCompositionUnified";
 import PoolCurrencyLogoUnified from "../../PoolCurrencyLogoUnified";
+import {PoolFeeRecord} from "../../../data/maxis/maxiStaticTypes";
+import EtherLogo from "../../../assets/svg/ethereum.svg";
+import OpLogo from "../../../assets/svg/optimism.svg";
+import PolygonLogo from "../../../assets/svg/polygon.svg";
+import GnosisLogo from "../../../assets/svg/gnosis.svg";
+import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
+import BaseLogo from  "../../../assets/svg/base.svg"
+import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
 
 
 interface Data {
     name: string;
     poolTokens: PoolTokenDataUnified[];
     poolData: PoolDataUnified;
-    poolRevenue: number;
-    protocolRevenue: number;
-    tokenRevenue: number;
-    balEmissions: number;
-    contribution: number;
+    network: string;
+    earnedFees: number;
+    tvl: number;
 }
 
 function createData(
     name: string,
     poolTokens: PoolTokenDataUnified[],
     poolData: PoolDataUnified,
-    poolRevenue: number,
-    protocolRevenue: number,
-    tokenRevenue: number,
-    balEmissions: number,
-    contribution: number,
+    network: string,
+    earnedFees: number,
+    tvl: number,
 ): Data {
     return {
         name,
         poolTokens,
         poolData,
-        poolRevenue,
-        protocolRevenue,
-        tokenRevenue,
-        balEmissions,
-        contribution,
+        network,
+        earnedFees,
+        tvl,
     };
 }
 
@@ -115,6 +119,13 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
+        id: 'network',
+        numeric: false,
+        disablePadding: false,
+        label: 'Chain',
+        isMobileVisible: true,
+    },
+    {
         id: 'poolTokens',
         numeric: false,
         disablePadding: false,
@@ -129,39 +140,18 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'poolRevenue',
+        id: 'tvl',
         numeric: true,
         disablePadding: false,
-        label: 'Swap Fee Revenue',
+        label: 'TVL',
         isMobileVisible: true,
     },
     {
-        id: 'tokenRevenue',
+        id: 'earnedFees',
         numeric: true,
         disablePadding: false,
-        label: 'Token Yield Revenue',
-        isMobileVisible: false,
-    },
-    {
-        id: 'protocolRevenue',
-        numeric: true,
-        disablePadding: false,
-        label: 'Protocol Revenue',
+        label: 'Earned Protocol Fees',
         isMobileVisible: true,
-    },
-    {
-        id: 'balEmissions',
-        numeric: true,
-        disablePadding: false,
-        label: 'BAL Emissions',
-        isMobileVisible: true,
-    },
-    {
-        id: 'contribution',
-        numeric: true,
-        disablePadding: false,
-        label: 'Revenue per emissions spent',
-        isMobileVisible: false,
     },
 ];
 
@@ -172,7 +162,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, onRequestSort } =
+    const {order, orderBy, onRequestSort} =
         props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -190,14 +180,17 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
-                        sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
+                        sx={{display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell'}}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
-                            {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : <Typography variant='body2' sx={{ fontWeight: 'bold' }}>{headCell.label}</Typography>}
+                            {headCell.label === '' ?
+                                <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon"
+                                     width="25"/> :
+                                <Typography variant='body2' sx={{fontWeight: 'bold'}}>{headCell.label}</Typography>}
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -211,74 +204,60 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function EmissionsTable({
-    poolDatas,
-    timeRange,
-    balPrice
-}: {
-    poolDatas?: PoolDataUnified[],
-    timeRange?: number
-    balPrice?: number
+export default function CorePoolTable({
+                                          poolDatas,
+                                          corePools,
+                                      }: {
+    poolDatas: PoolDataUnified[],
+    corePools: PoolFeeRecord[],
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('balEmissions');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('earnedFees');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
-    if (!poolDatas) {
-        return <CircularProgress />;
+    if (!poolDatas && !corePools) {
+        return <CircularProgress/>;
     }
 
-    const time = timeRange ? timeRange : 1
-
-    if (poolDatas.length === 0) {
+    if ((!poolDatas || !corePools) || (corePools.length === 0 || poolDatas.length === 0)) {
         return (
             <Grid>
-                <CircularProgress />
+                <CircularProgress/>
             </Grid>
         );
     }
 
-    const filteredPoolDatas = poolDatas.filter((x) => !!x && x.poolType !== 'LIQUIDITY_BOOTSTRAPPING' && !POOL_HIDE.includes(x.poolId) && x.totalLiquidity > 100);
-
-    //Data to be averaged -> TODO: make dependency from parent!
-
-
-    //Calculate TVL to obtain relative ratio
-
-    //Helper function to calculate daily token yield
-    function calculateTokenYieldInUsd(poolData: PoolData) {
-        let dailyYield = 0
-        if (poolData.aprSet) {
-            poolData.tokens.forEach((token) => {
-                let tokenYield = 0
-                if (poolData.aprSet?.tokenAprs.breakdown[token.address]) {
-                        tokenYield = poolData.aprSet?.tokenAprs.breakdown[token.address]  / 100 / 100 * poolData.tvlUSD / 365
-                        dailyYield += tokenYield
-                }
-            }
-            )
-        }
-        return dailyYield
-    }
-
     //Create rows
-    const rows = filteredPoolDatas.map(el =>
-        //createData(getShortPoolName(el), el.tokens, el, calculateTokenYieldInUsd(el, true), calculateTokenYieldInUsd(el, true) * 0.5, calculateTokenYieldInUsd(el))
-        createData(
-            el.name,
-            el.tokens,
-            el,
-            el.fees24h * time,
-            el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR * time,
-            el.yieldCapture24h  * time,
-            el.globalAPRStats && balPrice ? el.globalAPRStats.nativeRewardAPRs.min * el.totalLiquidity / 365 * 7 * balPrice : 0,
-            (el.yieldCapture24h * DAO_FEE_FACTOR * time + el.fees24h * 0.5 * DAO_FEE_FACTOR * time) / (el.globalAPRStats && balPrice ? el.globalAPRStats.nativeRewardAPRs.min * el.totalLiquidity / 365 * 7 * balPrice : 0),
-        )
-    )
+    const rows = poolDatas.reduce((acc, poolData) => {
+        // Check the necessary conditions before processing.
+        if (poolData && poolData.poolType !== 'LIQUIDITY_BOOTSTRAPPING' &&
+            !POOL_HIDE.includes(poolData.poolId) && poolData.totalLiquidity > 100) {
+            // Find the matching core pool record.
+            const corePoolRecord = corePools.find(c => c.poolId === poolData.poolId);
+
+
+
+            if (corePoolRecord) {
+                // Parse 'earned_fees' as a float to ensure numeric sorting.
+                const earnedFeesNumeric = parseFloat(corePoolRecord.earned_fees);
+                // If a match is found, create the row data and accumulate it.
+                const rowData = createData(
+                    poolData.name,
+                    poolData.tokens,
+                    poolData,
+                    poolData.chain,
+                    isNaN(earnedFeesNumeric) ? 0 : earnedFeesNumeric, // Assuming createData needs these params.
+                    poolData.totalLiquidity
+                );
+                acc.push(rowData);
+            }
+        }
+        return acc;
+    }, [] as Data[]);
 
     //const totalPercent = rows.reduce((acc,row) => acc + row.contribution, 0)
     //console.log("totalPercent", totalPercent)
@@ -314,12 +293,47 @@ export default function EmissionsTable({
         return networkPrefix(activeNetwork) + 'pools/' + id;
     }
 
+    interface NetworkLogoMap {
+        [networkNumber: string]: string;
+    }
+
+    interface NetworkInfoMap {
+        [networkNumber: string]: NetworkInfo;
+    }
+
+    const networkLogoMap: NetworkLogoMap = {
+        MAINNET: EtherLogo,
+        POLYGON: PolygonLogo,
+        GNOSIS: GnosisLogo,
+        ARBITRUM: ArbitrumLogo,
+        AVALANCHE: AvaxLogo,
+        BASE: BaseLogo,
+    };
+
+    const networkStringMap :NetworkLogoMap = {
+        MAINNET: "Ethereum",
+        POLYGON: "Polygon",
+        GNOSIS: "Gnosis",
+        ARBITRUM: "Arbitrum",
+        AVALANCHE: "Avalanche",
+        BASE: "Base",
+    };
+
+    const networkInfos: NetworkInfoMap = {
+        MAINNET: EthereumNetworkInfo,
+        POLYGON: PolygonNetworkInfo,
+        GNOSIS: GnosisNetworkInfo,
+        ARBITRUM: ArbitrumNetworkInfo,
+        AVALANCHE: AvalancheNetworkInfo,
+        BASE: BaseNetworkInfo,
+    }
+
 
     //Table generation
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ mb: 2, boxShadow: 3  }}>
+        <Box sx={{width: '100%'}}>
+            <Paper sx={{mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
@@ -342,61 +356,47 @@ export default function EmissionsTable({
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={() => { navigate(`${getLink(activeNetwork, row.poolData.poolId)}/`); }}
+                                            onClick={() => {
+                                                navigate(`${getLink(networkInfos[row.network.toUpperCase()], row.poolData.poolId)}/`);
+                                            }}
                                             role="number"
                                             tabIndex={-1}
                                             key={row.poolData.address}
-                                            sx={{ cursor: 'pointer' }}
+                                            sx={{cursor: 'pointer'}}
                                         >
-                                            <TableCell >
-                                                <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'} />
+                                            <TableCell sx={{width: '10px'}}>
+                                                <Avatar
+                                                    sx={{
+                                                        height: 20,
+                                                        width: 20
+                                                    }}
+                                                    src={networkLogoMap[row.network.toUpperCase()]}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'}/>
                                             </TableCell>
                                             <TableCell
                                                 component="th"
                                                 id={labelId}
                                                 scope="row"
-                                                sx={{ display: {xs: 'none', md: 'table-cell' }}}
+                                                sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
-                                                <PoolCompositionUnified key={row.poolData.poolId} poolData={row.poolData} size={35} />
+                                                <PoolCompositionUnified key={row.poolData.poolId}
+                                                                        poolData={row.poolData} size={35}/>
                                             </TableCell>
                                             <TableCell align="right">
-                                                {row.poolRevenue > 0 ?
-                                                    formatDollarAmount(row.poolRevenue) :
-                                                    0
-                                                }
-                                            </TableCell>
-                                            <TableCell
-                                            align="right"
-                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
-                                            >
-                                                {row.poolData.tokens.some(element => YIELD_BEARING_TOKENS.includes(element.address)) ?
-                                                    row.tokenRevenue > 0 ?
-                                                        formatDollarAmount(row.tokenRevenue) :
-                                                        0
-                                                    : '-'
-                                                }
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {row.protocolRevenue > 0 ?
-                                                    formatDollarAmount(row.protocolRevenue) :
+                                                {row.tvl > 0 ?
+                                                    formatDollarAmount(row.tvl) :
                                                     0
                                                 }
                                             </TableCell>
                                             <TableCell align="right">
-                                                {row.balEmissions > 0 ?
-                                                    formatDollarAmount(row.balEmissions) : 0
-                                                }
-                                            </TableCell>
-                                            <TableCell
-                                            align="right"
-                                            sx={{ display: {xs: 'none', md: 'table-cell' }}}
-                                            >
-                                                {row.contribution > 0 ?
-                                                    formatAmount(row.contribution, 5) :
+                                                {row.earnedFees > 0 ?
+                                                    formatDollarAmount(row.earnedFees) :
                                                     0
                                                 }
                                             </TableCell>
-
                                         </TableRow>
                                     );
                                 })}
@@ -406,7 +406,7 @@ export default function EmissionsTable({
                                         height: (dense ? 33 : 53) * emptyRows,
                                     }}
                                 >
-                                    <TableCell colSpan={6} />
+                                    <TableCell colSpan={6}/>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -415,7 +415,7 @@ export default function EmissionsTable({
                 <Box display="flex" alignItems="center" justifyContent={"space-between"}>
                     <Box m={1} display="flex" justifyContent={"flex-start"}>
                         <FormControlLabel
-                            control={<Switch checked={dense} onChange={handleChangeDense} />}
+                            control={<Switch checked={dense} onChange={handleChangeDense}/>}
                             label="Compact view"
                         />
                     </Box>

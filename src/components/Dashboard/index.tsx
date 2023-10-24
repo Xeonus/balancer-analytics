@@ -34,6 +34,7 @@ import { isMobile } from 'react-device-detect';
 import Emissions from '../../pages/Emissions';
 import VotingIncentives from '../../pages/VotingIncentives';
 import Reports from "../../pages/Reports";
+import CorePools from "../../pages/CorePools";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -230,6 +231,8 @@ function Dashboard() {
                             <Route path={networkPrefix(activeNetwork) + 'reports'} element={<Reports />} />
                             <Route path={networkPrefix(activeNetwork) + 'voting-incentives'}
                                    element={<VotingIncentives/>}/>
+                            <Route path={networkPrefix(activeNetwork) + 'corePools'}
+                                   element={<CorePools/>}/>
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                             <Route path={"/:networkID/pools/:poolId"} element={<PoolPage />} />
                             <Route path={"/pools/:poolId"} element={<PoolPage />} />
