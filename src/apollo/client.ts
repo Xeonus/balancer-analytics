@@ -314,7 +314,7 @@ export const baseClient = new ApolloClient({
 })
 
 export const balancerV3APIClient = new ApolloClient({
-    uri: 'https://api-v3.balancer.fi/',
+    uri: 'https://api-v3-workaround.stellate.sh/',
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
