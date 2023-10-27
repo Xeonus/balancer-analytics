@@ -1,7 +1,7 @@
 schema:
   - 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks'
   - 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2'
-  - 'https://api-v3-workaround.stellate.sh/'
+  - 'https://api-v3.balancer.fi/'
 documents:
   - 'src/**/*.gql'
 hooks:
