@@ -175,7 +175,7 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Core Pools'} />
                 </ListItemButton>
-                <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'corePools'}>
+                <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
                     <ListItemIcon>
                         <Handshake />
                     </ListItemIcon>
