@@ -109,7 +109,6 @@ export default function useAggregatedProtocolData() {
     let protocolFeesChange = 0
     let swaps24 = 0
     let swapsChange = 0
-    let tvlChartData : BalancerChartDataItem[] = []
 
     if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl && protocolPolygonZkEVMData.tvl &&
         protocolGnosisData.tvl && protocolDataAvalanche.tvl && protocolDataBase.tvl) {
@@ -172,43 +171,25 @@ export default function useAggregatedProtocolData() {
     }
 
     //Protocol TVL Data
-    if (protocolData.tvlData && protocolArbitrumData.tvlData && protocolDataBase.tvlData && protocolGnosisData.tvlData && protocolDataBase.tvlData &&
-        protocolPolygonData.tvlData && protocolPolygonZkEVMData.tvlData
-    ) {
-        //Initial mapping of mainnet
-        tvlChartData = protocolData.tvlData;
-        //Mapping of side-chains
-        tvlChartData.forEach(el => {
-            const arbMatch = protocolArbitrumData.tvlData.find(entry => entry.time === el.time)
-            if (arbMatch) {
-                el.value += arbMatch.value
-            }
-            const polyMatch = protocolPolygonData.tvlData.find(entry => entry.time === el.time)
-            if (polyMatch) {
-                el.value += polyMatch.value
-            }
-            const zkevmMatch = protocolPolygonZkEVMData.tvlData.find(entry => entry.time === el.time)
-            if (zkevmMatch) {
-                el.value += zkevmMatch.value
-            }
-            const gnosisMatch = protocolGnosisData.tvlData.find(entry => entry.time === el.time)
-            if (gnosisMatch) {
-                el.value += gnosisMatch.value
-            }
-            const avalancheMatch = protocolDataAvalanche.tvlData.find(entry => entry.time === el.time)
-            if (avalancheMatch) {
-                el.value += avalancheMatch.value
-            }
+    const tvlChartData: BalancerChartDataItem[] = aggregateChartData(
+        protocolData,
+        [protocolArbitrumData, protocolPolygonData, protocolPolygonZkEVMData, protocolGnosisData, protocolDataAvalanche, protocolDataBase],
+        'tvlData'
+    );
 
-        })
-    }
-
-    const protocolFees: BalancerChartDataItem[] = aggregateChartData(
+    // Protocol Fee Data
+    const protocolFeesChartData: BalancerChartDataItem[] = aggregateChartData(
         protocolData,
         [protocolArbitrumData, protocolPolygonData, protocolPolygonZkEVMData, protocolGnosisData, protocolDataAvalanche, protocolDataBase],
         'protocolFeeData'
     );
-    console.log("protocolFees", protocolFees)
+
+    // Volume Data
+    const protocolVolumeChartData: BalancerChartDataItem[] = aggregateChartData(
+        protocolData,
+        [protocolArbitrumData, protocolPolygonData, protocolPolygonZkEVMData, protocolGnosisData, protocolDataAvalanche, protocolDataBase],
+        'volumeData'
+    );
 
     return {
         mainnetData: protocolData,
@@ -229,6 +210,7 @@ export default function useAggregatedProtocolData() {
         swaps24: swaps24,
         swapsChange: swapsChange,
         overallTvlData: tvlChartData,
-
+        overallProtocolFeeData: protocolFeesChartData,
+        overallVolumeChartData: protocolVolumeChartData,
     };
 }

@@ -44,7 +44,7 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
             type: 'category',
             data: xData,
             axisLabel: { 
-                interval: 0, 
+                interval: 'auto',
                 rotate: rotateAxis ? 30 : 0,
                 fontSize: 10 
             }
@@ -69,7 +69,7 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                 axisLabel: {
                     formatter: function (d: number) {
                         return formatDollarAmount(d);
-                    }
+                    },
                 }
             }
         ],
@@ -100,8 +100,20 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                 yAxisIndex: 1,
                 data: yDataLine,
                 type: 'line',
+                smooth: true,
                 itemStyle: {
-                    color: theme.palette.primary.main
+                    color: theme.palette.primary.main,
+                    borderColor: theme.palette.primary.main,
+                    borderWidth: 2,
+                },
+                symbol: 'circle',
+                symbolSize: 3,
+                showSymbol: true,
+                areaStyle: {
+                    normal: {
+                        color: theme.palette.primary.main,
+                        opacity: 0.1
+                    }
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
