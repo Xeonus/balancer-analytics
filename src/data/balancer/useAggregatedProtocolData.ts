@@ -1,5 +1,5 @@
 
-import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
+import { useBalancerChainProtocolData } from './useProtocolDataWithClientOverride';
 import {
     EthereumNetworkInfo,
     ArbitrumNetworkInfo,
@@ -17,12 +17,17 @@ import {
     polygonZKEVMBlockClient, polygonZKEVMClient
 } from '../../apollo/client';
 import { ProtocolData } from './useProtocolDataWithClientOverride'
+import {BalancerChartDataItem} from "./balancerTypes";
 
 //TODO: Define interface with SupportedNetwork array
 export interface AggregatedProtocolData {
     mainnetData: ProtocolData,
     arbitrumData: ProtocolData,
     polygonData: ProtocolData,
+    polygonzkEVMData: ProtocolData,
+    gnosisData: ProtocolData,
+    avalancheData: ProtocolData,
+    baseData: ProtocolData,
     volume: number;
     volumeChange: number;
     fees24: number;
@@ -35,6 +40,34 @@ export interface AggregatedProtocolData {
     swapsChange: number;
 }
 
+const aggregateChartData = (
+    mainData: ProtocolData,
+    sideChainsData: ProtocolData[],
+    field: keyof ProtocolData
+): BalancerChartDataItem[] => {
+    const mainFieldData = mainData[field] as BalancerChartDataItem[] | undefined;
+    if (mainFieldData) {
+        // Clone the main data to avoid mutating the original state
+        let aggregatedData: BalancerChartDataItem[] = JSON.parse(JSON.stringify(mainFieldData));
+
+        // Loop through the side-chain data and add the values to the main chain data
+        aggregatedData.forEach(mainDataPoint => {
+            sideChainsData.forEach(sideChain => {
+                const sideChainFieldData = sideChain[field] as BalancerChartDataItem[] | undefined;
+                if (sideChainFieldData) {
+                    const match = sideChainFieldData.find(entry => entry.time === mainDataPoint.time);
+                    if (match) {
+                        mainDataPoint.value += match.value;
+                    }
+                }
+            });
+        });
+
+        return aggregatedData;
+    }
+    return [];
+};
+
 export default function useAggregatedProtocolData() {
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
     const protocolArbitrumData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
@@ -46,10 +79,26 @@ export default function useAggregatedProtocolData() {
 
 
     if (!protocolData && !protocolArbitrumData && !protocolPolygonData && !protocolPolygonZkEVMData && !protocolGnosisData) {
-        return { mainnetData: [], arbitrumData: [], polygonData: [], volume24: 0, volumeChange: 0, fees24: 0, feesChange: 0, tvl: 0, tvlChange: 0, swaps24: 0 };
+        return {
+            mainnetData: [],
+            arbitrumData: [],
+            polygonData: [],
+            polygonZkEvmData: [],
+            protocolPolygonZkEVMData: [],
+            gnosisData : [],
+            avalancheData: [],
+            baseData: [],
+            volume24: 0,
+            volumeChange: 0,
+            fees24: 0,
+            feesChange: 0,
+            tvl: 0,
+            tvlChange: 0,
+            swaps24: 0
+        };
     }
 
-
+    //Global Metrics
     let tvl = 0
     let tvlChange = 0
     let volume = 0
@@ -60,6 +109,7 @@ export default function useAggregatedProtocolData() {
     let protocolFeesChange = 0
     let swaps24 = 0
     let swapsChange = 0
+    let tvlChartData : BalancerChartDataItem[] = []
 
     if (protocolData.tvl && protocolArbitrumData.tvl && protocolPolygonData.tvl && protocolPolygonZkEVMData.tvl &&
         protocolGnosisData.tvl && protocolDataAvalanche.tvl && protocolDataBase.tvl) {
@@ -121,12 +171,53 @@ export default function useAggregatedProtocolData() {
             protocolPolygonZkEVMData.swapsChange + protocolGnosisData.swapsChange + protocolDataAvalanche.swapsChange + protocolDataBase.swapsChange;
     }
 
+    //Protocol TVL Data
+    if (protocolData.tvlData && protocolArbitrumData.tvlData && protocolDataBase.tvlData && protocolGnosisData.tvlData && protocolDataBase.tvlData &&
+        protocolPolygonData.tvlData && protocolPolygonZkEVMData.tvlData
+    ) {
+        //Initial mapping of mainnet
+        tvlChartData = protocolData.tvlData;
+        //Mapping of side-chains
+        tvlChartData.forEach(el => {
+            const arbMatch = protocolArbitrumData.tvlData.find(entry => entry.time === el.time)
+            if (arbMatch) {
+                el.value += arbMatch.value
+            }
+            const polyMatch = protocolPolygonData.tvlData.find(entry => entry.time === el.time)
+            if (polyMatch) {
+                el.value += polyMatch.value
+            }
+            const zkevmMatch = protocolPolygonZkEVMData.tvlData.find(entry => entry.time === el.time)
+            if (zkevmMatch) {
+                el.value += zkevmMatch.value
+            }
+            const gnosisMatch = protocolGnosisData.tvlData.find(entry => entry.time === el.time)
+            if (gnosisMatch) {
+                el.value += gnosisMatch.value
+            }
+            const avalancheMatch = protocolDataAvalanche.tvlData.find(entry => entry.time === el.time)
+            if (avalancheMatch) {
+                el.value += avalancheMatch.value
+            }
+
+        })
+    }
+
+    const protocolFees: BalancerChartDataItem[] = aggregateChartData(
+        protocolData,
+        [protocolArbitrumData, protocolPolygonData, protocolPolygonZkEVMData, protocolGnosisData, protocolDataAvalanche, protocolDataBase],
+        'protocolFeeData'
+    );
+    console.log("protocolFees", protocolFees)
+
     return {
         mainnetData: protocolData,
         arbitrumData: protocolArbitrumData,
         polygonData: protocolPolygonData,
         polygonZkEvmData: protocolPolygonZkEVMData,
         gnosisData : protocolGnosisData,
+        avalancheData: protocolDataAvalanche,
+        baseData: protocolDataBase,
         volume: volume,
         volumeChange: volumeChange,
         fees24: fees24,
@@ -137,6 +228,7 @@ export default function useAggregatedProtocolData() {
         tvlChange: tvlChange,
         swaps24: swaps24,
         swapsChange: swapsChange,
+        overallTvlData: tvlChartData,
 
     };
 }

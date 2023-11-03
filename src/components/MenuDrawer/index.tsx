@@ -208,12 +208,12 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'DAO Financials'} />
                 </ListItemButton>
-                {/* <ListItemButton key={'Reports'} component={NavLink} to={'reports'}>
+                <ListItemButton key={'Reports'} component={NavLink} to={'reports'}>
                     <ListItemIcon>
                         <AssessmentIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Reports'} />
-                </ListItemButton> */}
+                </ListItemButton>
                 <Divider />
                 <ListItem>
                     <Box mt={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>

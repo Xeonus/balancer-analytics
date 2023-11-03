@@ -11,6 +11,9 @@ import {CORE_POOLS_ARBITRUM, CORE_POOLS_MAINNET, CORE_POOLS_POLYGON} from "../..
 import Select, {SelectChangeEvent} from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
+import useAggregatedProtocolData from "../../data/balancer/useAggregatedProtocolData";
+import {BalancerChartDataItem} from "../../data/balancer/balancerTypes";
+import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
 
 
 interface PoolsMapping {
@@ -45,8 +48,16 @@ export default function Reports() {
     //Date States
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
-    const pools = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping' && corePools.includes(pool.id));
-    console.log("pools", pools)
+    //const pools = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping' && corePools.includes(pool.id));
+    //console.log("pools", pools)
+    const aggregatedProtocolData = useAggregatedProtocolData();
+    console.log("aggregatedProtocolData", aggregatedProtocolData);
+
+    //---Data preparation---
+    // For a given time-range obtain omnichain stats
+    const tvlChartData: BalancerChartDataItem[] = [];
+
+
 
 
     //Navigation
@@ -137,6 +148,21 @@ export default function Reports() {
                         </FormControl>
                         </Box>
                     </Box>
+                </Grid>
+                <Grid
+                    item
+                    mt={2}
+                    xs={11}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Box display="flex" alignItems='center'>
+                            <Typography variant="h6">TVL Metrics</Typography>
+                        </Box>
+                    </Box>
+                    <Card>
+                        {aggregatedProtocolData && aggregatedProtocolData.overallTvlData && aggregatedProtocolData.overallTvlData.length > 1 ?
+                        <GenericAreaChart chartData={aggregatedProtocolData.overallTvlData} dataTitle={"Protocol TVL"} /> : null }
+                    </Card>
                 </Grid>
                 <Grid
                     item

@@ -74,7 +74,7 @@ query GetTokenSingleData($address: String!, $block24: Block_height!) {
 }
 
 query GetTokenPageData($address: String!, $startTimestamp: Int!) {
-    tokenSnapshots(first: 500, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
+    tokenSnapshots(first: 1000, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
         ...TokenSnapshot
     }
 }
