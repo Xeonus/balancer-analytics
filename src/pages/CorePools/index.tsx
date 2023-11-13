@@ -11,15 +11,16 @@ import LinkIcon from '@mui/icons-material/Link';
 import {BalancerChartDataItem, BalancerPieChartDataItem} from "../../data/balancer/balancerTypes";
 import MixedLineBarChart from "../../components/Echarts/MixedLineBarChart";
 import GenericPieChart from "../../components/Echarts/GenericPieChart";
+import MetricsCard from "../../components/Cards/MetricsCard";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PoolMetricsCard from "../../components/Cards/PoolMetricsCard";
 
 export default function CorePools() {
 
 
     const [activeNetwork] = useActiveNetworkVersion();
     let globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE']);
-    //console.log("globalPools", globalPools)
     const corePools = useGetCorePoolCurrentFees();
-    //console.log("corePools", corePools)
 
     const totalFees = corePools.reduce((acc, pool) => acc + parseFloat(pool.earned_fees), 0)
     const corePoolIds = new Set(corePools.map(pool => pool.poolId));
@@ -55,7 +56,6 @@ export default function CorePools() {
 
             // For the line chart, we want to match the earned fees with the correct pool.
             const earnedFees = feesByPoolId.get(pool.poolId) || 0; // Default to 0 if no matching pool is found
-
             // Prepare data for the line chart (earned fees)
             poolLineChartData.push({
                 value: earnedFees,
@@ -64,8 +64,6 @@ export default function CorePools() {
         });
     }
 
-    console.log("poolLineChartData", poolLineChartData)
-
 
 
 
@@ -73,10 +71,36 @@ export default function CorePools() {
     const filteredPoolBarChartTVLData = poolBarChartData.slice(0, 19);
     const filteredPoolBarChartData = poolLineChartData.slice(0, 19);
 
+    //Top 20 core pools
     const filteredPieChartData: BalancerPieChartDataItem[] = filteredPoolBarChartData.map(({value, time}) => ({
         value: value,
         name: time,
     }))
+
+    //Core pools by chain
+    const activeChains = ['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE'];
+    const chainPieChartData: BalancerPieChartDataItem[] = activeChains.map(chain => ({
+        name: chain,
+        value: corePools.reduce((sum, pool) => {
+            return pool.chain === chain.toLowerCase() ? sum + parseFloat(pool.earned_fees) : sum;
+        }, 0),
+    }));
+
+    //Fee distribution
+    const feeDistroPieChartData: BalancerPieChartDataItem[] = [
+        {
+            name: 'Revenue to DAO',
+            value: totalFees * 0.175
+        },
+        {
+            name: 'Revenue to veBAL',
+            value: totalFees * 0.325
+        },
+        {
+            name: 'Voting incentives',
+            value: totalFees * 0.5
+        },
+    ]
 
     return (
         <Box sx={{flexGrow: 2}}>
@@ -91,6 +115,52 @@ export default function CorePools() {
                     </Box>
 
                 </Grid>
+                <Grid item xs={11}>
+                    <Typography variant={'h5'}>Core Pool Revenue Metrics</Typography>
+
+                </Grid>
+                <Grid mb={2} item xs={11}>
+                    <MetricsCard
+                        mainMetric={totalFees}
+                        mainMetricInUSD={true}
+                        metricName={'Total Fees'}
+                        MetricIcon={MonetizationOnIcon}
+                    />
+                </Grid>
+                <Grid
+                    container
+                    sx={{
+                        direction: {xs: 'column', sm: 'row'}
+                    }}
+                    justifyContent="center"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={2}
+                >
+                    <Grid
+                        item
+                        xs={11}
+                        md={5.5}
+                    >
+                        <Card >
+                            <Box m={1}>
+                                <Typography variant={'h6'}>Revenue distribution</Typography>
+                            </Box>
+                            <GenericPieChart data={feeDistroPieChartData} height='250px'/>
+                        </Card>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={11}
+                        md={5.5}
+                    >
+                        <Card >
+                            <Box m={1}>
+                                <Typography variant={'h6'}>Revenue per Chain</Typography>
+                            </Box>
+                            <GenericPieChart data={chainPieChartData} height='250px'/>
+                        </Card>
+                    </Grid>
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                         item
@@ -98,9 +168,11 @@ export default function CorePools() {
                         mt={1}
                         xs={11}
                     >
+                        <Box mb={1}>
                         <Typography variant='h5'>
                             Top 20 Core Pools by Fees Earned on all Deployments
                         </Typography>
+                        </Box>
                     </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
@@ -118,10 +190,10 @@ export default function CorePools() {
                             <Grid
                                 item
                                 xs={11}
-                                md={5}
+                                md={5.5}
                             >
                                 <Card
-                                    sx={{boxShadow: 3}}
+
                                 >
                                     < MixedLineBarChart
                                         barChartData={filteredPoolBarChartTVLData}
@@ -134,20 +206,21 @@ export default function CorePools() {
                         <Grid
                             item
                             xs={11}
-                            md={5}
+                            md={5.5}
                         >
                             <Card
-                                sx={{boxShadow: 3}}
                             >
                                 <GenericPieChart data={filteredPieChartData} height='350px'/>
                             </Card>
 
                         </Grid>
                     </Grid> : null}
-                <Grid item xs={11}>
+                <Grid mb={1} item xs={11}>
                     <Typography variant={'h5'}>
                         Core Pools: Earned Fees Statistics
                     </Typography>
+                </Grid>
+
                 </Grid>
                 <Grid item xs={11}>
                     <Typography variant={'body1'}>
@@ -171,7 +244,7 @@ export default function CorePools() {
                         <Grid
                             container
                             spacing={2}
-                            mt='25%'
+                            mt='10%'
                             sx={{justifyContent: 'center'}}
                         >
                             <CustomLinearProgress/>

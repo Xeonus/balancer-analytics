@@ -2,7 +2,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import {keyframes, useTheme} from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button, Badge} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -36,6 +36,7 @@ import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
 import { networkPrefix } from '../../utils/networkPrefix';
+import AvatarNew from "../AvatarNew";
 
 export type MenuDrawerProps = {
     drawerWidth: number,
@@ -174,6 +175,7 @@ const MenuDrawer = ({
                         <HubIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Core Pools'} />
+                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
                     <ListItemIcon>
@@ -213,6 +215,7 @@ const MenuDrawer = ({
                         <AssessmentIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Reports'} />
+                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <Divider />
                 <ListItem>

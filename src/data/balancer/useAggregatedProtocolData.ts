@@ -9,7 +9,7 @@ import {
 } from '../../constants/networks';
 import {
     arbitrumBlockClient,
-    arbitrumClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient,
+    arbitrumClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient, blockClient, client,
     gnosisBlockClient,
     gnosisClient,
     polygonBlockClient,
@@ -69,7 +69,7 @@ const aggregateChartData = (
 };
 
 export default function useAggregatedProtocolData() {
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
+    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp, blockClient, client);
     const protocolArbitrumData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
     const protocolPolygonData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
     const protocolPolygonZkEVMData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);

@@ -116,7 +116,7 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
                 }
             });
         }
-    }, [block24, first, activeNetwork.clientUri]);
+    }, [block24, first, activeNetwork.clientUri, startunixTime, endunixTime]);
 
     if (!data) {
         return [];

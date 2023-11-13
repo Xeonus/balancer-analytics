@@ -10,7 +10,7 @@ import Select, {SelectChangeEvent} from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import useAggregatedProtocolData from "../../data/balancer/useAggregatedProtocolData";
-import {BalancerChartDataItem} from "../../data/balancer/balancerTypes";
+import {BalancerChartDataItem, BalancerPieChartDataItem} from "../../data/balancer/balancerTypes";
 import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
 import {unixToDate} from "../../utils/date";
 import MixedLineBarChart from "../../components/Echarts/MixedLineBarChart";
@@ -26,6 +26,9 @@ import CustomLinearProgress from "../../components/Progress/CustomLinearProgress
 import PoolTable from "../../components/Tables/PoolTable";
 import {useBalancerPools} from "../../data/balancer/usePools";
 import PoolReportsTable from "../../components/Tables/PoolReportsTable";
+import useGetCollectedFees from "../../data/maxis/useGetCollectedFees";
+import GenericPieChart from "../../components/Echarts/GenericPieChart";
+import NetworkSelector from "../../components/NetworkSelector";
 
 
 interface PoolsMapping {
@@ -46,8 +49,8 @@ export default function Reports() {
     const currentQuarter = dayjs().quarter();
     const [activeNetwork] = useActiveNetworkVersion()
     const corePools = POOLS[activeNetwork.v3NetworkID]
-    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-    const [timeRange, setTimeRange] = React.useState('7');
+    //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+    const [timeRange, setTimeRange] = React.useState('30');
     const [showDate, setShowDate] = React.useState(false);
     const today = new Date();
     //Set timestamps if none is given:
@@ -61,13 +64,8 @@ export default function Reports() {
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
     const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
-    //console.log("pools", pools)
     const aggregatedProtocolData = useAggregatedProtocolData();
-
-    //Prepare pools data
-    const pools = React.useMemo(() => {
-        return (poolsData ?? []).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
-    }, [poolsData]);
+    const collectedFees = useGetCollectedFees()
 
     //---Data preparation---
     // Prepare Data for given time-range
@@ -117,9 +115,80 @@ export default function Reports() {
         cumulativeValue += el.value; // Accumulate the value
         return {
             value: cumulativeValue,
-            time: el.time // Use the time as it is if no conversion is needed
+            time: el.time
         };
     });
+
+    // DAO Income fee metrics
+    const filteredFeesData = React.useMemo(() => {
+        if (collectedFees.loading) {
+            return [];
+        }
+        return collectedFees.feeData.filter((dataItem) => {
+            const dataDate = dataItem.periodEnd;
+            return dataDate  >= endDate && dataDate  <= startDate;
+        });
+    }, [collectedFees.feeData, startDate, endDate]);
+
+    const feesToDaoChartData: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.feesToDao,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0;
+    const cumulativeToDaoData: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.feesToDao; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd )
+        };
+    });
+
+    // veBAL Income fee metrics
+    const feesToVebal: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.feesToVebal,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0;
+    const cumulativeToVebal: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.feesToVebal; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd )
+        };
+    });
+
+    // Incentives metrics
+    const incentives: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.feesToVebal,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0;
+    const cumulativeIncentives: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.feesToVebal; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd )
+        };
+    });
+
+    //Fee distribution
+    const feeDistroPieChartData: BalancerPieChartDataItem[] = [
+        {
+            name: 'Revenue to DAO',
+            value: cumulativeToDaoData.length > 0 ? cumulativeToDaoData[cumulativeToDaoData.length-1].value : 0
+        },
+        {
+            name: 'Revenue to veBAL',
+            value: cumulativeToVebal.length > 0 ? cumulativeToVebal[cumulativeToVebal.length -1].value : 0
+        },
+        {
+            name: 'Voting incentives',
+            value: cumulativeIncentives.length > 0 ? cumulativeIncentives[cumulativeIncentives.length -1].value : 0
+        },
+    ]
 
 
     //Navigation
@@ -155,8 +224,6 @@ export default function Reports() {
             setEndDate(Math.floor(newEndDate.getTime() / 1000));
         }
     };
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
 
     const parseDateString = (dateString: string): number | null => {
         // Expected format "DD.MM.YYYY"
@@ -197,6 +264,7 @@ export default function Reports() {
     };
 
 
+
     return (
         <Box sx={{flexGrow: 2, justifyContent: "center"}}>
             {aggregatedProtocolData && aggregatedProtocolData.overallTvlData && aggregatedProtocolData.overallTvlData.length > 1 ?
@@ -205,7 +273,7 @@ export default function Reports() {
                 spacing={1}
                 sx={{justifyContent: 'center'}}
             >
-                <Grid item xs={11}>
+                <Grid item xs={9}>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <NavCrumbs crumbSet={navCrumbs} destination={'Reports'}/>
                     </Box>
@@ -214,26 +282,27 @@ export default function Reports() {
                     item
                     mt={1}
                     mb={1}
-                    xs={11}
+                    xs={9}
                 >
                     <Box display="flex" alignItems="center">
                         <Box>
-                            <Typography variant={"h5"}>Reports Dashboard</Typography>
+                            <Typography variant={"h5"}>Reports Dashboard (Beta)</Typography>
                         </Box>
 
                     </Box>
                     <Box>
-                        <Typography variant={"body2"}>Create reports of key protocol metrics by specifying a time-range.
-                            Metrics aggregate data from all Balancer deployments</Typography>
+                        <Typography variant={"body2"}>Create aggregated views of key protocol metrics by specifying a time-range.
+                            Metrics combine data from all Balancer deployments unless stated otherwise.</Typography>
                     </Box>
                 </Grid>
                 <Grid
                     item
                     mt={1}
                     mb={1}
-                    xs={11}
+                    xs={9}
                 >
-                    <Box display="flex" alignItems="center">
+
+                    <Box display="flex" alignItems="center" mb={1}>
                         <Box>
                             <Typography>Report Time range:</Typography>
                         </Box>
@@ -269,6 +338,7 @@ export default function Reports() {
                                 </Select>
                             </FormControl>
                         </Box>
+
                         {showDate ?
                             <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -298,22 +368,34 @@ export default function Reports() {
                                 </LocalizationProvider>
                             </Box> : null}
                     </Box>
+                    <Divider />
                 </Grid>
                 <Grid
                     item
                     mt={2}
-                    xs={11}
+                    xs={9}
                 >
-                    <Box mb={1} display="flex" justifyContent="space-between" alignItems="row">
+                    <Box  display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">Protocol TVL Metrics</Typography>
+                            <Typography variant="h5">Protocol TVL Metrics</Typography>
                         </Box>
+
+                    </Box>
+                    <Box mb={1} display="flex" alignItems='center'>
+                        <Typography variant="body2">Aggreated TVL across all Balancer Deployments</Typography>
                     </Box>
                     <Grid
                         container
                         columns={{xs: 4, sm: 8, md: 12}}
-                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                        sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                     >
+                        <Box m={1}>
+                            <MetricsCard
+                                mainMetric={filteredTvlData[filteredTvlData.length-1].value}
+                                mainMetricInUSD={true}
+                                metricName={'Current TVL'}
+                                MetricIcon={LandscapeIcon}/>
+                        </Box>
                         <Box m={1}>
                             <MetricsCard
                                 mainMetric={Math.max(...filteredTvlData.map(item => item.value))}
@@ -339,17 +421,20 @@ export default function Reports() {
                 <Grid
                     item
                     mt={2}
-                    xs={11}
+                    xs={9}
                 >
                     <Box display="flex" justifyContent="space-between" alignItems="row">
-                        <Box mb={1} display="flex" alignItems='center'>
-                            <Typography variant="h6">Protocol Volume Metrics</Typography>
+                        <Box display="flex" alignItems='center'>
+                            <Typography variant="h5">Protocol Volume Metrics</Typography>
                         </Box>
+                    </Box>
+                    <Box mb={1} display="flex" alignItems='center'>
+                        <Typography variant="body2">Aggregated Volume across all Balancer Deployments</Typography>
                     </Box>
                     <Grid
                         container
                         columns={{xs: 4, sm: 8, md: 12}}
-                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                        sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                     >
                         <Box m={1}>
                             <MetricsCard
@@ -386,17 +471,20 @@ export default function Reports() {
                 <Grid
                     item
                     mt={2}
-                    xs={11}
+                    xs={9}
                 >
-                    <Box mb={1} display="flex" justifyContent="space-between" alignItems="row">
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">Protocol Fee Metrics</Typography>
+                            <Typography variant="h5">Protocol Fee Metrics</Typography>
                         </Box>
+                    </Box>
+                    <Box mb={1} display="flex" alignItems='center'>
+                        <Typography variant="body2">Aggreated protocol fees collected across all Balancer Deployments</Typography>
                     </Box>
                     <Grid
                         container
                         columns={{xs: 4, sm: 8, md: 12}}
-                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                        sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                     >
                         <Box m={1}>
                             <MetricsCard
@@ -410,17 +498,17 @@ export default function Reports() {
                                 mainMetric={Math.max(...filteredProtocolFeeMetrics.map(item => item.value))}
                                 mainMetricInUSD={true}
                                 metricName={'Max Protocol Fees'}
-                                MetricIcon={LandscapeIcon}/>
+                                MetricIcon={EqualizerIcon}/>
                         </Box>
                         <Box m={1}>
                             <MetricsCard
                                 mainMetric={Math.min(...filteredProtocolFeeMetrics.map(item => item.value))}
                                 mainMetricInUSD={true}
                                 metricName={'Min Protocol Fees'}
-                                MetricIcon={LandscapeIcon}/>
+                                MetricIcon={EqualizerIcon}/>
                         </Box>
                     </Grid>
-                    <Card>
+                    <Card >
                         {filteredProtocolFeeMetrics && filteredProtocolFeeMetrics.length > 1 && cumulativeProtocolFeeData && cumulativeProtocolFeeData.length > 1 ?
                             <MixedLineBarChart
                                 barChartData={filteredProtocolFeeMetrics}
@@ -429,20 +517,118 @@ export default function Reports() {
                                 lineChartName={'Cumulative Protocol Fees'}/>
                             : null}
                     </Card>
+                    <Box mb={2}></Box>
                 </Grid>
+                {feesToDaoChartData && feesToDaoChartData.length > 0 ?
                 <Grid
                     item
                     mt={2}
-                    xs={11}
+                    xs={9}
                 >
-                    <Box mb={1} display="flex" justifyContent="space-between" alignItems="row">
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
                         <Box display="flex" alignItems='center'>
-                            <Typography variant="h6">Pool Performance on {activeNetwork.name}</Typography>
+                            <Typography variant="h5">Protocol Revenue Metrics</Typography>
                         </Box>
                     </Box>
+                    <Box mb={1} display="flex" alignItems='center'>
+                        <Typography variant="body2">Distribution of bi-weekly fee collection to voting incentives, veBAL holders and the DAO</Typography>
+                    </Box>
+                    <Grid item
+                    >
+                        <Box mb={1}>
+                            {cumulativeToDaoData && cumulativeToDaoData.length > 0 ?
+                                <Card >
+                                    <Box m={1}>
+                                        <Typography variant="body2">Cumulative Revenue Distribution</Typography>
+                                    </Box>
+                                    <GenericPieChart data={feeDistroPieChartData} height='250px'/>
+                                </Card> : null }
+                        </Box>
+
+                    </Grid>
+                    {filteredFeesData && feesToDaoChartData.length > 1 && cumulativeToDaoData && cumulativeToDaoData.length > 0 ?
+                    <Box mt={1}>
+                        <Typography variant="h6"> Historical Revenue to the DAO</Typography>
+                    </Box> : null }
+                    {filteredFeesData && feesToDaoChartData.length > 1 && cumulativeToDaoData && cumulativeToDaoData.length > 0 ?
+                    <Box mb={1} display="flex" alignItems='center'>
+                        <Typography variant="body2">Revenue from collected fees distributed to the DAO treasury</Typography>
+                    </Box> : null }
+
+                    <Card >
+                        {filteredFeesData && feesToDaoChartData.length > 1 && cumulativeToDaoData && cumulativeToDaoData.length > 0 ?
+                            <MixedLineBarChart
+                                barChartData={feesToDaoChartData}
+                                barChartName={'DAO Income'}
+                                lineChartData={cumulativeToDaoData}
+                                lineChartName={'Cumulative DAO Income'}/>
+                            : null}
+                    </Card>
+                    {filteredFeesData && feesToVebal.length > 1 && cumulativeToVebal && cumulativeToVebal.length > 0 ?
+                    <Box mt={1}>
+                        <Typography variant="h6"> Historical Fees to veBAL holders</Typography>
+                    </Box> : null  }
+                    {filteredFeesData && feesToVebal.length > 1 && cumulativeToVebal && cumulativeToVebal.length > 0 ?
+                    <Box mb={1}  display="flex" alignItems='center'>
+                        <Typography variant="body2">Income distributed to veBAL holders (equals voting incentive amount as it is a 50/50 split)</Typography>
+                    </Box> : null }
+                    <Card >
+                        {filteredFeesData && feesToVebal.length > 1 && cumulativeToVebal && cumulativeToVebal.length > 0 ?
+                            <MixedLineBarChart
+                                barChartData={feesToVebal}
+                                barChartName={'DAO Income'}
+                                lineChartData={cumulativeToVebal}
+                                lineChartName={'Cumulative DAO Income'}/>
+                            : null}
+                    </Card>
+                    { /* <Box mb={1}>
+                        <Typography variant="h6"> Historical Distribution of Voting Incentives to Core Pools</Typography>
+                    </Box>
+                    <Card >
+                        {incentives && incentives.length > 1 && cumulativeIncentives && cumulativeIncentives.length > 0 ?
+                            <MixedLineBarChart
+                                barChartData={incentives}
+                                barChartName={'Incentives'}
+                                lineChartData={cumulativeIncentives}
+                                lineChartName={'Cumulative Incentive Distribution'}/>
+                            : null}
+                    </Card> */}
+                </Grid> :
+                    <Grid
+                        item
+                        mt={2}
+                        xs={9}
+                    >
+                        <Box mb={1} display="flex" justifyContent="space-between" alignItems="row">
+                            <Box display="flex" alignItems='center'>
+                                <Typography variant="h5">Protocol Revenue Metrics</Typography>
+                            </Box>
+
+                        </Box>
+                        <Box display="flex" alignItems='center'>
+                            <Typography variant="body2">Select a larger time-range for fee metrics</Typography>
+                        </Box>
+                    </Grid>}
+                 <Grid
+                    item
+                    mt={2}
+                    xs={9}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Box display="flex" alignItems='center'>
+                            <Typography variant="h6">Pool Performance on {activeNetwork.name}</Typography>
+
+                        </Box>
+                        <Box>
+                            <NetworkSelector />
+                        </Box>
+                    </Box>
+                     <Box mb={1}  display="flex" alignItems='center'>
+                         <Typography variant="body2">Performance of pools for the given time-range</Typography>
+                     </Box>
                     <Box>
-                        {pools && pools.length > 1 ?
-                        <PoolReportsTable poolDatas={pools} /> : <CircularProgress /> }
+                        {poolsData && poolsData.length > 1 ?
+                        <PoolReportsTable poolDatas={poolsData} startTime={startTimestamp} endTime={endTimeStamp} /> : <CircularProgress /> }
                     </Box>
                 </Grid>
 

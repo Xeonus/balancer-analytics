@@ -17,7 +17,7 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
             main: '#3b82f6',
           },
           secondary: {
-            main: '#d97706',
+            main: '#7cadc4',
           },
           background: {
             paper: alpha('#0f2027', 0.9),

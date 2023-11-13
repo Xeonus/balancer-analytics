@@ -12,3 +12,20 @@ export interface PoolFeeRecord {
     redirected_incentives: string;
     reroute_incentives: number;
 }
+
+export interface FeeAllocations {
+    feesCollected: number;
+    incentivesDistributed: number;
+    feesNotDistributed: number;
+    auraIncentives: number;
+    balIncentives: number;
+    feesToDao: number;
+    feesToVebal: number;
+    auraIncentivesPct: number;
+    balIncentivesPct: number;
+    feesToDaoPct: number;
+    feesToVebalPct: number;
+    createdAt: number;
+    periodStart: number;
+    periodEnd: number;
+}

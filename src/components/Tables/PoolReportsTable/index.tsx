@@ -210,9 +210,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function PoolReportsTable({
-                                      poolDatas
-                                  }: {
-    poolDatas: PoolData[]
+                                             poolDatas,
+                                             startTime,
+                                             endTime,
+                                         }: {
+    poolDatas: PoolData[],
+    startTime: number,
+    endTime: number
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
@@ -239,11 +243,8 @@ export default function PoolReportsTable({
     )
 
     React.useEffect(() => {
-        if (originalRows.length > 1) {
             setRows(originalRows)
-        }
-
-    },[originalRows.length])
+    },[JSON.stringify(originalRows), originalRows.length, startTime, endTime])
 
 
     const handleRequestSort = (
