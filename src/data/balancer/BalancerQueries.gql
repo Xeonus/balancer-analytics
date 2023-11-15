@@ -4,6 +4,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -11,6 +12,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -18,6 +20,7 @@ query GetProtocolData($startTimestamp: Int!, $block24: Block_height!, $block48: 
         totalLiquidity
         totalSwapCount
         totalSwapFee
+        totalProtocolFee
         totalSwapVolume
         poolCount
     }
@@ -71,7 +74,7 @@ query GetTokenSingleData($address: String!, $block24: Block_height!) {
 }
 
 query GetTokenPageData($address: String!, $startTimestamp: Int!) {
-    tokenSnapshots(first: 500, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
+    tokenSnapshots(first: 1000, orderBy: timestamp, orderDirection: asc, where: {token: $address, timestamp_gte: $startTimestamp}) {
         ...TokenSnapshot
     }
 }
@@ -144,6 +147,7 @@ query GetPoolChartData($poolId: String!, $startTimestamp: Int!) {
         amounts
         swapVolume
         swapFees
+        protocolFee
         timestamp
         swapsCount
         holdersCount
@@ -167,6 +171,7 @@ query BalancerPoolSwapFeeSnapshot($startTimestamp: Int!, $endTimeStamp: Int!) {
            id
         amounts
         totalShares
+        protocolFee
         swapVolume
         swapFees
         timestamp
@@ -177,6 +182,36 @@ query BalancerPoolSwapFeeSnapshot($startTimestamp: Int!, $endTimeStamp: Int!) {
         }
         }
 }
+
+query BalancerPoolProtocolFeeSnapshots($startTimestamp: Int!, $endTimeStamp: Int!) {
+        poolSnapshots(
+            first: 1000
+            orderBy: protocolFee
+            orderDirection: desc
+            where: { timestamp_in: [$startTimestamp, $endTimeStamp] }
+        ) {
+           id
+        amounts
+        totalShares
+        protocolFee
+        swapVolume
+        swapFees
+        timestamp
+        swapsCount
+        holdersCount
+        pool {
+            id
+          address
+          totalProtocolFeePaidInBPT
+          tokens {
+            symbol
+            address
+            paidProtocolFees
+          }
+        }
+        }
+}
+
 
 fragment LatestPrice on LatestPrice {
     asset
@@ -207,6 +242,7 @@ query BalancerProtocolData(
         totalLiquidity
         totalSwapVolume
         totalSwapFee
+        totalProtocolFee
         poolCount
         totalSwapCount
     }
@@ -358,6 +394,7 @@ fragment BalancerPool on Pool {
     totalSwapVolume
     totalSwapFee
     totalLiquidity
+    totalProtocolFee
     totalShares
     swapsCount
     holdersCount
@@ -488,6 +525,7 @@ fragment BalancerPoolSnapshot on PoolSnapshot {
     totalShares
     swapVolume
     swapFees
+    protocolFee
     timestamp
 }
 
@@ -705,6 +743,7 @@ fragment BalancerSnapshot on BalancerSnapshot {
     poolCount
     totalLiquidity
     totalSwapCount
+    totalProtocolFee
     totalSwapVolume
     totalSwapFee
 }

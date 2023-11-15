@@ -25,6 +25,7 @@ interface PoolChartProps {
     tvlData: BalancerChartDataItem[],
     volumeData: BalancerChartDataItem[],
     feesData: BalancerChartDataItem[],
+    protocolFeesData: BalancerChartDataItem[],
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -53,7 +54,7 @@ function a11yProps(index: number) {
     };
 }
 
-export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartProps) {
+export default function PoolChart({ tvlData, volumeData, feesData, protocolFeesData }: PoolChartProps) {
 
     const [value, setValue] = React.useState(0);
     const [startDate, setStartDate] = React.useState(dayjs().subtract(7, 'day').valueOf());
@@ -66,16 +67,19 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     const [rangedTvlData, setRangedTvlData] = React.useState(tvlData)
     const [rangedVolumeData, setRangedVolumeData] = React.useState(volumeData);
     const [rangedFeesData, setRangedFeesData] = React.useState(feesData);
+    const [rangedProtocolFeesData, setRangedProtocolFeesData] = React.useState(protocolFeesData);
 
     React.useEffect(() => {
         if (tvlData.length < Number(timeRange) || timeRange === '0') {
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedFeesData(feesData);
+            setRangedProtocolFeesData(protocolFeesData)
         } else {
             setRangedTvlData(tvlData.slice(tvlData.length - Number(timeRange)))
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(timeRange)))
             setRangedFeesData(feesData.slice(feesData.length - Number(timeRange)))
+            setRangedProtocolFeesData(protocolFeesData.slice(protocolFeesData.length - Number(timeRange)))
         }
         if (showDate) {
             if (startIndex === 0 && endIndex === 0) {
@@ -84,6 +88,7 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             setRangedTvlData(tvlData.slice(startIndex, endIndex))
             setRangedVolumeData(volumeData.slice(startIndex, endIndex))
             setRangedFeesData(feesData.slice(startIndex, endIndex))
+            setRangedProtocolFeesData(protocolFeesData.slice(startIndex, endIndex))
         }
     }, [tvlData, timeRange, startIndex, endIndex]);
 
@@ -93,10 +98,12 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             setRangedTvlData(tvlData);
             setRangedVolumeData(volumeData);
             setRangedFeesData(feesData);
+            setRangedProtocolFeesData(protocolFeesData)
         } else if (tvlData.length >= Number(event.target.value)) {
             setRangedTvlData(tvlData.slice(tvlData.length - Number(event.target.value)))
             setRangedVolumeData(volumeData.slice(volumeData.length - Number(event.target.value)))
             setRangedFeesData(feesData.slice(feesData.length - Number(event.target.value)))
+            setRangedProtocolFeesData(protocolFeesData.slice(protocolFeesData.length - Number(event.target.value)))
         }
         if (event.target.value === '1000') {
             setShowDate(true);
@@ -159,18 +166,19 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
     return (
 
         <Box >
-            <Box 
-                m={1} 
+            <Box
+                m={1}
                 display="flex"
                 alignItems={{ xs: 'center', sm: 'flex-start', md: "flex-start" }}
-                justifyContent="flex-start" 
+                justifyContent="flex-start"
                 sx={{ borderBottom: 1, borderColor: 'divider' }}
                 flexDirection={{ xs: 'column', sm: 'row' }}
                 >
                 <Tabs value={value} onChange={handleTabChange} aria-label="graph tab">
                     <Tab label="Volume" {...a11yProps(0)} />
                     <Tab label="TVL" {...a11yProps(1)} />
-                    <Tab label="Fees" {...a11yProps(2)} />
+                    <Tab label="Trading Fees" {...a11yProps(2)} />
+                    <Tab label="Protocol Fees" {...a11yProps(2)} />
                 </Tabs>
                 <Box sx={{m:{xs: 1, mb: 0}}}>
                 <FormControl size="small">
@@ -238,6 +246,9 @@ export default function PoolChart({ tvlData, volumeData, feesData }: PoolChartPr
             </TabPanel>
             <TabPanel value={value} index={2}>
                 <   GenericBarChart data={rangedFeesData} />
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+                <   GenericBarChart data={rangedProtocolFeesData} />
             </TabPanel>
         </Box>
 

@@ -8,6 +8,8 @@ import { HashRouter } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client/react';
 import { client } from './apollo/client';
 import store from './state';
+import { initializeApp } from "firebase/app";
+import {FIREBASE_API_KEY} from "./data/balancer/constants";
 
 function Updaters() {
   return (
@@ -16,6 +18,19 @@ function Updaters() {
     </>
   );
 }
+
+const firebaseConfig = {
+    apiKey: FIREBASE_API_KEY,
+    authDomain: "aura-analytics-backend.firebaseapp.com",
+    databaseURL: "https://aura-analytics-backend-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "aura-analytics-backend",
+    storageBucket: "aura-analytics-backend.appspot.com",
+    messagingSenderId: "331682703662",
+    appId: "1:331682703662:web:059e942c66d50c07af72bf",
+    measurementId: "G-CP46H3FVPR"
+};
+
+initializeApp(firebaseConfig);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

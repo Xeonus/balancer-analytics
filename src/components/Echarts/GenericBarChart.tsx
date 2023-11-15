@@ -4,6 +4,7 @@ import { CircularProgress } from '@mui/material';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
 import { pink } from '@mui/material/colors';
+import {smoothData} from "../../utils/data";
 
 export interface GenericBarChartProps {
     data: BalancerChartDataItem[],
@@ -12,8 +13,9 @@ export interface GenericBarChartProps {
 export default function GenericBarChart({ data }: GenericBarChartProps) {
 
     const theme = useTheme();
-    let xData = data.map(el => el.time);
-    let yData = data.map(el => el.value);
+    const smoothedData = smoothData(data, 10000000)
+    let xData = smoothedData.map(el => el.time);
+    let yData = smoothedData.map(el => el.value);
 
     const option = {
         tooltip: {

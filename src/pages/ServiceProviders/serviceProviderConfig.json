@@ -57,6 +57,17 @@
             "ETH": 20,
             "BAL_VESTED": 0
           }
+        },
+        {
+          "year": 2023,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xbdd578a51415c10d7d9f0fd3c80758edfa4a56b6720247bc9f1d33ec2b8bc0c3",
+          "budget_requested": {
+            "USDC": 168770,
+            "BAL": 21130,
+            "ETH": 20,
+            "BAL_VESTED": 10564
+          }
         }
       ]
     },
@@ -82,6 +93,34 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x686cfe15ffd35178814276eaff348b791bfd8fd1684e2731f222e9881df61279",
           "budget_requested": {
             "USDC": 50000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2023,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x686cfe15ffd35178814276eaff348b791bfd8fd1684e2731f222e9881df61279",
+          "budget_requested": {
+            "USDC": 55000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hypernative",
+      "site_url": "https://www.hypernative.io/",
+      "short_description": "Hypernative stops zero day Web3 cyber attacks, economic risks and protects digital assets, protocols and Web3 applications from significant losses.",
+      "img_ref": "hypernative_small.png",
+      "budgets": [
+        {
+          "year": 2023,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xd28b9b597ee87c9842153d9dc0961325798f48369f3d6029f7ae588f45a06d95",
+          "budget_requested": {
+            "USDC": 15000,
             "BAL": 0,
             "BAL_VESTED": 0
           }
@@ -245,6 +284,16 @@
           "budget_requested": {
             "USDC": 25263.39,
             "BAL": 25262,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2023,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x8eb143cdf1608513078270f6c0302e30faa2155cce748e74678bde2ef4091f46",
+          "budget_requested": {
+            "USDC": 21000,
+            "BAL": 11570,
             "BAL_VESTED": 0
           }
         }

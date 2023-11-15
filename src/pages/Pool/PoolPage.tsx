@@ -24,6 +24,7 @@ import JoinExitsTable from '../../components/Tables/JoinExitsTable';
 import { STABLE_POOLS } from '../../constants';
 import useGetPoolUserBalances from "../../data/balancer/useGetPoolUserBalances";
 import PoolShareLeaderboard from "../../components/Tables/PoolShareLeaderboard";
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 
 
 
@@ -32,7 +33,7 @@ export default function PoolPage() {
     const [activeNetwork] = useActiveNetworkVersion();
     const poolId = params.poolId ? params.poolId : '';
     const poolData = useBalancerPoolSingleData(poolId);
-    const { tvlData, volumeData, feesData, tokenDatas } = useBalancerPoolPageData(poolId);
+    const { tvlData, volumeData, feesData, tokenDatas, protocolFeesData} = useBalancerPoolPageData(poolId);
     const { swaps, joinExits, swapPairVolumes } = useBalancerTransactionData(
         (poolData?.tokens || []).map((token) => token.address),
         poolData ? [poolData.id] : [],
@@ -73,6 +74,15 @@ export default function PoolPage() {
         if (feesData[feesData.length - 2]) {
             feesUSDChange = 100 / feesData[feesData.length - 2].value * feesData[feesData.length - 1].value - 100
             //feesUSDChange = (feesUSD - feesData[feesData.length - 2].value) / feesData[feesData.length - 2].value
+        }
+    }
+
+    let protocolFeesUSD = 0;
+    let protocolFeesUSDChange = 0;
+    if (protocolFeesData.length >= 3) {
+        protocolFeesUSD = protocolFeesData[feesData.length - 1].value;
+        if (protocolFeesData[feesData.length - 2]) {
+            protocolFeesUSDChange = 100 / protocolFeesData[protocolFeesData.length - 2].value * protocolFeesData[protocolFeesData.length - 1].value - 100
         }
     }
 
@@ -155,7 +165,7 @@ export default function PoolPage() {
                         <Grid
                             container
                             columns={{ xs: 4, sm: 8, md: 12 }}
-                            sx={{ justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center' }}
+                            sx={{ justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center' }}
                         >
                             <Box
                             m={1}
@@ -163,7 +173,7 @@ export default function PoolPage() {
                             <MetricsCard
                                 mainMetric={volumeUSD ? volumeUSD : poolData.volumeUSD}
                                 mainMetricInUSD={true}
-                                metricName='Pool Volume'
+                                metricName='Volume'
                                 mainMetricChange={volumeUSDChange ? volumeUSDChange : poolData.volumeUSDChange}
                                 MetricIcon={EqualizerIcon}
                             />
@@ -174,7 +184,7 @@ export default function PoolPage() {
                             <MetricsCard
                                 mainMetric={tvlUSD ? tvlUSD : poolData.tvlUSD}
                                 mainMetricInUSD={true}
-                                metricName='Pool TVL'
+                                metricName='TVL'
                                 mainMetricChange={tvlUSDChange ? tvlUSDChange : poolData.tvlUSDChange * 100}
                                 MetricIcon={MonetizationOnIcon}
                             />
@@ -185,7 +195,7 @@ export default function PoolPage() {
                             <MetricsCard
                                 mainMetric={swaps24h}
                                 mainMetricInUSD={false}
-                                metricName='Pool Swaps'
+                                metricName='Swaps'
                                 mainMetricChange={swaps24hChange}
                                 MetricIcon={SwapHorizontalCircleIcon}
 
@@ -197,11 +207,23 @@ export default function PoolPage() {
                             <MetricsCard
                                 mainMetric={feesUSD}
                                 mainMetricInUSD={true}
-                                metricName='Pool Fees'
+                                metricName='Trading Fees'
                                 mainMetricChange={feesUSDChange}
                                 MetricIcon={CurrencyExchangeIcon}
 
                             />
+                            </Box>
+                            <Box
+                                m={1}
+                            >
+                                <MetricsCard
+                                    mainMetric={protocolFeesUSD}
+                                    mainMetricInUSD={true}
+                                    metricName='Protocol Fees'
+                                    mainMetricChange={protocolFeesUSDChange}
+                                    MetricIcon={RequestQuoteIcon}
+
+                                />
                             </Box>
                         </Grid>
                     </Grid>
@@ -210,7 +232,7 @@ export default function PoolPage() {
                     </Grid>
                     <Grid item xs={11}>
                         <Card>
-                            <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} />
+                            <PoolChart tvlData={tvlData} volumeData={volumeData} feesData={feesData} protocolFeesData={protocolFeesData} />
                         </Card>
                     </Grid>
 

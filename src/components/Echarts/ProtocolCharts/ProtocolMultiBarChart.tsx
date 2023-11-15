@@ -51,7 +51,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
 
     const mainnetData = mainnetProtocolData.map(el => Number(el.value.toFixed(2)));
     let arbitrumData = arbitrumProtocolData.map(el => Number(el.value.toFixed(2)));
-    
+
 
     //add preceeding zero values based on mainnet size to later deployed chains
     if (mainnetData && arbitrumData) {
@@ -135,7 +135,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setRangedBasenData(baseData.slice(baseData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
-    }, [timeRange]);
+    }, [timeRange, rangedxAxis.length]);
 
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
@@ -191,9 +191,9 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
                     </Select>
                 </FormControl>
                 </Box>
-            <ProtocolMultiBarCharts  
-                mainnetData={rangedMainnetData} 
-                arbitrumData={rangedArbitrumData} 
+            <ProtocolMultiBarCharts
+                mainnetData={rangedMainnetData}
+                arbitrumData={rangedArbitrumData}
                 polygonData={rangedPolygonData}
                 polygonZkEVMData={rangedPolygonZkEVMData}
                 gnosisData={rangedGnosisData}

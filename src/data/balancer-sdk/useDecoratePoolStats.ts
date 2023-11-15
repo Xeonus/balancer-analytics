@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BalancerSDK } from '@balancer-labs/sdk';
-import { ALCHEMY_URL } from "../balancer/constants";
-import { PoolData, AprSet } from '../balancer/balancerTypes';
+import { PoolData } from '../balancer/balancerTypes';
 import { YIELD_BEARING_TOKENS } from '../../constants';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 

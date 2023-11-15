@@ -3,10 +3,17 @@ import { KARPATKEY_SAFE, SERVICE_PROVIDER_WALLETS } from '../../constants/wallet
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { TransactionHistory } from '../../data/debank/debankTypes';
 
+export function extractTransactionsByTokenAndType(
+    txnHistory: TransactionHistory | null,
+    tokenAddress: string,
+    type: string,
+    sender?: string
+): BalancerChartDataItem[] {
+    if (txnHistory === null) {
+        return []; // Return an empty array if txnHistory is null
+    }
 
-export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory, tokenAddress: string, type: string, sender?: string) {
-
-    const tnxChartData: BalancerChartDataItem[] = []
+    const tnxChartData: BalancerChartDataItem[] = [];
     txnHistory.history_list.forEach((el) => {
         let date = dayjs.unix(el.time_at);
         if (el.cate_id === type && type === 'receive') {
@@ -19,43 +26,44 @@ export function extractTransactionsByTokenAndType(txnHistory: TransactionHistory
                                     value: receive.amount,
                                     time: date.format("YYYY-MM-DD"),
                                 }
-                            )
+                            );
                         }
                     }
 
                 }
-            )
+            );
 
         }
         if (type === 'send') {
             el.sends.forEach(
                 send => {
-                    
-                    //Only list taxations that happened between the DAO and SP wallets
-                    const wallet = SERVICE_PROVIDER_WALLETS.find( el => el.walletId.toLowerCase() === send.to_addr)
+                    // Only list taxations that happened between the DAO and SP wallets
+                    const wallet = SERVICE_PROVIDER_WALLETS.find(el => el.walletId.toLowerCase() === send.to_addr);
                     if (tokenAddress === send.token_id && wallet) {
                         tnxChartData.push(
                             {
-                                value: send.amount < 0 ? send.amount : - send.amount,
+                                value: send.amount < 0 ? send.amount : -send.amount,
                                 time: date.format("YYYY-MM-DD"),
                             }
-                        )
+                        );
                     }
 
                 }
-            )
+            );
 
         }
-    })
+    });
 
-    //sort by time
+    // Sort by time
     tnxChartData.sort(function (a, b) {
-        const date1 = new Date(a.time)
-        const date2 = new Date(b.time)
+        const date1 = new Date(a.time);
+        const date2 = new Date(b.time);
         return date1.getTime() - date2.getTime();
-    })
+    });
+
     return tnxChartData;
 }
+
 
 export function getChartDataByQuarter(chartData: BalancerChartDataItem[]) {
     const quarterData: BalancerChartDataItem[] = [];
@@ -158,7 +166,7 @@ export function getDailyChartDataByDateRange(chartData: BalancerChartDataItem[],
         //Create new object to remove pointer reference!
         let startDate = new Date(start.getTime());
         let endDate = new Date(end.getTime());
-  
+
     while (startDate <= endDate) {
       let day = startDate.toISOString().slice(0, 10);
       let obj = chartData.find(o => o.time === day);

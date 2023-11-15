@@ -4,6 +4,7 @@ import MetricsCard from '../../components/Cards/MetricsCard';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import PoolChart from '../../components/PoolChart';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
@@ -87,9 +88,16 @@ export default function Chain() {
                         <MetricsCard
                             mainMetric={protocolData.fees24 ? protocolData.fees24 : 0}
                             mainMetricInUSD={true}
-                            metricName='Fees'
+                            metricName='Trading Fees'
                             mainMetricChange={protocolData.feesChange ? protocolData.feesChange * 100 : 0}
                             MetricIcon={CurrencyExchangeIcon}
+                        />
+                        <MetricsCard
+                            mainMetric={protocolData.protocolFees24 ? protocolData.protocolFees24 : 0}
+                            mainMetricInUSD={true}
+                            metricName='Protocol Fees'
+                            mainMetricChange={protocolData.protocolFeesChange ? protocolData.protocolFeesChange * 100 : 0}
+                            MetricIcon={RequestQuoteIcon}
                         />
                     </Stack>
                 </Grid>
@@ -116,7 +124,7 @@ export default function Chain() {
                     </Box>
                     <Box>
                         <Card>
-                            <PoolChart tvlData={protocolData.tvlData} volumeData={protocolData.volumeData} feesData={protocolData.feeData} />
+                            <PoolChart tvlData={protocolData.tvlData} volumeData={protocolData.volumeData} feesData={protocolData.feeData} protocolFeesData={protocolData.protocolFeeData} />
                         </Card>
                     </Box>
                 </Grid>

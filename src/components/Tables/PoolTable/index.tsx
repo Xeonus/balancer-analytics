@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Grid } from '@mui/material';
+import { Grid, IconButton, InputBase } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
@@ -28,6 +28,8 @@ import { networkPrefix } from '../../../utils/networkPrefix';
 import { useActiveNetworkVersion } from '../../../state/application/hooks';
 import { NetworkInfo } from '../../../constants/networks';
 import SwapFee from '../../SwapFee'
+import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 interface Data {
@@ -200,34 +202,34 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 export default function PoolTable({
   poolDatas
 }: {
-  poolDatas?: PoolData[]
+  poolDatas: PoolData[]
 }) {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('tvl');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const [searched, setSearched] = React.useState<string>("");
   const [activeNetwork] = useActiveNetworkVersion();
   let navigate = useNavigate();
-
-  if (!poolDatas) {
-    return <CircularProgress />;
-  }
-
-  if (poolDatas.length === 0) {
-    return (
-      <Grid>
-        <CircularProgress />
-      </Grid>
-    );
-  }
+  const [rows, setRows] = React.useState<Data[]>([]);
 
   const filteredPoolDatas = poolDatas.filter((x) => !!x && !POOL_HIDE.includes(x.id) && x.tvlUSD > 1);
 
-  const rows = filteredPoolDatas.map(el =>
+  const originalRows = filteredPoolDatas.map(el =>
     createData(getShortPoolName(el), el.tokens, el, el.swapFee, el.volumeUSD, el.feesUSD, el.tvlUSD)
 
   )
+
+  React.useEffect(() => {
+    if (originalRows.length > 1) {
+      setRows(originalRows)
+    }
+
+  },[originalRows.length])
+
+
+
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -260,11 +262,51 @@ export default function PoolTable({
     return networkPrefix(activeNetwork) + 'pools/' + id;
   }
 
+  const requestSearch = (searchedVal: string) => {
+    const filteredRows = originalRows.filter((row) => {
+      const lowerCaseSearchedVal = searchedVal.toLowerCase();
+      const hasPartialMatchInAddress = row.poolData.address.toLowerCase().includes(lowerCaseSearchedVal);
+      const hasPartialMatchInSymbol = row.poolData.symbol.toLowerCase().includes(lowerCaseSearchedVal);
+      const hasPartialMatchInTokens = row.poolData.tokens.some((token) => token.symbol.toLowerCase().includes(lowerCaseSearchedVal));
+      return hasPartialMatchInAddress || hasPartialMatchInSymbol || hasPartialMatchInTokens;
+    });
+    setRows(filteredRows);
+    setSearched(searchedVal)
+  };
+  const clearSearch = (): void => {
+    setSearched("");
+    setRows(originalRows)
+  };
+
 
   //Table generation
 
   return (
     <Box sx={{ width: '100%' }}>
+      <Grid
+          container
+          columns={{xs: 4, sm: 8, md: 12}}
+          sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
+      >
+        <Box>
+          <Paper
+              component="form"
+              sx={{mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500, minWidth: 400}}
+          >
+            <InputBase
+                sx={{ml: 1, flex: 1}}
+                placeholder="Search Balancer Pools"
+                inputProps={{'aria-label': 'Search Balancer pools'}}
+                value={searched}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value)}
+            />
+            <IconButton onClick={clearSearch} type="button" sx={{p: '10px'}} aria-label="search">
+              {searched !== "" ? <ClearIcon/> : <SearchIcon/>}
+            </IconButton>
+
+          </Paper>
+        </Box>
+      </Grid>
       <Paper sx={{ mb: 2, boxShadow: 3 }}>
         <TableContainer>
           <Table

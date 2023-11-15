@@ -5,3 +5,4 @@ node_modules
 firebase.json
 build
 .idea
+.DS_Store

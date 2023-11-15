@@ -147,7 +147,7 @@ const headCells: readonly HeadCell[] = [
         id: 'votingIncentives',
         numeric: true,
         disablePadding: false,
-        label: '$/vlAura',
+        label: '$/veBAL',
         isMobileVisible: true,
     },
 ];

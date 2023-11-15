@@ -941,6 +941,8 @@ interface GqlPoolBase {
   owner: Bytes
   staking: GqlPoolStaking
   symbol: String!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1032,7 +1034,9 @@ type GqlPoolElement implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
   unitSeconds: BigInt!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1052,6 +1056,7 @@ input GqlPoolFilter {
   categoryNotIn: [GqlPoolFilterCategory!]
   chainIn: [GqlChain!]
   chainNotIn: [GqlChain!]
+  createTime: GqlPoolTimePeriod
   filterIn: [String!]
   filterNotIn: [String!]
   idIn: [String!]
@@ -1107,6 +1112,7 @@ type GqlPoolGyro implements GqlPoolBase {
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
   type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1166,7 +1172,9 @@ type GqlPoolLinear implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
   upperTarget: BigInt!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
   wrappedIndex: Int!
 }
@@ -1241,6 +1249,8 @@ type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1261,6 +1271,8 @@ type GqlPoolMetaStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1284,6 +1296,7 @@ type GqlPoolMinimal {
 
 enum GqlPoolMinimalType {
   ELEMENT
+  FX
   GYRO
   GYRO3
   GYROE
@@ -1337,6 +1350,8 @@ type GqlPoolPhantomStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1398,6 +1413,8 @@ type GqlPoolStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1424,6 +1441,7 @@ type GqlPoolStakingGauge {
   rewards: [GqlPoolStakingGaugeReward!]!
   status: GqlPoolStakingGaugeStatus!
   version: Int!
+  workingSupply: String!
 }
 
 type GqlPoolStakingGaugeReward {
@@ -1467,6 +1485,11 @@ input GqlPoolSwapFilter {
   poolIdIn: [String!]
   tokenInIn: [String!]
   tokenOutIn: [String!]
+}
+
+input GqlPoolTimePeriod {
+  gt: Int
+  lt: Int
 }
 
 type GqlPoolToken implements GqlPoolTokenBase {
@@ -1586,6 +1609,8 @@ type GqlPoolWeighted implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 

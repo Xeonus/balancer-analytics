@@ -28,6 +28,7 @@ export enum SupportedNetwork {
 export type NetworkInfo = {
   id: SupportedNetwork
   chainId: string
+  v3NetworkID: string
   coingeckoId: string
   debankId: string
   balAddress: string,
@@ -50,6 +51,7 @@ export type NetworkInfo = {
 export const EthereumNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ETHEREUM,
   chainId: '1',
+  v3NetworkID: 'MAINNET',
   coingeckoId: 'ethereum',
   debankId: 'eth',
   balAddress: '0xba100000625a3754423978a60c9317c58a424e3d',
@@ -72,6 +74,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
 export const ArbitrumNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ARBITRUM,
   chainId: '42161',
+  v3NetworkID: 'ARBITRUM',
   coingeckoId: 'arbitrum-one',
   debankId: 'arb',
   balAddress: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',
@@ -95,6 +98,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
 export const PolygonNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.POLYGON,
   chainId: '137',
+  v3NetworkID: 'POLYGON',
   coingeckoId: 'polygon-pos',
   debankId: 'matic',
   balAddress: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
@@ -118,6 +122,7 @@ export const PolygonNetworkInfo: NetworkInfo = {
 export const PolygonZkEVMNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ZKEVM,
   chainId: '1101',
+  v3NetworkID: 'ZKEVM',
   coingeckoId: 'polygon-zkevm',
   debankId: 'pze',
   balAddress: '0x120eF59b80774F02211563834d8E3b72cb1649d6',
@@ -141,6 +146,7 @@ export const PolygonZkEVMNetworkInfo: NetworkInfo = {
 export const GnosisNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.GNOSIS,
   chainId: '100',
+  v3NetworkID: 'GNOSIS',
   coingeckoId: 'xdai-ecosystem',
   debankId: 'xdai',
   balAddress: '0x7eF541E2a22058048904fE5744f9c7E4C57AF717',
@@ -164,6 +170,7 @@ export const GnosisNetworkInfo: NetworkInfo = {
 export const AvalancheNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.AVALANCHE,
   chainId: '43114',
+  v3NetworkID: 'AVALANCHE',
   coingeckoId: 'avalanche',
   debankId: 'avax',
   balAddress: '',
@@ -187,9 +194,10 @@ export const AvalancheNetworkInfo: NetworkInfo = {
 export const BaseNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.BASE,
   chainId: '8453',
+  v3NetworkID: 'BASE',
   coingeckoId: 'base',
   debankId: 'base',
-  balAddress: '',
+  balAddress: '0x4158734d47fc9692176b5085e0f52ee0da5d47f1',
   feeCollectorThreshold: 5000,
   route: 'base',
   name: 'Base',
@@ -198,7 +206,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
   decentralicedClientUri: '',
-  alchemyRPCUrl: ' https://mainnet.base.org ',
+  alchemyRPCUrl: 'https://base.publicnode.com',
   alchemyKey: '',
   bgColor: '#0030a6',
   primaryColor: '#0027a2',

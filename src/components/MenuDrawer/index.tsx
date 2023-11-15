@@ -2,7 +2,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import {keyframes, useTheme} from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button, Badge} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -14,17 +14,20 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import ListItemButton from '@mui/material/ListItemButton';
+import HubIcon from '@mui/icons-material/Hub';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
+import DefilyticaIcon from '../../assets/png/defilytica.png'
 import {Handshake} from "@mui/icons-material";
 //import Stellate from '../../assets/svg/stellate.svg'
 import BeetsIcon from '../../assets/png/beets-icon-large.png';
@@ -33,6 +36,7 @@ import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
 import { networkPrefix } from '../../utils/networkPrefix';
+import AvatarNew from "../AvatarNew";
 
 export type MenuDrawerProps = {
     drawerWidth: number,
@@ -68,6 +72,21 @@ const glowingAura = keyframes`
   100% {
     background-color: #8a2be2;
     box-shadow: 0 0 5px #8a2be2;
+  }
+`;
+
+const glowingTools = keyframes`
+  0% {
+    background-color: #0f42ea;
+    box-shadow: 0 0 5px #2154c5;
+  }
+  50% {
+    background-color: #1e3bc7;
+    box-shadow: 0 0 20px #2b49a9;
+  }
+  100% {
+    background-color: #445dab;
+    box-shadow: 0 0 5px #4a5994;
   }
 `;
 
@@ -145,11 +164,18 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Tokens'} />
                 </ListItemButton>
-                <ListItemButton key={'BAL Emissions'} component={NavLink} to={'/' + route + 'emissions'}>
+                 <ListItemButton key={'BAL Emissions'} component={NavLink} to={'/' + route + 'emissions'}>
                     <ListItemIcon>
                         <AutoAwesomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={'BAL Emissions'} />
+                </ListItemButton>
+                <ListItemButton key={'Core Pools'} component={NavLink} to={'/' + route + 'corePools'}>
+                    <ListItemIcon>
+                        <HubIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Core Pools'} />
+                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
                     <ListItemIcon>
@@ -183,6 +209,13 @@ const MenuDrawer = ({
                         <RequestQuoteIcon />
                     </ListItemIcon>
                     <ListItemText primary={'DAO Financials'} />
+                </ListItemButton>
+                <ListItemButton key={'Reports'} component={NavLink} to={'reports'}>
+                    <ListItemIcon>
+                        <AssessmentIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Reports'} />
+                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <Divider />
                 <ListItem>
@@ -239,6 +272,35 @@ const MenuDrawer = ({
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <img src={AuraIcon} alt="Aura Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
                                 <Typography variant="caption" sx={{ color: '#eeeeee' }}>Aura Analytics</Typography>
+                            </Box>
+                        </Button>
+                    </Box>
+                </ListItem>
+                <ListItem>
+                    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                            onClick={() => {window.open('https://defilytica.tools', '_blank')}}
+                            sx={{
+                                backgroundColor: '#2a46ef',
+                                minWidth: '180px',
+                                borderRadius: '30px',
+                                border: 'none',
+                                color: '#eeeeee',
+                                cursor: 'pointer',
+                                display: 'inline-block',
+                                fontFamily: 'sans-serif',
+                                padding: '5px 15px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                    animation: `${glowingTools} 1300ms infinite`,
+                                },
+                            }}
+
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <img src={DefilyticaIcon} alt="Tools Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>DeFilytica Tools</Typography>
                             </Box>
                         </Button>
                     </Box>

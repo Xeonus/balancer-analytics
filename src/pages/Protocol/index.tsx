@@ -9,6 +9,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
@@ -37,6 +38,7 @@ import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
+import {smoothData} from "../../utils/data";
 
 
 
@@ -186,37 +188,61 @@ export default function Protocol() {
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
-                            mainnetProtocolData={protocolData.volumeData}
-                            arbitrumProtocolData={arbitrumProtocolData.volumeData}
-                            polygonProtocolData={polygonProtocolData.volumeData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.volumeData}
-                            gnosisProtocolData={gnosisProtocolData.volumeData}
-                            avalancheProtocolData={avalancheProtocolData.volumeData}
-                            baseProtocolData={baseProtocolData.volumeData}
+                            mainnetProtocolData={smoothData(protocolData.volumeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.volumeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.volumeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.volumeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.volumeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.volumeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.volumeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Fees</Typography>
+                        <Typography variant='h5'>Historical Collected Protocol Fees</Typography>
+                    </Grid>
+                    <Grid item xs={11}>
+                        <MetricsCard
+                            mainMetric={aggregatedProtocolData.protocolFees24 ? aggregatedProtocolData.protocolFees24 : 0}
+                            mainMetricInUSD={true}
+                            metricName='Protocol Fees'
+                            mainMetricChange={aggregatedProtocolData.protocolFeesChange}
+                            MetricIcon={RequestQuoteIcon}
+                        />
+                    </Grid>
+                    <Grid item mt={1} xs={11} >
+                        <ProtocolMultipleBarChart
+                            mainnetProtocolData={smoothData(protocolData.protocolFeeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.protocolFeeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.protocolFeeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.protocolFeeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.protocolFeeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.protocolFeeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.protocolFeeData, 100000000)}
+                            isUSD={true}
+                        />
+                    </Grid>
+                    <Grid item mt={1} xs={11} >
+                        <Typography variant='h5'>Historical Trading Fees</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <MetricsCard
                             mainMetric={aggregatedProtocolData.fees24}
                             mainMetricInUSD={true}
-                            metricName='Protocol Fees'
+                            metricName='Trading Fees'
                             mainMetricChange={aggregatedProtocolData.feesChange}
                             MetricIcon={CurrencyExchangeIcon}
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
-                            mainnetProtocolData={protocolData.feeData}
-                            arbitrumProtocolData={arbitrumProtocolData.feeData}
-                            polygonProtocolData={polygonProtocolData.feeData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.feeData}
-                            gnosisProtocolData={gnosisProtocolData.feeData}
-                            avalancheProtocolData={avalancheProtocolData.feeData}
-                            baseProtocolData={baseProtocolData.feeData}
+                            mainnetProtocolData={smoothData(protocolData.feeData, 100000000)}
+                            arbitrumProtocolData={smoothData(arbitrumProtocolData.feeData, 100000000)}
+                            polygonProtocolData={smoothData(polygonProtocolData.feeData, 100000000)}
+                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.feeData, 100000000)}
+                            gnosisProtocolData={smoothData(gnosisProtocolData.feeData, 100000000)}
+                            avalancheProtocolData={smoothData(avalancheProtocolData.feeData, 100000000)}
+                            baseProtocolData={smoothData(baseProtocolData.feeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>
