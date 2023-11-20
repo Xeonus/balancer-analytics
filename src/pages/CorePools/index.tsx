@@ -123,7 +123,7 @@ export default function CorePools() {
                     <MetricsCard
                         mainMetric={totalFees}
                         mainMetricInUSD={true}
-                        metricName={'Total Fees'}
+                        metricName={'Total Core Fees'}
                         MetricIcon={MonetizationOnIcon}
                     />
                 </Grid>
@@ -224,7 +224,7 @@ export default function CorePools() {
                 </Grid>
                 <Grid item xs={11}>
                     <Typography variant={'body1'}>
-                        {'This table provides an overview of currently collected fees that are distributed according to the '}
+                        {'This table provides an overview of currently collected fees from core pools as per the core pool framework '}
                         <a
                             href="https://forum.balancer.fi/t/bip-457-core-pool-incentive-program-automation/5254"
                             target="_blank"
