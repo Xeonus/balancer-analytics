@@ -89,15 +89,15 @@ export default function CorePools() {
     //Fee distribution
     const feeDistroPieChartData: BalancerPieChartDataItem[] = [
         {
-            name: 'Revenue to DAO',
+            name: 'Core Pool Revenue to DAO',
             value: totalFees * 0.175
         },
         {
-            name: 'Revenue to veBAL',
+            name: 'Core Pool Revenue to veBAL',
             value: totalFees * 0.325
         },
         {
-            name: 'Voting incentives',
+            name: 'Core Pool Voting incentives',
             value: totalFees * 0.5
         },
     ]
@@ -144,7 +144,7 @@ export default function CorePools() {
                     >
                         <Card >
                             <Box m={1}>
-                                <Typography variant={'h6'}>Revenue distribution</Typography>
+                                <Typography variant={'h6'}>Core Pool Revenue distribution</Typography>
                             </Box>
                             <GenericPieChart data={feeDistroPieChartData} height='250px'/>
                         </Card>
@@ -156,7 +156,7 @@ export default function CorePools() {
                     >
                         <Card >
                             <Box m={1}>
-                                <Typography variant={'h6'}>Revenue per Chain</Typography>
+                                <Typography variant={'h6'}>Core Pool Revenue per Chain</Typography>
                             </Box>
                             <GenericPieChart data={chainPieChartData} height='250px'/>
                         </Card>
@@ -170,7 +170,7 @@ export default function CorePools() {
                     >
                         <Box mb={1}>
                         <Typography variant='h5'>
-                            Top 20 Core Pools by Fees Earned on all Deployments
+                            Top 20 Core Pools by Core Pool Fees Earned on all Deployments
                         </Typography>
                         </Box>
                     </Grid> : null}
@@ -224,7 +224,7 @@ export default function CorePools() {
                 </Grid>
                 <Grid item xs={11}>
                     <Typography variant={'body1'}>
-                        {'This table provides an overview of currently collected fees from core pools as per the core pool framework '}
+                        {'This table provides an overview of currently collected fees by core pools as per '}
                         <a
                             href="https://forum.balancer.fi/t/bip-457-core-pool-incentive-program-automation/5254"
                             target="_blank"
