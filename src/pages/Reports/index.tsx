@@ -1,6 +1,5 @@
 import {Box, Card, CircularProgress, Divider, Grid, Typography} from "@mui/material";
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
-import {useCoinGeckoSimpleTokenPrices} from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import {useActiveNetworkVersion} from "../../state/application/hooks";
@@ -23,12 +22,12 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
 import {EthereumNetworkInfo} from "../../constants/networks";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
-import PoolTable from "../../components/Tables/PoolTable";
 import {useBalancerPools} from "../../data/balancer/usePools";
 import PoolReportsTable from "../../components/Tables/PoolReportsTable";
 import useGetCollectedFees from "../../data/maxis/useGetCollectedFees";
 import GenericPieChart from "../../components/Echarts/GenericPieChart";
 import NetworkSelector from "../../components/NetworkSelector";
+import { DateTime } from 'luxon';
 
 
 interface PoolsMapping {
@@ -52,19 +51,21 @@ export default function Reports() {
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
     const [timeRange, setTimeRange] = React.useState('30');
     const [showDate, setShowDate] = React.useState(false);
-    const today = new Date();
-    //Set timestamps if none is given:
-    today.setUTCHours(0, 0, 0, 0);
-    const startTimestamp = Math.floor(today.getTime() / 1000)
-    const weekAgo = new Date();
-    weekAgo.setDate(today.getDate() - 7);
-    weekAgo.setUTCHours(0, 0, 0, 0);
-    const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
+    //Poolsnapshots are taken OO:OO UTC.
+// Get the current UTC time
+    const currentUTCTime = DateTime.utc();
+    const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
+
+// Get the UTC time for a week ago
+    const weekAgoUTCTime = currentUTCTime.minus({ days: 7 });
+    const endTimeStamp = Math.floor(weekAgoUTCTime.startOf('day').toMillis() / 1000);
+
     //Date States
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
     const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const aggregatedProtocolData = useAggregatedProtocolData();
+    console.log("aggregatedProtocolData", aggregatedProtocolData)
     const collectedFees = useGetCollectedFees()
 
     //---Data preparation---
@@ -78,6 +79,8 @@ export default function Reports() {
             return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
         });
     }, [aggregatedProtocolData.overallTvlData, startDate, endDate]);
+
+    console.log("filteredTvlData", filteredTvlData)
 
     // Prepare volume data
     const filteredVolumeMetrics = React.useMemo(() => {
@@ -202,28 +205,26 @@ export default function Reports() {
     //Change management
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
+
         if (event.target.value === '1000') {
             setShowDate(true);
         } else if (event.target.value === '0') {
             setEndDate(EthereumNetworkInfo.startTimeStamp);
-            const newEndDate = new Date()
-            newEndDate.setDate(today.getDate());
-            newEndDate.setUTCHours(0, 0, 0, 0);
-            setStartDate(Math.floor(newEndDate.getTime() / 1000));
+
+            const newEndDate = DateTime.utc().startOf('day');
+            setStartDate(newEndDate.toSeconds());
             setShowDate(false);
         } else {
-            const today = new Date();
-            //Set timestamps if none is given:
-            today.setUTCHours(0, 0, 0, 0);
-            const startTimestamp = Math.floor(today.getTime() / 1000)
-            setStartDate(startTimestamp)
+            const startTimestamp = DateTime.utc().startOf('day').toSeconds();
+            setStartDate(startTimestamp);
             setShowDate(false);
-            const newEndDate = new Date()
-            newEndDate.setDate(today.getDate() - Number(event.target.value));
-            newEndDate.setUTCHours(0, 0, 0, 0);
-            setEndDate(Math.floor(newEndDate.getTime() / 1000));
+
+            const daysToSubtract = Number(event.target.value);
+            const newEndDate = DateTime.utc().minus({ days: daysToSubtract }).startOf('day');
+            setEndDate(newEndDate.toSeconds());
         }
     };
+
 
     const parseDateString = (dateString: string): number | null => {
         // Expected format "DD.MM.YYYY"
@@ -391,7 +392,7 @@ export default function Reports() {
                     >
                         <Box m={1}>
                             <MetricsCard
-                                mainMetric={filteredTvlData[filteredTvlData.length-1].value}
+                                mainMetric={filteredTvlData[filteredTvlData.length-1] ? filteredTvlData[filteredTvlData.length-1].value : 0}
                                 mainMetricInUSD={true}
                                 metricName={'Current TVL'}
                                 MetricIcon={LandscapeIcon}/>
@@ -438,7 +439,7 @@ export default function Reports() {
                     >
                         <Box m={1}>
                             <MetricsCard
-                                mainMetric={cumulativeVolumeData[cumulativeVolumeData.length - 1].value}
+                                mainMetric={cumulativeVolumeData[cumulativeVolumeData.length - 1] ? cumulativeVolumeData[cumulativeVolumeData.length - 1].value : 0}
                                 mainMetricInUSD={true}
                                 metricName={'Cumulative Volume'}
                                 MetricIcon={EqualizerIcon}/>
@@ -488,7 +489,7 @@ export default function Reports() {
                     >
                         <Box m={1}>
                             <MetricsCard
-                                mainMetric={cumulativeProtocolFeeData[cumulativeProtocolFeeData.length - 1].value}
+                                mainMetric={cumulativeProtocolFeeData[cumulativeProtocolFeeData.length - 1] ? cumulativeProtocolFeeData[cumulativeProtocolFeeData.length - 1].value : 0}
                                 mainMetricInUSD={true}
                                 metricName={'Cumulative Fees'}
                                 MetricIcon={EqualizerIcon}/>
