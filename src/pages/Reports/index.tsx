@@ -57,7 +57,7 @@ export default function Reports() {
     const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
 
 // Get the UTC time for a week ago
-    const weekAgoUTCTime = currentUTCTime.minus({ days: 7 });
+    const weekAgoUTCTime = currentUTCTime.minus({ days: 30 });
     const endTimeStamp = Math.floor(weekAgoUTCTime.startOf('day').toMillis() / 1000);
 
     //Date States
@@ -79,8 +79,6 @@ export default function Reports() {
             return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
         });
     }, [aggregatedProtocolData.overallTvlData, startDate, endDate]);
-
-    console.log("filteredTvlData", filteredTvlData)
 
     // Prepare volume data
     const filteredVolumeMetrics = React.useMemo(() => {
@@ -243,7 +241,6 @@ export default function Reports() {
 
     const handleStartDateChange = (value: number | null, keyboardInputValue?: string) => {
         if (value) {
-            console.log("value startdatechange", value)
             setStartDate(Math.floor(new Date(value).getTime() / 1000));
         } else if (keyboardInputValue) {
             const timestamp = parseDateString(keyboardInputValue);
