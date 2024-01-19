@@ -68,6 +68,17 @@
             "ETH": 20,
             "BAL_VESTED": 10564
           }
+        },
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x71093cb5f1ed8359856757cc04c08f6905ea2b0bf7c7d78780745d27977a1102",
+          "budget_requested": {
+            "USDC": 108095,
+            "BAL": 0,
+            "ETH": 20,
+            "BAL_VESTED": 37518
+          }
         }
       ]
     },
@@ -103,6 +114,80 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x686cfe15ffd35178814276eaff348b791bfd8fd1684e2731f222e9881df61279",
           "budget_requested": {
             "USDC": 55000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Beethoven-X DAO: Technical",
+      "site_url": "https://beets.fi/",
+      "short_description": "The Beethoven-X Technical team comprises of experts providing technical SP services to further develop Balancer technology.",
+      "img_ref": "beethoven-x-dao_small.png",
+      "budgets": [
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe5d44fde813153791cc0f635326fe8dfb6db43ee966f1f3366762c2c1b03904f",
+          "budget_requested": {
+            "USDC": 87000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xe5d44fde813153791cc0f635326fe8dfb6db43ee966f1f3366762c2c1b03904f",
+          "budget_requested": {
+            "USDC": 87000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Beethoven-X DAO: Marketing",
+      "site_url": "https://beets.fi/",
+      "short_description": "The Beethoven-X marketing team comprises of experts providing marketing advisory services to the DAO further developing the Balancer brand.",
+      "img_ref": "beethoven-x-dao_small.png",
+      "budgets": [
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xeca45642f0e3310d29e4add137f89f2e38c234c0bb0ee7a54d10e8fa38a4b5ac",
+          "budget_requested": {
+            "USDC": 90000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xeca45642f0e3310d29e4add137f89f2e38c234c0bb0ee7a54d10e8fa38a4b5ac",
+          "budget_requested": {
+            "USDC": 90000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "BD Unit",
+      "site_url": "-",
+      "short_description": "The Business Development unit comprises of 2 core contributors advancing the DAOs efforts to secure strategic partnerships.",
+      "img_ref": "hypernative_small.png",
+      "budgets": [
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xd28b9b597ee87c9842153d9dc0961325798f48369f3d6029f7ae588f45a06d95",
+          "budget_requested": {
+            "USDC": 20000,
             "BAL": 0,
             "BAL_VESTED": 0
           }
@@ -294,6 +379,17 @@
           "budget_requested": {
             "USDC": 21000,
             "BAL": 11570,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x8eb143cdf1608513078270f6c0302e30faa2155cce748e74678bde2ef4091f46",
+          "budget_requested": {
+            "USDC": 35300,
+            "BAL": 0,
+            "WETH": 0.5,
             "BAL_VESTED": 0
           }
         }

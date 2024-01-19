@@ -101,7 +101,7 @@ const headCells: readonly HeadCell[] = [
         id: 'quarterlyUSDC',
         numeric: true,
         disablePadding: false,
-        label: 'USDC',
+        label: 'Liquid USDC',
         isMobileVisible: false,
     },
     {
