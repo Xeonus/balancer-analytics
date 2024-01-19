@@ -1,6 +1,6 @@
 import {Card, CardContent, CardMedia, Grid, Link, Typography} from '@mui/material';
 import { styled } from '@mui/system';
-import HHLogo from '../../../assets/png/hiddenHandLogo.png';
+import PaladinLogo from '../../../assets/svg/paladin.svg';
 import OrbBg from '../../../assets/png/orbz.png';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -16,7 +16,6 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
     alignItems: 'flex-start',
     justifyContent: 'space-between', // Add this line to distribute items evenly along the horizontal axis
     marginBottom: theme.spacing(2),
-
 }));
 
 const Title = styled(Typography)(({ theme }) => ({
@@ -37,35 +36,36 @@ const LogoImage = styled('img')({
     border: 'none',
 });
 
+
 const LogoContainer = styled(Grid)({
     display: 'flex',
     alignItems: 'flex-end',
 });
 
-const HiddenHandCard = () => {
+const PaladinQuestsCard = () => {
     return (
         <StyledCard>
             <ContentContainer container>
                 <Grid item xs={9}>
-                    <Title variant="h5">HiddenHand</Title>
+                    <Title variant="h5">Paladin Quests</Title>
                     <Description variant="body2">
-                        Explore a range of voting incentives available
+                        Explore a range of quests on Paladin for voting incentives
                     </Description>
                 </Grid>
 
                 <LogoContainer item xs={3}>
-                    <LogoImage src={HHLogo} alt="HiddenHand Logo" />
+                    <LogoImage src={PaladinLogo} alt="Paladin Logo" />
                 </LogoContainer>
 
             </ContentContainer>
             <Link
-                href="https://hiddenhand.finance/balancer"
+                href="https://quest.paladin.vote/#/bal"
                 underline="none"
                 target="_blank"
                 rel="noopener noreferrer"
-            >Go to HiddenHand to learn more</Link>
+            >Go to Paladin quests to learn more</Link>
         </StyledCard>
     );
 };
 
-export default HiddenHandCard;
+export default PaladinQuestsCard;

@@ -20,6 +20,7 @@ import HistoricalIncentivesTable from "../../components/Tables/HistoricalIncenti
 import HiddenHandCard from "../../components/Cards/HiddenHandCard";
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
+import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -189,7 +190,10 @@ export default function VotingIncentives() {
                                         : <CircularProgress/>}
                                 </Box>
                                     <Box sx={{ mt: { xs: 1 } }}>
-                                <HiddenHandCard />
+                                        <HiddenHandCard />
+                                    </Box>
+                                    <Box sx={{mt: {xs: 1}}}>
+                                        <PaladinQuestsCard/>
                                     </Box>
                             </Grid>
                         </Grid>
