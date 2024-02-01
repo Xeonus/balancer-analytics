@@ -45,3 +45,14 @@ export interface PoolTokenDataUnified {
     symbol: string;
     weight: number;
 }
+
+
+export interface TokenPriceInfo {
+    price: number;
+    priceChange24h: number;
+}
+
+
+export interface TokenPrices {
+    [tokenAddress: string]: TokenPriceInfo;
+}

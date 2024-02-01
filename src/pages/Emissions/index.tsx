@@ -19,6 +19,7 @@ import {EthereumNetworkInfo} from '../../constants/networks';
 import useGetAllPools from "../../data/balancer-api-v3/useGetAllPools";
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 export default function Emissions() {
 
@@ -46,8 +47,9 @@ export default function Emissions() {
     //TODO: obtain form contants
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     //Data
-    const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
-    const balPrice = coinData && coinData[balAddress] ? coinData[balAddress].usd : 0;
+    //const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
+    const coinData = useGetSimpleTokenPrices([activeNetwork.balAddress]);
+    const balPrice = coinData && coinData.data[balAddress] ? coinData.data[balAddress].price : 0;
 
     //Init SDK - static for Mainnet
     const sdk = new BalancerSDK({
@@ -123,12 +125,12 @@ export default function Emissions() {
                             sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                         >
                             <Box m={1}>
-                                {coinData && coinData[balAddress] && coinData[balAddress].usd ?
+                                {coinData && coinData.data[balAddress] && coinData.data[balAddress].price ?
                                     <CoinCard
                                         tokenAddress={balAddress}
                                         tokenName='BAL'
-                                        tokenPrice={coinData[balAddress].usd}
-                                        tokenPriceChange={coinData[balAddress].usd_24h_change}
+                                        tokenPrice={coinData.data[balAddress].price}
+                                        tokenPriceChange={coinData.data[balAddress].priceChange24h}
 
                                     />
                                     : <CircularProgress/>}

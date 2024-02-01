@@ -39,6 +39,7 @@ import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
 import {smoothData} from "../../utils/data";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 
 
@@ -48,7 +49,8 @@ export default function Protocol() {
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     //Data
     const aggregatedProtocolData = useAggregatedProtocolData();
-    const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
+    //const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
+    const v3CoinData = useGetSimpleTokenPrices([balAddress]);
 
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
@@ -110,12 +112,12 @@ export default function Protocol() {
                             </Stack>
                         </Grid>
                         <Grid item xs={11} sm={4} md={4} mb={2}>
-                            {coinData && coinData[balAddress] && coinData[balAddress].usd ?
+                            {v3CoinData && v3CoinData.data[balAddress] && v3CoinData.data[balAddress].price ?
                                 <CoinCard
                                     tokenAddress={balAddress}
                                     tokenName='BAL'
-                                    tokenPrice={coinData[balAddress].usd}
-                                    tokenPriceChange={coinData[balAddress].usd_24h_change}
+                                    tokenPrice={v3CoinData.data[balAddress].price}
+                                    tokenPriceChange={v3CoinData.data[balAddress].priceChange24h}
 
                                 />
                                 : <CircularProgress />}

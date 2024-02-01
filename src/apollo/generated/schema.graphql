@@ -191,6 +191,13 @@ type Balancer {
     where: Pool_filter
   ): [Pool!]
   protocolFeesCollector: Bytes
+  snapshots(
+    first: Int = 100
+    orderBy: BalancerSnapshot_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    where: BalancerSnapshot_filter
+  ): [BalancerSnapshot!]
   totalLiquidity: BigDecimal!
   totalProtocolFee: BigDecimal
   totalSwapCount: BigInt!
@@ -358,6 +365,7 @@ input Balancer_filter {
   protocolFeesCollector_not: Bytes
   protocolFeesCollector_not_contains: Bytes
   protocolFeesCollector_not_in: [Bytes!]
+  snapshots_: BalancerSnapshot_filter
   totalLiquidity: BigDecimal
   totalLiquidity_gt: BigDecimal
   totalLiquidity_gte: BigDecimal
@@ -405,6 +413,7 @@ enum Balancer_orderBy {
   poolCount
   pools
   protocolFeesCollector
+  snapshots
   totalLiquidity
   totalProtocolFee
   totalSwapCount
@@ -840,6 +849,39 @@ enum CircuitBreaker_orderBy {
 
 scalar Date
 
+type FXOracle {
+  id: ID!
+  tokens: [Bytes!]!
+}
+
+input FXOracle_filter {
+  """
+  Filter for the block changed event.
+  """
+  _change_block: BlockChangedFilter
+  and: [FXOracle_filter]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [FXOracle_filter]
+  tokens: [Bytes!]
+  tokens_contains: [Bytes!]
+  tokens_contains_nocase: [Bytes!]
+  tokens_not: [Bytes!]
+  tokens_not_contains: [Bytes!]
+  tokens_not_contains_nocase: [Bytes!]
+}
+
+enum FXOracle_orderBy {
+  id
+  tokens
+}
+
 type GqlBalancePoolAprItem {
   apr: GqlPoolAprValue!
   id: ID!
@@ -864,6 +906,7 @@ enum GqlChain {
   MAINNET
   OPTIMISM
   POLYGON
+  SEPOLIA
   ZKEVM
 }
 
@@ -883,11 +926,54 @@ enum GqlContentNewsItemSource {
   twitter
 }
 
+type GqlCowSwapApiResponse {
+  returnAmount: String!
+  swapAmount: String!
+  swaps: [GqlSwap!]!
+  tokenAddresses: [String!]!
+  tokenIn: String!
+  tokenOut: String!
+}
+
 type GqlFeaturePoolGroupItemExternalLink {
   buttonText: String!
   buttonUrl: String!
   id: ID!
   image: String!
+}
+
+"""
+Configuration options for SOR V2
+"""
+input GqlGraphTraversalConfigInput {
+  """
+  Max number of paths to return (can be less)
+
+  Default: 5
+  """
+  approxPathsToReturn: Int
+
+  """
+  The max hops in a path.
+
+  Default: 6
+  """
+  maxDepth: Int
+
+  """
+  Limit non boosted hop tokens in a boosted path.
+
+  Default: 2
+  """
+  maxNonBoostedHopTokensInBoostedPath: Int
+
+  """
+  Limit of "non-boosted" pools for efficiency.
+
+  Default: 6
+  """
+  maxNonBoostedPathDepth: Int
+  poolIdsToInclude: [String]
 }
 
 type GqlHistoricalTokenPrice {
@@ -941,12 +1027,15 @@ interface GqlPoolBase {
   owner: Bytes
   staking: GqlPoolStaking
   symbol: String!
-  type: String!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
 type GqlPoolBatchSwap {
+  chain: GqlChain!
   id: ID!
   swaps: [GqlPoolBatchSwapSwap!]!
   timestamp: Int!
@@ -977,6 +1066,51 @@ type GqlPoolBatchSwapSwap {
   tx: String!
   userAddress: String!
   valueUSD: Float!
+}
+
+type GqlPoolComposableStable implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  amp: BigInt!
+  bptPriceRate: BigDecimal!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
+  version: Int!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolComposableStableNested {
+  address: Bytes!
+  amp: BigInt!
+  bptPriceRate: BigDecimal!
+  createTime: Int!
+  factory: Bytes
+  id: ID!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  swapFee: BigDecimal!
+  symbol: String!
+  tokens: [GqlPoolTokenComposableStableNestedUnion!]!
+  totalLiquidity: BigDecimal!
+  totalShares: BigDecimal!
+  type: GqlPoolType!
+  version: Int!
 }
 
 type GqlPoolDynamicData {
@@ -1034,10 +1168,18 @@ type GqlPoolElement implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
-  type: String!
+  type: GqlPoolType!
   unitSeconds: BigInt!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolFeaturedPool {
+  pool: GqlPoolBase!
+  poolId: ID!
+  primary: Boolean!
 }
 
 type GqlPoolFeaturedPoolGroup {
@@ -1061,10 +1203,12 @@ input GqlPoolFilter {
   filterNotIn: [String!]
   idIn: [String!]
   idNotIn: [String!]
-  poolTypeIn: [GqlPoolFilterType!]
-  poolTypeNotIn: [GqlPoolFilterType!]
+  poolTypeIn: [GqlPoolType!]
+  poolTypeNotIn: [GqlPoolType!]
   tokensIn: [String!]
   tokensNotIn: [String!]
+  userAddress: String
+  vaultVersionIn: [Int!]
 }
 
 enum GqlPoolFilterCategory {
@@ -1072,27 +1216,7 @@ enum GqlPoolFilterCategory {
   INCENTIVIZED
 }
 
-type GqlPoolFilterDefinition {
-  id: ID!
-  title: String!
-}
-
-enum GqlPoolFilterType {
-  ELEMENT
-  GYRO
-  GYRO3
-  GYROE
-  INVESTMENT
-  LINEAR
-  LIQUIDITY_BOOTSTRAPPING
-  META_STABLE
-  PHANTOM_STABLE
-  STABLE
-  UNKNOWN
-  WEIGHTED
-}
-
-type GqlPoolGyro implements GqlPoolBase {
+type GqlPoolFx implements GqlPoolBase {
   address: Bytes!
   allTokens: [GqlPoolTokenExpanded!]!
   alpha: String!
@@ -1100,20 +1224,65 @@ type GqlPoolGyro implements GqlPoolBase {
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
+  delta: String!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  epsilon: String!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  lambda: String!
+  name: String!
+  owner: Bytes
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
+  version: Int!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolGyro implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  alpha: String!
+  beta: String!
+  c: String!
+  chain: GqlChain!
+  createTime: Int!
+  dSq: String!
+  decimals: Int!
   displayTokens: [GqlPoolTokenDisplay!]!
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   id: ID!
   investConfig: GqlPoolInvestConfig!
+  lambda: String!
   name: String!
   nestingType: GqlPoolNestingType!
   owner: Bytes!
+  root3Alpha: String!
+  s: String!
+  sqrtAlpha: String!
+  sqrtBeta: String!
   staking: GqlPoolStaking
   symbol: String!
+  tauAlphaX: String!
+  tauAlphaY: String!
+  tauBetaX: String!
+  tauBetaY: String!
   tokens: [GqlPoolTokenUnion!]!
-  type: String!
+  type: GqlPoolType!
+  u: String!
+  userBalance: GqlPoolUserBalance
+  v: String!
+  vaultVersion: Int!
   version: Int!
+  w: String!
   withdrawConfig: GqlPoolWithdrawConfig!
+  z: String!
 }
 
 type GqlPoolInvestConfig {
@@ -1130,6 +1299,7 @@ type GqlPoolInvestOption {
 
 type GqlPoolJoinExit {
   amounts: [GqlPoolJoinExitAmount!]!
+  chain: GqlChain!
   id: ID!
   poolId: String!
   sender: String!
@@ -1145,6 +1315,7 @@ type GqlPoolJoinExitAmount {
 }
 
 input GqlPoolJoinExitFilter {
+  chainIn: [GqlChain!]
   poolIdIn: [String!]
 }
 
@@ -1172,8 +1343,10 @@ type GqlPoolLinear implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
-  type: String!
+  type: GqlPoolType!
   upperTarget: BigInt!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
   wrappedIndex: Int!
@@ -1193,7 +1366,9 @@ type GqlPoolLinearNested {
   tokens: [GqlPoolToken!]!
   totalLiquidity: BigDecimal!
   totalShares: BigDecimal!
+  type: GqlPoolType!
   upperTarget: BigInt!
+  version: Int!
   wrappedIndex: Int!
 }
 
@@ -1249,7 +1424,9 @@ type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
-  type: String!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
@@ -1271,7 +1448,9 @@ type GqlPoolMetaStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
-  type: String!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
@@ -1290,27 +1469,13 @@ type GqlPoolMinimal {
   owner: Bytes
   staking: GqlPoolStaking
   symbol: String!
-  type: GqlPoolMinimalType!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
 }
 
-enum GqlPoolMinimalType {
-  ELEMENT
-  FX
-  GYRO
-  GYRO3
-  GYROE
-  INVESTMENT
-  LINEAR
-  LIQUIDITY_BOOTSTRAPPING
-  META_STABLE
-  PHANTOM_STABLE
-  STABLE
-  UNKNOWN
-  WEIGHTED
-}
-
-union GqlPoolNestedUnion = GqlPoolLinearNested | GqlPoolPhantomStableNested
+union GqlPoolNestedUnion = GqlPoolComposableStableNested | GqlPoolLinearNested
 
 enum GqlPoolNestingType {
   HAS_ONLY_PHANTOM_BPT
@@ -1323,6 +1488,7 @@ enum GqlPoolOrderBy {
   fees24h
   totalLiquidity
   totalShares
+  userbalanceUsd
   volume24h
 }
 
@@ -1331,49 +1497,9 @@ enum GqlPoolOrderDirection {
   desc
 }
 
-type GqlPoolPhantomStable implements GqlPoolBase {
-  address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-  amp: BigInt!
-  bptPriceRate: BigDecimal!
-  chain: GqlChain!
-  createTime: Int!
-  decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-  dynamicData: GqlPoolDynamicData!
-  factory: Bytes
-  id: ID!
-  investConfig: GqlPoolInvestConfig!
-  name: String!
-  nestingType: GqlPoolNestingType!
-  owner: Bytes!
-  staking: GqlPoolStaking
-  symbol: String!
-  tokens: [GqlPoolTokenUnion!]!
-  type: String!
-  version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-}
-
-type GqlPoolPhantomStableNested {
-  address: Bytes!
-  amp: BigInt!
-  bptPriceRate: BigDecimal!
-  createTime: Int!
-  factory: Bytes
-  id: ID!
-  name: String!
-  nestingType: GqlPoolNestingType!
-  owner: Bytes!
-  swapFee: BigDecimal!
-  symbol: String!
-  tokens: [GqlPoolTokenPhantomStableNestedUnion!]!
-  totalLiquidity: BigDecimal!
-  totalShares: BigDecimal!
-}
-
 type GqlPoolSnapshot {
   amounts: [String!]!
+  chain: GqlChain!
   fees24h: String!
   holdersCount: String!
   id: ID!
@@ -1413,12 +1539,14 @@ type GqlPoolStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
-  type: String!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
-type GqlPoolStablePhantomPoolData {
+type GqlPoolStableComposablePoolData {
   address: String!
   balance: String!
   id: ID!
@@ -1429,9 +1557,19 @@ type GqlPoolStablePhantomPoolData {
 
 type GqlPoolStaking {
   address: String!
+  chain: GqlChain!
+  farm: GqlPoolStakingMasterChefFarm
   gauge: GqlPoolStakingGauge
   id: ID!
+  reliquary: GqlPoolStakingReliquaryFarm
   type: GqlPoolStakingType!
+}
+
+type GqlPoolStakingFarmRewarder {
+  address: String!
+  id: ID!
+  rewardPerSecond: String!
+  tokenAddress: String!
 }
 
 type GqlPoolStakingGauge {
@@ -1456,6 +1594,12 @@ enum GqlPoolStakingGaugeStatus {
   PREFERRED
 }
 
+type GqlPoolStakingMasterChefFarm {
+  beetsPerBlock: String!
+  id: ID!
+  rewarders: [GqlPoolStakingFarmRewarder!]
+}
+
 type GqlPoolStakingOtherGauge {
   gaugeAddress: String!
   id: ID!
@@ -1464,11 +1608,32 @@ type GqlPoolStakingOtherGauge {
   version: Int!
 }
 
+type GqlPoolStakingReliquaryFarm {
+  beetsPerSecond: String!
+  id: ID!
+  levels: [GqlPoolStakingReliquaryFarmLevel!]
+  totalBalance: String!
+  totalWeightedBalance: String!
+}
+
+type GqlPoolStakingReliquaryFarmLevel {
+  allocationPoints: Int!
+  apr: BigDecimal!
+  balance: BigDecimal!
+  id: ID!
+  level: Int!
+  requiredMaturity: Int!
+}
+
 enum GqlPoolStakingType {
+  FRESH_BEETS
   GAUGE
+  MASTER_CHEF
+  RELIQUARY
 }
 
 type GqlPoolSwap {
+  chain: GqlChain!
   id: ID!
   poolId: String!
   timestamp: Int!
@@ -1482,6 +1647,7 @@ type GqlPoolSwap {
 }
 
 input GqlPoolSwapFilter {
+  chainIn: [GqlChain!]
   poolIdIn: [String!]
   tokenInIn: [String!]
   tokenOutIn: [String!]
@@ -1500,6 +1666,7 @@ type GqlPoolToken implements GqlPoolTokenBase {
   index: Int!
   name: String!
   priceRate: BigDecimal!
+  priceRateProvider: String
   symbol: String!
   totalBalance: BigDecimal!
   weight: BigDecimal
@@ -1513,10 +1680,30 @@ interface GqlPoolTokenBase {
   index: Int!
   name: String!
   priceRate: BigDecimal!
+  priceRateProvider: String
   symbol: String!
   totalBalance: BigDecimal!
   weight: BigDecimal
 }
+
+type GqlPoolTokenComposableStable implements GqlPoolTokenBase {
+  address: String!
+  balance: BigDecimal!
+  decimals: Int!
+  id: ID!
+  index: Int!
+  name: String!
+  pool: GqlPoolComposableStableNested!
+  priceRate: BigDecimal!
+  priceRateProvider: String
+  symbol: String!
+  totalBalance: BigDecimal!
+  weight: BigDecimal
+}
+
+union GqlPoolTokenComposableStableNestedUnion =
+    GqlPoolToken
+  | GqlPoolTokenLinear
 
 type GqlPoolTokenDisplay {
   address: String!
@@ -1549,6 +1736,7 @@ type GqlPoolTokenLinear implements GqlPoolTokenBase {
   name: String!
   pool: GqlPoolLinearNested!
   priceRate: BigDecimal!
+  priceRateProvider: String
   symbol: String!
   totalBalance: BigDecimal!
   totalMainTokenBalance: BigDecimal!
@@ -1556,36 +1744,47 @@ type GqlPoolTokenLinear implements GqlPoolTokenBase {
   wrappedTokenBalance: BigDecimal!
 }
 
-type GqlPoolTokenPhantomStable implements GqlPoolTokenBase {
-  address: String!
-  balance: BigDecimal!
-  decimals: Int!
-  id: ID!
-  index: Int!
-  name: String!
-  pool: GqlPoolPhantomStableNested!
-  priceRate: BigDecimal!
-  symbol: String!
-  totalBalance: BigDecimal!
-  weight: BigDecimal
-}
-
-union GqlPoolTokenPhantomStableNestedUnion = GqlPoolToken | GqlPoolTokenLinear
-
 union GqlPoolTokenUnion =
     GqlPoolToken
+  | GqlPoolTokenComposableStable
   | GqlPoolTokenLinear
-  | GqlPoolTokenPhantomStable
+
+enum GqlPoolType {
+  COMPOSABLE_STABLE
+  ELEMENT
+  FX
+  GYRO
+  GYRO3
+  GYROE
+  INVESTMENT
+  LINEAR
+  LIQUIDITY_BOOTSTRAPPING
+  META_STABLE
+  PHANTOM_STABLE
+  STABLE
+  UNKNOWN
+  WEIGHTED
+}
 
 union GqlPoolUnion =
-    GqlPoolElement
+    GqlPoolComposableStable
+  | GqlPoolElement
+  | GqlPoolFx
   | GqlPoolGyro
   | GqlPoolLinear
   | GqlPoolLiquidityBootstrapping
   | GqlPoolMetaStable
-  | GqlPoolPhantomStable
   | GqlPoolStable
   | GqlPoolWeighted
+
+type GqlPoolUserBalance {
+  stakedBalance: AmountHumanReadable!
+  stakedBalanceUsd: Float!
+  totalBalance: AmountHumanReadable!
+  totalBalanceUsd: Float!
+  walletBalance: AmountHumanReadable!
+  walletBalanceUsd: Float!
+}
 
 type GqlPoolUserSwapVolume {
   swapVolumeUSD: BigDecimal!
@@ -1609,7 +1808,9 @@ type GqlPoolWeighted implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
-  type: String!
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int!
   version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
@@ -1630,9 +1831,7 @@ type GqlProtocolMetricsAggregated {
   chains: [GqlProtocolMetricsChain!]!
   numLiquidityProviders: BigInt!
   poolCount: BigInt!
-  swapFee7d: BigDecimal!
   swapFee24h: BigDecimal!
-  swapVolume7d: BigDecimal!
   swapVolume24h: BigDecimal!
   totalLiquidity: BigDecimal!
   totalSwapFee: BigDecimal!
@@ -1644,14 +1843,72 @@ type GqlProtocolMetricsChain {
   chainId: String!
   numLiquidityProviders: BigInt!
   poolCount: BigInt!
-  swapFee7d: BigDecimal!
   swapFee24h: BigDecimal!
-  swapVolume7d: BigDecimal!
   swapVolume24h: BigDecimal!
   totalLiquidity: BigDecimal!
   totalSwapFee: BigDecimal!
   totalSwapVolume: BigDecimal!
   yieldCapture24h: BigDecimal!
+}
+
+type GqlRelicSnapshot {
+  balance: String!
+  entryTimestamp: Int!
+  farmId: String!
+  level: Int!
+  relicId: Int!
+}
+
+type GqlReliquaryFarmLevelSnapshot {
+  balance: String!
+  id: ID!
+  level: String!
+}
+
+type GqlReliquaryFarmSnapshot {
+  dailyDeposited: String!
+  dailyWithdrawn: String!
+  farmId: String!
+  id: ID!
+  levelBalances: [GqlReliquaryFarmLevelSnapshot!]!
+  relicCount: String!
+  timestamp: Int!
+  tokenBalances: [GqlReliquaryTokenBalanceSnapshot!]!
+  totalBalance: String!
+  totalLiquidity: String!
+  userCount: String!
+}
+
+type GqlReliquaryTokenBalanceSnapshot {
+  address: String!
+  balance: String!
+  decimals: Int!
+  id: ID!
+  name: String!
+  symbol: String!
+}
+
+type GqlSftmxStakingData {
+  exchangeRate: String!
+  maintenancePaused: Boolean!
+  maxDepositLimit: AmountHumanReadable!
+  minDepositLimit: AmountHumanReadable!
+  numberOfVaults: Int!
+  stakingApr: String!
+  totalFtmAmount: AmountHumanReadable!
+  totalFtmAmountInPool: AmountHumanReadable!
+  totalFtmAmountStaked: AmountHumanReadable!
+  undelegatePaused: Boolean!
+  withdrawPaused: Boolean!
+  withdrawalDelay: Int!
+}
+
+type GqlSftmxWithdrawalRequests {
+  amountSftmx: AmountHumanReadable!
+  id: String!
+  isWithdrawn: Boolean!
+  requestTimestamp: Int!
+  user: String!
 }
 
 type GqlSorGetBatchSwapForTokensInResponse {
@@ -1693,6 +1950,7 @@ type GqlSorSwap {
 input GqlSorSwapOptionsInput {
   forceRefresh: Boolean
   maxPools: Int
+  queryBatchSwap: Boolean
   timestamp: Int
 }
 
@@ -1719,8 +1977,17 @@ enum GqlSorSwapType {
   EXACT_OUT
 }
 
+type GqlSwap {
+  amount: String!
+  assetInIndex: Int!
+  assetOutIndex: Int!
+  poolId: String!
+  userData: String!
+}
+
 type GqlToken {
   address: String!
+  chain: GqlChain!
   chainId: Int!
   decimals: Int!
   description: String
@@ -1785,6 +2052,7 @@ type GqlTokenDynamicData {
 
 type GqlTokenPrice {
   address: String!
+  chain: GqlChain!
   price: Float!
 }
 
@@ -1801,7 +2069,15 @@ enum GqlTokenType {
   WHITE_LISTED
 }
 
+type GqlUserFbeetsBalance {
+  id: String!
+  stakedBalance: AmountHumanReadable!
+  totalBalance: AmountHumanReadable!
+  walletBalance: AmountHumanReadable!
+}
+
 type GqlUserPoolBalance {
+  chain: GqlChain!
   poolId: String!
   stakedBalance: AmountHumanReadable!
   tokenAddress: String!
@@ -1843,7 +2119,7 @@ type GqlVotingPool {
   id: ID!
   symbol: String!
   tokens: [GqlVotingGaugeToken!]!
-  type: GqlPoolMinimalType!
+  type: GqlPoolType!
 }
 
 type GradualWeightUpdate {
@@ -2024,6 +2300,7 @@ scalar JSON
 
 type JoinExit {
   amounts: [BigDecimal!]!
+  block: BigInt
   id: ID!
   pool: Pool!
   sender: Bytes!
@@ -2046,6 +2323,14 @@ input JoinExit_filter {
   amounts_not_contains: [BigDecimal!]
   amounts_not_contains_nocase: [BigDecimal!]
   and: [JoinExit_filter]
+  block: BigInt
+  block_gt: BigInt
+  block_gte: BigInt
+  block_in: [BigInt!]
+  block_lt: BigInt
+  block_lte: BigInt
+  block_not: BigInt
+  block_not_in: [BigInt!]
   id: ID
   id_gt: ID
   id_gte: ID
@@ -2141,6 +2426,7 @@ input JoinExit_filter {
 
 enum JoinExit_orderBy {
   amounts
+  block
   id
   pool
   pool__address
@@ -2478,7 +2764,8 @@ enum ManagementOperation_orderBy {
 }
 
 type Mutation {
-  balancerMutationTest: String!
+  beetsPoolLoadReliquarySnapshotsForAllFarms: String!
+  beetsSyncFbeetsRatio: String!
   cacheAverageBlockTime: String!
   poolBlackListAddPool(poolId: String!): String!
   poolBlackListRemovePool(poolId: String!): String!
@@ -2491,11 +2778,8 @@ type Mutation {
   poolLoadSnapshotsForPools(poolIds: [String!]!, reload: Boolean): String!
   poolReloadAllPoolAprs: String!
   poolReloadAllTokenNestedPoolIds: String!
-  poolReloadPoolNestedTokens(poolId: String!): String!
-  poolReloadPoolTokenIndexes(poolId: String!): String!
   poolReloadStakingForAllPools(stakingTypes: [GqlPoolStakingType!]!): String!
   poolSetPoolsWithPreferredGaugesAsIncentivized: String!
-  poolSyncAllPoolVersions: String!
   poolSyncAllPoolsFromSubgraph: [String!]!
   poolSyncLatestSnapshotsForAllPools(daysToSync: Int): String!
   poolSyncNewPoolsFromSubgraph: [String!]!
@@ -2511,11 +2795,14 @@ type Mutation {
   poolUpdateLiquidityValuesForAllPools: String!
   poolUpdateVolumeAndFeeValuesForAllPools: String!
   protocolCacheMetrics: String!
+  sftmxSyncStakingData: String!
+  sftmxSyncWithdrawalRequests: String!
   tokenDeletePrice(timestamp: Int!, tokenAddress: String!): Boolean!
   tokenDeleteTokenType(tokenAddress: String!, type: GqlTokenType!): String!
   tokenInitChartData(tokenAddress: String!): String!
   tokenReloadAllTokenTypes: String!
   tokenReloadTokenPrices: Boolean
+  tokenSyncLatestFxPrices(chain: GqlChain!): String!
   tokenSyncTokenDefinitions: String!
   tokenSyncTokenDynamicData: String!
   userInitStakedBalances(stakingTypes: [GqlPoolStakingType!]!): String!
@@ -2582,6 +2869,13 @@ type Pool {
   isInRecoveryMode: Boolean
   isPaused: Boolean
   joinExitEnabled: Boolean
+  joinsExits(
+    first: Int = 100
+    orderBy: JoinExit_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    where: JoinExit_filter
+  ): [JoinExit!]
   lambda: BigDecimal
   lastJoinExitAmp: BigInt
   lastPostJoinExitInvariant: BigDecimal
@@ -3827,6 +4121,7 @@ input Pool_filter {
   joinExitEnabled_in: [Boolean!]
   joinExitEnabled_not: Boolean
   joinExitEnabled_not_in: [Boolean!]
+  joinsExits_: JoinExit_filter
   lambda: BigDecimal
   lambda_gt: BigDecimal
   lambda_gte: BigDecimal
@@ -4348,6 +4643,7 @@ enum Pool_orderBy {
   isInRecoveryMode
   isPaused
   joinExitEnabled
+  joinsExits
   lambda
   lastJoinExitAmp
   lastPostJoinExitInvariant
@@ -4723,7 +5019,6 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): Balancer
-  balancerQueryTest: String!
   balancerSnapshot(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4768,6 +5063,11 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Balancer_filter
   ): [Balancer!]!
+  beetsGetFbeetsRatio: String!
+  beetsPoolGetReliquaryFarmSnapshots(
+    id: String!
+    range: GqlPoolSnapshotDataRange!
+  ): [GqlReliquaryFarmSnapshot!]!
   block(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4829,6 +5129,34 @@ type Query {
     where: CircuitBreaker_filter
   ): [CircuitBreaker!]!
   contentGetNewsItems: [GqlContentNewsItem!]!
+  fxoracle(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): FXOracle
+  fxoracles(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: FXOracle_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: FXOracle_filter
+  ): [FXOracle!]!
   gradualWeightUpdate(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4982,23 +5310,22 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: PoolContract_filter
   ): [PoolContract!]!
-  poolGetAllPoolsSnapshots(
-    range: GqlPoolSnapshotDataRange!
-  ): [GqlPoolSnapshot!]!
   poolGetBatchSwaps(
     first: Int
     skip: Int
     where: GqlPoolSwapFilter
   ): [GqlPoolBatchSwap!]!
-  poolGetFeaturedPoolGroups: [GqlPoolFeaturedPoolGroup!]!
+  poolGetFeaturedPoolGroups(chains: [GqlChain!]): [GqlPoolFeaturedPoolGroup!]!
+  poolGetFeaturedPools(chains: [GqlChain!]!): [GqlPoolFeaturedPool!]!
+  poolGetFxPools(chains: [GqlChain!]): [GqlPoolFx!]!
+  poolGetGyroPools(chains: [GqlChain!]): [GqlPoolGyro!]!
   poolGetJoinExits(
     first: Int
     skip: Int
     where: GqlPoolJoinExitFilter
   ): [GqlPoolJoinExit!]!
-  poolGetLinearPools: [GqlPoolLinear!]!
-  poolGetPool(id: String!): GqlPoolBase!
-  poolGetPoolFilters: [GqlPoolFilterDefinition!]!
+  poolGetLinearPools(chains: [GqlChain!]): [GqlPoolLinear!]!
+  poolGetPool(chain: GqlChain, id: String!, userAddress: String): GqlPoolBase!
   poolGetPools(
     first: Int
     orderBy: GqlPoolOrderBy
@@ -5016,15 +5343,11 @@ type Query {
     where: GqlPoolFilter
   ): Int!
   poolGetSnapshots(
+    chain: GqlChain
     id: String!
     range: GqlPoolSnapshotDataRange!
   ): [GqlPoolSnapshot!]!
   poolGetSwaps(first: Int, skip: Int, where: GqlPoolSwapFilter): [GqlPoolSwap!]!
-  poolGetUserSwapVolume(
-    first: Int
-    skip: Int
-    where: GqlUserSwapVolumeFilter
-  ): [GqlPoolUserSwapVolume!]!
   poolHistoricalLiquidities(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5209,14 +5532,24 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: ProtocolIdData_filter
   ): [ProtocolIdData!]!
-  protocolMetricsAggregated(chainIds: [String!]!): GqlProtocolMetricsAggregated!
-  protocolMetricsChain: GqlProtocolMetricsChain!
+  protocolMetricsAggregated(chains: [GqlChain!]): GqlProtocolMetricsAggregated!
+  protocolMetricsChain(chain: GqlChain): GqlProtocolMetricsChain!
+  sftmxGetStakingData: GqlSftmxStakingData!
+  sftmxGetWithdrawalRequests(user: String!): [GqlSftmxWithdrawalRequests!]!
   sorGetBatchSwapForTokensIn(
     swapOptions: GqlSorSwapOptionsInput!
     tokenOut: String!
     tokensIn: [GqlTokenAmountHumanReadable!]!
   ): GqlSorGetBatchSwapForTokensInResponse!
+  sorGetCowSwaps(
+    chain: GqlChain!
+    swapAmount: BigDecimal!
+    swapType: GqlSorSwapType!
+    tokenIn: String!
+    tokenOut: String!
+  ): GqlCowSwapApiResponse!
   sorGetSwaps(
+    chain: GqlChain
     swapAmount: BigDecimal!
     swapOptions: GqlSorSwapOptionsInput!
     swapType: GqlSorSwapType!
@@ -5293,23 +5626,29 @@ type Query {
   ): Token
   tokenGetCandlestickChartData(
     address: String!
+    chain: GqlChain
     range: GqlTokenChartDataRange!
   ): [GqlTokenCandlestickChartDataItem!]!
-  tokenGetCurrentPrices: [GqlTokenPrice!]!
+  tokenGetCurrentPrices(chains: [GqlChain!]): [GqlTokenPrice!]!
   tokenGetHistoricalPrices(addresses: [String!]!): [GqlHistoricalTokenPrice!]!
   tokenGetPriceChartData(
     address: String!
+    chain: GqlChain
     range: GqlTokenChartDataRange!
   ): [GqlTokenPriceChartDataItem!]!
   tokenGetProtocolTokenPrice: AmountHumanReadable!
   tokenGetRelativePriceChartData(
+    chain: GqlChain
     range: GqlTokenChartDataRange!
     tokenIn: String!
     tokenOut: String!
   ): [GqlTokenPriceChartDataItem!]!
-  tokenGetTokenData(address: String!): GqlTokenData
-  tokenGetTokenDynamicData(address: String!): GqlTokenDynamicData
-  tokenGetTokens: [GqlToken!]!
+  tokenGetTokenData(address: String!, chain: GqlChain): GqlTokenData
+  tokenGetTokenDynamicData(
+    address: String!
+    chain: GqlChain
+  ): GqlTokenDynamicData
+  tokenGetTokens(chains: [GqlChain!]): [GqlToken!]!
   tokenGetTokensData(addresses: [String!]!): [GqlTokenData!]!
   tokenGetTokensDynamicData(addresses: [String!]!): [GqlTokenDynamicData!]!
   tokenPrice(
@@ -5452,14 +5791,26 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): User
-  userGetPoolBalances: [GqlUserPoolBalance!]!
+  userGetFbeetsBalance: GqlUserFbeetsBalance!
+  userGetPoolBalances(
+    address: String
+    chains: [GqlChain!]
+  ): [GqlUserPoolBalance!]!
   userGetPoolJoinExits(
+    address: String
+    chain: GqlChain
     first: Int = 10
     poolId: String!
     skip: Int = 0
   ): [GqlPoolJoinExit!]!
-  userGetStaking: [GqlPoolStaking!]!
-  userGetSwaps(first: Int = 10, poolId: String!, skip: Int = 0): [GqlPoolSwap!]!
+  userGetStaking(address: String, chains: [GqlChain!]): [GqlPoolStaking!]!
+  userGetSwaps(
+    address: String
+    chain: GqlChain
+    first: Int = 10
+    poolId: String!
+    skip: Int = 0
+  ): [GqlPoolSwap!]!
   userInternalBalance(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5655,6 +6006,34 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: CircuitBreaker_filter
   ): [CircuitBreaker!]!
+  fxoracle(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): FXOracle
+  fxoracles(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: FXOracle_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: FXOracle_filter
+  ): [FXOracle!]!
   gradualWeightUpdate(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -6246,6 +6625,7 @@ type Subscription {
 }
 
 type Swap {
+  block: BigInt
   caller: Bytes!
   id: ID!
   poolId: Pool!
@@ -6432,6 +6812,14 @@ input Swap_filter {
   """
   _change_block: BlockChangedFilter
   and: [Swap_filter]
+  block: BigInt
+  block_gt: BigInt
+  block_gte: BigInt
+  block_in: [BigInt!]
+  block_lt: BigInt
+  block_lte: BigInt
+  block_not: BigInt
+  block_not_in: [BigInt!]
   caller: Bytes
   caller_contains: Bytes
   caller_gt: Bytes
@@ -6598,6 +6986,7 @@ input Swap_filter {
 }
 
 enum Swap_orderBy {
+  block
   caller
   id
   poolId

@@ -14,6 +14,7 @@ import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, PoolData } from './balancerTypes';
 import { CoingeckoSnapshotPriceData } from './useTokens';
 import { DateTime } from 'luxon';
+import {CG_KEY} from "./constants";
 
 function getPoolValues(
     poolId: string,
@@ -316,7 +317,9 @@ export function useBalancerPoolPageData(poolId: string): {
             const toTimestamp = data.poolSnapshots[data.poolSnapshots.length - 1].timestamp;
             const getTokenSnapshotData = async (address: string, fromTimestamp: number, toTimestamp: number) => {
                 const baseURI = 'https://api.coingecko.com/api/v3/coins/';
-                const queryParams = activeNetwork.coingeckoId + '/contract/' + address + '/market_chart/range?vs_currency=usd&from=' + fromTimestamp.toString() + '&to=' + toTimestamp.toString();
+                const queryParams = activeNetwork.coingeckoId + '/contract/' + address +
+                    '/market_chart/range?vs_currency=usd&from=' + fromTimestamp.toString() +
+                    '&to=' + toTimestamp.toString() + '&x_cg_demo_api_key=' + CG_KEY;
                 try {
                     const coingeckoResponse = await fetch(baseURI + queryParams);
                     const hit = coingeckoSnapshotData.find(el => el.tokenAddress === address);

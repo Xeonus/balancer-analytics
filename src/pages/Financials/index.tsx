@@ -28,6 +28,7 @@ import IncomeVsSpendingMultiBarChart from '../../components/Echarts/FinancialCha
 import GenericPieChartWithVerticalLegend from '../../components/Echarts/GenericPieChartWithVerticalLegend';
 import SimpleRunwayGauge from '../../components/Echarts/RunwayGauge/SimpleRunwayGauge';
 import {useGetAddressTransactionsHistorically} from "../../data/firebase/useGetAddressTransactionsHistorically";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 export default function Financials() {
 
@@ -215,12 +216,14 @@ export default function Financials() {
     dayjs.extend(quarterOfYear);
     const currentQuarter = dayjs().quarter();
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
-    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+    //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress]);
+    console.log("apiv3", balPriceData)
 
 
     //SP Data
-    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData)
-    const spRows = useGetSPTableEntry(sps, dayjs().year(), currentQuarter, balPriceData);
+    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData.data)
+    const spRows = useGetSPTableEntry(sps, dayjs().year(), currentQuarter, balPriceData.data);
     const totalsBySpsPie = getTotalsBySp(spRows);
     let monthlyUSDCBurn = 0;
     if (quarterlyPie && quarterlyPie.find(el => el.name === 'USDC')) {

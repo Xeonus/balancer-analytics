@@ -5,11 +5,12 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { ServiceProvidersConfig } from '../../types';
 import { CoingeckoRawData } from '../../data/balancer/useTokens';
 import { createData, Data } from '../../components/Tables/ServiceProviderSpendingTable';
+import {TokenPrices} from "../../data/balancer-api-v3/balancerUnifiedTypes";
 //Import quarter plugin
 dayjs.extend(quarterOfYear);
 
 
-export function useGetQuarterlyTotalSpendData(sps: ServiceProvidersConfig, year: number, quarter: number, balPriceData: CoingeckoRawData | undefined) {
+export function useGetQuarterlyTotalSpendData(sps: ServiceProvidersConfig, year: number, quarter: number, balPriceData: TokenPrices | undefined) {
 
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     const quarterlyBAL = sps.service_provider.reduce((acc, sp) => {
@@ -30,17 +31,17 @@ export function useGetQuarterlyTotalSpendData(sps: ServiceProvidersConfig, year:
 
     //Create Pie Chart data points
     useEffect(() => {
-        if (balPriceData && balPriceData[balAddress]) {
+        if (balPriceData && balPriceData[balAddress] && balPriceData[balAddress].price) {
             const pie: BalancerPieChartDataItem[] = []
             pie.push(
                 {
-                    value: quarterlyBALVested * balPriceData[balAddress].usd,
+                    value: quarterlyBALVested * balPriceData[balAddress].price,
                     name: 'Vested BAL'
                 }
             )
             pie.push(
                 {
-                    value: quarterlyBAL * balPriceData[balAddress].usd,
+                    value: quarterlyBAL * balPriceData[balAddress].price,
                     name: 'Liquid BAL'
                 }
             )
@@ -50,16 +51,16 @@ export function useGetQuarterlyTotalSpendData(sps: ServiceProvidersConfig, year:
                     name: 'USDC'
                 }
             )
-            const totalBudget = (quarterlyBALVested * balPriceData[balAddress].usd + quarterlyBAL * balPriceData[balAddress].usd + quarterlyUSDC)
+            const totalBudget = (quarterlyBALVested * balPriceData[balAddress].price + quarterlyBAL * balPriceData[balAddress].price + quarterlyUSDC)
             setQuarterlyPie(pie);
             setQuarterlyTotalBudget(totalBudget);
         }
-    }, [balPriceData !== undefined]);
+    }, [balPriceData !== undefined && balPriceData[balAddress] !== undefined]);
 
     return [quarterlyPie, quarterlyTotalBudget] as const;
 }
 
-export function useGetSPTableEntry(sps: ServiceProvidersConfig, year: number, quarter: number, balPriceData: CoingeckoRawData | undefined) {
+export function useGetSPTableEntry(sps: ServiceProvidersConfig, year: number, quarter: number, balPriceData: TokenPrices | undefined) {
 
 
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
@@ -80,12 +81,12 @@ export function useGetSPTableEntry(sps: ServiceProvidersConfig, year: number, qu
             const updatedRows = initialSpRows.map((item) => {
                 return {
                     ...item,
-                    quarterlyTotal: (item.quarterlyBALVested * balPriceData[balAddress].usd + item.quarterlyBAL * balPriceData[balAddress].usd + item.quarterlyUSDC),
+                    quarterlyTotal: (item.quarterlyBALVested * balPriceData[balAddress].price + item.quarterlyBAL * balPriceData[balAddress].price + item.quarterlyUSDC),
                 };
             });
             setSpRows(updatedRows);
         }
-    }, [balPriceData !== undefined]);
+    }, [balPriceData !== undefined && balPriceData[balAddress] !== undefined]);
 
     return spRows
 }
