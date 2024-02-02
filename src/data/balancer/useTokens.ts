@@ -79,7 +79,7 @@ export function useBalancerTokens(first = 100) {
     const [block24, block48, blockWeek] = blocks ?? [];
     const [getTokenData, { data }] = useGetTokenDataLazyQuery();
     const tokenAddresses = data?.tokens.map(token => token.address) ?? [];
-    const { data: tokenPrices, loading: pricesLoading, error: pricesError } = useGetSimpleTokenPrices(tokenAddresses);
+    const { data: tokenPrices, loading: pricesLoading, error: pricesError } = useGetSimpleTokenPrices(tokenAddresses, activeNetwork.chainId);
 
     useEffect(() => {
         if (block24) {

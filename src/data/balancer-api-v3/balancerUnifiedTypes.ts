@@ -50,6 +50,7 @@ export interface PoolTokenDataUnified {
 export interface TokenPriceInfo {
     price: number;
     priceChange24h: number;
+    priceChangePercentage24h: number;
 }
 
 

@@ -217,8 +217,7 @@ export default function Financials() {
     const currentQuarter = dayjs().quarter();
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress]);
-    console.log("apiv3", balPriceData)
+    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
 
 
     //SP Data

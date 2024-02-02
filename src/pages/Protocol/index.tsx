@@ -40,6 +40,7 @@ import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
 import {smoothData} from "../../utils/data";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
+import {useActiveNetworkVersion} from "../../state/application/hooks";
 
 
 
@@ -47,10 +48,11 @@ export default function Protocol() {
 
     //TODO: obtain form contants
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
+    const [activeNetwork] = useActiveNetworkVersion()
     //Data
     const aggregatedProtocolData = useAggregatedProtocolData();
     //const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
-    const v3CoinData = useGetSimpleTokenPrices([balAddress]);
+    const v3CoinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
 
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
@@ -117,7 +119,7 @@ export default function Protocol() {
                                     tokenAddress={balAddress}
                                     tokenName='BAL'
                                     tokenPrice={v3CoinData.data[balAddress].price}
-                                    tokenPriceChange={v3CoinData.data[balAddress].priceChange24h}
+                                    tokenPriceChange={v3CoinData.data[balAddress].priceChangePercentage24h}
 
                                 />
                                 : <CircularProgress />}

@@ -48,7 +48,7 @@ export default function Emissions() {
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     //Data
     //const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
-    const coinData = useGetSimpleTokenPrices([activeNetwork.balAddress]);
+    const coinData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
     const balPrice = coinData && coinData.data[balAddress] ? coinData.data[balAddress].price : 0;
 
     //Init SDK - static for Mainnet
@@ -130,7 +130,7 @@ export default function Emissions() {
                                         tokenAddress={balAddress}
                                         tokenName='BAL'
                                         tokenPrice={coinData.data[balAddress].price}
-                                        tokenPriceChange={coinData.data[balAddress].priceChange24h}
+                                        tokenPriceChange={coinData.data[balAddress].priceChangePercentage24h}
 
                                     />
                                     : <CircularProgress/>}

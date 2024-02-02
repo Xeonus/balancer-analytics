@@ -25,7 +25,7 @@ export default function ServiceProviders() {
     const [activeNetwork] = useActiveNetworkVersion()
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress]);
+    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
 
 
     //Data
