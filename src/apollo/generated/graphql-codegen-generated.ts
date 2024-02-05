@@ -924,16 +924,6 @@ export interface GqlContentNewsItem {
 
 export type GqlContentNewsItemSource = "discord" | "medium" | "twitter";
 
-export interface GqlCowSwapApiResponse {
-  __typename: "GqlCowSwapApiResponse";
-  returnAmount: Scalars["String"];
-  swapAmount: Scalars["String"];
-  swaps: Array<GqlSwap>;
-  tokenAddresses: Array<Scalars["String"]>;
-  tokenIn: Scalars["String"];
-  tokenOut: Scalars["String"];
-}
-
 export interface GqlFeaturePoolGroupItemExternalLink {
   __typename: "GqlFeaturePoolGroupItemExternalLink";
   buttonText: Scalars["String"];
@@ -1956,6 +1946,23 @@ export interface GqlSorGetBatchSwapForTokensInResponse {
   tokenOutAmount: Scalars["AmountHumanReadable"];
 }
 
+export interface GqlSorGetSwaps {
+  __typename: "GqlSorGetSwaps";
+  priceImpact: Scalars["AmountHumanReadable"];
+  returnAmount: Scalars["AmountHumanReadable"];
+  returnAmountScaled: Scalars["BigDecimal"];
+  routes: Array<GqlSorSwapRoute>;
+  swapAmount: Scalars["AmountHumanReadable"];
+  swapAmountScaled: Scalars["BigDecimal"];
+  swapType: GqlSorSwapType;
+  swaps: Array<GqlSorSwap>;
+  tokenAddresses: Array<Scalars["String"]>;
+  tokenIn: Scalars["String"];
+  tokenInAmount: Scalars["AmountHumanReadable"];
+  tokenOut: Scalars["String"];
+  tokenOutAmount: Scalars["AmountHumanReadable"];
+}
+
 export interface GqlSorGetSwapsResponse {
   __typename: "GqlSorGetSwapsResponse";
   effectivePrice: Scalars["AmountHumanReadable"];
@@ -2016,15 +2023,6 @@ export interface GqlSorSwapRouteHop {
 }
 
 export type GqlSorSwapType = "EXACT_IN" | "EXACT_OUT";
-
-export interface GqlSwap {
-  __typename: "GqlSwap";
-  amount: Scalars["String"];
-  assetInIndex: Scalars["Int"];
-  assetOutIndex: Scalars["Int"];
-  poolId: Scalars["String"];
-  userData: Scalars["String"];
-}
 
 export interface GqlToken {
   __typename: "GqlToken";
@@ -5115,9 +5113,8 @@ export interface Query {
   protocolMetricsChain: GqlProtocolMetricsChain;
   sftmxGetStakingData: GqlSftmxStakingData;
   sftmxGetWithdrawalRequests: Array<GqlSftmxWithdrawalRequests>;
-  sorGetBatchSwapForTokensIn: GqlSorGetBatchSwapForTokensInResponse;
-  sorGetCowSwaps: GqlCowSwapApiResponse;
   sorGetSwaps: GqlSorGetSwapsResponse;
+  sorV2GetSwaps: GqlSorGetSwaps;
   swap?: Maybe<Swap>;
   swapFeeUpdate?: Maybe<SwapFeeUpdate>;
   swapFeeUpdates: Array<SwapFeeUpdate>;
@@ -5535,22 +5532,17 @@ export interface QuerySftmxGetWithdrawalRequestsArgs {
   user: Scalars["String"];
 }
 
-export interface QuerySorGetBatchSwapForTokensInArgs {
-  swapOptions: GqlSorSwapOptionsInput;
-  tokenOut: Scalars["String"];
-  tokensIn: Array<GqlTokenAmountHumanReadable>;
-}
-
-export interface QuerySorGetCowSwapsArgs {
-  chain: GqlChain;
+export interface QuerySorGetSwapsArgs {
+  chain?: InputMaybe<GqlChain>;
   swapAmount: Scalars["BigDecimal"];
+  swapOptions: GqlSorSwapOptionsInput;
   swapType: GqlSorSwapType;
   tokenIn: Scalars["String"];
   tokenOut: Scalars["String"];
 }
 
-export interface QuerySorGetSwapsArgs {
-  chain?: InputMaybe<GqlChain>;
+export interface QuerySorV2GetSwapsArgs {
+  chain: GqlChain;
   swapAmount: Scalars["BigDecimal"];
   swapOptions: GqlSorSwapOptionsInput;
   swapType: GqlSorSwapType;

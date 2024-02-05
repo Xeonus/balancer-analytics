@@ -18,13 +18,14 @@ import ExploreCard from '../../components/Cards/ExploreCard';
 import TokenIcon from '@mui/icons-material/Token';
 import WavesIcon from '@mui/icons-material/Waves';
 import { networkPrefix } from '../../utils/networkPrefix';
+import {getUnixTimestamp1000DaysAgo} from "../../utils/date";
 
 
 
 export default function Chain() {
 
     const [activeNetwork] = useActiveNetworkVersion()
-    const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, activeNetwork.startTimeStamp);
+    const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, getUnixTimestamp1000DaysAgo());
     const poolData = useBalancerPools(20);
 
 

@@ -27,3 +27,17 @@ export const formatTime = (unix: string, buffer?: number) => {
         return `${inSeconds} ${inSeconds === 1 ? 'second' : 'seconds'} ago`;
     }
 };
+
+export function getUnixTimestamp1000DaysAgo(): number {
+    // Get the current date in UTC
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0); // Set time to 00:00 UTC
+
+    // Subtract 1000 days
+    const daysAgo = 1000;
+    const pastDate = new Date(today);
+    pastDate.setDate(today.getDate() - daysAgo);
+
+    // Convert to Unix timestamp (in seconds)
+    return Math.floor(pastDate.getTime() / 1000);
+}

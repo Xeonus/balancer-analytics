@@ -41,6 +41,7 @@ import BaseLogo from '../../assets/svg/base.svg'
 import {smoothData} from "../../utils/data";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
+import {getUnixTimestamp1000DaysAgo} from "../../utils/date";
 
 
 
@@ -54,13 +55,13 @@ export default function Protocol() {
     //const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
     const v3CoinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
 
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp);
-    const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
-    const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
-    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
-    const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient);
-    const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, AvalancheNetworkInfo.startTimeStamp, avalancheBlockClient, avalancheClient);
-    const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, BaseNetworkInfo.startTimeStamp, baseBlockClient, baseClient);
+    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo());
+    const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), arbitrumBlockClient, arbitrumClient);
+    const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonBlockClient, polygonClient);
+    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
+    const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient);
+    const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient);
+    const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), baseBlockClient, baseClient);
 
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
