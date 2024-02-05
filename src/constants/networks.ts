@@ -58,7 +58,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   feeCollectorThreshold: 5000,
   route: '',
   name: 'Ethereum',
-  startTimeStamp: 1619874000,
+  startTimeStamp: 1620712698,
   appUri: 'https://app.balancer.fi/#/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
   clientUri: 'https://balancer-v2-analytics.stellate.sh',

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {CG_KEY} from "../balancer/constants";
 
 //Coingecko Interface
 export interface CoingeckoRawData {
@@ -17,7 +18,7 @@ export function GetCoingeckoData (addresses: string[], network: string) {
     addresses.forEach(el => {
        addressesString = addressesString + el + ','})
     const baseURI = 'https://api.coingecko.com/api/v3/simple/token_price/';
-    const queryParams = network + '?contract_addresses=' + addressesString + '&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true';
+    const queryParams = network + '?contract_addresses=' + addressesString + '&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true' + '&x_cg_demo_api_key=' + CG_KEY;;
         const [jsonData, setJsonData] = useState<CoingeckoRawData>();
         useEffect(() => {
             const fetchData = async () => {

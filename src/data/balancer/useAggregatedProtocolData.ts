@@ -18,6 +18,7 @@ import {
 } from '../../apollo/client';
 import { ProtocolData } from './useProtocolDataWithClientOverride'
 import {BalancerChartDataItem} from "./balancerTypes";
+import {getUnixTimestamp1000DaysAgo} from "../../utils/date";
 
 //TODO: Define interface with SupportedNetwork array
 export interface AggregatedProtocolData {
@@ -69,13 +70,14 @@ const aggregateChartData = (
 };
 
 export default function useAggregatedProtocolData() {
-    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, EthereumNetworkInfo.startTimeStamp, blockClient, client);
-    const protocolArbitrumData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, ArbitrumNetworkInfo.startTimeStamp, arbitrumBlockClient, arbitrumClient);
-    const protocolPolygonData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, PolygonNetworkInfo.startTimeStamp, polygonBlockClient, polygonClient);
-    const protocolPolygonZkEVMData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, PolygonZkEVMNetworkInfo.startTimeStamp, polygonZKEVMBlockClient, polygonZKEVMClient);
-    const protocolGnosisData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, GnosisNetworkInfo.startTimeStamp, gnosisBlockClient, gnosisClient)
-    const protocolDataAvalanche = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, AvalancheNetworkInfo.startTimeStamp, avalancheBlockClient, avalancheClient)
-    const protocolDataBase = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, BaseNetworkInfo.startTimeStamp, baseBlockClient, baseClient);
+    //For now fix the aggregated data range to the last 1000 days because of subgraph pagination
+    const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), blockClient, client);
+    const protocolArbitrumData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), arbitrumBlockClient, arbitrumClient);
+    const protocolPolygonData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonBlockClient, polygonClient);
+    const protocolPolygonZkEVMData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
+    const protocolGnosisData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient)
+    const protocolDataAvalanche = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient)
+    const protocolDataBase = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), baseBlockClient, baseClient);
 
 
     if (!protocolData && !protocolArbitrumData && !protocolPolygonData && !protocolPolygonZkEVMData && !protocolGnosisData) {

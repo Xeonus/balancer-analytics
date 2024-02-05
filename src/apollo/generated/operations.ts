@@ -52,8 +52,8 @@ export const GqlPoolTokenLinear = gql`
   }
   ${GqlPoolToken}
 `;
-export const GqlPoolTokenPhantomStable = gql`
-  fragment GqlPoolTokenPhantomStable on GqlPoolTokenPhantomStable {
+export const GqlPoolTokenComposableStable = gql`
+  fragment GqlPoolTokenComposableStable on GqlPoolTokenComposableStable {
     id
     index
     name
@@ -281,6 +281,37 @@ export const BalancerSnapshot = gql`
     totalSwapFee
   }
 `;
+export const GetTokenPrice = gql`
+  query GetTokenPrice($address: String!, $chain: GqlChain!) {
+    tokenGetPriceChartData(
+      address: $address
+      chain: $chain
+      range: NINETY_DAY
+    ) {
+      id
+      price
+      timestamp
+    }
+  }
+`;
+export const TokenGetCurrentPrices = gql`
+  query TokenGetCurrentPrices($chains: [GqlChain!]) {
+    tokenGetCurrentPrices(chains: $chains) {
+      address
+      chain
+      price
+    }
+  }
+`;
+export const GetDynamicTokenPrices = gql`
+  query GetDynamicTokenPrices($addresses: [String!]!) {
+    tokenGetTokensDynamicData(addresses: $addresses) {
+      price
+      tokenAddress
+      priceChange24h
+    }
+  }
+`;
 export const VeBalGetVotingGauges = gql`
   query VeBalGetVotingGauges {
     veBalGetVotingList {
@@ -471,8 +502,8 @@ export const GetPool = gql`
           ... on GqlPoolTokenLinear {
             ...GqlPoolTokenLinear
           }
-          ... on GqlPoolTokenPhantomStable {
-            ...GqlPoolTokenPhantomStable
+          ... on GqlPoolTokenComposableStable {
+            ...GqlPoolTokenComposableStable
           }
         }
       }
@@ -510,7 +541,7 @@ export const GetPool = gql`
           }
         }
       }
-      ... on GqlPoolPhantomStable {
+      ... on GqlPoolComposableStable {
         amp
         nestingType
         tokens {
@@ -520,8 +551,8 @@ export const GetPool = gql`
           ... on GqlPoolTokenLinear {
             ...GqlPoolTokenLinear
           }
-          ... on GqlPoolTokenPhantomStable {
-            ...GqlPoolTokenPhantomStable
+          ... on GqlPoolTokenComposableStable {
+            ...GqlPoolTokenComposableStable
           }
         }
       }
@@ -546,8 +577,8 @@ export const GetPool = gql`
           ... on GqlPoolTokenLinear {
             ...GqlPoolTokenLinear
           }
-          ... on GqlPoolTokenPhantomStable {
-            ...GqlPoolTokenPhantomStable
+          ... on GqlPoolTokenComposableStable {
+            ...GqlPoolTokenComposableStable
           }
         }
       }
@@ -555,7 +586,7 @@ export const GetPool = gql`
   }
   ${GqlPoolToken}
   ${GqlPoolTokenLinear}
-  ${GqlPoolTokenPhantomStable}
+  ${GqlPoolTokenComposableStable}
 `;
 export const GetPoolSwaps = gql`
   query GetPoolSwaps($first: Int, $skip: Int, $where: GqlPoolSwapFilter) {
@@ -830,7 +861,7 @@ export const GetTokenSingleData = gql`
 export const GetTokenPageData = gql`
   query GetTokenPageData($address: String!, $startTimestamp: Int!) {
     tokenSnapshots(
-      first: 500
+      first: 1000
       orderBy: timestamp
       orderDirection: asc
       where: { token: $address, timestamp_gte: $startTimestamp }

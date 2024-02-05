@@ -25,3 +25,4 @@ export const DB_KEY = process.env.REACT_APP_DB_KEY || '';
 
 export const FIREBASE_API_KEY = process.env.REACT_APP_FIREBASE_API || '';
 export const DAO_FEE_FACTOR = 0.175;
+export const CG_KEY = process.env.REACT_APP_CG_KEY || '';

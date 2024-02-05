@@ -1,3 +1,28 @@
+query GetTokenPrice($address: String!, $chain: GqlChain!){
+    tokenGetPriceChartData(address: $address, chain: $chain, range: NINETY_DAY)
+    {
+        id
+        price
+        timestamp
+    }
+}
+
+query TokenGetCurrentPrices($chains: [GqlChain!]) {
+    tokenGetCurrentPrices(chains: $chains) {
+        address
+        chain
+        price
+    }
+}
+
+query GetDynamicTokenPrices($addresses: [String!]!) {
+    tokenGetTokensDynamicData(addresses: $addresses) {
+        price
+        tokenAddress
+        priceChange24h
+    }
+}
+
 query VeBalGetVotingGauges {
     veBalGetVotingList
     {
@@ -188,8 +213,8 @@ query GetPool($id: String!) {
                 ... on GqlPoolTokenLinear {
                     ...GqlPoolTokenLinear
                 }
-                ... on GqlPoolTokenPhantomStable {
-                    ...GqlPoolTokenPhantomStable
+                ... on GqlPoolTokenComposableStable {
+                    ...GqlPoolTokenComposableStable
                 }
             }
         }
@@ -227,7 +252,7 @@ query GetPool($id: String!) {
                 }
             }
         }
-        ... on GqlPoolPhantomStable {
+        ... on GqlPoolComposableStable {
             amp
             nestingType
             tokens {
@@ -237,8 +262,8 @@ query GetPool($id: String!) {
                 ... on GqlPoolTokenLinear {
                     ...GqlPoolTokenLinear
                 }
-                ... on GqlPoolTokenPhantomStable {
-                    ...GqlPoolTokenPhantomStable
+                ... on GqlPoolTokenComposableStable {
+                    ...GqlPoolTokenComposableStable
                 }
             }
         }
@@ -263,8 +288,8 @@ query GetPool($id: String!) {
                 ... on GqlPoolTokenLinear {
                     ...GqlPoolTokenLinear
                 }
-                ... on GqlPoolTokenPhantomStable {
-                    ...GqlPoolTokenPhantomStable
+                ... on GqlPoolTokenComposableStable {
+                    ...GqlPoolTokenComposableStable
                 }
             }
         }
@@ -321,7 +346,7 @@ fragment GqlPoolTokenLinear on GqlPoolTokenLinear {
     }
 }
 
-fragment GqlPoolTokenPhantomStable on GqlPoolTokenPhantomStable {
+fragment GqlPoolTokenComposableStable on GqlPoolTokenComposableStable {
     id
     index
     name

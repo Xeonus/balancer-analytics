@@ -17,6 +17,7 @@ import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import { useTheme } from '@mui/material/styles'
 import { CoingeckoRawData } from "../../../data/balancer/useTokens";
+import {TokenPrices} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
 
 
 export interface Data {
@@ -177,7 +178,7 @@ interface ServiceProviderSpendingTable {
     spRows: Data[],
     year: number,
     quarter: number,
-    balPriceData: CoingeckoRawData,
+    balPriceData: TokenPrices,
 }
 
 export default function ServiceProviderSpendingTable({ spRows, year, quarter, balPriceData }:

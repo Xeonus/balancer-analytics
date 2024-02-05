@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useActiveNetworkVersion } from "../../state/application/hooks";
+import {CG_KEY} from "../balancer/constants";
 
 //Coingecko Historical Interface
 export interface CoingeckoRawData {
@@ -12,7 +13,8 @@ export interface CoingeckoRawData {
 export function GetCoingeckoSingleTokenData (address: string, network: string, fromTimestamp: number, toTimestamp: number) {
     const [activeNetwork] = useActiveNetworkVersion();
     const baseURI = 'https://api.coingecko.com/api/v3/coins/';
-    const queryParams = network + '/contract/' + address + '/market_cart/range?vs_currency=usd&from=' + fromTimestamp.toString() + '&to=' + toTimestamp.toString();
+    const queryParams = network + '/contract/' + address + '/market_cart/range?vs_currency=usd&from='
+        + fromTimestamp.toString() + '&to=' + toTimestamp.toString() + '&x_cg_demo_api_key=' + CG_KEY;
         const [jsonData, setJsonData] = useState<CoingeckoRawData>();
         //Fetch Balancer Front-End Json containing incentives data:
         useEffect(() => {

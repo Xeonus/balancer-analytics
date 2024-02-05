@@ -2,7 +2,6 @@ node_modules
 .env
 .firebaserc
 .firebase
-firebase.json
 build
 .idea
 .DS_Store

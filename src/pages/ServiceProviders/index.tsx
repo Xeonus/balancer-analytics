@@ -12,6 +12,7 @@ import { formatDollarAmount } from '../../utils/numbers';
 import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from './helpers';
 import ServiceProviderSpendingTable from '../../components/Tables/ServiceProviderSpendingTable';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 
 
@@ -23,17 +24,18 @@ export default function ServiceProviders() {
     const currentQuarter = dayjs().quarter();
     const [activeNetwork] = useActiveNetworkVersion()
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
-    const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+    //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
+    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
 
 
     //Data
-    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData)
+    const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData.data)
     const nextQuarter = currentQuarter < 4 ? currentQuarter + 1 : 1;
     const nextYearEntry = currentQuarter < 4 ? dayjs().year() : dayjs().year() + 1;
-    const [nextQuarterPie, netQuarterTotal] = useGetQuarterlyTotalSpendData(sps, nextYearEntry, nextQuarter, balPriceData);
-    const spRows = useGetSPTableEntry(sps, dayjs().year(), currentQuarter, balPriceData);
+    const [nextQuarterPie, netQuarterTotal] = useGetQuarterlyTotalSpendData(sps, nextYearEntry, nextQuarter, balPriceData.data);
+    const spRows = useGetSPTableEntry(sps, dayjs().year(), currentQuarter, balPriceData.data);
     const totalsBySpsPie = getTotalsBySp(spRows);
-    const spRowsForecast = useGetSPTableEntry(sps, nextYearEntry, nextQuarter, balPriceData);
+    const spRowsForecast = useGetSPTableEntry(sps, nextYearEntry, nextQuarter, balPriceData.data);
     const totalsBySpsForecast = getTotalsBySp(spRowsForecast);
 
 
@@ -156,7 +158,7 @@ export default function ServiceProviders() {
                     xs={11}
                 >
                     {balPriceData ?
-                        <ServiceProviderSpendingTable spRows={spRows} year={dayjs().year()} quarter={currentQuarter} balPriceData={balPriceData} />
+                        <ServiceProviderSpendingTable spRows={spRows} year={dayjs().year()} quarter={currentQuarter} balPriceData={balPriceData.data} />
                         : null}
                 </Grid>
                 <Grid
@@ -235,7 +237,7 @@ export default function ServiceProviders() {
                     xs={11}
                 >
                     {balPriceData ?
-                        <ServiceProviderSpendingTable spRows={spRowsForecast} year={nextYearEntry} quarter={nextQuarter} balPriceData={balPriceData} />
+                        <ServiceProviderSpendingTable spRows={spRowsForecast} year={nextYearEntry} quarter={nextQuarter} balPriceData={balPriceData.data} />
                         : null}
                 </Grid>
                 <Grid
