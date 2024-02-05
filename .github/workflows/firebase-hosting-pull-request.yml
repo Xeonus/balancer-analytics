@@ -36,6 +36,7 @@ jobs:
       REACT_APP_ALCHEMY_URL_POLYGON: '${{ secrets.REACT_APP_ALCHEMY_URL_POLYGON }}'
       REACT_APP_ALCHEMY_URL_ZKEVM: '${{ secrets.REACT_APP_ALCHEMY_URL_ZKEVM }}'
       REACT_APP_ALCHEMY_URL_ARBITRUM: '${{ secrets.REACT_APP_ALCHEMY_URL_ARBITRUM }}'
+      REACT_APP_CG_KEY: '${{ secrets.REACT_APP_CG_KEY }}'
     strategy:
       matrix:
         node-version: [ 16.x ]
