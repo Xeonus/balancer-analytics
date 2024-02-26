@@ -2,6 +2,7 @@ import ReactEcharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { BalancerPieChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount, formatNumber } from '../../utils/numbers';
+import {RAINBOW_COLORS} from "../../constants";
 
 export interface GenericPieChartProps {
     data: BalancerPieChartDataItem[],
@@ -42,6 +43,13 @@ export default function GenericPieChart({ data, height, isNotUSD = false }: Gene
             {
                 name: 'Total asset fraction',
                 type: 'pie',
+                itemStyle: {
+                    color: function (params: any) {
+                        // Use the rainbowColors array to set colors based on the index
+                        const colorIndex = params.dataIndex % RAINBOW_COLORS.length;
+                        return RAINBOW_COLORS[colorIndex];
+                    },
+                },
                 data: data,
                 radius: ['40%', '70%'],
                 avoidLabelOverlap: true,

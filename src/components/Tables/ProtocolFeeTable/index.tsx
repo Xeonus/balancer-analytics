@@ -9,23 +9,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {
-    Avatar,
-    Checkbox,
-    CircularProgress,
-    FormGroup,
-    Grid, IconButton,
-    InputBase,
-    Menu,
-    Radio,
-    RadioGroup,
-    Typography
-} from '@mui/material';
+import {Avatar, CircularProgress, Grid, Typography} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import {visuallyHidden} from '@mui/utils';
-import {formatDollarAmount} from '../../../utils/numbers';
-import {POOL_HIDE, POOL_TYPE_DISPLAY_NAMES, POOL_TYPE_FILTERS, TOKEN_FILTERS} from '../../../constants'
+import {PoolFeeData} from '../../../data/balancer/balancerTypes';
+import {formatAmount, formatDollarAmount} from '../../../utils/numbers';
+import {POOL_HIDE} from '../../../constants'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import {useTheme} from '@mui/material/styles'
@@ -44,52 +34,42 @@ import PoolCompositionUnified from "../../PoolCompositionUnified";
 import PoolCurrencyLogoUnified from "../../PoolCurrencyLogoUnified";
 import {PoolFeeRecord} from "../../../data/maxis/maxiStaticTypes";
 import EtherLogo from "../../../assets/svg/ethereum.svg";
-import OpLogo from "../../../assets/svg/optimism.svg";
 import PolygonLogo from "../../../assets/svg/polygon.svg";
 import GnosisLogo from "../../../assets/svg/gnosis.svg";
 import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
 import BaseLogo from  "../../../assets/svg/base.svg"
 import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
-import TextField from "@mui/material/TextField";
-import {useState} from "react";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import {TokenFilters} from "../../../data/balancer/balancerTypes";
-import ClearIcon from "@mui/icons-material/Clear";
-import SearchIcon from "@mui/icons-material/Search";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import PoolCompositionFeeData from "../../PoolCompositionFeeData";
 
 
 interface Data {
+    network: string;
     name: string;
     poolTokens: PoolTokenDataUnified[];
-    poolData: PoolDataUnified;
-    network: string;
+    poolData: PoolFeeData;
     earnedFees: number;
     tvl: number;
+    isCore: boolean;
 }
 
 function createData(
+    network: string,
     name: string,
     poolTokens: PoolTokenDataUnified[],
-    poolData: PoolDataUnified,
-    network: string,
+    poolData: PoolFeeData,
     earnedFees: number,
     tvl: number,
+    isCore: boolean,
 ): Data {
     return {
+        network,
         name,
         poolTokens,
         poolData,
-        network,
         earnedFees,
         tvl,
+        isCore
     };
-}
-
-interface SelectionState {
-    tokenType: keyof TokenFilters | null;
-    poolType: string | null;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -108,8 +88,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | PoolTokenDataUnified[] | PoolDataUnified },
-    b: { [key in Key]: number | string | PoolTokenDataUnified[] | PoolDataUnified },
+    a: { [key in Key]: number | boolean | string | PoolTokenDataUnified[] | PoolFeeData },
+    b: { [key in Key]: number | boolean | string | PoolTokenDataUnified[] | PoolFeeData },
 ) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -152,6 +132,13 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: '',
+        isMobileVisible: true,
+    },
+    {
+        id: 'isCore',
+        numeric: false,
+        disablePadding: false,
+        label: 'Core Pool',
         isMobileVisible: true,
     },
     {
@@ -226,29 +213,19 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function CorePoolTable({
+export default function ProtocolFeeTable({
                                           poolDatas,
                                           corePools,
                                       }: {
-    poolDatas: PoolDataUnified[],
+    poolDatas: PoolFeeData[],
     corePools: PoolFeeRecord[],
 }) {
-    const [order, setOrder] = useState<Order>('desc');
-    const [orderBy, setOrderBy] = useState<keyof Data>('earnedFees');
-    const [page, setPage] = useState(0);
-    const [dense, setDense] = useState(true);
-    const [rowsPerPage, setRowsPerPage] = useState(25);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState<null | HTMLElement>(null);
-    const [selection, setSelection] = useState<SelectionState>({ tokenType: null, poolType: null });
-    const [selectedPoolTypes, setSelectedPoolTypes] = useState<string[]>([]);
-    const [selectedTokenCategories, setSelectedTokenCategories] = useState<Array<keyof TokenFilters>>([]);
-    //console.log("selectedTokenCategories", selectedTokenCategories)
-    const theme = useTheme();
-
-
-
-
+    const [order, setOrder] = React.useState<Order>('desc');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('earnedFees');
+    const [page, setPage] = React.useState(0);
+    const [dense, setDense] = React.useState(true);
+    const [rowsPerPage, setRowsPerPage] = React.useState(25);
+    const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
 
     if (!poolDatas && !corePools) {
@@ -263,50 +240,32 @@ export default function CorePoolTable({
         );
     }
 
-    const handleTokenTypeChange = (tokenType: keyof TokenFilters | null) => {
-        setSelection(prev => ({ ...prev, tokenType }));
-    };
-
-    const handlePoolTypeChange = (poolType: string | null) => {
-        setSelection(prev => ({ ...prev, poolType }));
-    };
-
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setFilterMenuAnchorEl(event.currentTarget);
-    };
-
-    const resetFilters = () => {
-        setSelection({ tokenType: null, poolType: null });
-    };
-
-
-
-
     //Create rows
     const rows = poolDatas.reduce((acc, poolData) => {
         // Check the necessary conditions before processing.
         if (poolData && poolData.poolType !== 'LIQUIDITY_BOOTSTRAPPING' &&
-            !POOL_HIDE.includes(poolData.poolId) && poolData.totalLiquidity > 100) {
+            !POOL_HIDE.includes(poolData.id) && poolData.liquidity > 100) {
             // Find the matching core pool record.
-            const corePoolRecord = corePools.find(c => c.poolId === poolData.poolId);
+            const corePoolRecord = corePools.find(c => c.poolId === poolData.id);
 
 
-
-            if (corePoolRecord) {
                 // Parse 'earned_fees' as a float to ensure numeric sorting.
-                const earnedFeesNumeric = parseFloat(corePoolRecord.earned_fees);
+                //const earnedFeesNumeric = parseFloat(corePoolRecord.earned_fees);
                 // If a match is found, create the row data and accumulate it.
                 const rowData = createData(
+                    activeNetwork.name,
                     poolData.name,
                     poolData.tokens,
                     poolData,
-                    poolData.chain,
-                    isNaN(earnedFeesNumeric) ? 0 : earnedFeesNumeric, // Assuming createData needs these params.
-                    poolData.totalLiquidity
+                    poolData.protocolFee,
+                    poolData.liquidity,
+                    false,
                 );
-                acc.push(rowData);
+            if (corePoolRecord) {
+                rowData.isCore = true
             }
+                acc.push(rowData);
+
         }
         return acc;
     }, [] as Data[]);
@@ -381,109 +340,10 @@ export default function CorePoolTable({
     }
 
 
-
-    const filteredRows = rows.filter((row) => {
-        const matchesSearchTerm = searchTerm === '' || row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.poolTokens.some(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            row.poolData.chain.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const tokenTypeMatch = selection.tokenType ? TOKEN_FILTERS[selection.tokenType].some(token => row.poolTokens.some(rowToken => rowToken.symbol === token)) : true;
-        const poolTypeMatch = selection.poolType ? row.poolData.poolType === selection.poolType : true;
-
-
-        return matchesSearchTerm && tokenTypeMatch && poolTypeMatch;
-    });
-
-    const clearSearch = (): void => {
-        setSearchTerm("");
-    };
-
-
-
-
     //Table generation
 
     return (
         <Box sx={{width: '100%'}}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Box>
-                    <Paper
-                        component="form"
-                        sx={{mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500, minWidth: 400}}
-                    >
-                        <InputBase
-                            sx={{ml: 1, flex: 1}}
-                            placeholder="Search for a Core Pool"
-                            inputProps={{'aria-label': 'search core pools'}}
-                            value={searchTerm}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(event.target.value)}
-                        />
-                        <IconButton onClick={clearSearch} type="button" sx={{p: '10px'}} aria-label="search">
-                            {searchTerm !== "" ? <ClearIcon/> : <SearchIcon/>}
-                        </IconButton>
-
-                    </Paper>
-                </Box>
-                <Box m={1}>
-                    <Button
-                        sx={{
-                            backgroundColor: theme.palette.mode === 'dark' ? "background.paper" : null,
-                        }}
-                        variant="contained" aria-controls="filter-menu" onClick={handleClick}>
-                        Filters
-                    </Button>
-                </Box>
-                <Menu
-                    id="filter-menu"
-                    anchorEl={filterMenuAnchorEl}
-                    keepMounted
-                    open={Boolean(filterMenuAnchorEl)}
-                    onClose={() => setFilterMenuAnchorEl(null)}
-                    PaperProps={{
-                        style: {
-                            padding: '0', // Reduce padding around the menu
-                        },
-                    }}
-                >
-                    <MenuItem disabled>
-                        <Typography variant="h6" style={{ marginLeft: 16 }}>Token Types</Typography> {/* Add some margin if needed */}
-                    </MenuItem>
-                    {Object.keys(TOKEN_FILTERS).map((tokenType) => (
-                        <MenuItem key={tokenType} style={{ padding: '4px 16px' }}> {/* Reduce vertical padding */}
-                            <ListItemIcon style={{ minWidth: 'auto' }}> {/* Wrap Radio in ListItemIcon for alignment */}
-                                <Radio
-                                    checked={selection.tokenType === tokenType}
-                                    onChange={(event) => handleTokenTypeChange(event.target.value as keyof TokenFilters)}
-                                    value={tokenType}
-                                    name="token-type-group"
-                                />
-                            </ListItemIcon>
-                            <Typography variant="body1">{tokenType}</Typography> {/* Use Typography for consistent text styling */}
-                        </MenuItem>
-                    ))}
-                    <MenuItem disabled>
-                        <Typography variant="h6" style={{ marginLeft: 16 }}>Pool Types</Typography>
-                    </MenuItem>
-                    {POOL_TYPE_FILTERS.map((poolType) => (
-                        <MenuItem key={poolType} style={{ padding: '4px 16px' }}>
-                            <ListItemIcon style={{ minWidth: 'auto' }}>
-                                <Radio
-                                    checked={selection.poolType === poolType}
-                                    onChange={(event) => handlePoolTypeChange(event.target.value)}
-                                    value={poolType}
-                                    name="pool-type-group"
-                                />
-                            </ListItemIcon>
-                            <Typography variant="body1">{POOL_TYPE_DISPLAY_NAMES[poolType as keyof typeof POOL_TYPE_DISPLAY_NAMES]}</Typography>
-                        </MenuItem>
-                    ))}
-                    <MenuItem style={{ padding: '8px 16px' }}>
-                        <Button fullWidth onClick={resetFilters} color="primary">
-                            Reset Filters
-                        </Button>
-                    </MenuItem>
-                </Menu>
-            </Box>
             <Paper sx={{mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table
@@ -497,7 +357,9 @@ export default function CorePoolTable({
                             onRequestSort={handleRequestSort}
                         />
                         <TableBody>
-                            {stableSort(filteredRows, getComparator(order, orderBy))
+                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+              rows.sort(getComparator(order, orderBy)).slice() */}
+                            {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -506,7 +368,7 @@ export default function CorePoolTable({
                                         <TableRow
                                             hover
                                             onClick={() => {
-                                                navigate(`${getLink(networkInfos[row.network.toUpperCase()], row.poolData.poolId)}/`);
+                                                navigate(`${getLink(networkInfos[activeNetwork.id], row.poolData.id)}/`);
                                             }}
                                             role="number"
                                             tabIndex={-1}
@@ -519,11 +381,14 @@ export default function CorePoolTable({
                                                         height: 20,
                                                         width: 20
                                                     }}
-                                                    src={networkLogoMap[row.network.toUpperCase()]}
+                                                    src={networkLogoMap[activeNetwork.id]}
                                                 />
                                             </TableCell>
                                             <TableCell>
                                                 <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'}/>
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.isCore ? 'CORE' : 'Non-Core'}
                                             </TableCell>
                                             <TableCell
                                                 component="th"
@@ -531,7 +396,7 @@ export default function CorePoolTable({
                                                 scope="row"
                                                 sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
-                                                <PoolCompositionUnified key={row.poolData.poolId}
+                                                <PoolCompositionFeeData key={row.poolData.id}
                                                                         poolData={row.poolData} size={35}/>
                                             </TableCell>
                                             <TableCell align="right">

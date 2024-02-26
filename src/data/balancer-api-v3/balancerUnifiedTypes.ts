@@ -44,6 +44,7 @@ export interface PoolTokenDataUnified {
     name: string;
     symbol: string;
     weight: number;
+    paidProtocolFees?: number,
 }
 
 

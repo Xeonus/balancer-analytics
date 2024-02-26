@@ -26,14 +26,12 @@ export default function PoolMetricsCard({
     const metricUnit = mainMetricUnit ? mainMetricUnit : '';
 
     return (
-        <Card
-        sx={{
-          maxWidth: '275px',
-          minWidth: '250px',
-          boxShadow: 3,
-        }}
-        >
-          <CardContent>
+        <Card sx={{
+            minHeight: '110px',
+            maxWidth: '275px',
+            boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
+        }}>
+            <CardContent sx={{pl: '10px', pr: '10px', pt: '10px', paddingBottom: '0px !important'}}>
             <Grid
               container
               spacing={1}
@@ -44,6 +42,7 @@ export default function PoolMetricsCard({
                   color="textSecondary"
                   gutterBottom
                   variant="h6"
+                  sx={{fontSize: '22px'}}
                 >
                   {metricName}
                 </Typography>

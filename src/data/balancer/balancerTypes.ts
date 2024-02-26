@@ -1,3 +1,5 @@
+import {PoolTokenDataUnified} from "../balancer-api-v3/balancerUnifiedTypes";
+
 export interface BalancerChartDataItem {
     value: number;
     time: string;
@@ -7,6 +9,12 @@ export interface BalancerChartDataItem {
 export interface BalancerPieChartDataItem {
     value: number;
     name: string;
+}
+
+export interface TokenFilters {
+    LSTs: string[];
+    Stables: string[];
+    LRTs: string[];
 }
 
 export type TokenData = {
@@ -227,4 +235,26 @@ export interface SimplePoolData {
     poolType: string;
     symbol: string;
     tokens: SimplePoolTokenData[];
+}
+
+export interface PoolFeeSnapshotData {
+    pools: PoolFeeData[]
+}
+
+export interface PoolFeeData {
+    address: string,
+    id: string,
+    symbol: string,
+    totalAumFeeCollectedInBPT: number,
+    totalProtocolFee: number,
+    totalProtocolFeePaidInBPT: number,
+    totalSwapFee: number,
+    tokens: PoolTokenDataUnified[],
+    timestamp: number,
+    protocolFee: number,
+    swapFees: number,
+    swapVolume: number,
+    liquidity: number,
+    poolType: string,
+    name: string,
 }

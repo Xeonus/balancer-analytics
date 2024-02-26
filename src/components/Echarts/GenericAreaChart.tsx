@@ -20,7 +20,7 @@ export default function GenericAreaChart({chartData, dataTitle, format = '$', ba
     let yData = chartData.map(el => el.value);
 
     const option = {
-        color: ['#00DDFF'],
+        color: ['#2c5364'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -64,7 +64,13 @@ export default function GenericAreaChart({chartData, dataTitle, format = '$', ba
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 2,
+                    color: new graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#737373' }, // Brighter color
+                        { offset: 1, color: '#c5c5c5' }, // Darker color
+                    ]),
+                    shadowColor: 'rgba(194,194,194,0.5)',
+                    shadowBlur: 10,
                 },
                 showSymbol: false,
                 areaStyle: {
@@ -72,11 +78,11 @@ export default function GenericAreaChart({chartData, dataTitle, format = '$', ba
                     color: new graphic.LinearGradient(0, 0, 0, 1, [
                         {
                             offset: 0,
-                            color: 'rgb(77, 119, 255)'
+                            color: 'rgb(70,70,70)'
                         },
                         {
                             offset: 1,
-                            color: 'rgb(0, 221, 255)'
+                            color: 'rgb(44,83,100)'
                         }
                     ])
                 },

@@ -164,12 +164,12 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Tokens'} />
                 </ListItemButton>
-                 <ListItemButton key={'BAL Emissions'} component={NavLink} to={'/' + route + 'emissions'}>
+                 {/*<ListItemButton key={'BAL Emissions'} component={NavLink} to={'/' + route + 'emissions'}>
                     <ListItemIcon>
                         <AutoAwesomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={'BAL Emissions'} />
-                </ListItemButton>
+                </ListItemButton>*/}
                 <ListItemButton key={'Core Pools'} component={NavLink} to={'/' + route + 'corePools'}>
                     <ListItemIcon>
                         <HubIcon />
@@ -186,12 +186,12 @@ const MenuDrawer = ({
             </List>
             <List>
                 <Divider />
-                <ListItemButton key={'Fees'} component={NavLink} to={networkPrefix(activeNetwork) + 'fees'}>
+                {/*<ListItemButton key={'Fees'} component={NavLink} to={networkPrefix(activeNetwork) + 'fees'}>
                     <ListItemIcon>
                         <MonetizationOnIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Revenue Projections'} />
-                </ListItemButton>
+                </ListItemButton>*/}
                 <ListItemButton key={'DAO Treasury'} component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'}>
                     <ListItemIcon>
                         <AccountBalanceWalletIcon />
@@ -225,7 +225,6 @@ const MenuDrawer = ({
                             sx={{
                                 backgroundColor: '#989799',
                                 borderRadius: '30px',
-                                minWidth: '180px',
                                 border: 'none',
                                 color: '#eeeeee',
                                 cursor: 'pointer',
@@ -242,7 +241,7 @@ const MenuDrawer = ({
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                                 <img src={BeetsIcon} alt="Beets Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Beets Analytics</Typography>
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Beets</Typography>
                             </Box>
                         </Button>
                     </Box>
@@ -253,7 +252,6 @@ const MenuDrawer = ({
                             onClick={() => {window.open('https://aura.defilytica.com', '_blank')}}
                             sx={{
                                 backgroundColor: '#7905ef',
-                                minWidth: '180px',
                                 borderRadius: '30px',
                                 border: 'none',
                                 color: '#eeeeee',
@@ -271,7 +269,7 @@ const MenuDrawer = ({
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <img src={AuraIcon} alt="Aura Icon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Aura Analytics</Typography>
+                                <Typography variant="caption" sx={{ color: '#eeeeee' }}>Aura</Typography>
                             </Box>
                         </Button>
                     </Box>
@@ -282,7 +280,6 @@ const MenuDrawer = ({
                             onClick={() => {window.open('https://defilytica.tools', '_blank')}}
                             sx={{
                                 backgroundColor: '#2a46ef',
-                                minWidth: '180px',
                                 borderRadius: '30px',
                                 border: 'none',
                                 color: '#eeeeee',

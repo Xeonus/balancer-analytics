@@ -12,7 +12,7 @@ export default function useGetAllPools(chainInIds: GqlChain[]): PoolDataUnified[
         }
     );
 
-    if (loading || error) {
+    if (error) {
         console.error("Error fetching gauges:", error);
         return undefined; // Return undefined in case of loading or error
     }
