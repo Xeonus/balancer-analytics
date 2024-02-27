@@ -475,7 +475,9 @@ export default function Reports() {
                                     barChartData={filteredVolumeMetrics}
                                     barChartName={'Protocol Volume'}
                                     lineChartData={cumulativeVolumeData}
-                                    lineChartName={'Cumulative Volume'}/>
+                                    lineChartName={'Cumulative Volume'}
+                                    noRainbowColors={true}
+                                />
                                 : null}
                         </Card>
                     </Grid>
@@ -526,7 +528,10 @@ export default function Reports() {
                                     barChartData={filteredProtocolFeeMetrics}
                                     barChartName={'Protocol Fees'}
                                     lineChartData={cumulativeProtocolFeeData}
-                                    lineChartName={'Cumulative Protocol Fees'}/>
+                                    lineChartName={'Cumulative Protocol Fees'}
+                                    noRainbowColors={true}
+
+                                />
                                 : null}
                         </Card>
                         <Box mb={2}></Box>
@@ -575,7 +580,9 @@ export default function Reports() {
                                         barChartData={feesToDaoChartData}
                                         barChartName={'DAO Income'}
                                         lineChartData={cumulativeToDaoData}
-                                        lineChartName={'Cumulative DAO Income'}/>
+                                        lineChartName={'Cumulative DAO Income'}
+                                        noRainbowColors={true}
+                                    />
                                     : null}
                             </Card>
                             {filteredFeesData && feesToVebal.length > 1 && cumulativeToVebal && cumulativeToVebal.length > 0 ?
@@ -593,7 +600,9 @@ export default function Reports() {
                                         barChartData={feesToVebal}
                                         barChartName={'DAO Income'}
                                         lineChartData={cumulativeToVebal}
-                                        lineChartName={'Cumulative DAO Income'}/>
+                                        lineChartName={'Cumulative DAO Income'}
+                                        noRainbowColors={true}
+                                    />
                                     : null}
                             </Card>
                             { /* <Box mb={1}>

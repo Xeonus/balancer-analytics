@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import Papa from 'papaparse';
-import { PoolFeeRecord } from "./maxiStaticTypes";
+import { NetworkFees } from "./maxiStaticTypes";
 
-//Obtain historical fees run
-export default function useGetTotalFeesCollected(endDate: string): PoolFeeRecord[] {
-    const [data, setData] = useState<PoolFeeRecord[]>([]);
+// Use a TypeScript generic to define the function's return type
+export default function useGetCollectedFees(endDate: string): NetworkFees | undefined {
+    const [data, setData] = useState<NetworkFees | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<any>(null);
 
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
                 // Calculate the start date by subtracting 14 days from the endDate
                 const endDateObj = new Date(endDate);
@@ -16,32 +18,24 @@ export default function useGetTotalFeesCollected(endDate: string): PoolFeeRecord
 
                 // Format dates to 'YYYY-MM-DD' format
                 const startDate = startDateObj.toISOString().split('T')[0];
-                const feeEndpoint = `https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/main/fee_allocator/allocations/incentives_${startDate}_${endDate}.csv`;
-
-                console.log("feeEndpoint",feeEndpoint)
-
+                // Adjust the path based on the endDate
+                const basePath = "https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/main/fee_allocator";
+                const isAfterCutoffDate = new Date(endDate) >= new Date("2024-01-18");
+                const pathSegment = isAfterCutoffDate ? "" : "/curated";
+                const feeEndpoint = `${basePath}${pathSegment}/fees_collected/fees_${startDate}_${endDate}.json`;
 
                 const response = await fetch(feeEndpoint);
-                const reader = response.body?.getReader();
-                const result = await reader?.read(); // raw array
-                const decoder = new TextDecoder('utf-8');
-                const csv = decoder.decode(result?.value); // convert the raw array to string
-                const correctedCsv = csv.replace(/^,/, 'poolId,');
-
-                // Now, parse the corrected CSV string.
-                const results = Papa.parse(correctedCsv, {
-                    header: true,
-                    skipEmptyLines: true,
-                });
-
-                if (results.errors.length > 0) {
-                    // Handle the error or throw it.
-                    console.log("CSV PARSING ERROR:", results.errors);
-                    throw new Error('Error parsing CSV data');
+                if (!response.ok) {
+                    // If the server response was not ok, throw an error
+                    throw new Error(`Error fetching data: ${response.statusText}`);
                 }
-                setData(results.data as PoolFeeRecord[]);
+                const fees: NetworkFees = await response.json();
+                setData(fees);
             } catch (error) {
                 console.error("Error fetching data: ", error);
+                setError(error);
+            } finally {
+                setIsLoading(false);
             }
         };
 

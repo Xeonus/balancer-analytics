@@ -20,21 +20,56 @@ import {getLastThursdayOddWeek} from "../../data/maxis/static/dataHelpers";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import CorePoolHistoricalTable from "../../components/Tables/CorePoolHistoricalTable";
+import useGetCollectedFees from "../../data/maxis/useGetTotalFeesCollected";
+import CorePoolEarnedVsSweptTable from "../../components/Tables/CorePoolEarnedVsSweptTable";
+import {NetworkFees, PoolFeeRecord} from "../../data/maxis/maxiStaticTypes";
 
 function formatDate(date: Date) {
     return date.toISOString().split('T')[0];
 }
 
+function calculateDelta(historicalFees: NetworkFees, poolFeeRecords: PoolFeeRecord[]): number {
+    // Calculate total amount from historicalCollectedNetworkFees
+    const totalSwept = Object.values(historicalFees).reduce((acc, current) => acc + current, 0);
+
+    // Sum up fees_to_vebal, fees_to_dao, and total_incentives from historicalData
+    const totalHistoricalSum = poolFeeRecords.reduce((acc, record) => {
+        const feesToVebal = parseFloat(record.fees_to_vebal);
+        const feesToDao = parseFloat(record.fees_to_dao);
+        const totalIncentives = parseFloat(record.total_incentives);
+        return acc + feesToVebal + feesToDao + totalIncentives;
+    }, 0);
+
+    // Calculate the delta
+    return totalSwept - totalHistoricalSum;
+}
+
 export default function CorePools() {
 
-
-
-    const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE']);
+    const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS']);
     const currentData = useGetCorePoolCurrentFees();
+
     const lastOddWeekThu = getLastThursdayOddWeek();
     const lastOddWeekThuString = formatDate(lastOddWeekThu)
     const [selectedEndDate, setSelectedEndDate] = useState<string>(lastOddWeekThuString);
     const historicalData = useGetCorePoolHistoricalFees(selectedEndDate);
+    const historicalCollectedNetworkFees = useGetCollectedFees(selectedEndDate)
+    let delta = 0
+    let totalSwept = 0
+    let totalHistoricalSum = 0
+    if (historicalCollectedNetworkFees && historicalData) {
+        totalSwept = Object.values(historicalCollectedNetworkFees).reduce((acc, current) => acc + current, 0);
+        // Sum up fees_to_vebal, fees_to_dao, and total_incentives from historicalData
+        totalHistoricalSum = historicalData.reduce((acc, record) => {
+            const feesToVebal = parseFloat(record.fees_to_vebal);
+            const feesToDao = parseFloat(record.fees_to_dao);
+            const totalIncentives = parseFloat(record.total_incentives);
+            return acc + feesToVebal + feesToDao + totalIncentives;
+        }, 0);
+
+        delta = totalSwept - totalHistoricalSum;
+    }
 
     const [selectedPeriod, setSelectedPeriod] = useState<string>("Current Fee Epoch");
     const [periods, setPeriods] = useState<string[]>([]);
@@ -65,7 +100,7 @@ export default function CorePools() {
         };
 
         const lastOddThursday = getLastThursdayOddWeek();
-        const firstDataOccurrence = "2023-09-29"; // Assuming this is the correct start date
+        const firstDataOccurrence = "2023-09-28"; // Assuming this is the correct start date
         setPeriods(generatePeriods(firstDataOccurrence, lastOddThursday));
     }, []);
 
@@ -86,7 +121,6 @@ export default function CorePools() {
 
     // Decide which data set to display based on selected period
     let corePools = selectedPeriod === "Current Fee Epoch" ? currentData : historicalData;
-    console.log("corePools", corePools)
 
 
     const totalFees = corePools?.reduce((acc, pool) => acc + parseFloat(pool.earned_fees), 0)
@@ -143,7 +177,7 @@ export default function CorePools() {
     }))
 
     //Core pools by chain
-    const activeChains = ['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE'];
+    const activeChains = ['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS'];
     const chainPieChartData: BalancerPieChartDataItem[] = activeChains.map(chain => ({
         name: chain,
         value: corePools ? corePools.reduce((sum, pool) => {
@@ -203,7 +237,7 @@ export default function CorePools() {
                                 <MenuItem
 
                                     key={index}
-                                          value={period === "Current Fee Epoch" ? period : period.split(" to ")[1]}>
+                                    value={period === "Current Fee Epoch" ? period : period.split(" to ")[1]}>
                                     {period}
                                 </MenuItem>
                             ))}
@@ -258,8 +292,9 @@ export default function CorePools() {
                         </Box>
                     </Grid>
                 </Grid>
+            </Grid>
 
-                    {/*<Grid
+                {/*<Grid
                         item
                         xs={11}
                         md={5.5}
@@ -291,44 +326,63 @@ export default function CorePools() {
                             <GenericPieChart data={chainPieChartData} height='250px'/>
                         </Card>
                     </Grid>*/}
-                <Grid item xs={11}>
+
                     {filteredPoolBarChartData.length > 1 && (
                         <Grid
                             container
-                            sx={{
-                                direction: {xs: 'column', sm: 'row'}
-                            }}
+                            sx={{direction: {xs: 'column', sm: 'row'}}}
                             justifyContent="space-around"
                             alignItems="left"
                             alignContent="left"
+                            spacing={2}
                         >
-                            <Grid item xs={11} md={5.5} m={{xs: 0, sm: 1}}>
-                                <Card sx={{ minHeight: '150px', maxWidth: '700px', boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px" }}>
-                                    <Box m={1}>
-                                        <Typography sx={{ fontSize: '20px' }}>
-                                            Top 20 Core Pools by Core Pool Fees Earned on all Deployments
-                                        </Typography>
-                                    </Box>
-                                    <MixedLineBarChart
-                                        barChartData={filteredPoolBarChartTVLData}
-                                        barChartName={'TVL'}
-                                        lineChartData={filteredPoolBarChartData}
-                                        lineChartName={'Earned Protocol Fees'}
-                                        rotateAxis={true}
-                                    />
-                                </Card>
+                            <Grid
+                                item
+                                mt={1}
+                                xs={11}
+                                md={5}
+                            >
+                                <Box m={1}>
+                                    <Card
+                                        sx={{minHeight: '150px', maxWidth: '700px', boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px"}}>
+                                        <Box m={1}>
+                                            <Typography sx={{fontSize: '20px'}}>
+                                                Top 20 Core Pools by Core Pool Fees Earned on all Deployments
+                                            </Typography>
+                                        </Box>
+                                        <MixedLineBarChart
+                                            barChartData={filteredPoolBarChartTVLData}
+                                            barChartName={'TVL'}
+                                            lineChartData={filteredPoolBarChartData}
+                                            lineChartName={'Earned Protocol Fees'}
+                                            rotateAxis={true}
+                                        />
+                                    </Card>
+                                </Box>
                             </Grid>
-                            <Grid item xs={11} md={5.5} m={{xs: 0, sm: 1}}>
-                                <Card sx={{ minHeight: '150px', maxWidth: '700px', boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px" }}>
+                            <Grid
+                                item
+                                mt={2}
+                                xs={11}
+                                md={5}
+                            >
+                                <Box m={1}>
+                                <Card
+                                    sx={{minHeight: '150px', maxWidth: '700px', boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px"}}>
                                     <Box m={1}>
-                                        <Typography sx={{ fontSize: '20px' }}>Core Pool Revenue per Chain</Typography>
+                                        <Typography sx={{fontSize: '20px'}}>Core Pool Revenue per Chain</Typography>
                                     </Box>
-                                    <GenericPieChart data={chainPieChartData} height='250px' />
+                                    <GenericPieChart data={chainPieChartData} height='250px'/>
                                 </Card>
+                                </Box>
                             </Grid>
                         </Grid>
                     )}
-                </Grid>
+            <Grid
+                container
+                spacing={2}
+                sx={{justifyContent: 'center'}}
+            >
                 <Grid item xs={11}>
                     <Typography variant={'h5'}>
                         Core Pools: Earned Fees Statistics
@@ -350,20 +404,85 @@ export default function CorePools() {
                     </Typography>
                 </Grid>
 
-                <Grid item xs={11}>
-                    {corePools && globalPools && globalPools.length > 10 ?
-                        <CorePoolTable poolDatas={globalPools} corePools={corePools}/> :
+                {selectedPeriod === "Current Fee Epoch" ?
+                    <Grid item xs={11}>
+                        {corePools && globalPools && globalPools.length > 10 ?
+                            <CorePoolTable poolDatas={globalPools} corePools={corePools}/> :
+                            <Grid
+                                container
+                                spacing={2}
+                                mt='5%'
+                                mb={2}
+                                sx={{justifyContent: 'center'}}
+                            >
+                                <CustomLinearProgress/>
+                            </Grid>}
+
+                    </Grid> :
+                    <Grid item xs={11}>
+                        {corePools && globalPools && globalPools.length > 10 ?
+                            <CorePoolHistoricalTable poolDatas={globalPools} corePools={corePools}/> :
+                            <Grid
+                                container
+                                spacing={2}
+                                mt='5%'
+                                mb={2}
+                                sx={{justifyContent: 'center'}}
+                            >
+                                <CustomLinearProgress/>
+                            </Grid>}
+
+                    </Grid>}
+                {selectedPeriod !== "Current Fee Epoch" ?
+                    <Grid item xs={11}>
+                        <Typography sx={{fontSize: '24px'}}>Fee Collector Performance</Typography>
+
+                    </Grid> : null}
+                {selectedPeriod !== "Current Fee Epoch" ?
+                    <Grid mb={1} item xs={11}>
                         <Grid
                             container
-                            spacing={2}
-                            mt='5%'
-                            mb={2}
-                            sx={{justifyContent: 'center'}}
+                            columns={{xs: 4, sm: 8, md: 12}}
+                            sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                         >
-                            <CustomLinearProgress/>
-                        </Grid>}
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
+                                    mainMetric={totalSwept ? totalSwept : 0}
+                                    mainMetricInUSD={true}
+                                    metricName={'Overall Fees Swept'}
+                                    MetricIcon={MonetizationOnIcon}
+                                    toolTipText={'Total Fees streamed to the fee collector and being processed across all networks'}
+                                />
+                            </Box>
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
+                                    mainMetric={delta ? delta : 0}
+                                    mainMetricInUSD={true}
+                                    metricName={'Swept vs Distributed'}
+                                    MetricIcon={MonetizationOnIcon}
+                                    toolTipText={'Fee allocator precision in $. Provides a metric of how much the fee allocator distributes vs how much was effectively collected and processed by Mimic.'}
+                                />
+                            </Box>
+                        </Grid>
+                        <Box mb={1}>
+                            <Typography variant={'body1'}>Statistics visualizing total fees swept (incl. swap fees and
+                                non-core pool fees) vs. earned core pool fees. A difference ratio greater than 1
+                                indicates that non-core pool fees were distributed to core pools</Typography>
+                        </Box>
+                        {chainPieChartData && historicalCollectedNetworkFees ?
+                            <CorePoolEarnedVsSweptTable networkData={chainPieChartData}
+                                                        historicalCollectedNetworkFees={historicalCollectedNetworkFees}/> :
+                            <Grid
+                                container
+                                spacing={2}
+                                mt='5%'
+                                mb={2}
+                                sx={{justifyContent: 'center'}}
+                            >
+                                <CustomLinearProgress/>
+                            </Grid>}
 
-                </Grid>
+                    </Grid> : null}
                 <Grid>
                 </Grid>
             </Grid>

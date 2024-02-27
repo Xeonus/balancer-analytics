@@ -16,9 +16,12 @@ export default function useGetCorePoolHistoricalFees(endDate: string): PoolFeeRe
 
                 // Format dates to 'YYYY-MM-DD' format
                 const startDate = startDateObj.toISOString().split('T')[0];
-                const feeEndpoint = `https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/main/fee_allocator/allocations/incentives_${startDate}_${endDate}.csv`;
+                // Adjust the path based on the endDate
+                const basePath = "https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/main/fee_allocator";
+                const isAfterCutoffDate = new Date(endDate) >= new Date("2024-01-18");
+                const pathSegment = isAfterCutoffDate ? "" : "/curated";
+                const feeEndpoint = `${basePath}${pathSegment}/allocations/incentives_${startDate}_${endDate}.csv`;
 
-                console.log("feeEndpoint",feeEndpoint)
 
 
                 const response = await fetch(feeEndpoint);

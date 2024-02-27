@@ -29,3 +29,13 @@ export interface FeeAllocations {
     periodStart: number;
     periodEnd: number;
 }
+
+export interface NetworkFees {
+    mainnet: number,
+    arbitrum: number,
+    polygon: number,
+    base: number,
+    gnosis: number,
+    avalanche: number,
+    zkevm?: number,
+}

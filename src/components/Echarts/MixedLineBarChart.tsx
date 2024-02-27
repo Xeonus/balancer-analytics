@@ -12,9 +12,10 @@ export interface GenericBarChartProps {
     lineChartData: BalancerChartDataItem[],
     lineChartName: string,
     rotateAxis?: boolean
+    noRainbowColors?: boolean
 }
 
-export default function MixedLineBarChart({ barChartData, barChartName, lineChartData, lineChartName, rotateAxis = false}: GenericBarChartProps) {
+export default function MixedLineBarChart({ barChartData, barChartName, lineChartData, lineChartName, rotateAxis = false, noRainbowColors=false}: GenericBarChartProps) {
 
     const theme = useTheme();
     let xData = barChartData.map(el => el.time);
@@ -88,7 +89,7 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                 name: barChartName,
                 type: 'bar',
                 itemStyle: {
-                    color: function (params: any) {
+                    color: noRainbowColors ? theme.palette.secondary : function (params: any) {
                         // Use the rainbowColors array to set colors based on the index
                         const colorIndex = params.dataIndex % RAINBOW_COLORS.length;
                         return RAINBOW_COLORS[colorIndex];
