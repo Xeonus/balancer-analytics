@@ -25,6 +25,8 @@ import { STABLE_POOLS } from '../../constants';
 import useGetPoolUserBalances from "../../data/balancer/useGetPoolUserBalances";
 import PoolShareLeaderboard from "../../components/Tables/PoolShareLeaderboard";
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
+import useGetGaugeShares from "../../data/balancer-gauges/useGetGaugeShares";
 
 
 
@@ -38,7 +40,13 @@ export default function PoolPage() {
         (poolData?.tokens || []).map((token) => token.address),
         poolData ? [poolData.id] : [],
     );
-    const usersBalances = useGetPoolUserBalances(poolId);
+    //const usersBalances = useGetPoolUserBalances(poolId);
+    const gauges = useGetBalancerV3StakingGauges();
+    const poolGauge = gauges.find(el => el.pool.id === poolId)
+    console.log("poolGauge", poolGauge)
+    const gaugeStakes = useGetGaugeShares(poolGauge ? poolGauge.address : '')
+    console.log("gaugeStakes", gaugeStakes)
+    const usersBalances = useGetPoolUserBalances(poolId, poolGauge ? poolGauge.address : '')
 
 
     //Navigation
@@ -265,7 +273,18 @@ export default function PoolPage() {
                         </Grid>
                     </Grid>
                     <Grid item mt={1} xs={11}>
-                        <Typography variant="h5">Top (Unstaked) BPT Holders </Typography>
+                        <Typography variant="h5"> Gauge Depositors (Stakers) </Typography>
+                    </Grid>
+
+                    <Grid item mt={1} xs={11}>
+                        { poolGauge ?
+                        <PoolShareLeaderboard leaderboardInfo={gaugeStakes} pricePerBPT={poolData.tvlUSD / poolData.totalShares}/> :
+                            <Typography>No Balancer gauge set up for this pool.</Typography>
+                        }
+                    </Grid>
+
+                    <Grid item mt={1} xs={11}>
+                        <Typography variant="h5"> BPT Holders (Non-Stakers) </Typography>
                     </Grid>
                     <Grid item mt={1} xs={11}>
                         <PoolShareLeaderboard leaderboardInfo={usersBalances} pricePerBPT={poolData.tvlUSD / poolData.totalShares}/>

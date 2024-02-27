@@ -34,6 +34,7 @@ export type NetworkInfo = {
   balAddress: string,
   feeCollectorThreshold: number
   decentralicedClientUri: string
+  gaugeClientUri: string
   alchemyRPCUrl: string
   alchemyKey: string
   route: string
@@ -62,6 +63,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
   clientUri: 'https://balancer-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges',
   decentralicedClientUri: 'https://gateway.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/GAWNgiGrA9eRce5gha9tWc7q5DPvN3fs5rSJ6tEULFNM',
   alchemyRPCUrl: ALCHEMY_URL,
   alchemyKey: ALCHEMY_KEY,
@@ -85,6 +87,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/arbitrum/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2',
   clientUri: 'https://balancer-arbitrum-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges-arbitrum',
   decentralicedClientUri: '',
   alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
   alchemyKey: ALCHEMY_KEY_ARBITRUM,
@@ -109,6 +112,7 @@ export const PolygonNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/polygon/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://balancer-polygon-prune-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges-polygon',
   decentralicedClientUri: '',
   alchemyRPCUrl: ALCHEMY_URL_POLYGON,
   alchemyKey: ALCHEMY_KEY_POLYGON,
@@ -133,6 +137,7 @@ export const PolygonZkEVMNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/zkevm/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://balancer-polygon-zkevm-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest',
   decentralicedClientUri: '',
   alchemyRPCUrl: ALCHEMY_URL_ZKEVM,
   alchemyKey: ALCHEMY_KEY_ZKEVM,
@@ -157,6 +162,7 @@ export const GnosisNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/gnosis-chain/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://balancer-gnosis-chain-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges-gnosis-chain',
   decentralicedClientUri: '',
   alchemyRPCUrl: 'https://rpc.gnosis.gateway.fm',
   alchemyKey: '',
@@ -181,6 +187,7 @@ export const AvalancheNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/avalanche/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://balancer-avalanche-v2-analytics.stellate.sh',
+  gaugeClientUri: 'https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges-avalanche',
   decentralicedClientUri: '',
   alchemyRPCUrl: ' https://api.avax.network/ext/bc/C/rpc ',
   alchemyKey: '',
@@ -205,6 +212,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/avalanche/',
   //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
+  gaugeClientUri: '',
   decentralicedClientUri: '',
   alchemyRPCUrl: 'https://base.publicnode.com',
   alchemyKey: '',

@@ -183,6 +183,50 @@ query BalancerPoolSwapFeeSnapshot($startTimestamp: Int!, $endTimeStamp: Int!) {
         }
 }
 
+query BalancerPoolFeeSnapshots(
+    $block: Block_height,
+    $where: PoolSnapshot_filter,
+) {
+    poolSnapshots(
+        first: 1000,
+        orderBy: timestamp,
+        orderDirection: desc,
+        block: $block,
+        where: $where) {
+        pool {
+            address
+            id
+            symbol
+            poolType
+            name
+            totalAumFeeCollectedInBPT
+            totalProtocolFee
+            totalProtocolFeePaidInBPT
+            totalSwapFee
+            tokens {
+                address
+                decimals
+                id
+                name
+                symbol
+                weight
+                paidProtocolFees
+            }
+            protocolAumFeeCache
+            protocolSwapFeeCache
+            protocolYieldFeeCache
+            swapFee
+        }
+        timestamp
+        protocolFee
+        swapFees
+        swapVolume
+        liquidity
+    }
+}
+
+
+
 query BalancerPoolProtocolFeeSnapshots($startTimestamp: Int!, $endTimeStamp: Int!) {
         poolSnapshots(
             first: 1000

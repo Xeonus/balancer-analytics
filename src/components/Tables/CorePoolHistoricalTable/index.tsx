@@ -66,6 +66,11 @@ interface Data {
     poolData: PoolDataUnified;
     network: string;
     earnedFees: number;
+    feesToveBAL: number;
+    feesToDAO: number;
+    totalIncentives: number;
+    auraIncentives: number;
+    balIncentives: number;
     tvl: number;
 }
 
@@ -75,6 +80,11 @@ function createData(
     poolData: PoolDataUnified,
     network: string,
     earnedFees: number,
+    feesToveBAL: number,
+    feesToDAO: number,
+    totalIncentives: number,
+    auraIncentives: number,
+    balIncentives: number,
     tvl: number,
 ): Data {
     return {
@@ -83,6 +93,11 @@ function createData(
         poolData,
         network,
         earnedFees,
+        feesToveBAL,
+        feesToDAO,
+        totalIncentives,
+        auraIncentives,
+        balIncentives,
         tvl,
     };
 }
@@ -175,6 +190,41 @@ const headCells: readonly HeadCell[] = [
         label: 'Earned Protocol Fees',
         isMobileVisible: true,
     },
+    {
+        id: 'feesToveBAL',
+        numeric: true,
+        disablePadding: false,
+        label: 'Fees to veBAL',
+        isMobileVisible: true,
+    },
+    {
+        id: 'feesToDAO',
+        numeric: true,
+        disablePadding: false,
+        label: 'Fees to DAO',
+        isMobileVisible: true,
+    },
+    {
+        id: 'totalIncentives',
+        numeric: true,
+        disablePadding: false,
+        label: 'Total Incentives',
+        isMobileVisible: true,
+    },
+    {
+        id: 'auraIncentives',
+        numeric: true,
+        disablePadding: false,
+        label: 'Incentives to AURA',
+        isMobileVisible: true,
+    },
+    {
+        id: 'balIncentives',
+        numeric: true,
+        disablePadding: false,
+        label: 'Incentives to BAL',
+        isMobileVisible: true,
+    },
 ];
 
 interface EnhancedTableProps {
@@ -226,7 +276,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function CorePoolTable({
+export default function CorePoolHistoricalTable({
                                           poolDatas,
                                           corePools,
                                       }: {
@@ -241,9 +291,6 @@ export default function CorePoolTable({
     const [searchTerm, setSearchTerm] = useState('');
     const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [selection, setSelection] = useState<SelectionState>({ tokenType: null, poolType: null });
-    const [selectedPoolTypes, setSelectedPoolTypes] = useState<string[]>([]);
-    const [selectedTokenCategories, setSelectedTokenCategories] = useState<Array<keyof TokenFilters>>([]);
-    //console.log("selectedTokenCategories", selectedTokenCategories)
     const theme = useTheme();
 
 
@@ -296,13 +343,23 @@ export default function CorePoolTable({
             if (corePoolRecord) {
                 // Parse 'earned_fees' as a float to ensure numeric sorting.
                 const earnedFeesNumeric = parseFloat(corePoolRecord.earned_fees);
+                const feesToVeBALNumeric = parseFloat(corePoolRecord.fees_to_vebal);
+                const feesToDAONumeric = parseFloat(corePoolRecord.fees_to_dao);
+                const totalIncentivesLNumeric = parseFloat(corePoolRecord.total_incentives);
+                const auraIncentivesNumeric = parseFloat(corePoolRecord.aura_incentives);
+                const balIncentivesNumeric = parseFloat(corePoolRecord.bal_incentives);
                 // If a match is found, create the row data and accumulate it.
                 const rowData = createData(
                     poolData.name,
                     poolData.tokens,
                     poolData,
                     poolData.chain,
-                    isNaN(earnedFeesNumeric) ? 0 : earnedFeesNumeric, // Assuming createData needs these params.
+                    isNaN(earnedFeesNumeric) ? 0 : earnedFeesNumeric,
+                    isNaN(feesToVeBALNumeric) ? 0 : feesToVeBALNumeric,
+                    isNaN(feesToDAONumeric) ? 0 : feesToDAONumeric,
+                    isNaN(totalIncentivesLNumeric) ? 0 : totalIncentivesLNumeric,
+                    isNaN(auraIncentivesNumeric) ? 0 : auraIncentivesNumeric,
+                    isNaN(balIncentivesNumeric) ? 0 : balIncentivesNumeric,
                     poolData.totalLiquidity
                 );
                 acc.push(rowData);
@@ -543,6 +600,36 @@ export default function CorePoolTable({
                                             <TableCell align="right">
                                                 {row.earnedFees > 0 ?
                                                     formatDollarAmount(row.earnedFees) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.feesToveBAL > 0 ?
+                                                    formatDollarAmount(row.feesToveBAL) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.feesToDAO > 0 ?
+                                                    formatDollarAmount(row.feesToDAO) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.totalIncentives > 0 ?
+                                                    formatDollarAmount(row.totalIncentives) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.auraIncentives > 0 ?
+                                                    formatDollarAmount(row.auraIncentives) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.balIncentives > 0 ?
+                                                    formatDollarAmount(row.balIncentives) :
                                                     0
                                                 }
                                             </TableCell>

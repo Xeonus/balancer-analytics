@@ -160,7 +160,10 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
 
     return (
         polygonData.length > 10 ?
-        <Card sx={{boxShadow: 3}}>
+        <Card sx={{
+            pb: '0px',
+            boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
+        }}>
             <Box m={1}>
             <FormControl size="small">
                     <Select

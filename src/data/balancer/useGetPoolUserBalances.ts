@@ -1,12 +1,13 @@
 import {useGetUserPoolBalancesQuery,} from '../../apollo/generated/graphql-codegen-generated';
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 
-export interface UserPoolShares {
+export interface UserPoolAndGaugeShares {
     balance: number,
     userAddress: string,
+    isStakedInGauge: boolean,
 }
 
-export default function useGetPoolUserBalances(poolId: string): UserPoolShares[] {
+export default function useGetPoolUserBalances(poolId: string, gaugeId = ''): UserPoolAndGaugeShares[] {
 
     const [activeNetwork] = useActiveNetworkVersion()
 
@@ -26,13 +27,15 @@ export default function useGetPoolUserBalances(poolId: string): UserPoolShares[]
     //Protocol Wallets
     const excludedAddresses = [
         "0xc128a9954e6c874ea3d62ce62b468ba073093f25",
-        "0xba12222222228d8ba445958a75a0704d566bf2c8"
+        "0xba12222222228d8ba445958a75a0704d566bf2c8",
+        gaugeId
     ];
 
     return data.pool.shares
         .filter(share => !excludedAddresses.includes(share.userAddress.id))
         .map(share => ({
-            balance: parseFloat(share.balance), // Assuming balance is a string and you want to convert to a number
+            balance: parseFloat(share.balance),
             userAddress: share.userAddress.id,
+            isStakedInGauge: false
         }));
 }

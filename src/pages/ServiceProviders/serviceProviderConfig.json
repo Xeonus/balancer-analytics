@@ -180,7 +180,7 @@
       "name": "BD Unit",
       "site_url": "-",
       "short_description": "The Business Development unit comprises of 2 core contributors advancing the DAOs efforts to secure strategic partnerships.",
-      "img_ref": "hypernative_small.png",
+      "img_ref": "default.png",
       "budgets": [
         {
           "year": 2024,
@@ -204,6 +204,46 @@
           "year": 2023,
           "quarter": 4,
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xd28b9b597ee87c9842153d9dc0961325798f48369f3d6029f7ae588f45a06d95",
+          "budget_requested": {
+            "USDC": 15000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xd28b9b597ee87c9842153d9dc0961325798f48369f3d6029f7ae588f45a06d95",
+          "budget_requested": {
+            "USDC": 15000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x58e317ba908ee8e75bf0c32c7b45eccdefa948ba46d00b112508fc9783a40cdc",
+          "budget_requested": {
+            "USDC": 15000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 3,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x58e317ba908ee8e75bf0c32c7b45eccdefa948ba46d00b112508fc9783a40cdc",
+          "budget_requested": {
+            "USDC": 15000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x58e317ba908ee8e75bf0c32c7b45eccdefa948ba46d00b112508fc9783a40cdc",
           "budget_requested": {
             "USDC": 15000,
             "BAL": 0,

@@ -23,12 +23,13 @@ import { getEtherscanLink } from "../../../utils";
 import { deepPurple } from '@mui/material/colors';
 import { generateIdenticon } from '../../../utils/generateIdenticon';
 import {ethers} from "ethers";
-import {UserPoolShares} from "../../../data/balancer/useGetPoolUserBalances";
+import {UserPoolAndGaugeShares} from "../../../data/balancer/useGetPoolUserBalances";
 
 
 interface Data {
     id: number,
     accountId: string,
+    amountBPT: number,
     amount: number,
     fraction: number,
 }
@@ -36,12 +37,14 @@ interface Data {
 function createData(
     id: number,
     accountId: string,
+    amountBPT: number,
     amount: number,
     fraction: number,
 ): Data {
     return {
         id,
         accountId,
+        amountBPT,
         amount,
         fraction,
     };
@@ -109,17 +112,24 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: true,
     },
     {
+        id: 'amountBPT',
+        numeric: true,
+        disablePadding: false,
+        label: 'Shares (BPT)',
+        isMobileVisible: false,
+    },
+    {
         id: 'amount',
         numeric: true,
         disablePadding: false,
-        label: 'Total BPT Share ($)',
+        label: 'Shares Worth ($)',
         isMobileVisible: false,
     },
     {
         id: 'fraction',
         numeric: true,
         disablePadding: false,
-        label: 'Pool Share',
+        label: 'Relative Share',
         isMobileVisible: true,
     },
 ];
@@ -171,7 +181,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function PoolShareLeaderboard({ leaderboardInfo, pricePerBPT }: { leaderboardInfo: UserPoolShares[], pricePerBPT: number }) {
+export default function PoolShareLeaderboard({ leaderboardInfo, pricePerBPT }: { leaderboardInfo: UserPoolAndGaugeShares[], pricePerBPT: number }) {
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('fraction');
@@ -191,7 +201,12 @@ export default function PoolShareLeaderboard({ leaderboardInfo, pricePerBPT }: {
 
                 for (let x = page * rowsPerPage; x <= page * rowsPerPage + rowsPerPage - 1; x++) {
                     let account = leaderboardInfo[x].userAddress;
-                    if (account && localEnsMap[account] === undefined) {
+                    //Resolve known protocols
+                    if (account === '0xaF52695E1bB01A16D33D7194C28C42b10e0Dbec2'.toLowerCase()) {
+                        ensLocalMap[account] = 'AURA Protocol'
+                    } else if (account === '0x76ba3eC5f5adBf1C58c91e86502232317EeA72dE'.toLowerCase()) {
+                        ensLocalMap[account] = 'RADIANT Protocol'
+                    } else if (account && localEnsMap[account] === undefined) {
                         const response = await provider.lookupAddress(account);
                         ensLocalMap[account] = response;
                     }
@@ -229,7 +244,7 @@ export default function PoolShareLeaderboard({ leaderboardInfo, pricePerBPT }: {
         .reduce((sum, share) => sum + share.balance, 0);
 
     const rows = sortedLeaderboardInfo.map(el =>
-        createData(sortedLeaderboardInfo.indexOf(el) + 1, el.userAddress, el.balance, 100 / totalBalance * el.balance)
+        createData(sortedLeaderboardInfo.indexOf(el) + 1, el.userAddress, el.balance, el.balance, 100 / totalBalance * el.balance)
 
     )
 
@@ -310,6 +325,12 @@ export default function PoolShareLeaderboard({ leaderboardInfo, pricePerBPT }: {
                                                     <Link href={getEtherscanLink(row.accountId, 'address', activeNetwork)}
                                                           target='_blank'>     {localEnsMap[row.accountId] ? localEnsMap[row.accountId] : row.accountId}</Link>
                                                 </Box>
+                                            </TableCell>
+                                            <TableCell
+                                                align="right"
+                                                sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                                            >
+                                                {formatAmount(row.amountBPT, 4)}
                                             </TableCell>
                                             <TableCell
                                                 align="right"

@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { SupportedChainId, Token, WETH9 } from '@uniswap/sdk-core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import process from "process";
+import { TokenFilters } from '../data/balancer/balancerTypes'
 
 const development: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
@@ -9,6 +10,34 @@ export default function isDev(): boolean
 {
     return development;
 }
+
+export const TOKEN_FILTERS: TokenFilters = {
+    LSTs: ['wstETH', 'rETH', 'sfrxETH', 'cbETH', 'ankrETH', 'mevETH'],
+    Stables: ['USDC', 'USDT', 'USDC.e', 'sDAI', 'GHO'],
+    LRTs: ['ezETH', 'weETH', 'rswETH', 'rsETH', 'ETHx', 'vETH']
+};
+
+export const POOL_TYPE_FILTERS: string[] = [
+    'META_STABLE',
+    'WEIGHTED',
+    'COMPOSABLE_STABLE',
+    'GYROE'
+];
+
+export const RAINBOW_COLORS = [
+    'rgb(32, 129, 240)',
+    'rgb(255, 204, 0)',
+    'rgb(126, 217, 87)',
+    'rgb(255, 87, 87)',
+    'rgb(140, 82, 255)',
+];
+
+export const POOL_TYPE_DISPLAY_NAMES: { [key: string]: string } = {
+    META_STABLE: 'Metastable',
+    WEIGHTED: 'Weighted',
+    COMPOSABLE_STABLE: 'Composable Stable',
+    GYROE: 'Gyro',
+};
 
 export const YIELD_BEARING_TOKENS = [
     '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', //wstETH

@@ -1,211 +1,122 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ProtocolData } from '../../../data/balancer/useProtocolDataWithClientOverride';
-import { Card, Grid, Box } from '@mui/material';
+import { Card, Grid, Box, MenuItem, FormControl, Select, Divider } from '@mui/material';
 import CustomLinearProgress from '../../Progress/CustomLinearProgress';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Divider } from '@mui/material';
 import ProtocolTVLCharts from './ProtocolTVLCharts';
-
-export interface Normal {
-    color: string;
-}
-
-export interface ItemStyle {
-    normal: Normal;
-}
-
-export interface echartsData {
-    name: number;
-    type: string;
-    itemStyle: ItemStyle;
-}
-
-export interface ToolTipParams {
-  value: string;
-  data: echartsData;
-}
+import {SelectChangeEvent} from "@mui/material/Select";
+import {BalancerChartDataItem} from "../../../data/balancer/balancerTypes";
 
 interface ProtocolAreaChartProps {
     mainnetProtocolData: ProtocolData,
     arbitrumProtocolData: ProtocolData,
     polygonProtocolData: ProtocolData,
-    polygonZkEVMProtocolData: ProtocolData
+    polygonZkEVMProtocolData: ProtocolData,
     gnosisProtocolData: ProtocolData,
     avalancheProtocolData: ProtocolData,
-    baseProtocolData: ProtocolData
+    baseProtocolData: ProtocolData,
 }
 
-
-
-export default function ProtocolMultiAreaChart({
-                                                   mainnetProtocolData,
-                                                   arbitrumProtocolData,
-                                                   polygonProtocolData,
-                                                   polygonZkEVMProtocolData,
-                                                   gnosisProtocolData,
-                                                   avalancheProtocolData,
-                                                   baseProtocolData}: ProtocolAreaChartProps) {
-
-    const mainnetData = mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-    let arbitrumData = arbitrumProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-    
-    
-    //add preceeding zero values based on mainnet size to later deployed chains
-    if (mainnetData && arbitrumData) {
-        const diffSize = mainnetData.length - arbitrumData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        arbitrumData = zeroArray.concat(arbitrumData);
+const processData = (mainnetData: number[], protocolData: ProtocolData): number[] => {
+    const processedData = protocolData.tvlData.map((el: BalancerChartDataItem) => Number(el.value.toFixed(2)));
+    if (mainnetData.length > processedData.length) {
+        const diffSize = mainnetData.length - processedData.length;
+        const zeroArray = Array(diffSize).fill(0);
+        return zeroArray.concat(processedData);
     }
+    return processedData;
+};
 
-    let polygonData = polygonProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
+    const { mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData } = props;
+    const mainnetData = useMemo(() => mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2))), [mainnetProtocolData]);
+    const mainnetxAxisData = useMemo(() => mainnetProtocolData.tvlData.map(el => el.time), [mainnetProtocolData]);
 
-    if (mainnetData && polygonData) {
-        const diffSize = mainnetData.length - polygonData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        polygonData = zeroArray.concat(polygonData);
-    }
+    const [timeRange, setTimeRange] = useState('365');
+    const [chartData, setChartData] = useState({
+        mainnetData,
+        arbitrumData: processData(mainnetData, arbitrumProtocolData),
+        polygonData: processData(mainnetData, polygonProtocolData),
+        polygonZkEVMData: processData(mainnetData, polygonZkEVMProtocolData),
+        gnosisData: processData(mainnetData, gnosisProtocolData),
+        avalancheData: processData(mainnetData, avalancheProtocolData),
+        baseData: processData(mainnetData, baseProtocolData),
+        xAxis: mainnetxAxisData,
+    });
 
-    let polygonZkEVMData = polygonZkEVMProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
+    useEffect(() => {
+        const newData = {
+            mainnetData: processData(mainnetData, mainnetProtocolData),
+            arbitrumData: processData(mainnetData, arbitrumProtocolData),
+            polygonData: processData(mainnetData, polygonProtocolData),
+            polygonZkEVMData: processData(mainnetData, polygonZkEVMProtocolData),
+            gnosisData: processData(mainnetData, gnosisProtocolData),
+            avalancheData: processData(mainnetData, avalancheProtocolData),
+            baseData: processData(mainnetData, baseProtocolData),
+            xAxis: mainnetxAxisData,
+        };
 
-    if (mainnetData && polygonZkEVMData) {
-        const diffSize = mainnetData.length - polygonZkEVMData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        polygonZkEVMData = zeroArray.concat(polygonZkEVMData);
-    }
+        const updateDataForRange = (data: number[], timeRange: string): number[] => {
+            const range = Number(timeRange) === 0 ? data.length : Number(timeRange);
+            return data.slice(Math.max(data.length - range, 0));
+        };
 
-    let gnosisData = gnosisProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && gnosisData) {
-        const diffSize = mainnetData.length - gnosisData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        gnosisData = zeroArray.concat(gnosisData);
-    }
-
-    let avalancheData = avalancheProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && avalancheData) {
-        const diffSize = mainnetData.length - avalancheData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        avalancheData = zeroArray.concat(avalancheData);
-    }
-
-    let baseData = baseProtocolData.tvlData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && baseData) {
-        const diffSize = mainnetData.length - baseData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        baseData = zeroArray.concat(baseData);
-    }
-
-    const mainnetxAxisData = mainnetProtocolData.tvlData.map(el => el.time);
+        // Assuming `xAxis` is an array of strings (dates or times) and `timeRange` is a string representing the number of elements to include from the end of the array.
+        const updateXAxisForRange = (xAxis: string[], timeRange: string): string[] => {
+            const range = Number(timeRange) === 0 ? xAxis.length : Number(timeRange);
+            return xAxis.slice(Math.max(xAxis.length - range, 0));
+        };
 
 
-    //---Hooks for custom time ranges---
-    const [timeRange, setTimeRange] = React.useState('365');
-    //data state
-    const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
-    const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);
-    const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
-    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonZkEVMData);
-    const [rangedGnosisData, setrangedGnosisData] = React.useState(gnosisData);
-    const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
-    const [rangedBaseData, setRangedBaseData] = React.useState(avalancheData);
-    const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
-    React.useEffect(() => {
-        if (mainnetData.length < Number(timeRange) || timeRange === '0') {
-            setrangedMainnetData(mainnetData);
-            setrangedArbitrumData(arbitrumData);
-            setrangedPolygonData(polygonData);
-            setrangedPolygonZkEVMData(polygonZkEVMData);
-            setrangedGnosisData(gnosisData)
-            setrangedAvalanchenData(avalancheData)
-            setRangedBaseData(baseData)
-            setRangedxAxis(mainnetxAxisData)
-        } else {
-            setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
-            setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(timeRange)))
-            setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
-            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(timeRange)))
-            setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(timeRange)))
-            setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(timeRange)))
-            setRangedBaseData(baseData.slice(baseData.length - Number(timeRange)))
-            setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
+        if (newData.mainnetData.length >= Number(timeRange) || timeRange === '0') {
+            setChartData({
+                ...newData,
+                mainnetData: updateDataForRange(newData.mainnetData, timeRange),
+                arbitrumData: updateDataForRange(newData.arbitrumData, timeRange),
+                polygonData: updateDataForRange(newData.polygonData, timeRange),
+                polygonZkEVMData: updateDataForRange(newData.polygonZkEVMData, timeRange),
+                gnosisData: updateDataForRange(newData.gnosisData, timeRange),
+                avalancheData: updateDataForRange(newData.avalancheData, timeRange),
+                baseData: updateDataForRange(newData.baseData, timeRange),
+                xAxis: updateXAxisForRange(newData.xAxis, timeRange),
+            });
         }
-    }, [timeRange]);
+    }, [timeRange, mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData, mainnetData, mainnetxAxisData]);
 
     const handleChange = (event: SelectChangeEvent) => {
-        setTimeRange(event.target.value as string);
-        if (mainnetData.length < Number(event.target.value) || event.target.value === '0') {
-            setrangedMainnetData(mainnetData);
-            setrangedArbitrumData(arbitrumData);
-            setrangedPolygonData(polygonData);
-            setrangedPolygonZkEVMData(polygonZkEVMData)
-            setrangedGnosisData(gnosisData);
-            setrangedAvalanchenData(avalancheData)
-            setRangedBaseData(baseData)
-        } else if (mainnetData.length >= Number(event.target.value)) {
-            setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(event.target.value)))
-            setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(event.target.value)))
-            setrangedPolygonData(polygonData.slice(polygonData.length - Number(event.target.value)))
-            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(event.target.value)))
-            setrangedGnosisData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
-            setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
-            setRangedBaseData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
-        }
+        setTimeRange(event.target.value);
     };
 
     return (
-        polygonData.length > 10 ?
-        <Card sx={{boxShadow: 3}}>
-            <Box m={1}>
-            <FormControl size="small">
-                    <Select
-                        sx={{
-                            backgroundColor: "background.paper",
-                            boxShadow: 2,
-                            borderRadius: 2,
-                            borderColor: 0,
-                        }}
-                        color="primary"
-                        labelId="timeRangeSelectLabel"
-                        id="timeRangeSelect"
-                        onChange={handleChange}
-                        value={timeRange}
-                        inputProps={{
-                            name: 'timeRange',
-                            id: 'timeRangeId-native-simple',
-                        }}
-                    >
-                        <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
-                        <Divider />
-                        <MenuItem value={'30'}> 30 days</MenuItem>
-                        <MenuItem value={'90'}>90 days</MenuItem>
-                        <MenuItem value={'180'}>180 days</MenuItem>
-                        <MenuItem value={'365'}>365 days</MenuItem>
-                        <MenuItem value={'0'}>All time</MenuItem>
-                    </Select>
-                </FormControl>
+        chartData.polygonData.length > 10 ? (
+            <Card sx={{ pb: '0px', boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px" }}>
+                <Box m={1}>
+                    <FormControl size="small">
+                        <Select
+                            sx={{ backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0 }}
+                            color="primary"
+                            labelId="timeRangeSelectLabel"
+                            id="timeRangeSelect"
+                            onChange={handleChange}
+                            value={timeRange}
+                            inputProps={{ name: 'timeRange', id: 'timeRangeId-native-simple' }}
+                        >
+                            <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                            <Divider />
+                            <MenuItem value={'30'}>30 days</MenuItem>
+                            <MenuItem value={'90'}>90 days</MenuItem>
+                            <MenuItem value={'180'}>180 days</MenuItem>
+                            <MenuItem value={'365'}>365 days</MenuItem>
+                            <MenuItem value={'0'}>All time</MenuItem>
+                        </Select>
+                    </FormControl>
                 </Box>
-            <ProtocolTVLCharts  
-                mainnetData={rangedMainnetData} 
-                arbitrumData={rangedArbitrumData} 
-                polygonData={rangedPolygonData}
-                polygonZkEVMData={rangedPolygonZkEVMData}
-                gnosisData={rangedGnosisData}
-                avalancheData={rangedAvalancheData}
-                baseData={rangedBaseData}
-                xAxis={rangedxAxis}/>
-            </Card> : <Grid
-            container
-            spacing={2}
-            mt='10%'
-            mb='10%'
-            sx={{ justifyContent: 'center' }}
-        >
-            <CustomLinearProgress />
-        </Grid>
-    )
+                <ProtocolTVLCharts {...chartData} />
+            </Card>
+        ) : (
+            <Grid container spacing={2} mt='10%' mb='10%' sx={{ justifyContent: 'center' }}>
+                <CustomLinearProgress />
+            </Grid>
+        )
+    );
 }

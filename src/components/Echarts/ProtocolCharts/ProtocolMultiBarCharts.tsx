@@ -44,10 +44,10 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
 
     const option = {
         color: [
-            '#00DDFF',
-            '#80FFA5',
-            '#37A2FF',
-            '#37A2FF',
+            '#0047AB',
+            '#66CCCC',
+            '#8B00FF',
+            '#3a0f5d',
             '#0d8e74',
             '#F01B36',
             '#0021a2'],
@@ -104,7 +104,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.95,
-                    color: 'rgb(0, 221, 255)'
+                    color: 'rgb(0,71,171)'
 
                 },
                 emphasis: {
@@ -128,7 +128,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.95,
-                    color: 'rgb(128, 255, 165)'
+                    color: 'rgb(102,204,204)'
 
                 },
                 emphasis: {
@@ -152,7 +152,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 showSymbol: false,
                 itemStyle: {
                     opacity: 0.95,
-                    color: 'rgb(155, 10, 255)'
+                    color: 'rgb(139,0,255)'
                 },
                 emphasis: {
                     focus: 'series'
@@ -175,7 +175,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 showSymbol: false,
                 itemStyle: {
                     opacity: 0.95,
-                    color: 'rgb(76,0,126)'
+                    color: 'rgb(58,15,93)'
                 },
                 emphasis: {
                     focus: 'series'
@@ -198,7 +198,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 showSymbol: false,
                 itemStyle: {
                     opacity: 0.95,
-                    color: 'rgb(13, 142, 116)'
+                    color: 'rgb(13,142,116)'
                 },
                 emphasis: {
                     focus: 'series'

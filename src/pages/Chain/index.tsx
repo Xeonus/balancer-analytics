@@ -68,10 +68,12 @@ export default function Chain() {
                     item
                     xs={11}
                 >
-                    <Stack
-                        direction={{ xs: 'column', md: 'row' }}
-                        spacing={2}
-                        justifyContent="flex-start">
+                    <Grid
+                        container
+                        columns={{xs: 4, sm: 8, md: 12}}
+                        sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
+                    >
+                        <Box m={{xs: 0, sm: 1}}>
                         <MetricsCard
                             mainMetric={protocolData.volume24 ? protocolData.volume24 : 0}
                             mainMetricInUSD={true}
@@ -79,6 +81,8 @@ export default function Chain() {
                             mainMetricChange={protocolData.volumeChange ? protocolData.volumeChange * 100 : 0}
                             MetricIcon={EqualizerIcon}
                         />
+                        </Box>
+                        <Box m={{xs: 0, sm: 1}}>
                         <MetricsCard
                             mainMetric={protocolData.tvl ? protocolData.tvl : 0}
                             mainMetricInUSD={true}
@@ -86,6 +90,8 @@ export default function Chain() {
                             mainMetricChange={protocolData.tvlChange ? protocolData.tvlChange * 100 : 0}
                             MetricIcon={MonetizationOnIcon}
                         />
+                        </Box>
+                        <Box m={{xs: 0, sm: 1}}>
                         <MetricsCard
                             mainMetric={protocolData.fees24 ? protocolData.fees24 : 0}
                             mainMetricInUSD={true}
@@ -93,6 +99,8 @@ export default function Chain() {
                             mainMetricChange={protocolData.feesChange ? protocolData.feesChange * 100 : 0}
                             MetricIcon={CurrencyExchangeIcon}
                         />
+                        </Box>
+                        <Box m={{xs: 0, sm: 1}}>
                         <MetricsCard
                             mainMetric={protocolData.protocolFees24 ? protocolData.protocolFees24 : 0}
                             mainMetricInUSD={true}
@@ -100,16 +108,17 @@ export default function Chain() {
                             mainMetricChange={protocolData.protocolFeesChange ? protocolData.protocolFeesChange * 100 : 0}
                             MetricIcon={RequestQuoteIcon}
                         />
-                    </Stack>
+                        </Box>
+                    </Grid>
                 </Grid>
                 <Grid item mt={1} xs={11}>
                     <Stack
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <Box mb={1}>
+                        <Box m={1}>
                             <ExploreCard linkName='Pools' linkTarget={networkPrefix(activeNetwork) + 'pools'} MetricIcon={WavesIcon} />
                         </Box>
-                        <Box mb={1}>
+                        <Box m={1}>
                             <ExploreCard linkName='Tokens' linkTarget={networkPrefix(activeNetwork) + 'tokens'} MetricIcon={TokenIcon} />
                         </Box>
                     </Stack>

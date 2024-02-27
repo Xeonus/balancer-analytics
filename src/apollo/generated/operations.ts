@@ -288,7 +288,6 @@ export const GetTokenPrice = gql`
       chain: $chain
       range: NINETY_DAY
     ) {
-      id
       price
       timestamp
     }
@@ -768,6 +767,22 @@ export const GetAllPools = gql`
     }
   }
 `;
+export const FetchGaugeShares = gql`
+  query FetchGaugeShares($gaugeAddress: String!) {
+    gaugeShares(
+      where: { gauge_contains_nocase: $gaugeAddress, balance_gt: "0" }
+      orderBy: balance
+      orderDirection: desc
+      first: 1000
+    ) {
+      balance
+      id
+      user {
+        id
+      }
+    }
+  }
+`;
 export const GetProtocolData = gql`
   query GetProtocolData(
     $startTimestamp: Int!
@@ -1010,6 +1025,50 @@ export const BalancerPoolSwapFeeSnapshot = gql`
       pool {
         id
       }
+    }
+  }
+`;
+export const BalancerPoolFeeSnapshots = gql`
+  query BalancerPoolFeeSnapshots(
+    $block: Block_height
+    $where: PoolSnapshot_filter
+  ) {
+    poolSnapshots(
+      first: 1000
+      orderBy: timestamp
+      orderDirection: desc
+      block: $block
+      where: $where
+    ) {
+      pool {
+        address
+        id
+        symbol
+        poolType
+        name
+        totalAumFeeCollectedInBPT
+        totalProtocolFee
+        totalProtocolFeePaidInBPT
+        totalSwapFee
+        tokens {
+          address
+          decimals
+          id
+          name
+          symbol
+          weight
+          paidProtocolFees
+        }
+        protocolAumFeeCache
+        protocolSwapFeeCache
+        protocolYieldFeeCache
+        swapFee
+      }
+      timestamp
+      protocolFee
+      swapFees
+      swapVolume
+      liquidity
     }
   }
 `;

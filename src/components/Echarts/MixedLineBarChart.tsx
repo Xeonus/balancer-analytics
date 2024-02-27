@@ -4,6 +4,7 @@ import { CircularProgress } from '@mui/material';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { formatDollarAmount } from '../../utils/numbers';
 import { pink, blue } from '@mui/material/colors';
+import {RAINBOW_COLORS} from "../../constants";
 
 export interface GenericBarChartProps {
     barChartData: BalancerChartDataItem[],
@@ -11,9 +12,10 @@ export interface GenericBarChartProps {
     lineChartData: BalancerChartDataItem[],
     lineChartName: string,
     rotateAxis?: boolean
+    noRainbowColors?: boolean
 }
 
-export default function MixedLineBarChart({ barChartData, barChartName, lineChartData, lineChartName, rotateAxis = false}: GenericBarChartProps) {
+export default function MixedLineBarChart({ barChartData, barChartName, lineChartData, lineChartName, rotateAxis = false, noRainbowColors=false}: GenericBarChartProps) {
 
     const theme = useTheme();
     let xData = barChartData.map(el => el.time);
@@ -32,7 +34,10 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
             },
         },
         legend: {
-            data: [barChartName, lineChartName]
+            data: [barChartName, lineChartName],
+            textStyle: {
+                color: theme.palette.secondary
+            }
           },
         grid: {
             left: '10%',
@@ -81,9 +86,14 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                     }
                 },
                 data: yDataBar,
+                name: barChartName,
                 type: 'bar',
                 itemStyle: {
-                    color: theme.palette.secondary.main
+                    color: noRainbowColors ? theme.palette.secondary : function (params: any) {
+                        // Use the rainbowColors array to set colors based on the index
+                        const colorIndex = params.dataIndex % RAINBOW_COLORS.length;
+                        return RAINBOW_COLORS[colorIndex];
+                    },
                 },
                 tooltip: {
                     valueFormatter: function (value: number) {
@@ -98,6 +108,7 @@ export default function MixedLineBarChart({ barChartData, barChartName, lineChar
                     }
                 },
                 yAxisIndex: 1,
+                name: lineChartName,
                 data: yDataLine,
                 type: 'line',
                 smooth: true,

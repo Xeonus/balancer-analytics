@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
-import { Grid, CircularProgress, Typography, Stack, Skeleton } from '@mui/material';
+import {Grid, CircularProgress, Typography, Stack, Skeleton, IconButton, AlertProps, AppBar} from '@mui/material';
 import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
+import MuiAlert from '@mui/material/Alert';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
 import useAggregatedProtocolData from '../../data/balancer/useAggregatedProtocolData';
@@ -42,20 +43,39 @@ import {smoothData} from "../../utils/data";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {getUnixTimestamp1000DaysAgo} from "../../utils/date";
+import CloseIcon from '@mui/icons-material/Close';
+import * as React from "react";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert
+        elevation={6}
+        ref={ref}
+        variant="filled"
+        {...props} />;
+});
 
 
 
 export default function Protocol() {
 
-    //TODO: obtain form contants
+
+    const [protocolAlert, setProtocolAlert] = React.useState(false);
+    const protocolAlertMessage = 'Polygon zkEVM Subgraph issues - Protocol TVL stats affected!'
+
+
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
     const [activeNetwork] = useActiveNetworkVersion()
     //Data
     const aggregatedProtocolData = useAggregatedProtocolData();
-    //const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
     const v3CoinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
 
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo());
+    console.log("protocolData", protocolData)
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), arbitrumBlockClient, arbitrumClient);
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonBlockClient, polygonClient);
     const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
@@ -69,14 +89,49 @@ export default function Protocol() {
     const swapsChange = aggregatedProtocolData.swapsChange ? aggregatedProtocolData.swapsChange * 100 : 0
     const mainnetPercentage = 100 / aggregatedProtocolData.tvl * mainnetTVL
 
+
+    const handleProtocolAlert = () => {
+        setProtocolAlert(false);
+    };
+
+    const networkExplorers = [
+        { name: 'Ethereum', linkTarget: 'chain', svgPath: EtherLogo },
+        { name: 'Arbitrum', linkTarget: 'arbitrum/chain', svgPath: ArbitrumLogo },
+        { name: 'Polygon', linkTarget: 'polygon/chain', svgPath: PolygonLogo },
+        { name: 'zkEVM', linkTarget: 'zkevm/chain', svgPath: PolygonZkEVMLogo },
+        { name: 'Gnosis', linkTarget: 'gnosis/chain', svgPath: GnosisLogo },
+        { name: 'Avalanche', linkTarget: 'avalanche/chain', svgPath: AvalancheLogo },
+        { name: 'Base', linkTarget: 'base/chain', svgPath: BaseLogo },
+
+    ];
+
+
     return (
         <Box sx={{ flexGrow: 2 }}>
+            <Box mb={1} sx={{flexGrow: 2, justifyContent: "center"}}>
+                {protocolAlert && (
+                    <Alert
+                        severity="warning"
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleProtocolAlert}
+                            >
+                                <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                    >
+                        {protocolAlertMessage}
+                    </Alert>
+                )}
+            </Box>
             <Grid
                 container
                 spacing={2}
                 sx={{ justifyContent: 'center' }}
             >
-
                 <Grid
                     item
                     xs={11}
@@ -87,44 +142,17 @@ export default function Protocol() {
                         columns={{ xs: 4, sm: 2, md: 10 }}
                     >
                         <Grid item mt={1} xs={11}>
-                            <Stack
-                                direction={{ xs: 'column', md: 'row' }}
-                                justifyContent="space-between"
-                            >
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Ethereum' linkTarget={'chain'} svgPath={EtherLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Polygon' linkTarget={'polygon/chain'} svgPath={PolygonLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Polygon zkEVM' linkTarget={'zkevm/chain'} svgPath={PolygonZkEVMLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Arbitrum' linkTarget={'arbitrum/chain'} svgPath={ArbitrumLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Gnosis' linkTarget={'gnosis/chain'} svgPath={GnosisLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Avalanche' linkTarget={'avalanche/chain'} svgPath={AvalancheLogo} />
-                                </Box>
-                                <Box mb={1}>
-                                    <ExploreCard linkName='Base' linkTarget={'base/chain'} svgPath={BaseLogo} />
-                                </Box>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={11} sm={4} md={4} mb={2}>
-                            {v3CoinData && v3CoinData.data[balAddress] && v3CoinData.data[balAddress].price ?
-                                <CoinCard
-                                    tokenAddress={balAddress}
-                                    tokenName='BAL'
-                                    tokenPrice={v3CoinData.data[balAddress].price}
-                                    tokenPriceChange={v3CoinData.data[balAddress].priceChangePercentage24h}
-
-                                />
-                                : <CircularProgress />}
-
+                            <Grid container spacing={2} justifyContent="center">
+                                {networkExplorers.map((network, index) => (
+                                    <Grid item xs={3} sm={4} md={3} lg={1} key={index}>
+                                        <ExploreCard
+                                            linkName={network.name}
+                                            linkTarget={network.linkTarget}
+                                            svgPath={network.svgPath}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -136,15 +164,28 @@ export default function Protocol() {
                     spacing={1}
                     sx={{ justifyContent: 'center' }}
                 >
-
-                    <Grid item mt={1} xs={11}>
-                        <Typography variant='h5'>Historical TVL</Typography>
+                    <Grid item xs={11}>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Global Balancer Stats</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={11}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
+
+                    <Grid item xs={11}>
+                        <Grid
+                            container
+                            columns={{xs: 4, sm: 8, md: 12}}
+                            sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                         >
-                            <Box mr={3} mb={1}>
+                            <Box m={{xs: 0, sm: 1}}>
+                                {v3CoinData && v3CoinData.data[balAddress] && v3CoinData.data[balAddress].price ?
+                                    <CoinCard
+                                        tokenAddress={balAddress}
+                                        tokenName='BAL'
+                                        tokenPrice={v3CoinData.data[balAddress].price}
+                                        tokenPriceChange={v3CoinData.data[balAddress].priceChangePercentage24h}
+
+                                    />
+                                    : <CircularProgress />}
+                            </Box>
+                            <Box m={{xs: 0, sm: 1}}>
                                 <MetricsCard
                                     mainMetric={aggregatedProtocolData.tvl}
                                     mainMetricInUSD={true}
@@ -153,20 +194,58 @@ export default function Protocol() {
                                     MetricIcon={MonetizationOnIcon}
                                 />
                             </Box>
-
-                            <Box mr={1} mb={1}>
+                            <Box m={{xs: 0, sm: 1}}>
+                                    <MetricsCard
+                                        mainMetric={mainnetPercentage}
+                                        mainMetricInUSD={false}
+                                        mainMetricUnit={' %'}
+                                        metricName='Mainnet Dominance'
+                                        mainMetricChange={mainnetTVLChange * 100}
+                                        MetricIcon={PieChartIcon}
+                                    />
+                            </Box>
+                            <Box m={{xs: 0, sm: 1}}>
                                 <MetricsCard
-                                    mainMetric={mainnetPercentage}
-                                    mainMetricInUSD={false}
-                                    mainMetricUnit={' %'}
-                                    metricName='Mainnet Dominance'
-                                    mainMetricChange={mainnetTVLChange * 100}
-                                    MetricIcon={PieChartIcon}
+                                    mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='Protocol Volume'
+                                    mainMetricChange={aggregatedProtocolData.volumeChange}
+                                    MetricIcon={EqualizerIcon}
                                 />
                             </Box>
-                        </Stack>
+                            <Box m={{xs: 0, sm: 1}}>
+                                <MetricsCard
+                                    mainMetric={aggregatedProtocolData.protocolFees24 ? aggregatedProtocolData.protocolFees24 : 0}
+                                    mainMetricInUSD={true}
+                                    metricName='Protocol Fees'
+                                    mainMetricChange={aggregatedProtocolData.protocolFeesChange}
+                                    MetricIcon={RequestQuoteIcon}
+                                />
+                            </Box>
+                        <Box m={{xs: 0, sm: 1}}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.fees24}
+                                mainMetricInUSD={true}
+                                metricName='Trading Fees'
+                                mainMetricChange={aggregatedProtocolData.feesChange}
+                                MetricIcon={CurrencyExchangeIcon}
+                            />
+                        </Box>
+                            <Box m={{xs: 0, sm: 1}}>
+                            <MetricsCard
+                                mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
+                                mainMetricInUSD={false}
+                                metricName='Swaps'
+                                mainMetricChange={swapsChange}
+                                MetricIcon={SwapHorizIcon}
+                            />
+                            </Box>
+                        </Grid>
                     </Grid>
 
+                    <Grid item mt={1} xs={11}>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical TVL</Typography>
+                    </Grid>
                     <Grid item mt={1} xs={11}>
                         <ProtocolMultiAreaChart
                             mainnetProtocolData={protocolData}
@@ -179,17 +258,7 @@ export default function Protocol() {
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Volume</Typography>
-                    </Grid>
-                    <Grid item xs={11}>
-                        <MetricsCard
-                            mainMetric={aggregatedProtocolData.volume ? aggregatedProtocolData.volume : 0}
-                            mainMetricInUSD={true}
-                            metricName='Protocol Volume'
-                            mainMetricChange={aggregatedProtocolData.volumeChange}
-                            MetricIcon={EqualizerIcon}
-                        />
-
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Volume</Typography>
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
@@ -204,16 +273,7 @@ export default function Protocol() {
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Collected Protocol Fees</Typography>
-                    </Grid>
-                    <Grid item xs={11}>
-                        <MetricsCard
-                            mainMetric={aggregatedProtocolData.protocolFees24 ? aggregatedProtocolData.protocolFees24 : 0}
-                            mainMetricInUSD={true}
-                            metricName='Protocol Fees'
-                            mainMetricChange={aggregatedProtocolData.protocolFeesChange}
-                            MetricIcon={RequestQuoteIcon}
-                        />
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Collected Protocol Fees</Typography>
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
@@ -228,16 +288,7 @@ export default function Protocol() {
                         />
                     </Grid>
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Trading Fees</Typography>
-                    </Grid>
-                    <Grid item xs={11}>
-                        <MetricsCard
-                            mainMetric={aggregatedProtocolData.fees24}
-                            mainMetricInUSD={true}
-                            metricName='Trading Fees'
-                            mainMetricChange={aggregatedProtocolData.feesChange}
-                            MetricIcon={CurrencyExchangeIcon}
-                        />
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Trading Fees</Typography>
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart
@@ -253,16 +304,7 @@ export default function Protocol() {
                     </Grid>
 
                     <Grid item mt={1} xs={11} >
-                        <Typography variant='h5'>Historical Swaps</Typography>
-                    </Grid>
-                    <Grid item xs={11}>
-                        <MetricsCard
-                            mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
-                            mainMetricInUSD={false}
-                            metricName='Swaps'
-                            mainMetricChange={swapsChange}
-                            MetricIcon={SwapHorizIcon}
-                        />
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Swaps</Typography>
                     </Grid>
                     <Grid item mt={1} xs={11} >
                         <ProtocolMultipleBarChart

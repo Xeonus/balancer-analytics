@@ -55,7 +55,7 @@ export function useBlocksFromTimestamps(
         if (!networkBlocks && !error) {
             fetchData();
         }
-    });
+    }, [timestamps]);
 
     const blocksFormatted = useMemo(() => {
         if (blocks?.[activeNetwork.id]) {

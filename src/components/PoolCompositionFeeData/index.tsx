@@ -1,19 +1,19 @@
-import { PoolData } from "../../data/balancer/balancerTypes";
+import {PoolData, PoolFeeData, PoolFeeSnapshotData} from "../../data/balancer/balancerTypes";
 import { useTheme } from '@mui/material/styles'
 import { AvatarGroup, Typography } from "@mui/material";
 import { Avatar, Box } from "@mui/material";
 import {PoolDataUnified} from "../../data/balancer-api-v3/balancerUnifiedTypes";
 
 interface PoolCompositionProps {
-    poolData: PoolDataUnified;
+    poolData: PoolFeeData;
     size?: number;
 }
 
-export default function PoolCompositionUnified({ poolData, size = 24 }: PoolCompositionProps) {
+export default function PoolCompositionFeeData({ poolData, size = 24 }: PoolCompositionProps) {
 
     const theme = useTheme();
 
-    poolData.tokens = poolData.tokens.filter((token) => (! token.symbol.includes('BSP') && ! token.symbol.includes('bb-') && ! token.symbol.includes('BPT')  && ! token.symbol.includes('-Stable') && ! token.symbol.includes('/')) || token.isMainToken)
+    poolData.tokens = poolData.tokens.filter((token) => ! token.symbol.includes('BPT') && ! token.symbol.includes('/') || token.isMainToken)
     return (
         <Box position={"relative"} display="flex" alignItems={"center"}>
             <AvatarGroup max={4}

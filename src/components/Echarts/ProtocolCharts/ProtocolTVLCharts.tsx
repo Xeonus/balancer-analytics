@@ -51,10 +51,10 @@ export default function ProtocolTVLCharts({
 
     const option = {
         color: [
-            '#00DDFF',
-            '#80FFA5',
-            '#37A2FF',
-            '#37A2FF',
+            '#0047AB',
+            '#66CCCC',
+            '#8B00FF',
+            '#3a0f5d',
             '#0d8e74',
             '#F01B36',
             '#0021a2'],
@@ -119,7 +119,7 @@ export default function ProtocolTVLCharts({
                         },
                         {
                             offset: 1,
-                            color: 'rgb(0, 221, 255)'
+                            color: 'rgb(0,71,171)'
                         }
                     ])
                 },
@@ -151,7 +151,7 @@ export default function ProtocolTVLCharts({
                         },
                         {
                             offset: 1,
-                            color: 'rgb(128, 255, 165)'
+                            color: 'rgb(102,204,204)'
                         }
                     ])
                 },
@@ -183,7 +183,7 @@ export default function ProtocolTVLCharts({
                         },
                         {
                             offset: 1,
-                            color: 'rgb(55, 162, 255)'
+                            color: 'rgb(139,0,255)'
                         }
                     ])
                 },
@@ -215,7 +215,7 @@ export default function ProtocolTVLCharts({
                         },
                         {
                             offset: 1,
-                            color: 'rgb(0,80,148)'
+                            color: 'rgb(58,15,93)'
                         }
                     ])
                 },

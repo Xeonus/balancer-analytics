@@ -21,81 +21,81 @@ const getLink = (activeNetwork: NetworkInfo, id: string) => {
 }
 
 const CoinCard = ({
-  tokenPrice,
-  tokenPriceChange,
-  tokenName,
-  tokenAddress }: CoinCardProps) => {
+                    tokenPrice,
+                    tokenPriceChange,
+                    tokenName,
+                    tokenAddress }: CoinCardProps) => {
 
-    let navigate = useNavigate();
-    
-    const [activeNetwork] = useActiveNetworkVersion()
+  let navigate = useNavigate();
+
+  const [activeNetwork] = useActiveNetworkVersion()
   return (
-    <Card
-    sx={{
-      maxWidth: '275px',
-      minWidth: '250px',
-      maxHeight: '150px',
-      cursor: 'pointer',
-      boxShadow: 3,
-    }}
-    >
-      <CardActionArea
-      onClick={() => { navigate(`${getLink(activeNetwork, tokenAddress)}/`); }}
-      >
-      <CardContent>
-        <Grid
-          container
-          spacing={1}
-          sx={{ justifyContent: 'space-between' }}
-        >
-          <Grid item>
-            <Typography
-              color="textSecondary"
-              gutterBottom
-              variant="h6"
-            >
-              {tokenName}
-            </Typography>
-            <Typography
-              color="textPrimary"
-              variant="h6"
-            >
-              {formatDollarAmount(tokenPrice)}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <CurrencyLogo address={tokenAddress} size='30px' />
-          </Grid>
-        </Grid>
-        <Box
+      <Card
           sx={{
-            display: 'flex',
-            alignItems: 'center'
+            maxWidth: '275px',
+            minWidth: '200px',
+            minHeight: '110px',
+            cursor: 'pointer',
+            pb: '0px',
+            boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
           }}
+      >
+        <CardActionArea
+            onClick={() => { navigate(`${getLink(activeNetwork, tokenAddress)}/`); }}
         >
-          {tokenPriceChange > 0 ? 
-            <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} /> 
-            : 
-            <ArrowDownwardIcon fontSize="small" color="error" />}
-          <Typography
-            color={tokenPriceChange > 0 ? 'green' : 'error'}
-            sx={{
-              mr: 1
-            }}
-            variant="body2"
-          >
-            {Number(tokenPriceChange).toFixed(2)} %
-          </Typography>
-          <Typography
-            color="textSecondary"
-            variant="caption"
-          >
-            (24h)
-          </Typography>
-        </Box>
-      </CardContent>
-      </CardActionArea>
-    </Card>
+          <CardContent sx={{p: '10px', pb: '0px'}}>
+            <Grid
+                container
+                spacing={1}
+                sx={{ justifyContent: 'space-between' }}
+            >
+              <Grid item>
+                <Typography
+                    gutterBottom
+                    sx={{fontSize: '18px',}}
+                >
+                  {tokenName} Price
+                </Typography>
+                <Typography
+                    color="textPrimary"
+                    sx={{fontSize: '22px',}}
+                >
+                  {formatDollarAmount(tokenPrice)}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <CurrencyLogo address={tokenAddress} size='30px' />
+              </Grid>
+            </Grid>
+            <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+            >
+              {tokenPriceChange > 0 ?
+                  <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} />
+                  :
+                  <ArrowDownwardIcon fontSize="small" color="error" />}
+              <Typography
+                  color={tokenPriceChange > 0 ? 'green' : 'error'}
+                  sx={{
+                    mr: 1
+                  }}
+                  variant="body2"
+              >
+                {Number(tokenPriceChange).toFixed(2)} %
+              </Typography>
+              <Typography
+                  color="textSecondary"
+                  variant="caption"
+              >
+                (24h)
+              </Typography>
+            </Box>
+          </CardContent>
+        </CardActionArea>
+      </Card>
   );
 }
 export default CoinCard;

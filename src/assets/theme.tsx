@@ -20,8 +20,8 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
             main: '#7cadc4',
           },
           background: {
-            paper: alpha('#0f2027', 0.9),
-            default: '#162031',
+            paper: alpha('#212636', 0.25),
+            default: '#212636',
           },
         }),
   },
@@ -30,7 +30,7 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          background: mode === 'dark' ? "linear-gradient(to right, #0f2027, #203a43, #2c5364)" : '',
+          background: mode === 'dark' ? "linear-gradient(to right, #1e202a, #203a43, #1e202a)" : '',
           transition: 'all 0.25s linear',
           scrollbarColor: mode === 'dark' ? "#6b6b6b #2b2b2b" : "#c0c0c0 #f5f5f5",
           "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
@@ -54,8 +54,18 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
           "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
             backgroundColor: mode === 'dark' ? "#2c5364" : "#f5f5f5",
           },
+
         },
       },
     },
-  }
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          // Apply a blur effect to the backdrop
+          backdropFilter: 'blur(5px)',
+          backgroundColor: alpha(mode === 'dark' ? '#212636' : '#fff', 0.6),
+        },
+      },
+    },
+  },
 });

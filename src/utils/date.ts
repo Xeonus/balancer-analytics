@@ -33,8 +33,8 @@ export function getUnixTimestamp1000DaysAgo(): number {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0); // Set time to 00:00 UTC
 
-    // Subtract 1000 days
-    const daysAgo = 1000;
+    // Subtract 999 days
+    const daysAgo = 999;
     const pastDate = new Date(today);
     pastDate.setDate(today.getDate() - daysAgo);
 
