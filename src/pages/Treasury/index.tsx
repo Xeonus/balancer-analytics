@@ -2,9 +2,10 @@ import {Box, Card, Grid, Typography} from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {getTreasuryConfig, KARPATKEY_SAFE} from "../../constants/wallets";
+import {getTreasuryConfig, KARPATKEY_SAFE, OPCO_SAFE} from "../../constants/wallets";
 import {useGetTotalBalances} from "../../data/debank/useGetTotalBalances";
 import {useGetPortfolio} from '../../data/debank/useGetPortfolio';
 import StyledExternalLink from '../../components/StyledExternalLink';
@@ -14,7 +15,8 @@ import LiquidityPosition from '../../components/LiquidityPosition';
 import {BalancerPieChartDataItem} from '../../data/balancer/balancerTypes';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
-import {mergeArrays} from "./helpers";
+import {calculatePortfolioStablecoinValue, calculateTokenBalancesStablecoinValue, mergeArrays} from "./helpers";
+import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
 
 export default function Treasury() {
 
@@ -42,8 +44,20 @@ export default function Treasury() {
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const {portfolio} = useGetPortfolio(TREASURY_CONFIG.treasury);
     const karpatkeyPortfolio = useGetPortfolio(KARPATKEY_SAFE);
+    const opcoPortfolio = useGetPortfolio(OPCO_SAFE);
     const {totalBalances} = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
+    const opcoBalances = useGetTotalBalances(OPCO_SAFE);
+
+
+    let totalStablecoinValue = 0
+    if (portfolio && karpatkeyPortfolio && karpatkeyPortfolio.portfolio && totalBalances && karpatkeyBalances && karpatkeyBalances.totalBalances) {
+
+        const portfolioValue = calculatePortfolioStablecoinValue([...portfolio, ...karpatkeyPortfolio.portfolio]);
+        const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances]);
+        totalStablecoinValue = portfolioValue + balancesValue;
+    }
+    console.log("totalStablecoinValue", totalStablecoinValue)
 
 
     //Obtain wallet total worth and USDC
@@ -212,6 +226,16 @@ export default function Treasury() {
                                         MetricIcon={CurrencyExchangeIcon}
                                     />
                                 </Box>
+                                <Box m={1}>
+                                    <MetricsCard
+                                        mainMetric={totalStablecoinValue}
+                                        mainMetricInUSD={true}
+                                        metricName='Total Stable Coins'
+                                        mainMetricChange={0}
+                                        MetricIcon={LocalAtmIcon}
+                                        toolTipText={"USD value of all assets combined resembling stable coins like sDAI, DAI, USDC, USDT etc."}
+                                    />
+                                </Box>
                             </Grid>
                         </Grid> : null}
                     {ratioPieChartData && ratioPieChartData.length > 0 ?
@@ -309,7 +333,7 @@ export default function Treasury() {
                                     portfolio.map(pos =>
                                         pos.chain === activeNetwork.debankId ?
                                             <Box key={pos.id + "box"} mb={1}>
-                                                <LiquidityPosition key={pos.id + pos.name} position={pos}/>
+                                                <LiquidityPosition key={'treasury'} position={pos}/>
                                             </Box> : undefined
                                     )
                                     : <Typography>none</Typography>}
@@ -361,7 +385,7 @@ export default function Treasury() {
                                     karpatkeyPortfolio.portfolio.map(pos =>
                                         pos.chain === activeNetwork.debankId ?
                                             <Box key={pos.id + "box"} mb={1}>
-                                                <LiquidityPosition key={pos.id + pos.name} position={pos}/>
+                                                <LiquidityPosition key={'karpatkey'} position={pos}/>
                                             </Box> : <Typography>none</Typography>
                                     )
                                     : <Typography>none</Typography>}

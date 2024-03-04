@@ -1,4 +1,11 @@
 import { BalancerPieChartDataItem } from "../../data/balancer/balancerTypes";
+import {ChainPortfolio, Portfolio, TotalTokenBalances} from "../../data/debank/debankTypes";
+
+const STABLECOINS = {
+    USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+};
 
 export function mergeArrays(array1 : BalancerPieChartDataItem[], array2: BalancerPieChartDataItem[]) {
     let result: BalancerPieChartDataItem[] = [];
@@ -28,3 +35,29 @@ export function mergeArrays(array1 : BalancerPieChartDataItem[], array2: Balance
   
     return result;
   }
+
+export function calculatePortfolioStablecoinValue(chainPortfolio: ChainPortfolio[]) {
+    let totalValue = 0;
+    chainPortfolio.forEach( portfolio => {
+        portfolio.portfolio_item_list?.forEach(item =>  {
+            item.detail.supply_token_list?.forEach(token => {
+                if (token.id === STABLECOINS.USDC.toLowerCase() || token.id === STABLECOINS.DAI.toLowerCase()) {
+                    totalValue += token.amount * token.price
+                }
+            })
+        })
+    })
+    return totalValue;
+}
+
+export function calculateTokenBalancesStablecoinValue(tokenBalances: TotalTokenBalances) {
+    let totalValue = 0;
+
+    tokenBalances.forEach(token => {
+        if (token.id === STABLECOINS.USDC.toLowerCase() || token.id === STABLECOINS.DAI.toLowerCase()) {
+            totalValue += token.amount * token.price; // Assuming amount is in asset's smallest unit
+        }
+    });
+
+    return totalValue;
+}

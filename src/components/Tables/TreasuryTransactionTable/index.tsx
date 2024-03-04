@@ -27,6 +27,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import JoinExitChip, { JoinExitChipProps } from "../JoinExitsTable/JoinExitChip";
 import { TransactionHistory, Send2, TokenDict } from "../../../data/debank/debankTypes";
 import { getSPWalletName } from "../../../constants/wallets";
+import useGetCurrentTokenPrices from "../../../data/balancer-api-v3/useGetCurrentTokenPrices";
 
 
 interface Data {
@@ -195,6 +196,7 @@ export default function TreasuryTransactionTable({ txnHistory }:
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeNetwork] = useActiveNetworkVersion();
+    const prices = useGetCurrentTokenPrices(['MAINNET'])
 
     if (!txnHistory) {
         return <CircularProgress />;
@@ -241,14 +243,28 @@ export default function TreasuryTransactionTable({ txnHistory }:
         let value = 0
         if (sends.length > 0) {
             sends.forEach(send => {
-                    const price = token_dict[send.token_id] ? token_dict[send.token_id].price : 0
+                    let price = 0
+                    if (prices && prices.data) {
+                       const hit = prices.data.find(el => el.address.toLowerCase() === send.to_addr.toLowerCase())
+                        if (hit?.price) {
+                            price = hit.price
+                        }
+                    }
+                    //const price = token_dict[send.token_id] ? token_dict[send.token_id].price : 0
                     value += send.amount * price;
 
             })
         } else {
             receives.forEach(receive => {
                 //const token = token_dict.find(dict => dict.eth.id === receive.token_id)
-                const price = token_dict[receive.token_id] ? token_dict[receive.token_id].price : 0
+                //const price = token_dict[receive.token_id] ? token_dict[receive.token_id].price : 0
+                let price = 0
+                if (prices && prices.data) {
+                    const hit = prices.data.find(el => el.address.toLowerCase() === receive.token_id.toLowerCase())
+                    if (hit?.price) {
+                        price = hit.price
+                    }
+                }
                     value += receive.amount * price;
 
             })
