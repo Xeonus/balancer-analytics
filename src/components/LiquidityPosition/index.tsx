@@ -77,7 +77,7 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                     <TableBody>
                         {rows.map((row) => (
                             <TableRow
-                                key={row.totalAmount + row.description}
+                                key={row.totalAmount + row.description + Math.random()}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell sx={{ maxWidth: '50px' }} align="right">

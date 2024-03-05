@@ -280,13 +280,6 @@ export default function CorePoolEarnedVsSweptTable({
         ZKEVM: ZkevmLogo,
     };
 
-
-
-
-
-
-
-
     //Table generation
 
     return (

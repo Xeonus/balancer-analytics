@@ -534,6 +534,7 @@ export default function CorePoolTable({
                                                 <PoolCompositionUnified key={row.poolData.poolId}
                                                                         poolData={row.poolData} size={35}/>
                                             </TableCell>
+                                            {}
                                             <TableCell align="right">
                                                 {row.tvl > 0 ?
                                                     formatDollarAmount(row.tvl) :

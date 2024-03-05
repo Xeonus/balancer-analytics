@@ -78,6 +78,7 @@ export interface ServiceProviderEntry {
     budgets:            Budget[];
     img_ref:            string;
     short_descrption?:  string;
+    sunset?: boolean
 }
 
 export interface Budget {

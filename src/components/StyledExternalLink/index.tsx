@@ -5,13 +5,17 @@ import { getEtherscanLink } from "../../utils";
 
 interface StyledLinkProps {
     address: string,
-    type: 'transaction' | 'token' | 'address' | 'block',
+    type: 'transaction' | 'token' | 'address' | 'block' | 'debank',
     activeNetwork: NetworkInfo
 }
 
 export default function StyledExternalLink({address, type, activeNetwork} : StyledLinkProps) {
-
-    const link = getEtherscanLink(address, type, activeNetwork);
+    let link = '';
+    if (type === 'debank') {
+        link = 'https://debank.com/profile/' + address
+    } else {
+        link = getEtherscanLink(address, type, activeNetwork);
+    }
  return (
     <Link target="_blank" href={link}><LaunchIcon sx={{height: '20px'}}/></Link>
  )

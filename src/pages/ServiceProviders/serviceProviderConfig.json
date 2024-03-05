@@ -5,6 +5,7 @@
       "short_description": "The Balancer Maxis are a passionate group of Balancer community contributors. A center of excellence that keeps the Balancer ecosystem operating at a first class level.",
       "site_url": "https://www.notion.so/Balancer-Maxis-b2825faaad2a46a39b7eda2992ae4251",
       "img_ref": "balancerMaxis.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2022,
@@ -87,6 +88,7 @@
       "site_url": "https://beets.fi/",
       "short_description": "Since becoming a Friendly Fork, Beethoven-X and Balancer have developed a strong working relationship, marked by the successful launch of a joint venture on Optimism. As a Service Provider the Beethoven-X team will further strengthen that relationship by providing expert services for protocol development and marketing.",
       "img_ref": "beethoven-x-dao_small.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2023,
@@ -125,6 +127,7 @@
       "site_url": "https://beets.fi/",
       "short_description": "The Beethoven-X Technical team comprises of experts providing technical SP services to further develop Balancer technology.",
       "img_ref": "beethoven-x-dao_small.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2024,
@@ -153,6 +156,7 @@
       "site_url": "https://beets.fi/",
       "short_description": "The Beethoven-X marketing team comprises of experts providing marketing advisory services to the DAO further developing the Balancer brand.",
       "img_ref": "beethoven-x-dao_small.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2024,
@@ -181,6 +185,7 @@
       "site_url": "-",
       "short_description": "The Business Development unit comprises of 2 core contributors advancing the DAOs efforts to secure strategic partnerships.",
       "img_ref": "default.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2024,
@@ -199,6 +204,7 @@
       "site_url": "https://www.hypernative.io/",
       "short_description": "Hypernative stops zero day Web3 cyber attacks, economic risks and protects digital assets, protocols and Web3 applications from significant losses.",
       "img_ref": "hypernative_small.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2023,
@@ -257,6 +263,7 @@
       "site_url": "",
       "short_description": "Orb is an experienced and passionate team of professionals who are dedicated to propelling Balancers growth. Orbs mission is simple: to scale global utilization of the Balancer Protocol, and continue to cultivate the Balancer ecosystem for the next decade of innovation in DeFi.",
       "img_ref": "orbCollective.png",
+      "sunset": true,
       "budgets": [
         {
           "year": 2022,
@@ -305,6 +312,7 @@
       "short_description": "Balancer OpCo Limited (or the “Balancer OpCo”) is a wholly-owned subsidiary of the Balancer Foundation. It is an integral element of the Balancer Foundation  corporate structure supporting the BalancerDAO, and is intended to serve two primary functions: Admnisistrative & Operational as well as Front-End Dev and Engineering Workstream.",
       "site_url": "",
       "img_ref": "default.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2022,
@@ -353,6 +361,7 @@
       "short_description": "Balancer OpCo Limited (or the “Balancer OpCo”) is a wholly-owned subsidiary of the Balancer Foundation. It is an integral element of the Balancer Foundation  corporate structure supporting the BalancerDAO, and is intended to serve two primary functions: Admnisistrative & Operational as well as Front-End Dev and Engineering Workstream.",
       "site_url": "",
       "img_ref": "default.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2023,
@@ -371,6 +380,7 @@
       "short_description": "The grant program provides support and funding (up to $100K USD, paid in BAL) to projects committed to supporting Balancer Protocol in achieving its mission to become the number one source of liquidity for DeFi. This program is made for groups and individuals that aspire to run a project that builds on the Balancer Protocol or supports the development of the Balancer ecosystem.",
       "site_url": "https://www.notion.so/Balancer-Grants-938f1b979810427f8d903a904315da41",
       "img_ref": "default.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2022,
@@ -440,6 +450,7 @@
       "short_description": "he Foundation provides the DAO with an additional mechanism for executing work, furthering Balancer’s decentralization goals, and building resilience across the Balancer Ecosystem. The Balancer Foundation is a traditional legal entity that is directed by the DAO.",
       "site_url": "",
       "img_ref": "default.png",
+      "sunset": false,
       "budgets": [
         {
           "year": 2022,
@@ -498,6 +509,7 @@
       "short_description": "The Three Rocks integrations team consists of talented and dedicated devs formerly part of Orb Collective. After Orb's sunsetting in Summer 2023, they formed their own SP.",
       "site_url": "https://daoism.systems/",
       "img_ref": "default.png",
+      "sunset": true,
       "budgets": [
         {
           "year": 2023,
@@ -526,6 +538,7 @@
       "short_description": "Daoism Systems is a consultancy of computer scientists, engineers, and researchers developing on-chain solutions for web3 organizations, founded in Berlin in January 2022. Please read our manifesto 1 for more details.",
       "site_url": "https://daoism.systems/",
       "img_ref": "daoismSystems.png",
+      "sunset": true,
       "budgets": [
         {
           "year": 2022,

@@ -39,7 +39,8 @@ export function extractTransactionsByTokenAndType(
                 send => {
                     // Only list taxations that happened between the DAO and SP wallets
                     const wallet = SERVICE_PROVIDER_WALLETS.find(el => el.walletId.toLowerCase() === send.to_addr);
-                    if (tokenAddress === send.token_id && wallet) {
+                    // Make BAL sends an exception and always track them!
+                    if (tokenAddress === send.token_id && (wallet || send.token_id === '0xba100000625a3754423978a60c9317c58a424e3d')) {
                         tnxChartData.push(
                             {
                                 value: send.amount < 0 ? send.amount : -send.amount,

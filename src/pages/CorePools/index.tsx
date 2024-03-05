@@ -254,7 +254,7 @@ export default function CorePools() {
                         columns={{xs: 4, sm: 8, md: 12}}
                         sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                     >
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees : 0}
                                 mainMetricInUSD={true}
@@ -263,7 +263,7 @@ export default function CorePools() {
                                 toolTipText={'Total amount of fees collected from core pools. This includes swap fees and the protocol fee cut of 50% on yield-bearing assets.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.5 : 0}
                                 mainMetricInUSD={true}
@@ -272,7 +272,7 @@ export default function CorePools() {
                                 toolTipText={'Minimum amount of voting incentives being placed in total. Fees earned from non-core pools are not included.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.325 : 0}
                                 mainMetricInUSD={true}
@@ -281,7 +281,7 @@ export default function CorePools() {
                                 toolTipText={'Out of all core pool fees earned, 32.5% of revenue is shared with veBAL holders.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.175 : 0}
                                 mainMetricInUSD={true}
