@@ -7,7 +7,7 @@ import * as React from "react";
 import {DateTime} from "luxon";
 import {useBalancerPools} from "../../data/balancer/usePools";
 import useAggregatedProtocolData from "../../data/balancer/useAggregatedProtocolData";
-import useGetCollectedFees from "../../data/maxis/useGetCollectedFees";
+import useGetCollectedFeesSummary from "../../data/maxis/useGetCollectedFeesSummary";
 import {getSnapshotFees, useBalancerPoolFeeSnapshotData} from "../../data/balancer/useBalancerPoolFeeSnapshotData";
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
 import {EthereumNetworkInfo} from "../../constants/networks";
@@ -71,7 +71,7 @@ export default function ProtocolFees() {
     const [endDate, setEndDate] = React.useState(endTimeStamp);
     const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const aggregatedProtocolData = useAggregatedProtocolData();
-    const collectedFees = useGetCollectedFees()
+    const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
     const [feeDelta, setFeeDelta] = React.useState<PoolFeeSnapshotData | undefined>();

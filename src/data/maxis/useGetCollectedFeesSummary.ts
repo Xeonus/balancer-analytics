@@ -2,7 +2,7 @@ import {FeeAllocations} from "./maxiStaticTypes";
 import React, { useEffect, useState } from 'react';
 import historicalData from './static/historical_fee_allocations_monthly.json';
 
-export default function useGetCollectedFees () : { feeData: FeeAllocations[], loading: boolean, error: string } {
+export default function useGetCollectedFeesSummary () : { feeData: FeeAllocations[], loading: boolean, error: string } {
 
     const [feeData, setFeeData] = useState<FeeAllocations[]>([]);
     const [loading, setLoading] = useState(true);

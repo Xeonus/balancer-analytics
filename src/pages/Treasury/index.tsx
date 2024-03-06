@@ -335,17 +335,24 @@ export default function Treasury() {
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" justifyContent="space-between" alignItems="row">
-                                    <Typography variant="h6"> DAO Treasury </Typography>
-
-                                    <Box ml={1}>
-                                        <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'debank'}
-                                                            activeNetwork={activeNetwork}/>
+                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                    {/* First Row: Title and External Link */}
+                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                        <Typography variant="h6">DAO Treasury</Typography>
+                                        <Box ml={1}>
+                                            <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'debank'} activeNetwork={activeNetwork}/>
+                                        </Box>
                                     </Box>
 
+                                    <Box width="100%">
+                                        <Typography variant="caption">
+                                            The DAO Treasury is the main treasury wallet holding all DAO tokens incl. BAL held in the wallet and as liquidity positions.
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
+
                                 <Typography variant="h6">Tokens in Treasury Wallet</Typography>
                                 {totalBalances && totalBalances.length > 0 ?
                                     <FeeCollectorTokenTable tokenBalances={totalBalances}/>
@@ -380,14 +387,20 @@ export default function Treasury() {
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" justifyContent="space-between" alignItems="row">
-                                    <Typography variant="h6"> Assets Managed by Karpatkey </Typography>
-
-                                    <Box ml={1}>
-                                        <StyledExternalLink address={KARPATKEY_SAFE} type={'debank'}
-                                                            activeNetwork={activeNetwork}/>
+                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                    {/* First Row: Title and External Link */}
+                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                        <Typography variant="h6">Karpatkey-managed Assets</Typography>
+                                        <Box ml={1}>
+                                            <StyledExternalLink address={KARPATKEY_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                        </Box>
                                     </Box>
 
+                                    <Box width="100%">
+                                        <Typography variant="caption">
+                                            These are DAO funds that are managed by Karpatkey to generate passive income for the treasury.
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
@@ -426,14 +439,20 @@ export default function Treasury() {
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" justifyContent="space-between" alignItems="row">
-                                    <Typography variant="h6"> Assets Managed by OpCo</Typography>
-
-                                    <Box ml={1}>
-                                        <StyledExternalLink address={OPCO_SAFE} type={'debank'}
-                                                            activeNetwork={activeNetwork}/>
+                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                    {/* First Row: Title and External Link */}
+                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                        <Typography variant="h6">Balancer OpCo</Typography>
+                                        <Box ml={1}>
+                                            <StyledExternalLink address={OPCO_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                        </Box>
                                     </Box>
 
+                                    <Box width="100%">
+                                        <Typography variant="caption">
+                                            These funds are part of OpCo and the foundation. Parts of the USDC reserves stem from BAL OTC sales. These funds may be used to fund Service Providers like the front-end team.
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
