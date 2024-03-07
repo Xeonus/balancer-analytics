@@ -1,17 +1,5 @@
 import Box from '@mui/material/Box';
-import {
-    Grid,
-    CircularProgress,
-    Typography,
-    Stack,
-    Skeleton,
-    IconButton,
-    AlertProps,
-    AppBar,
-    Card,
-    Divider
-} from '@mui/material';
-import { useCoinGeckoSimpleTokenPrices } from '../../data/coingecko/useCoinGeckoSimpleTokenPrices';
+import {AlertProps, Card, CircularProgress, Divider, Grid, IconButton, Typography} from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import CoinCard from '../../components/Cards/CoinCard';
 import MetricsCard from '../../components/Cards/MetricsCard';
@@ -22,22 +10,29 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import { useBalancerChainProtocolData } from '../../data/balancer/useProtocolDataWithClientOverride';
+import {useBalancerChainProtocolData} from '../../data/balancer/useProtocolDataWithClientOverride';
 import {
-    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
+    ArbitrumNetworkInfo,
+    AvalancheNetworkInfo,
+    BaseNetworkInfo,
     EthereumNetworkInfo,
     GnosisNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
 import {
-    arbitrumClient,
     arbitrumBlockClient,
-    polygonClient,
-    polygonBlockClient,
+    arbitrumClient,
+    avalancheBlockClient,
+    avalancheClient,
+    baseBlockClient,
+    baseClient,
     gnosisBlockClient,
     gnosisClient,
-    polygonZKEVMBlockClient, polygonZKEVMClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient
+    polygonBlockClient,
+    polygonClient,
+    polygonZKEVMBlockClient,
+    polygonZKEVMClient
 } from '../../apollo/client';
 
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
@@ -57,8 +52,6 @@ import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {getUnixTimestamp1000DaysAgo, unixToDate} from "../../utils/date";
 import CloseIcon from '@mui/icons-material/Close';
 import * as React from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
 import {DateTime} from 'luxon';
 import GenericAreaChart from "../../components/Echarts/GenericAreaChart";
@@ -69,6 +62,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
+import GenericBarChart from "../../components/Echarts/GenericBarChart";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -82,13 +76,16 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 
-
 export default function Protocol() {
 
 
     //States
     const [protocolAlert, setProtocolAlert] = React.useState(false);
-    const [showMultiAreaChart, setShowMultiAreaChart] = React.useState(true);
+    const [showMultiAreaChart, setShowMultiAreaChart] = React.useState(false);
+    const [showMultiAreaVolumeChart, setShowMultiAreaVolumeChart] = React.useState(false);
+    const [showMultiAreaProtocolFeeChart, setShowMultiAreaProtocolFeeChart] = React.useState(false);
+    const [showMultiAreaFeeChart, setShowMultiAreaFeeChart] = React.useState(false);
+    const [showMultiAreaSwapChart, setShowMultiSwapChart] = React.useState(false);
     const protocolAlertMessage = 'Polygon zkEVM Subgraph issues - Protocol TVL stats affected!'
 
     //Data
@@ -124,6 +121,7 @@ export default function Protocol() {
     const [endDate, setEndDate] = React.useState(endTimeStamp);
     const [timeRange, setTimeRange] = React.useState('365');
     const [showDate, setShowDate] = React.useState(false);
+    //const [aggregationInterval, setAggregationInterval] = React.useState('daily');
 
     //Aggregated TVL data
     const filteredTvlData = React.useMemo(() => {
@@ -136,6 +134,46 @@ export default function Protocol() {
         });
     }, [aggregatedProtocolData.overallTvlData, startDate, endDate]);
 
+    const filteredVolumeMetrics = React.useMemo(() => {
+        if (!aggregatedProtocolData.overallVolumeChartData) {
+            return [];
+        }
+        return aggregatedProtocolData.overallVolumeChartData.filter((dataItem) => {
+            const dataDate = dataItem.time; // assuming unixToDate converts timestamp to a JS Date object
+            return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
+        });
+    }, [aggregatedProtocolData.overallVolumeChartData, startDate, endDate]);
+
+    const filteredProtocolFeeMetrics = React.useMemo(() => {
+        if (!aggregatedProtocolData.overallProtocolFeeData) {
+            return [];
+        }
+        return aggregatedProtocolData.overallProtocolFeeData.filter((dataItem) => {
+            const dataDate = dataItem.time; // assuming unixToDate converts timestamp to a JS Date object
+            return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
+        });
+    }, [aggregatedProtocolData.overallProtocolFeeData, startDate, endDate]);
+
+    const filteredFeeMetrics = React.useMemo(() => {
+        if (!aggregatedProtocolData.overallFeeChartData) {
+            return [];
+        }
+        return aggregatedProtocolData.overallFeeChartData.filter((dataItem) => {
+            const dataDate = dataItem.time; // assuming unixToDate converts timestamp to a JS Date object
+            return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
+        });
+    }, [aggregatedProtocolData.overallFeeChartData, startDate, endDate]);
+
+    const filteredSwapsMetrics = React.useMemo(() => {
+        if (!aggregatedProtocolData.overallSwapsChartData) {
+            return [];
+        }
+        return aggregatedProtocolData.overallSwapsChartData.filter((dataItem) => {
+            const dataDate = dataItem.time; // assuming unixToDate converts timestamp to a JS Date object
+            return Date.parse(dataDate) / 1000 >= endDate && Date.parse(dataDate) / 1000 <= startDate;
+        });
+    }, [aggregatedProtocolData.overallSwapsChartData, startDate, endDate]);
+
 
     //Handlers
     const handleProtocolAlert = () => {
@@ -145,6 +183,22 @@ export default function Protocol() {
     const toggleTVLChart = () => {
         setShowMultiAreaChart(!showMultiAreaChart);
     };
+
+    const toggleVolumeChart = () => {
+        setShowMultiAreaVolumeChart(!showMultiAreaVolumeChart);
+    }
+
+    const toggleProtocolFeeChart = () => {
+        setShowMultiAreaProtocolFeeChart(!showMultiAreaProtocolFeeChart);
+    }
+
+    const toggleFeeChart = () => {
+        setShowMultiAreaFeeChart(!showMultiAreaFeeChart);
+    }
+
+    const toggleSwapChart = () => {
+        setShowMultiSwapChart(!showMultiAreaSwapChart);
+    }
 
     //Change management
     const handleChange = (event: SelectChangeEvent) => {
@@ -208,19 +262,19 @@ export default function Protocol() {
     };
 
     const networkExplorers = [
-        { name: 'Ethereum', linkTarget: 'chain', svgPath: EtherLogo },
-        { name: 'Arbitrum', linkTarget: 'arbitrum/chain', svgPath: ArbitrumLogo },
-        { name: 'Polygon', linkTarget: 'polygon/chain', svgPath: PolygonLogo },
-        { name: 'zkEVM', linkTarget: 'zkevm/chain', svgPath: PolygonZkEVMLogo },
-        { name: 'Gnosis', linkTarget: 'gnosis/chain', svgPath: GnosisLogo },
-        { name: 'Avalanche', linkTarget: 'avalanche/chain', svgPath: AvalancheLogo },
-        { name: 'Base', linkTarget: 'base/chain', svgPath: BaseLogo },
+        {name: 'Ethereum', linkTarget: 'chain', svgPath: EtherLogo},
+        {name: 'Arbitrum', linkTarget: 'arbitrum/chain', svgPath: ArbitrumLogo},
+        {name: 'Polygon', linkTarget: 'polygon/chain', svgPath: PolygonLogo},
+        {name: 'zkEVM', linkTarget: 'zkevm/chain', svgPath: PolygonZkEVMLogo},
+        {name: 'Gnosis', linkTarget: 'gnosis/chain', svgPath: GnosisLogo},
+        {name: 'Avalanche', linkTarget: 'avalanche/chain', svgPath: AvalancheLogo},
+        {name: 'Base', linkTarget: 'base/chain', svgPath: BaseLogo},
 
     ];
 
 
     return (
-        <Box sx={{ flexGrow: 2 }}>
+        <Box sx={{flexGrow: 2}}>
             <Box mb={1} sx={{flexGrow: 2, justifyContent: "center"}}>
                 {protocolAlert && (
                     <Alert
@@ -232,7 +286,7 @@ export default function Protocol() {
                                 size="small"
                                 onClick={handleProtocolAlert}
                             >
-                                <CloseIcon fontSize="inherit" />
+                                <CloseIcon fontSize="inherit"/>
                             </IconButton>
                         }
                     >
@@ -243,7 +297,7 @@ export default function Protocol() {
             <Grid
                 container
                 spacing={2}
-                sx={{ justifyContent: 'center' }}
+                sx={{justifyContent: 'center'}}
             >
                 <Grid
                     item
@@ -251,8 +305,8 @@ export default function Protocol() {
                 >
                     <Grid
                         container
-                        spacing={{ xs: 2, md: 2 }}
-                        columns={{ xs: 4, sm: 2, md: 10 }}
+                        spacing={{xs: 2, md: 2}}
+                        columns={{xs: 4, sm: 2, md: 10}}
                     >
                         <Grid item mt={1} xs={11}>
                             <Grid container spacing={2} justifyContent="center">
@@ -275,7 +329,7 @@ export default function Protocol() {
                 <Grid
                     container
                     spacing={1}
-                    sx={{ justifyContent: 'center' }}
+                    sx={{justifyContent: 'center'}}
                 >
                     <Grid item xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Global Balancer Stats</Typography>
@@ -296,7 +350,7 @@ export default function Protocol() {
                                         tokenPriceChange={v3CoinData.data[balAddress].priceChangePercentage24h}
 
                                     />
-                                    : <CircularProgress />}
+                                    : <CircularProgress/>}
                             </Box>
                             <Box m={{xs: 0, sm: 1}}>
                                 <MetricsCard
@@ -308,14 +362,14 @@ export default function Protocol() {
                                 />
                             </Box>
                             <Box m={{xs: 0, sm: 1}}>
-                                    <MetricsCard
-                                        mainMetric={mainnetPercentage}
-                                        mainMetricInUSD={false}
-                                        mainMetricUnit={' %'}
-                                        metricName='Mainnet Dominance'
-                                        mainMetricChange={mainnetTVLChange * 100}
-                                        MetricIcon={PieChartIcon}
-                                    />
+                                <MetricsCard
+                                    mainMetric={mainnetPercentage}
+                                    mainMetricInUSD={false}
+                                    mainMetricUnit={' %'}
+                                    metricName='Mainnet Dominance'
+                                    mainMetricChange={mainnetTVLChange * 100}
+                                    MetricIcon={PieChartIcon}
+                                />
                             </Box>
                             <Box m={{xs: 0, sm: 1}}>
                                 <MetricsCard
@@ -335,131 +389,147 @@ export default function Protocol() {
                                     MetricIcon={RequestQuoteIcon}
                                 />
                             </Box>
-                        <Box m={{xs: 0, sm: 1}}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.fees24}
-                                mainMetricInUSD={true}
-                                metricName='Trading Fees'
-                                mainMetricChange={aggregatedProtocolData.feesChange}
-                                MetricIcon={CurrencyExchangeIcon}
-                            />
-                        </Box>
                             <Box m={{xs: 0, sm: 1}}>
-                            <MetricsCard
-                                mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
-                                mainMetricInUSD={false}
-                                metricName='Swaps'
-                                mainMetricChange={swapsChange}
-                                MetricIcon={SwapHorizIcon}
-                            />
+                                <MetricsCard
+                                    mainMetric={aggregatedProtocolData.fees24}
+                                    mainMetricInUSD={true}
+                                    metricName='Trading Fees'
+                                    mainMetricChange={aggregatedProtocolData.feesChange}
+                                    MetricIcon={CurrencyExchangeIcon}
+                                />
+                            </Box>
+                            <Box m={{xs: 0, sm: 1}}>
+                                <MetricsCard
+                                    mainMetric={aggregatedProtocolData.swaps24 ? aggregatedProtocolData.swaps24 : 0}
+                                    mainMetricInUSD={false}
+                                    metricName='Swaps'
+                                    mainMetricChange={swapsChange}
+                                    MetricIcon={SwapHorizIcon}
+                                />
                             </Box>
                         </Grid>
                     </Grid>
 
+
                     <Grid item mt={1} xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Historical TVL</Typography>
                     </Grid>
-                        <Grid item xs={11}>
-                            <Button
-                                variant="outlined"
-                                onClick={toggleTVLChart}
-                                sx={{ backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0 }}
+                    <Grid item xs={11}>
+                        <Button
+                            variant="outlined"
+                            onClick={toggleTVLChart}
+                            sx={{backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0}}
 
-                            >
-                                {showMultiAreaChart ? 'Aggregated TVL' : 'TVL per Chain'}
-                            </Button>
+                        >
+                            {showMultiAreaChart ? 'Aggregated TVL' : 'TVL per Chain'}
+                        </Button>
+                    </Grid>
+                    {showMultiAreaChart ? (
+                        <Grid item mt={1} xs={11}>
+                            <ProtocolMultiAreaChart
+                                mainnetProtocolData={protocolData}
+                                arbitrumProtocolData={arbitrumProtocolData}
+                                polygonProtocolData={polygonProtocolData}
+                                polygonZkEVMProtocolData={polygonZkEVMProtocolData}
+                                gnosisProtocolData={gnosisProtocolData}
+                                avalancheProtocolData={avalancheProtocolData}
+                                baseProtocolData={baseProtocolData}
+                            />
                         </Grid>
-                        {showMultiAreaChart ? (
-                            <Grid item mt={1} xs={11}>
-                                <ProtocolMultiAreaChart
-                                    mainnetProtocolData={protocolData}
-                                    arbitrumProtocolData={arbitrumProtocolData}
-                                    polygonProtocolData={polygonProtocolData}
-                                    polygonZkEVMProtocolData={polygonZkEVMProtocolData}
-                                    gnosisProtocolData={gnosisProtocolData}
-                                    avalancheProtocolData={avalancheProtocolData}
-                                    baseProtocolData={baseProtocolData}
-                                />
-                            </Grid>
-                        ) : (
-                            <Grid item mt={1} xs={11}>
+                    ) : (
+                        <Grid item mt={1} xs={11}>
+                            <Card>
+                                <Box display="flex" alignItems="center" m={1}>
+                                    <Box ml={1}>
+                                        <FormControl size="small">
+                                            <Select
+                                                sx={{
+                                                    backgroundColor: "background.paper",
+                                                    boxShadow: 2,
+                                                    borderRadius: 2,
+                                                    borderColor: 0,
+                                                }}
+                                                color="primary"
+                                                labelId="timeRangeSelectLabel"
+                                                id="timeRangeSelect"
+                                                onChange={handleChange}
+                                                value={timeRange}
+                                                inputProps={{
+                                                    name: 'timeRange',
+                                                    id: 'timeRangeId-native-simple',
+                                                }}
+                                            >
+                                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                                <Divider/>
+                                                <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                                <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                                <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                                <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                                <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                                <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                                <MenuItem value={'0'}>All time</MenuItem>
+                                                <MenuItem value={'1000'}>Custom </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
 
-                                <Card>
-                                        <Box display="flex" alignItems="center" m={1}>
-                                            <Box ml={1}>
-                                                <FormControl size="small">
-                                                    <Select
-                                                        sx={{
-                                                            backgroundColor: "background.paper",
-                                                            boxShadow: 2,
-                                                            borderRadius: 2,
-                                                            borderColor: 0,
-                                                        }}
-                                                        color="primary"
-                                                        labelId="timeRangeSelectLabel"
-                                                        id="timeRangeSelect"
-                                                        onChange={handleChange}
-                                                        value={timeRange}
-                                                        inputProps={{
-                                                            name: 'timeRange',
-                                                            id: 'timeRangeId-native-simple',
-                                                        }}
-                                                    >
-                                                        <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
-                                                        <Divider/>
-                                                        <MenuItem value={'7'}>Last 7 days</MenuItem>
-                                                        <MenuItem value={'14'}>Last 14 days</MenuItem>
-                                                        <MenuItem value={'30'}>Last 30 days</MenuItem>
-                                                        <MenuItem value={'90'}>Last 90 days</MenuItem>
-                                                        <MenuItem value={'180'}>Last 180 days</MenuItem>
-                                                        <MenuItem value={'365'}>Last 365 days</MenuItem>
-                                                        <MenuItem value={'0'}>All time</MenuItem>
-                                                        <MenuItem value={'1000'}>Custom </MenuItem>
-                                                    </Select>
-                                                </FormControl>
+                                    {showDate ?
+                                        <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="Start Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(endDate)}
+                                                    onChange={handleEndDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                            <Box p={1}>
+                                                <Typography>to</Typography>
                                             </Box>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="End Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(startDate)}
+                                                    onChange={handleStartDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                        </Box> : null}
+                                </Box>
+                                {filteredTvlData && filteredTvlData.length > 1 ? (
+                                    <Box m={1}>
+                                        <GenericAreaChart chartData={filteredTvlData} dataTitle={"Protocol TVL"}
+                                                          height={'350px'}/>
+                                    </Box>
+                                ) : null}
+                            </Card>
+                        </Grid>
+                    )}
 
-                                            {showDate ?
-                                                <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <DatePicker
-                                                            label="Start Date"
-                                                            maxDate={Date.now()}
-                                                            minDate={EthereumNetworkInfo.startTimeStamp}
-                                                            value={unixToDate(endDate)}
-                                                            onChange={handleEndDateChange}
-                                                            renderInput={(params) => <TextField size='small'
-                                                                                                sx={{maxWidth: '150px'}} {...params} />}
-                                                        />
-                                                    </LocalizationProvider>
-                                                    <Box p={1}>
-                                                        <Typography>to</Typography>
-                                                    </Box>
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <DatePicker
-                                                            label="End Date"
-                                                            maxDate={Date.now()}
-                                                            minDate={EthereumNetworkInfo.startTimeStamp}
-                                                            value={unixToDate(startDate)}
-                                                            onChange={handleStartDateChange}
-                                                            renderInput={(params) => <TextField size='small'
-                                                                                                sx={{maxWidth: '150px'}} {...params} />}
-                                                        />
-                                                    </LocalizationProvider>
-                                                </Box> : null}
-                                        </Box>
-                                    {filteredTvlData && filteredTvlData.length > 1 ? (
-                                        <Box m={1}>
-                                            <GenericAreaChart chartData={filteredTvlData} dataTitle={"Protocol TVL"} height={'350px'}/>
-                                        </Box>
-                                    ) : null}
-                                </Card>
-                            </Grid>
-                        )}
-                    <Grid item mt={1} xs={11} >
+
+
+
+                    <Grid item mt={1} xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Historical Volume</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={11} >
+                    <Grid item xs={11}>
+                        <Button
+                            variant="outlined"
+                            onClick={toggleVolumeChart}
+                            sx={{backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0}}
+
+                        >
+                            {showMultiAreaVolumeChart ? 'Aggregated Volume' : 'Volume per Chain'}
+                        </Button>
+                    </Grid>
+                    {showMultiAreaVolumeChart ? (
+                        <Grid item mt={1} xs={11}>
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={smoothData(protocolData.volumeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.volumeData, 100000000)}
@@ -470,11 +540,96 @@ export default function Protocol() {
                             baseProtocolData={smoothData(baseProtocolData.volumeData, 100000000)}
                             isUSD={true}
                         />
-                    </Grid>
-                    <Grid item mt={1} xs={11} >
+                        </Grid>
+                    ) : (
+                        <Grid item mt={1} xs={11}>
+                            <Card>
+                                <Box display="flex" alignItems="center" m={1}>
+                                    <Box ml={1}>
+                                        <FormControl size="small">
+                                            <Select
+                                                sx={{
+                                                    backgroundColor: "background.paper",
+                                                    boxShadow: 2,
+                                                    borderRadius: 2,
+                                                    borderColor: 0,
+                                                }}
+                                                color="primary"
+                                                labelId="timeRangeSelectLabel"
+                                                id="timeRangeSelect"
+                                                onChange={handleChange}
+                                                value={timeRange}
+                                                inputProps={{
+                                                    name: 'timeRange',
+                                                    id: 'timeRangeId-native-simple',
+                                                }}
+                                            >
+                                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                                <Divider/>
+                                                <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                                <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                                <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                                <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                                <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                                <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                                <MenuItem value={'0'}>All time</MenuItem>
+                                                <MenuItem value={'1000'}>Custom </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    {showDate ?
+                                        <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="Start Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(endDate)}
+                                                    onChange={handleEndDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                            <Box p={1}>
+                                                <Typography>to</Typography>
+                                            </Box>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="End Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(startDate)}
+                                                    onChange={handleStartDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                        </Box> : null}
+                                </Box>
+                                {filteredTvlData && filteredTvlData.length > 1 ? (
+                                    <Box m={1}>
+                                        <GenericBarChart data={filteredVolumeMetrics} />
+                                    </Box>
+                                ) : null}
+                            </Card>
+                        </Grid>
+                    )}
+                    <Grid item mt={1} xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Historical Collected Protocol Fees</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={11} >
+                    <Grid item xs={11}>
+                        <Button
+                            variant="outlined"
+                            onClick={toggleProtocolFeeChart}
+                            sx={{backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0}}
+
+                        >
+                            {showMultiAreaProtocolFeeChart ? 'Aggregated Protocol Fees' : 'Protocol Fees per Chain'}
+                        </Button>
+                    </Grid>
+                    {showMultiAreaProtocolFeeChart ? (
+                    <Grid item mt={1} xs={11}>
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={smoothData(protocolData.protocolFeeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.protocolFeeData, 100000000)}
@@ -485,11 +640,96 @@ export default function Protocol() {
                             baseProtocolData={smoothData(baseProtocolData.protocolFeeData, 100000000)}
                             isUSD={true}
                         />
-                    </Grid>
-                    <Grid item mt={1} xs={11} >
+                    </Grid>) : (
+                        <Grid item mt={1} xs={11}>
+                            <Card>
+                                <Box display="flex" alignItems="center" m={1}>
+                                    <Box ml={1}>
+                                        <FormControl size="small">
+                                            <Select
+                                                sx={{
+                                                    backgroundColor: "background.paper",
+                                                    boxShadow: 2,
+                                                    borderRadius: 2,
+                                                    borderColor: 0,
+                                                }}
+                                                color="primary"
+                                                labelId="timeRangeSelectLabel"
+                                                id="timeRangeSelect"
+                                                onChange={handleChange}
+                                                value={timeRange}
+                                                inputProps={{
+                                                    name: 'timeRange',
+                                                    id: 'timeRangeId-native-simple',
+                                                }}
+                                            >
+                                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                                <Divider/>
+                                                <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                                <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                                <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                                <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                                <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                                <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                                <MenuItem value={'0'}>All time</MenuItem>
+                                                <MenuItem value={'1000'}>Custom </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    {showDate ?
+                                        <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="Start Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(endDate)}
+                                                    onChange={handleEndDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                            <Box p={1}>
+                                                <Typography>to</Typography>
+                                            </Box>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="End Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(startDate)}
+                                                    onChange={handleStartDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                        </Box> : null}
+                                </Box>
+                                {filteredTvlData && filteredTvlData.length > 1 ? (
+                                    <Box m={1}>
+                                        <GenericBarChart data={filteredProtocolFeeMetrics} />
+                                    </Box>
+                                ) : null}
+                            </Card>
+                        </Grid>
+                        )}
+
+                    <Grid item mt={1} xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Historical Trading Fees</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={11} >
+                    <Grid item xs={11}>
+                        <Button
+                            variant="outlined"
+                            onClick={toggleFeeChart}
+                            sx={{backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0}}
+
+                        >
+                            {showMultiAreaFeeChart ? 'Aggregated Swap Fees' : 'Swap Fees per Chain'}
+                        </Button>
+                    </Grid>
+                    {showMultiAreaFeeChart ? (
+                    <Grid item mt={1} xs={11}>
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={smoothData(protocolData.feeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.feeData, 100000000)}
@@ -500,12 +740,95 @@ export default function Protocol() {
                             baseProtocolData={smoothData(baseProtocolData.feeData, 100000000)}
                             isUSD={true}
                         />
-                    </Grid>
+                    </Grid> ) : (
+                        <Grid item mt={1} xs={11}>
+                            <Card>
+                                <Box display="flex" alignItems="center" m={1}>
+                                    <Box ml={1}>
+                                        <FormControl size="small">
+                                            <Select
+                                                sx={{
+                                                    backgroundColor: "background.paper",
+                                                    boxShadow: 2,
+                                                    borderRadius: 2,
+                                                    borderColor: 0,
+                                                }}
+                                                color="primary"
+                                                labelId="timeRangeSelectLabel"
+                                                id="timeRangeSelect"
+                                                onChange={handleChange}
+                                                value={timeRange}
+                                                inputProps={{
+                                                    name: 'timeRange',
+                                                    id: 'timeRangeId-native-simple',
+                                                }}
+                                            >
+                                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                                <Divider/>
+                                                <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                                <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                                <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                                <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                                <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                                <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                                <MenuItem value={'0'}>All time</MenuItem>
+                                                <MenuItem value={'1000'}>Custom </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
 
-                    <Grid item mt={1} xs={11} >
+                                    {showDate ?
+                                        <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="Start Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(endDate)}
+                                                    onChange={handleEndDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                            <Box p={1}>
+                                                <Typography>to</Typography>
+                                            </Box>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="End Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(startDate)}
+                                                    onChange={handleStartDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                        </Box> : null}
+                                </Box>
+                                {filteredTvlData && filteredTvlData.length > 1 ? (
+                                    <Box m={1}>
+                                        <GenericBarChart data={filteredFeeMetrics} />
+                                    </Box>
+                                ) : null}
+                            </Card>
+                        </Grid>
+                    )}
+                    <Grid item mt={1} xs={11}>
                         <Typography sx={{fontSize: '24px'}} mb={1}>Historical Swaps</Typography>
                     </Grid>
-                    <Grid item mt={1} xs={11} >
+                    <Grid item xs={11}>
+                        <Button
+                            variant="outlined"
+                            onClick={toggleSwapChart}
+                            sx={{backgroundColor: "background.paper", boxShadow: 2, borderRadius: 2, borderColor: 0}}
+
+                        >
+                            {showMultiAreaSwapChart ? 'Aggregated Swaps' : 'Swaps per Chain'}
+                        </Button>
+                    </Grid>
+                    {showMultiAreaSwapChart ? (
+                    <Grid item mt={1} xs={11}>
                         <ProtocolMultipleBarChart
                             mainnetProtocolData={protocolData.swapData}
                             arbitrumProtocolData={arbitrumProtocolData.swapData}
@@ -516,16 +839,89 @@ export default function Protocol() {
                             baseProtocolData={baseProtocolData.swapData}
                             isUSD={false}
                         />
-                    </Grid>
+                    </Grid> ) : (
+                        <Grid item mt={1} xs={11}>
+                            <Card>
+                                <Box display="flex" alignItems="center" m={1}>
+                                    <Box ml={1}>
+                                        <FormControl size="small">
+                                            <Select
+                                                sx={{
+                                                    backgroundColor: "background.paper",
+                                                    boxShadow: 2,
+                                                    borderRadius: 2,
+                                                    borderColor: 0,
+                                                }}
+                                                color="primary"
+                                                labelId="timeRangeSelectLabel"
+                                                id="timeRangeSelect"
+                                                onChange={handleChange}
+                                                value={timeRange}
+                                                inputProps={{
+                                                    name: 'timeRange',
+                                                    id: 'timeRangeId-native-simple',
+                                                }}
+                                            >
+                                                <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                                <Divider/>
+                                                <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                                <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                                <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                                <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                                <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                                <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                                <MenuItem value={'0'}>All time</MenuItem>
+                                                <MenuItem value={'1000'}>Custom </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    {showDate ?
+                                        <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="Start Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(endDate)}
+                                                    onChange={handleEndDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                            <Box p={1}>
+                                                <Typography>to</Typography>
+                                            </Box>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    label="End Date"
+                                                    maxDate={Date.now()}
+                                                    minDate={EthereumNetworkInfo.startTimeStamp}
+                                                    value={unixToDate(startDate)}
+                                                    onChange={handleStartDateChange}
+                                                    renderInput={(params) => <TextField size='small'
+                                                                                        sx={{maxWidth: '150px'}} {...params} />}
+                                                />
+                                            </LocalizationProvider>
+                                        </Box> : null}
+                                </Box>
+                                {filteredSwapsMetrics && filteredSwapsMetrics.length > 1 ? (
+                                    <Box m={1}>
+                                        <GenericBarChart data={filteredSwapsMetrics} />
+                                    </Box>
+                                ) : null}
+                            </Card>
+                        </Grid>
+                    )}
 
                 </Grid> : <Grid
                     container
                     spacing={2}
                     mt='10%'
                     mb='10%'
-                    sx={{ justifyContent: 'center' }}
+                    sx={{justifyContent: 'center'}}
                 >
-                    <CustomLinearProgress />
+                    <CustomLinearProgress/>
                 </Grid>}
         </Box>
     );

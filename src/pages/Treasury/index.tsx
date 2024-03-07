@@ -20,6 +20,7 @@ import {calculatePortfolioStablecoinValue, calculateTokenBalancesStablecoinValue
 import * as React from "react";
 import {EthereumNetworkInfo} from "../../constants/networks";
 import LaunchIcon from "@mui/icons-material/Launch";
+import {formatDollarAmount} from "../../utils/numbers";
 
 export default function Treasury() {
 
@@ -63,6 +64,19 @@ export default function Treasury() {
         const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances, ...opcoBalances.totalBalances]);
         totalStablecoinValue = portfolioValue + balancesValue;
     }
+
+    //Obtain total portfolio values
+    const treasuryValue = totalBalances && portfolio ?
+        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+
+    const KarpatkeyValue = karpatkeyBalances && karpatkeyBalances.totalBalances && karpatkeyPortfolio && karpatkeyPortfolio.portfolio ?
+        karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+
+    const opcoValue = opcoBalances && opcoBalances.totalBalances && opcoPortfolio && opcoPortfolio.portfolio ?
+        opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
 
     //Obtain wallet total worth and USDC
@@ -111,12 +125,12 @@ export default function Treasury() {
     const portfolioValue = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
     const karpatkeyPortfolioValue = karpatkeyPortfolio.portfolio ? karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
 
-// Calculate the sum of the token balances
+    // Calculate the sum of the token balances
     const totalTokenBalance = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     const karpatkeyTokenBalance = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     const opcoTokenBalances = opcoBalances.totalBalances ? opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
 
-// Sum up all the values
+    // Sum up all the values
     const totalAssetValue = portfolioValue + karpatkeyPortfolioValue + totalTokenBalance + karpatkeyTokenBalance + opcoTokenBalances;
 
 
@@ -229,7 +243,7 @@ export default function Treasury() {
                             >
                                 <Box mr={1} mb={1}>
                                     <MetricsCard
-                                        mainMetric={netWorth}
+                                        mainMetric={treasuryValue + KarpatkeyValue + opcoValue}
                                         mainMetricInUSD={true}
                                         metricName='Net Worth'
                                         mainMetricChange={0}
@@ -331,23 +345,28 @@ export default function Treasury() {
                     >
                         <Accordion>
                             <AccordionSummary
-                                expandIcon={<ExpandMoreIcon/>}
+                                expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
-                                    {/* First Row: Title and External Link */}
-                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
-                                        <Typography variant="h6">DAO Treasury</Typography>
-                                        <Box ml={1}>
-                                            <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'debank'} activeNetwork={activeNetwork}/>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">DAO Treasury</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'debank'} activeNetwork={activeNetwork} />
+                                            </Box>
                                         </Box>
-                                    </Box>
 
-                                    <Box width="100%">
+                                        {/* Description */}
                                         <Typography variant="caption">
                                             The DAO Treasury is the main treasury wallet holding all DAO tokens incl. BAL held in the wallet and as liquidity positions.
                                         </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryValue)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
@@ -383,23 +402,28 @@ export default function Treasury() {
                         xs={11}>
                         <Accordion>
                             <AccordionSummary
-                                expandIcon={<ExpandMoreIcon/>}
+                                expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
-                                    {/* First Row: Title and External Link */}
-                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
-                                        <Typography variant="h6">Karpatkey-managed Assets</Typography>
-                                        <Box ml={1}>
-                                            <StyledExternalLink address={KARPATKEY_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Karpatkey-managed Assets</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={KARPATKEY_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                            </Box>
                                         </Box>
-                                    </Box>
 
-                                    <Box width="100%">
+                                        {/* Description */}
                                         <Typography variant="caption">
                                             These are DAO funds that are managed by Karpatkey to generate passive income for the treasury.
                                         </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(KarpatkeyValue)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
@@ -435,23 +459,28 @@ export default function Treasury() {
                         xs={11}>
                         <Accordion>
                             <AccordionSummary
-                                expandIcon={<ExpandMoreIcon/>}
+                                expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
-                                    {/* First Row: Title and External Link */}
-                                    <Box display="flex" justifyContent="flex-start" alignItems="center">
-                                        <Typography variant="h6">Balancer OpCo</Typography>
-                                        <Box ml={1}>
-                                            <StyledExternalLink address={OPCO_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Balancer OpCo</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={OPCO_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                            </Box>
                                         </Box>
-                                    </Box>
 
-                                    <Box width="100%">
+                                        {/* Description */}
                                         <Typography variant="caption">
                                             These funds are part of OpCo and the foundation. Parts of the USDC reserves stem from BAL OTC sales. These funds may be used to fund Service Providers like the front-end team.
                                         </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(opcoValue)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
