@@ -204,8 +204,8 @@ export default function CorePoolEarnedVsSweptTable({
     const [order, setOrder] = useState<Order>('desc');
     const [orderBy, setOrderBy] = useState<keyof Data>('earnedFees');
     const [page, setPage] = useState(0);
-    const [dense, setDense] = useState(false);
-    const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [dense, setDense] = useState(true);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
 
 
@@ -279,13 +279,6 @@ export default function CorePoolEarnedVsSweptTable({
         BASE: BaseLogo,
         ZKEVM: ZkevmLogo,
     };
-
-
-
-
-
-
-
 
     //Table generation
 

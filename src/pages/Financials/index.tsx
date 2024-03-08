@@ -36,9 +36,9 @@ export default function Financials() {
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
     const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-    const bal = '0xba100000625a3754423978a60c9317c58a424e3D';
+    const bal = '0xba100000625a3754423978a60c9317c58a424e3d';
     const startingUSDCValue = 0 //1164169.82;
-    const startingBAL = 4412176.4
+    const startingBAL = 5009531.19 //4412176.4
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -110,7 +110,8 @@ export default function Financials() {
     //---USDC: SEND and RECEIVE---
     let usdcReceived =  extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
-    usdcReceived = usdcReceived.concat(usdcReceived2);
+    //const usdcReceivedFjord = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', '0xA5033A6BDb31E52Ce6ba9c67Bff7331aC2686e72'.toLowerCase());
+    usdcReceived = usdcReceived.concat(usdcReceived2)
     //USDC Send
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:
@@ -185,6 +186,7 @@ export default function Financials() {
             }
         )
     })
+    console.log("netCumulativeBALFlow", netCumulativeBALFlow)
 
     //---Historical Treasury wallet chart---
     //Take current balances and do a revert sum based on tx data we already have (net in outflow and smooth)
@@ -290,15 +292,17 @@ export default function Financials() {
                                 metricName='Total Liquid Reserves'
                                 mainMetricChange={0}
                                 MetricIcon={AccountBalanceIcon}
+                                toolTipText={'Amount of liquid tokens in the DAO treasury wallet excluding other sources.'}
                             />
                         </Box>
                         <Box m={1}>
                             <MetricsCard
                                 mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
                                 mainMetricInUSD={true}
-                                metricName='Liquid USDC'
+                                metricName='Liquid Treasury USDC'
                                 mainMetricChange={0}
                                 MetricIcon={CurrencyExchangeIcon}
+                                toolTipText={'Liquid USDC in the DAO treasury excluding other wallets (e.g. OpCo or Karpatkey)'}
                             />
                         </Box>
                         <Box m={1}>
@@ -361,6 +365,7 @@ export default function Financials() {
                             <Typography variant="h6">USDC Expenditures</Typography>
                         </Box>
                     </Box>
+                    <Typography variant={'body1'}>Visualizing the relationship between pure protocol fee income to the DAO vs. Service Provider spendings across the ecosystem. </Typography>
                 </Grid>
                 <Grid
                     container
@@ -451,6 +456,7 @@ export default function Financials() {
                             <Typography variant="h6">BAL Expenditures</Typography>
                         </Box>
                     </Box>
+                    <Typography variant={'body1'}>Flow of the BAL treasury reserves to different entities like service providers.</Typography>
                 </Grid>
                 <Grid
                     container
@@ -502,6 +508,7 @@ export default function Financials() {
                             <Typography variant="h6">Treasury Transaction History</Typography>
                         </Box>
                     </Box>
+                    <Typography variant={'body1'}>In-depth historical record of all transactions executed to or from the DAO treasury wallet</Typography>
                 </Grid>
                 <Grid
                     item

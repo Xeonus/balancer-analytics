@@ -26,6 +26,10 @@ export const SERVICE_PROVIDER_WALLETS = [
         walletId: '0x9a74cbff3f36ff1e433ef88d0ec1cdcd1eb79afa'
     },
     {
+        name: 'Fjord Proxy v2',
+        walletId: '0xA5033A6BDb31E52Ce6ba9c67Bff7331aC2686e72'
+    },
+    {
         name: 'Ribbon Vault',
         walletId: '0x2a6b048eb15c7d4ddca27db4f9a454196898a0fe'
     },
@@ -65,7 +69,9 @@ const COPPER_LAUNCH_PROXY_MAINNET = '0x9a74cbff3f36ff1e433ef88d0ec1cdcd1eb79afa'
 const COPPER_LAUNCH_PROXY_ARBITRUM = '0x22D15E202538e90d6fDaE5044A4D6a28453aA4C5';
 const COPPER_LAUNCH_PROXY_POLYGON ='0x7388feB5a04990bb4c7570e68F1b37aB06C1aafD';
 export const DAO_FEE_MULTISIG  = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
-export const KARPATKEY_SAFE = '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89'
+export const KARPATKEY_SAFE = '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89';
+
+export const OPCO_SAFE = '0x3B8910F378034FD6E103Df958863e5c684072693';
 
 export const TREASURY_ADDRESS_CONFIG = [
     {

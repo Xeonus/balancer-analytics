@@ -1,10 +1,12 @@
-import {Box, Card, Grid, Typography} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Box, Card, Grid, Link, Typography} from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {getTreasuryConfig, KARPATKEY_SAFE} from "../../constants/wallets";
+import {getTreasuryConfig, KARPATKEY_SAFE, OPCO_SAFE} from "../../constants/wallets";
 import {useGetTotalBalances} from "../../data/debank/useGetTotalBalances";
 import {useGetPortfolio} from '../../data/debank/useGetPortfolio';
 import StyledExternalLink from '../../components/StyledExternalLink';
@@ -14,7 +16,11 @@ import LiquidityPosition from '../../components/LiquidityPosition';
 import {BalancerPieChartDataItem} from '../../data/balancer/balancerTypes';
 import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
-import {mergeArrays} from "./helpers";
+import {calculatePortfolioStablecoinValue, calculateTokenBalancesStablecoinValue, mergeArrays} from "./helpers";
+import * as React from "react";
+import {EthereumNetworkInfo} from "../../constants/networks";
+import LaunchIcon from "@mui/icons-material/Launch";
+import {formatDollarAmount} from "../../utils/numbers";
 
 export default function Treasury() {
 
@@ -42,8 +48,35 @@ export default function Treasury() {
     const TREASURY_CONFIG = getTreasuryConfig(activeNetwork.chainId);
     const {portfolio} = useGetPortfolio(TREASURY_CONFIG.treasury);
     const karpatkeyPortfolio = useGetPortfolio(KARPATKEY_SAFE);
+    const opcoPortfolio = useGetPortfolio(OPCO_SAFE);
     const {totalBalances} = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
+    const opcoBalances = useGetTotalBalances(OPCO_SAFE);
+
+
+    let totalStablecoinValue = 0
+    if (portfolio &&  totalBalances &&
+        karpatkeyPortfolio && karpatkeyPortfolio.portfolio  && karpatkeyBalances && karpatkeyBalances.totalBalances &&
+        opcoPortfolio && opcoPortfolio.portfolio && opcoBalances && opcoBalances.totalBalances
+    ) {
+
+        const portfolioValue = calculatePortfolioStablecoinValue([...portfolio, ...karpatkeyPortfolio.portfolio, ...opcoPortfolio.portfolio]);
+        const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances, ...opcoBalances.totalBalances]);
+        totalStablecoinValue = portfolioValue + balancesValue;
+    }
+
+    //Obtain total portfolio values
+    const treasuryValue = totalBalances && portfolio ?
+        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+
+    const KarpatkeyValue = karpatkeyBalances && karpatkeyBalances.totalBalances && karpatkeyPortfolio && karpatkeyPortfolio.portfolio ?
+        karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+
+    const opcoValue = opcoBalances && opcoBalances.totalBalances && opcoPortfolio && opcoPortfolio.portfolio ?
+        opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
+        + opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
 
     //Obtain wallet total worth and USDC
@@ -74,22 +107,31 @@ export default function Treasury() {
         }
     })?.amount : 0;
 
-    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves : usdcReserves;
+    const opcoUsdcReserves = opcoBalances.totalBalances ? opcoBalances.totalBalances.find(el => {
+        if (el.symbol === 'USDC') {
+            return el
+        } else {
+            return 0
+        }
+    })?.amount : 0;
+
+    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined && opcoUsdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves + opcoUsdcReserves : usdcReserves;
 
     //BAL insurance fund
-    const BALinsuranceAmount = 1250000;
+    const BALinsuranceAmount = activeNetwork === EthereumNetworkInfo ? 1250000 : 0;
 
 
     // Calculate the sum of the portfolio values
     const portfolioValue = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
     const karpatkeyPortfolioValue = karpatkeyPortfolio.portfolio ? karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
 
-// Calculate the sum of the token balances
+    // Calculate the sum of the token balances
     const totalTokenBalance = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     const karpatkeyTokenBalance = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
+    const opcoTokenBalances = opcoBalances.totalBalances ? opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
 
-// Sum up all the values
-    const totalAssetValue = portfolioValue + karpatkeyPortfolioValue + totalTokenBalance + karpatkeyTokenBalance;
+    // Sum up all the values
+    const totalAssetValue = portfolioValue + karpatkeyPortfolioValue + totalTokenBalance + karpatkeyTokenBalance + opcoTokenBalances;
 
 
     //Token Balances Pie Chart
@@ -131,6 +173,13 @@ export default function Treasury() {
             name: 'Karpatkey Managed Tokens'
         });
     }
+    // Add OpCo token value
+    if (opcoTokenBalances > 0) {
+        ratioPieChartData.push({
+            value: opcoTokenBalances,
+            name: 'OpCo Treasury Tokens'
+        });
+    }
 
 // Add portfolio values
     if (portfolioValue > 0) {
@@ -148,10 +197,12 @@ export default function Treasury() {
     }
 
     // Add Foundation BAL Insurance
-    ratioPieChartData.push({
-        value: BALinsuranceAmount,
-        name: 'Foundation BAL Insurance'
-    });
+    if (activeNetwork === EthereumNetworkInfo) {
+        ratioPieChartData.push({
+            value: BALinsuranceAmount,
+            name: 'Foundation BAL Insurance'
+        });
+    }
 
     console.log("totalASsetValue", totalAssetValue)
     console.log("ratioPieChartData", ratioPieChartData)
@@ -170,12 +221,17 @@ export default function Treasury() {
                         </Box>
 
                     </Grid>
-                    <Grid mt={2} item xs={11}>
+                    <Grid mt={2} mb={1} item xs={11}>
                         <Box display="flex" alignItems="center">
                             <Box>
                                 <Typography variant={"h5"}>Treasury Metrics on {activeNetwork.name}</Typography>
                             </Box>
                         </Box>
+                        <Typography variant={"body2"}>
+                            Combined views of the treasury wallets for the given network. Consult the docs or a full list of treasury wallets
+                            <Link target="_blank" href={'https://docs.balancer.fi/concepts/governance/multisig.html#the-multisigs-and-their-addresses'}><LaunchIcon sx={{height: '20px'}}/></Link>
+                        </Typography>
+
                     </Grid>
 
                     {totalBalances && portfolio ?
@@ -185,31 +241,43 @@ export default function Treasury() {
                                 columns={{xs: 4, sm: 8, md: 12}}
                                 sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                             >
-                                <Box m={1}>
+                                <Box mr={1} mb={1}>
                                     <MetricsCard
-                                        mainMetric={netWorth}
+                                        mainMetric={treasuryValue + KarpatkeyValue + opcoValue}
                                         mainMetricInUSD={true}
                                         metricName='Net Worth'
                                         mainMetricChange={0}
                                         MetricIcon={AccountBalanceIcon}
                                     />
                                 </Box>
-                                <Box m={1}>
+                                <Box mr={1} mb={1}>
                                     <MetricsCard
                                         mainMetric={walletTokenNetworth}
                                         mainMetricInUSD={true}
-                                        metricName='Tokens in Wallet'
+                                        metricName='Tokens in Wallets'
                                         mainMetricChange={0}
                                         MetricIcon={WalletIcon}
+                                        toolTipText={'Combined net worth of tokens in the treasury, Karpatkey and OpCo wallets unless otherwise specified.'}
                                     />
                                 </Box>
-                                <Box m={1}>
+                                <Box mr={1} mb={1}>
                                     <MetricsCard
                                         mainMetric={totalUSDCReserves ? totalUSDCReserves : 0}
                                         mainMetricInUSD={true}
                                         metricName='Liquid USDC'
                                         mainMetricChange={0}
                                         MetricIcon={CurrencyExchangeIcon}
+                                        toolTipText={'Combined net worth of USDC in the treasury, Karpatkey and OpCo wallets unless otherwise specified.'}
+                                    />
+                                </Box>
+                                <Box mr={1}>
+                                    <MetricsCard
+                                        mainMetric={totalStablecoinValue}
+                                        mainMetricInUSD={true}
+                                        metricName='Total Stable Coins'
+                                        mainMetricChange={0}
+                                        MetricIcon={LocalAtmIcon}
+                                        toolTipText={"USD value of all assets combined resembling stable coins like sDAI, DAI, USDC, USDT etc."}
                                     />
                                 </Box>
                             </Grid>
@@ -275,98 +343,156 @@ export default function Treasury() {
                         mt={1}
                         xs={11}
                     >
-                        <Box display="flex" justifyContent="space-between" alignItems="row">
-                            <Box display="flex" alignItems='center'>
-                                <Typography variant="h6">Tokens in Treasury Wallet</Typography>
-                                <Box ml={1}>
-                                    <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'address'}
-                                                        activeNetwork={activeNetwork}/>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
-
-                    {totalBalances && totalBalances.length > 0 ?
-                        <Grid item xs={11}>
-                            <FeeCollectorTokenTable tokenBalances={totalBalances}/>
-                            <Grid
-                                mt={2}
-                                item
-                                xs={11}
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
                             >
-                                <Typography variant="h6">Liquidity Provisions</Typography>
-                            </Grid>
-                        </Grid> : null}
-                    <Grid
-                        item
-                        xs={11}
-                    >
-                        <Card
-                            sx={{boxShadow: 3}}
-                        >
-                            <Box p={2}>
-                                {portfolio && portfolio.length > 0 ?
-                                    portfolio.map(pos =>
-                                        pos.chain === activeNetwork.debankId ?
-                                            <Box key={pos.id + "box"} mb={1}>
-                                                <LiquidityPosition key={pos.id + pos.name} position={pos}/>
-                                            </Box> : undefined
-                                    )
-                                    : <Typography>none</Typography>}
-                            </Box>
-                        </Card>
-                    </Grid>
-                    <Grid
-                        item
-                        mt={2}
-                        xs={11}>
-                        <Typography variant="h5">Assets Managed by Karpatkey</Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        mt={1}
-                        xs={11}
-                    >
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">DAO Treasury</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={TREASURY_CONFIG.treasury} type={'debank'} activeNetwork={activeNetwork} />
+                                            </Box>
+                                        </Box>
 
-                        <Box display="flex" justifyContent="space-between" alignItems="row">
-                            <Box display="flex" alignItems='center'>
-                                <Typography variant="h6">Managed Tokens</Typography>
-                                <Box ml={1}>
-                                    <StyledExternalLink address={KARPATKEY_SAFE} type={'address'}
-                                                        activeNetwork={activeNetwork}/>
+                                        {/* Description */}
+                                        <Typography variant="caption">
+                                            The DAO Treasury is the main treasury wallet holding all DAO tokens incl. BAL held in the wallet and as liquidity positions.
+                                        </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryValue)}</Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
+                            </AccordionSummary>
+                            <AccordionDetails>
 
-                    {karpatkeyBalances.totalBalances && karpatkeyBalances.totalBalances.length > 0 ?
-                        <Grid item xs={11}>
-                            <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances}/>
-                        </Grid> : null}
+                                <Typography variant="h6">Tokens in Treasury Wallet</Typography>
+                                {totalBalances && totalBalances.length > 0 ?
+                                    <FeeCollectorTokenTable tokenBalances={totalBalances}/>
+                                    : null}
+                                <Typography variant="h6">Liquidity Provisions</Typography>
+                                <Card
+                                    sx={{boxShadow: 3}}
+                                >
+                                    <Box p={2}>
+                                        {portfolio && portfolio.length > 0 ?
+                                            portfolio.map(pos =>
+                                                pos.chain === activeNetwork.debankId ?
+                                                    <Box key={pos.id + "box"} mb={1}>
+                                                        <LiquidityPosition key={'treasury'} position={pos}/>
+                                                    </Box> : undefined
+                                            )
+                                            : <Typography>none</Typography>}
+                                    </Box>
+                                </Card>
+                            </AccordionDetails>
+                        </Accordion>
+
+                    </Grid>
+                    {activeNetwork === EthereumNetworkInfo ?
                     <Grid
                         item
                         mt={2}
                         xs={11}>
-                        <Typography variant="h6">Managed Liquidity Provisions</Typography>
-                    </Grid>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Karpatkey-managed Assets</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={KARPATKEY_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                            </Box>
+                                        </Box>
+
+                                        {/* Description */}
+                                        <Typography variant="caption">
+                                            These are DAO funds that are managed by Karpatkey to generate passive income for the treasury.
+                                        </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(KarpatkeyValue)}</Typography>
+                                    </Box>
+                                </Box>
+                            </AccordionSummary>
+                            <AccordionDetails>
+
+                                        <Typography variant="h6">Managed Tokens</Typography>
+
+                                {karpatkeyBalances.totalBalances && karpatkeyBalances.totalBalances.length > 0 ?
+
+                                        <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances}/> : null}
+                                <Typography variant="h6">Managed Liquidity Provisions</Typography>
+                                <Card
+                                    sx={{boxShadow: 3}}
+                                >
+                                    <Box p={2}>
+                                        {karpatkeyPortfolio.portfolio && karpatkeyPortfolio.portfolio.length > 0 ?
+                                            karpatkeyPortfolio.portfolio.map(pos =>
+                                                pos.chain === activeNetwork.debankId ?
+                                                    <Box key={pos.id + "box"} mb={1}>
+                                                        <LiquidityPosition key={'karpatkey'} position={pos}/>
+                                                    </Box> : <Typography>none</Typography>
+                                            )
+                                            : <Typography>none</Typography>}
+                                    </Box>
+                                </Card>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid> : null }
+                    {activeNetwork === EthereumNetworkInfo ?
                     <Grid
                         item
-                        xs={11}
-                    >
-                        <Card
-                            sx={{boxShadow: 3}}
-                        >
-                            <Box p={2}>
-                                {karpatkeyPortfolio.portfolio && karpatkeyPortfolio.portfolio.length > 0 ?
-                                    karpatkeyPortfolio.portfolio.map(pos =>
-                                        pos.chain === activeNetwork.debankId ?
-                                            <Box key={pos.id + "box"} mb={1}>
-                                                <LiquidityPosition key={pos.id + pos.name} position={pos}/>
-                                            </Box> : <Typography>none</Typography>
-                                    )
-                                    : <Typography>none</Typography>}
-                            </Box>
-                        </Card>
+                        mt={2}
+                        xs={11}>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Balancer OpCo</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={OPCO_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                            </Box>
+                                        </Box>
+
+                                        {/* Description */}
+                                        <Typography variant="caption">
+                                            These funds are part of OpCo and the foundation. Parts of the USDC reserves stem from BAL OTC sales. These funds may be used to fund Service Providers like the front-end team.
+                                        </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(opcoValue)}</Typography>
+                                    </Box>
+                                </Box>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="h6">Managed Tokens</Typography>
+                                {opcoBalances.totalBalances && opcoBalances.totalBalances.length > 0 ?
+                                    <FeeCollectorTokenTable tokenBalances={opcoBalances.totalBalances}/> : null}
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid> : null }
+                    <Grid mb={2} item xs={11}>
+
                     </Grid>
 
                 </Grid>

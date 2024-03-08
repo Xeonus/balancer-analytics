@@ -24,7 +24,7 @@ import {EthereumNetworkInfo} from "../../constants/networks";
 import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 import {useBalancerPools} from "../../data/balancer/usePools";
 import PoolReportsTable from "../../components/Tables/PoolReportsTable";
-import useGetCollectedFees from "../../data/maxis/useGetCollectedFees";
+import useGetCollectedFeesSummary from "../../data/maxis/useGetCollectedFeesSummary";
 import GenericPieChart from "../../components/Echarts/GenericPieChart";
 import NetworkSelector from "../../components/NetworkSelector";
 import {DateTime} from 'luxon';
@@ -68,7 +68,7 @@ export default function Reports() {
     const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
     const aggregatedProtocolData = useAggregatedProtocolData();
     console.log("aggregatedProtocolData", aggregatedProtocolData)
-    const collectedFees = useGetCollectedFees()
+    const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
     const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)

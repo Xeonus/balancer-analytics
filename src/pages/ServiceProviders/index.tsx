@@ -27,6 +27,10 @@ export default function ServiceProviders() {
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
     const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
 
+    // Splitting the service providers into active and alumni groups
+    const activeServiceProviders = sps.service_provider.filter(sp => !sp.sunset);
+    const alumniServiceProviders = sps.service_provider.filter(sp => sp.sunset);
+
 
     //Data
     const [quarterlyPie, quarterlyTotalBudget] = useGetQuarterlyTotalSpendData(sps, dayjs().year(), currentQuarter, balPriceData.data)
@@ -243,36 +247,63 @@ export default function ServiceProviders() {
                 <Grid
                     item
                     mt={2}
-                    xs={11}
-                >
+                    xs={11}>
                     <Box display="flex" justifyContent="space-between" alignItems="row">
-                        <Box display="flex" alignItems='center' mb={1}>
-                            <Typography variant="h6">Service Provider Overview</Typography>
+                        <Box display="flex" alignItems="center" mb={1}>
+                            <Typography variant="h6">Active Service Provider Overview</Typography>
                         </Box>
                     </Box>
                 </Grid>
                 <Grid
                     item
-                    xs={11}
-                >
+                    xs={11}>
                     <Grid
                         container
                         spacing={{ xs: 2, md: 2 }}
                         columns={{ xs: 4, sm: 8, md: 12 }}
-                        sx={{ justifyContent: 'center', alignContent: 'center', mb: 2 }}
-                    >
-                        {
-                            sps.service_provider.map((sp, index) =>
-                                <Grid
-                                    item
-                                    xs={11}
-                                    sm={4}
-                                    md={4}
-                                    key={index}>
-                                    <ServiceProviderCard sp={sp} />
-                                </Grid>
-                            )
-                        }
+                        sx={{ justifyContent: 'center', alignContent: 'center', mb: 2 }}>
+                        {activeServiceProviders.map((sp, index) => (
+                            <Grid
+                                item
+                                xs={11}
+                                sm={4}
+                                md={4}
+                                key={index}>
+                                <ServiceProviderCard sp={sp} />
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Grid>
+                <Grid
+                    item
+                    mt={4}
+                    xs={11}>
+                    <Box display="flex" justifyContent="space-between" alignItems="row">
+                        <Box display="flex" alignItems="center" mb={1}>
+                            <Typography variant="h6">Alumni</Typography>
+                        </Box>
+                    </Box>
+                </Grid>
+
+                {/* Alumni Service Providers */}
+                <Grid
+                    item
+                    xs={11}>
+                    <Grid
+                        container
+                        spacing={{ xs: 2, md: 2 }}
+                        columns={{ xs: 4, sm: 8, md: 12 }}
+                        sx={{ justifyContent: 'center', alignContent: 'center', mb: 2 }}>
+                        {alumniServiceProviders.map((sp, index) => (
+                            <Grid
+                                item
+                                xs={11}
+                                sm={4}
+                                md={4}
+                                key={index}>
+                                <ServiceProviderCard sp={sp} />
+                            </Grid>
+                        ))}
                     </Grid>
                 </Grid>
             </Grid>

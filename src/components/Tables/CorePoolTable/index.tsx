@@ -237,7 +237,7 @@ export default function CorePoolTable({
     const [orderBy, setOrderBy] = useState<keyof Data>('earnedFees');
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(true);
-    const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [selection, setSelection] = useState<SelectionState>({ tokenType: null, poolType: null });
@@ -534,6 +534,7 @@ export default function CorePoolTable({
                                                 <PoolCompositionUnified key={row.poolData.poolId}
                                                                         poolData={row.poolData} size={35}/>
                                             </TableCell>
+                                            {}
                                             <TableCell align="right">
                                                 {row.tvl > 0 ?
                                                     formatDollarAmount(row.tvl) :

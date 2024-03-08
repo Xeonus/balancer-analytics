@@ -49,6 +49,8 @@ export interface AggregatedProtocolData {
     overallTvlData?: BalancerChartDataItem[];
     overallProtocolFeeData?: BalancerChartDataItem[];
     overallVolumeChartData?: BalancerChartDataItem[];
+    overallFeeChartData?: BalancerChartDataItem[];
+    overallSwapsChartData?: BalancerChartDataItem[];
 }
 
 const sumNumericMetrics = (metrics: (number | undefined)[]): number => {
@@ -110,6 +112,8 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
     const overallTvlData = aggregateChartData(protocolsData, 'tvlData');
     const overallProtocolFeeData = aggregateChartData(protocolsData, 'protocolFeeData');
     const overallVolumeChartData = aggregateChartData(protocolsData, 'volumeData');
+    const overallFeeChartData = aggregateChartData(protocolsData, 'feeData');
+    const overallSwapsChartData = aggregateChartData(protocolsData, 'swapData');
 
     return {
         mainnetData: protocolsData[0],
@@ -132,5 +136,7 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         overallTvlData,
         overallProtocolFeeData,
         overallVolumeChartData,
+        overallFeeChartData,
+        overallSwapsChartData,
     };
 }

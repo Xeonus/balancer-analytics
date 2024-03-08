@@ -103,10 +103,10 @@ export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
                         >
                             <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
                             <Divider />
-                            <MenuItem value={'30'}>30 days</MenuItem>
-                            <MenuItem value={'90'}>90 days</MenuItem>
-                            <MenuItem value={'180'}>180 days</MenuItem>
-                            <MenuItem value={'365'}>365 days</MenuItem>
+                            <MenuItem value={'30'}>Last 30 days</MenuItem>
+                            <MenuItem value={'90'}>Last 90 days</MenuItem>
+                            <MenuItem value={'180'}>Last 180 days</MenuItem>
+                            <MenuItem value={'365'}>Last 365 days</MenuItem>
                             <MenuItem value={'0'}>All time</MenuItem>
                         </Select>
                     </FormControl>

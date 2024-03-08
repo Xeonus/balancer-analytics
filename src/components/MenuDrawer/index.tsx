@@ -198,18 +198,19 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'DAO Treasury'} />
                 </ListItemButton>
-                <ListItemButton key={'Service Providers'} component={NavLink} to={'serviceProviders'}>
-                    <ListItemIcon>
-                        <HandshakeIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Service Providers'} />
-                </ListItemButton>
                 <ListItemButton key={'DAO Financials'} component={NavLink} to={'financials'}>
                     <ListItemIcon>
                         <RequestQuoteIcon />
                     </ListItemIcon>
                     <ListItemText primary={'DAO Financials'} />
                 </ListItemButton>
+                <ListItemButton key={'Service Providers'} component={NavLink} to={'serviceProviders'}>
+                    <ListItemIcon>
+                        <HandshakeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Service Providers'} />
+                </ListItemButton>
+
                 <ListItemButton key={'Reports'} component={NavLink} to={'reports'}>
                     <ListItemIcon>
                         <AssessmentIcon />

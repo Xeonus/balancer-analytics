@@ -1,5 +1,5 @@
 import NavCrumbs, {NavElement} from "../../components/NavCrumbs";
-import {Card, Grid, Typography} from "@mui/material";
+import {Card, Divider, Grid, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import useGetAllPools from "../../data/balancer-api-v3/useGetAllPools";
 import useGetCorePoolCurrentFees from "../../data/maxis/useGetCorePoolCurrentFees";
@@ -24,6 +24,15 @@ import CorePoolHistoricalTable from "../../components/Tables/CorePoolHistoricalT
 import useGetCollectedFees from "../../data/maxis/useGetTotalFeesCollected";
 import CorePoolEarnedVsSweptTable from "../../components/Tables/CorePoolEarnedVsSweptTable";
 import {NetworkFees, PoolFeeRecord} from "../../data/maxis/maxiStaticTypes";
+import useGetCollectedFeesSummary from "../../data/maxis/useGetCollectedFeesSummary";
+import {unixToDate} from "../../utils/date";
+import * as React from "react";
+import {DateTime} from "luxon";
+import {EthereumNetworkInfo} from "../../constants/networks";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import TextField from "@mui/material/TextField";
 
 function formatDate(date: Date) {
     return date.toISOString().split('T')[0];
@@ -47,14 +56,31 @@ function calculateDelta(historicalFees: NetworkFees, poolFeeRecords: PoolFeeReco
 
 export default function CorePools() {
 
+
+    //STATES
+    const currentUTCTime = DateTime.utc();
+    const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
+    // Get the UTC time for a week ago
+    const yearAgoUTCTime = currentUTCTime.minus({days: 365});
+    const endTimeStamp = Math.floor(yearAgoUTCTime.startOf('day').toMillis() / 1000);
+    //Date States
+    const [startDate, setStartDate] = React.useState(startTimestamp);
+    const [endDate, setEndDate] = React.useState(endTimeStamp);
+    const [timeRange, setTimeRange] = React.useState('365');
+    const [showDate, setShowDate] = React.useState(false);
+
+
+    //DATA
     const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS']);
     const currentData = useGetCorePoolCurrentFees();
-
     const lastOddWeekThu = getLastThursdayOddWeek();
     const lastOddWeekThuString = formatDate(lastOddWeekThu)
     const [selectedEndDate, setSelectedEndDate] = useState<string>(lastOddWeekThuString);
     const historicalData = useGetCorePoolHistoricalFees(selectedEndDate);
     const historicalCollectedNetworkFees = useGetCollectedFees(selectedEndDate)
+    const collectedFeesSummary = useGetCollectedFeesSummary();
+
+
     let delta = 0
     let totalSwept = 0
     let totalHistoricalSum = 0
@@ -128,6 +154,79 @@ export default function CorePools() {
     const coreGlobalPools = globalPools?.filter(pool => corePoolIds.has(pool.poolId));
 
 
+    const filteredFeesData = React.useMemo(() => {
+        if (collectedFeesSummary.loading) {
+            return [];
+        }
+        return collectedFeesSummary.feeData.filter((dataItem) => {
+            const dataDate = dataItem.periodEnd;
+            return dataDate >= endDate && dataDate <= startDate;
+        });
+    }, [collectedFeesSummary.feeData, startDate, endDate]);
+
+    //Historical fees to DAO chart
+    const feesToDaoChartData: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.feesToDao,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    let cumulativeValue = 0
+    const cumulativeToDaoData: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.feesToDao; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd)
+        };
+    });
+
+    //Historical fees to veBAL chart data
+    const feesToveBALChartData: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.feesToVebal,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0
+    const cumulativeToveBALData: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.feesToVebal; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd)
+        };
+    });
+
+
+    //Historical balIncentives chart
+    const balIncentivesChartData: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.balIncentives,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0
+    const cumulativeBalIncentivesData: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.balIncentives; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd)
+        };
+    });
+
+    //Historical Aura incentives chart
+    const auraIncentivesChartData: BalancerChartDataItem[] = filteredFeesData.map(item => ({
+        value: item.auraIncentives,
+        time: unixToDate(item.periodEnd)
+    }));
+
+    cumulativeValue = 0
+    const cumulativeAuraIncentivesData: BalancerChartDataItem[] = filteredFeesData.map((el) => {
+        cumulativeValue += el.auraIncentives; // Accumulate the value
+        return {
+            value: cumulativeValue,
+            time: unixToDate(el.periodEnd)
+        };
+    });
+
+
+
     //Navigation
     const homeNav: NavElement = {
         name: 'Home',
@@ -152,7 +251,7 @@ export default function CorePools() {
             // Prepare data for the bar chart (TVL)
             poolBarChartData.push({
                 value: pool.totalLiquidity,
-                time: pool.name, // Using the pool name for the time axis as a unique identifier
+                time: pool.name.replace(/^Balancer\s*/, ''), // Using the pool name for the time axis as a unique identifier
             });
 
             // For the line chart, we want to match the earned fees with the correct pool.
@@ -160,7 +259,7 @@ export default function CorePools() {
             // Prepare data for the line chart (earned fees)
             poolLineChartData.push({
                 value: earnedFees,
-                time: pool.name, // The time values (pool names) must match with the bar chart data
+                time: pool.name.replace(/^Balancer\s*/, ''), // The time values (pool names) must match with the bar chart data
             });
         });
     }
@@ -201,6 +300,69 @@ export default function CorePools() {
         },
     ]
 
+
+    //State mgmt
+    //Change management
+    const handleChange = (event: SelectChangeEvent) => {
+        setTimeRange(event.target.value as string);
+
+        if (event.target.value === '1000') {
+            setShowDate(true);
+        } else if (event.target.value === '0') {
+            setEndDate(EthereumNetworkInfo.startTimeStamp);
+
+            const newEndDate = DateTime.utc().startOf('day');
+            setStartDate(newEndDate.toSeconds());
+            setShowDate(false);
+        } else {
+            const startTimestamp = DateTime.utc().startOf('day').toSeconds();
+            setStartDate(startTimestamp);
+            setShowDate(false);
+
+            const daysToSubtract = Number(event.target.value);
+            const newEndDate = DateTime.utc().minus({days: daysToSubtract}).startOf('day');
+            setEndDate(newEndDate.toSeconds());
+        }
+    };
+
+
+    const parseDateString = (dateString: string): number | null => {
+        // Expected format "DD.MM.YYYY"
+        const parts = dateString.split('.');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // JS months start from 0
+            const year = parseInt(parts[2], 10);
+
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                return new Date(year, month, day).getTime() / 1000; // Convert to UNIX timestamp
+            }
+        }
+        return null; // Return null if the format is incorrect
+    };
+
+    const handleStartDateChange = (value: number | null, keyboardInputValue?: string) => {
+        if (value) {
+            setStartDate(Math.floor(new Date(value).getTime() / 1000));
+        } else if (keyboardInputValue) {
+            const timestamp = parseDateString(keyboardInputValue);
+            if (timestamp) {
+                setStartDate(timestamp);
+            }
+        }
+    };
+
+    const handleEndDateChange = (value: number | null, keyboardInputValue?: string) => {
+        if (value) {
+            setEndDate(Math.floor(new Date(value).getTime() / 1000));
+        } else if (keyboardInputValue) {
+            const timestamp = parseDateString(keyboardInputValue);
+            if (timestamp) {
+                setEndDate(timestamp);
+            }
+        }
+    };
+
     return (
         <Box sx={{flexGrow: 2}}>
             <Grid
@@ -214,7 +376,12 @@ export default function CorePools() {
                         <NavCrumbs crumbSet={navCrumbs} destination={'Core Pools'}/>
                     </Box>
                 </Grid>
-                <Grid item xs={11} mb={2}>
+
+                <Grid item xs={11} mb={1}>
+                    <Typography sx={{fontSize: '24px'}}>Core Pool Revenue Metrics</Typography>
+
+                </Grid>
+                <Grid item xs={11} mb={1}>
                     <FormControl size="small">
                         <Select
                             sx={{
@@ -244,17 +411,13 @@ export default function CorePools() {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={11}>
-                    <Typography sx={{fontSize: '24px'}}>Core Pool Revenue Metrics</Typography>
-
-                </Grid>
                 <Grid mb={1} item xs={11}>
                     <Grid
                         container
                         columns={{xs: 4, sm: 8, md: 12}}
                         sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                     >
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees : 0}
                                 mainMetricInUSD={true}
@@ -263,7 +426,7 @@ export default function CorePools() {
                                 toolTipText={'Total amount of fees collected from core pools. This includes swap fees and the protocol fee cut of 50% on yield-bearing assets.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.5 : 0}
                                 mainMetricInUSD={true}
@@ -272,7 +435,7 @@ export default function CorePools() {
                                 toolTipText={'Minimum amount of voting incentives being placed in total. Fees earned from non-core pools are not included.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.325 : 0}
                                 mainMetricInUSD={true}
@@ -281,7 +444,7 @@ export default function CorePools() {
                                 toolTipText={'Out of all core pool fees earned, 32.5% of revenue is shared with veBAL holders.'}
                             />
                         </Box>
-                        <Box m={{xs: 0, sm: 1}}>
+                        <Box mr={1} mb={1}>
                             <MetricsCard
                                 mainMetric={totalFees ? totalFees * 0.175 : 0}
                                 mainMetricInUSD={true}
@@ -378,31 +541,34 @@ export default function CorePools() {
                             </Grid>
                         </Grid>
                     )}
+
+
             <Grid
                 container
                 spacing={2}
                 sx={{justifyContent: 'center'}}
             >
                 <Grid item xs={11}>
-                    <Typography variant={'h5'}>
+                    <Typography variant={'h6'}>
                         Core Pools: Earned Fees Statistics
                     </Typography>
+                    <Box mt={1}>
+                        <Typography variant={'body1'}>
+                            {'This table provides an overview of currently (or historical) fees collected by core pools as per '}
+                            <a
+                                href="https://forum.balancer.fi/t/bip-457-core-pool-incentive-program-automation/5254"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{textDecoration: 'none', color: 'inherit'}} // Adjust styles as needed
+                            >
+                                core-pool framework
+                                <LinkIcon style={{verticalAlign: 'bottom', marginLeft: '0.25rem'}}/>
+                            </a>
+                            {'.'}
+                        </Typography>
+                    </Box>
                 </Grid>
-                <Grid item xs={11}>
-                    <Typography variant={'body1'}>
-                        {'This table provides an overview of currently collected fees by core pools as per '}
-                        <a
-                            href="https://forum.balancer.fi/t/bip-457-core-pool-incentive-program-automation/5254"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{textDecoration: 'none', color: 'inherit'}} // Adjust styles as needed
-                        >
-                            core-pool framework
-                            <LinkIcon style={{verticalAlign: 'bottom', marginLeft: '0.25rem'}}/>
-                        </a>
-                        {'.'}
-                    </Typography>
-                </Grid>
+
 
                 {selectedPeriod === "Current Fee Epoch" ?
                     <Grid item xs={11}>
@@ -412,7 +578,7 @@ export default function CorePools() {
                                 container
                                 spacing={2}
                                 mt='5%'
-                                mb={2}
+                                mb={6}
                                 sx={{justifyContent: 'center'}}
                             >
                                 <CustomLinearProgress/>
@@ -426,7 +592,7 @@ export default function CorePools() {
                                 container
                                 spacing={2}
                                 mt='5%'
-                                mb={2}
+                                mb={6}
                                 sx={{justifyContent: 'center'}}
                             >
                                 <CustomLinearProgress/>
@@ -485,7 +651,195 @@ export default function CorePools() {
                     </Grid> : null}
                 <Grid>
                 </Grid>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{justifyContent: 'center'}}
+                >
+                    <Grid item xs={11}>
+                        <Typography variant={'h5'}>
+                            Historical Fee Distribution Metrics
+                        </Typography>
+                        <Box mt={1}>
+                            <Typography variant={'body1'}>Overview of Core Pool and Fee share Performance over time. Note that these metrics include totals for all fees collected and distributed for a given time-range.</Typography>
+                        </Box>
+                    </Grid>
+                </Grid>
+                <Grid
+                    container
+                    sx={{direction: {xs: 'column', sm: 'row'}}}
+                    justifyContent="space-around"
+                    alignItems="left"
+                    alignContent="left"
+                    spacing={2}
+                >
+                    <Grid
+                        item
+                        mt={1}
+                        mb={1}
+                        xs={11}
+                    >
+
+                        <Box display="flex" alignItems="center" mb={1}>
+                            <Box>
+                                <Typography>Time range:</Typography>
+                            </Box>
+                            <Box ml={1}>
+                                <FormControl size="small">
+                                    <Select
+                                        sx={{
+                                            backgroundColor: "background.paper",
+                                            boxShadow: 2,
+                                            borderRadius: 2,
+                                            borderColor: 0,
+                                        }}
+                                        color="primary"
+                                        labelId="timeRangeSelectLabel"
+                                        id="timeRangeSelect"
+                                        onChange={handleChange}
+                                        value={timeRange}
+                                        inputProps={{
+                                            name: 'timeRange',
+                                            id: 'timeRangeId-native-simple',
+                                        }}
+                                    >
+                                        <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                        <Divider/>
+                                        <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                        <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                        <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                        <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                        <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                        <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                        <MenuItem value={'0'}>All time</MenuItem>
+                                        <MenuItem value={'1000'}>Custom </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+
+                            {showDate ?
+                                <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Start Date"
+                                            maxDate={Date.now()}
+                                            minDate={EthereumNetworkInfo.startTimeStamp}
+                                            value={unixToDate(endDate)}
+                                            onChange={handleEndDateChange}
+                                            renderInput={(params) => <TextField size='small'
+                                                                                sx={{maxWidth: '150px'}} {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                    <Box p={1}>
+                                        <Typography>to</Typography>
+                                    </Box>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="End Date"
+                                            maxDate={Date.now()}
+                                            minDate={EthereumNetworkInfo.startTimeStamp}
+                                            value={unixToDate(startDate)}
+                                            onChange={handleStartDateChange}
+                                            renderInput={(params) => <TextField size='small'
+                                                                                sx={{maxWidth: '150px'}} {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </Box> : null}
+                        </Box>
+                        <Divider/>
+                    </Grid>
+                    <Grid
+                        item
+                        mt={1}
+                        xs={11}
+                        md={5}
+                    >
+                        {collectedFeesSummary && balIncentivesChartData.length > 1 && cumulativeBalIncentivesData && cumulativeBalIncentivesData.length > 0 ?
+
+                        <Card>
+                            <Box m={1}>
+                                <Typography>Incentives to veBAL Marketplaces</Typography>
+                            </Box>
+                            <MixedLineBarChart
+                                    barChartData={balIncentivesChartData}
+                                    barChartName={'Incentives to veBAL markets'}
+                                    lineChartData={cumulativeBalIncentivesData}
+                                    lineChartName={'Cumulative Incentives'}
+                                    noRainbowColors={true}
+                                />
+
+                        </Card> : null}
+                    </Grid>
+                    <Grid
+                        item
+                        mt={1}
+                        xs={11}
+                        md={5}
+                    >
+                        {collectedFeesSummary && auraIncentivesChartData.length > 1 && cumulativeAuraIncentivesData && cumulativeAuraIncentivesData.length > 0 ?
+                        <Card>
+                            <Box m={1}>
+                                <Typography>Incentives to vlAura Marketplaces</Typography>
+                            </Box>
+                                <MixedLineBarChart
+                                    barChartData={auraIncentivesChartData}
+                                    barChartName={'Incentives to vlAURA markets'}
+                                    lineChartData={cumulativeAuraIncentivesData}
+                                    lineChartName={'Cumulative Incentives'}
+                                    noRainbowColors={true}
+                                />
+
+                        </Card> : null}
+                    </Grid>
+                    <Grid
+                        item
+                        mt={1}
+                        xs={11}
+                        md={5}
+                    >
+                        {collectedFeesSummary && feesToDaoChartData.length > 1 && cumulativeToDaoData && cumulativeToDaoData.length > 0 ?
+                        <Card>
+                            <Box m={1}>
+                                <Typography>Fee share to the DAO</Typography>
+                            </Box>
+
+                                <MixedLineBarChart
+                                    barChartData={feesToDaoChartData}
+                                    barChartName={'DAO Income'}
+                                    lineChartData={cumulativeToDaoData}
+                                    lineChartName={'Cumulative DAO Income'}
+                                    noRainbowColors={true}
+                                />
+
+                        </Card> : null}
+                    </Grid>
+                    <Grid
+                        item
+                        mt={1}
+                        xs={11}
+                        md={5}
+                    >
+                        {collectedFeesSummary && feesToveBALChartData.length > 1 && cumulativeToveBALData && cumulativeToveBALData.length > 0 ?
+                        <Card>
+                            <Box m={1}>
+                                <Typography>Fee share to veBAL holders</Typography>
+                            </Box>
+
+                                <MixedLineBarChart
+                                    barChartData={feesToveBALChartData}
+                                    barChartName={'veBAL Income'}
+                                    lineChartData={cumulativeToveBALData}
+                                    lineChartName={'Cumulative veBAL Income'}
+                                    noRainbowColors={true}
+                                />
+
+                        </Card> : null}
+                    </Grid>
+
+                </Grid>
+
             </Grid>
+            <Grid mb={2}></Grid>
         </Box>
     );
 }
