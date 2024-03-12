@@ -156,7 +156,25 @@ export default function Treasury() {
         }
     ) : null;
 
+    const tokenPieChartDataOpco: BalancerPieChartDataItem[] | null = opcoBalances.totalBalances ? opcoBalances.totalBalances.filter(
+        x => x.chain === activeNetwork.debankId &&
+            x.amount * x.price > 10).map((balance) => {
+            return {
+                value: balance.amount * balance.price,
+                name: balance.symbol
+            }
+        }
+    ) : null;
+
     const ratioPieChartData = [];
+
+    let overallTokenDistro : BalancerPieChartDataItem[] = []
+
+    if (tokenPieChartData && tokenPieChartDataKarpatkey && tokenPieChartDataOpco) {
+        const mergedAssets = mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey);
+        overallTokenDistro = mergeArrays(mergedAssets, tokenPieChartDataOpco);
+    }
+
 
 // Add main address token value
     if (totalTokenBalance > 0) {
@@ -332,7 +350,7 @@ export default function Treasury() {
                                             </Typography>
                                         </Box>
                                         <GenericPieChart
-                                            data={mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey)}
+                                            data={overallTokenDistro}
                                             height='295px'/>
                                     </Card>
                                 </Grid> : null}
