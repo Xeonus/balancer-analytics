@@ -76,7 +76,7 @@ export default function Reports() {
     const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
     if (currentFeeSnapshot && pastFeeSnapshot) {
-        const feeDelta = getSnapshotFees(currentFeeSnapshot, pastFeeSnapshot)
+        const feeDelta = getSnapshotFees(currentFeeSnapshot, pastFeeSnapshot, endTimeStamp)
         console.log("feeDelta", feeDelta)
     }
 

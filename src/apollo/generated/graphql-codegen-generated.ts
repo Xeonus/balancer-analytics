@@ -1414,6 +1414,7 @@ export interface GqlGraphTraversalConfigInput {
 export interface GqlHistoricalTokenPrice {
   __typename: "GqlHistoricalTokenPrice";
   address: Scalars["String"];
+  chain: GqlChain;
   prices: Array<GqlHistoricalTokenPriceEntry>;
 }
 
@@ -1569,6 +1570,8 @@ export interface GqlPoolDynamicData {
   fees24hAtlTimestamp: Scalars["Int"];
   fees48h: Scalars["BigDecimal"];
   holdersCount: Scalars["BigInt"];
+  isInRecoveryMode: Scalars["Boolean"];
+  isPaused: Scalars["Boolean"];
   lifetimeSwapFees: Scalars["BigDecimal"];
   lifetimeVolume: Scalars["BigDecimal"];
   poolId: Scalars["ID"];
@@ -2366,54 +2369,102 @@ export interface GqlReliquaryTokenBalanceSnapshot {
 
 export interface GqlSftmxStakingData {
   __typename: "GqlSftmxStakingData";
+  /** Current exchange rate for sFTMx -> FTM */
   exchangeRate: Scalars["String"];
+  /** Whether maintenance is paused. This pauses reward claiming or harvesting and withdrawing from matured vaults. */
   maintenancePaused: Scalars["Boolean"];
+  /** The maximum FTM amount to depost. */
   maxDepositLimit: Scalars["AmountHumanReadable"];
+  /** The minimum FTM amount to deposit. */
   minDepositLimit: Scalars["AmountHumanReadable"];
+  /** Number of vaults that delegated to validators. */
   numberOfVaults: Scalars["Int"];
+  /** The current rebasing APR for sFTMx. */
   stakingApr: Scalars["String"];
+  /** Total amount of FTM in custody of sFTMx. Staked FTM plus free pool FTM. */
   totalFtmAmount: Scalars["AmountHumanReadable"];
+  /** Total amount of FTM in the free pool. */
   totalFtmAmountInPool: Scalars["AmountHumanReadable"];
+  /** Total amount of FTM staked/delegated to validators. */
   totalFtmAmountStaked: Scalars["AmountHumanReadable"];
+  /** Whether undelegation is paused. Undelegate is the first step to redeem sFTMx. */
   undelegatePaused: Scalars["Boolean"];
+  /** A list of all the vaults that delegated to validators. */
+  vaults: Array<GqlSftmxStakingVault>;
+  /** Whether withdrawals are paused. Withdraw is the second and final step to redeem sFTMx. */
   withdrawPaused: Scalars["Boolean"];
+  /** Delay to wait between undelegate (1st step) and withdraw (2nd step). */
   withdrawalDelay: Scalars["Int"];
+}
+
+export interface GqlSftmxStakingVault {
+  __typename: "GqlSftmxStakingVault";
+  /** The amount of FTM that has been delegated via this vault. */
+  ftmAmountStaked: Scalars["AmountHumanReadable"];
+  /** Whether the vault is matured, meaning whether unlock time has passed. */
+  isMatured: Scalars["Boolean"];
+  /** Timestamp when the delegated FTM unlocks, matures. */
+  unlockTimestamp: Scalars["Int"];
+  /** The address of the validator that the vault has delegated to. */
+  validatorAddress: Scalars["String"];
+  /** The ID of the validator that the vault has delegated to. */
+  validatorId: Scalars["String"];
+  /** The contract address of the vault. */
+  vaultAddress: Scalars["String"];
+  /** The internal index of the vault. */
+  vaultIndex: Scalars["Int"];
 }
 
 export interface GqlSftmxWithdrawalRequests {
   __typename: "GqlSftmxWithdrawalRequests";
+  /** Amount of sFTMx that is being redeemed. */
   amountSftmx: Scalars["AmountHumanReadable"];
+  /** The Withdrawal ID, used for interactions. */
   id: Scalars["String"];
+  /** Whether the requests is finished and the user has withdrawn. */
   isWithdrawn: Scalars["Boolean"];
+  /** The timestamp when the request was placed. There is a delay until the user can withdraw. See withdrawalDelay. */
   requestTimestamp: Scalars["Int"];
+  /** The user address that this request belongs to. */
   user: Scalars["String"];
 }
 
-export interface GqlSorGetBatchSwapForTokensInResponse {
-  __typename: "GqlSorGetBatchSwapForTokensInResponse";
-  assets: Array<Scalars["String"]>;
-  swaps: Array<GqlSorSwap>;
-  tokenOutAmount: Scalars["AmountHumanReadable"];
-}
-
+/** The swap paths for a swap */
 export interface GqlSorGetSwapPaths {
   __typename: "GqlSorGetSwapPaths";
+  /** The price of tokenOut in tokenIn. */
   effectivePrice: Scalars["AmountHumanReadable"];
+  /** The price of tokenIn in tokenOut. */
   effectivePriceReversed: Scalars["AmountHumanReadable"];
+  /** The found paths as needed as input for the b-sdk to execute the swap */
   paths: Array<GqlSorPath>;
-  priceImpact: Scalars["AmountHumanReadable"];
+  /** Price impact in percent. 0.01 -> 0.01% */
+  priceImpact?: Maybe<Scalars["AmountHumanReadable"]>;
+  /** The return amount in human form. Return amount is either tokenOutAmount (if swapType is exactIn) or tokenInAmount (if swapType is exactOut) */
   returnAmount: Scalars["AmountHumanReadable"];
-  returnAmountScaled: Scalars["BigDecimal"];
+  /** The return amount in a raw form */
+  returnAmountRaw: Scalars["BigDecimal"];
+  /** The swap routes including pool information. Used to display by the UI */
   routes: Array<GqlSorSwapRoute>;
+  /** The swap amount in human form. Swap amount is either tokenInAmount (if swapType is exactIn) or tokenOutAmount (if swapType is exactOut) */
   swapAmount: Scalars["AmountHumanReadable"];
-  swapAmountScaled: Scalars["BigDecimal"];
+  /** The swap amount in a raw form */
+  swapAmountRaw: Scalars["BigDecimal"];
+  /** The swapType that was provided, exact_in vs exact_out (givenIn vs givenOut) */
+  swapType: GqlSorSwapType;
+  /** Swaps as needed for the vault swap input to execute the swap */
   swaps: Array<GqlSorSwap>;
+  /** All token addresses (or assets) as needed for the vault swap input to execute the swap */
+  tokenAddresses: Array<Scalars["String"]>;
   /** The token address of the tokenIn provided */
   tokenIn: Scalars["String"];
+  /** The amount of tokenIn in human form */
   tokenInAmount: Scalars["AmountHumanReadable"];
   /** The token address of the tokenOut provided */
   tokenOut: Scalars["String"];
+  /** The amount of tokenOut in human form */
   tokenOutAmount: Scalars["AmountHumanReadable"];
+  /** The version of the vault these paths are from */
   vaultVersion: Scalars["Int"];
 }
 
@@ -2440,21 +2491,33 @@ export interface GqlSorGetSwapsResponse {
   tokenOutAmount: Scalars["AmountHumanReadable"];
 }
 
+/** A path of a swap. A swap can have multiple paths. Used as input to execute the swap via b-sdk */
 export interface GqlSorPath {
   __typename: "GqlSorPath";
+  /** Input amount of this path in scaled form */
   inputAmountRaw: Scalars["String"];
+  /** Output amount of this path in scaled form */
   outputAmountRaw: Scalars["String"];
+  /** A sorted list of pool ids that are used in this path */
   pools: Array<Maybe<Scalars["String"]>>;
+  /** A sorted list of tokens that are ussed in this path */
   tokens: Array<Maybe<Token>>;
+  /** Vault version of this path. */
   vaultVersion: Scalars["Int"];
 }
 
+/** A single swap step as used for input to the vault to execute a swap */
 export interface GqlSorSwap {
   __typename: "GqlSorSwap";
+  /** Amount to be swapped in this step. 0 for chained swap. */
   amount: Scalars["String"];
+  /** Index of the asset used in the tokenAddress array. */
   assetInIndex: Scalars["Int"];
+  /** Index of the asset used in the tokenAddress array. */
   assetOutIndex: Scalars["Int"];
+  /** Pool id used in this swap step */
   poolId: Scalars["String"];
+  /** UserData used in this swap, generally uses defaults. */
   userData: Scalars["String"];
 }
 
@@ -2465,24 +2528,38 @@ export interface GqlSorSwapOptionsInput {
   timestamp?: InputMaybe<Scalars["Int"]>;
 }
 
+/** The swap routes including pool information. Used to display by the UI */
 export interface GqlSorSwapRoute {
   __typename: "GqlSorSwapRoute";
+  /** The hops this route takes */
   hops: Array<GqlSorSwapRouteHop>;
+  /** Share of this route of the total swap */
   share: Scalars["Float"];
+  /** Address of the tokenIn */
   tokenIn: Scalars["String"];
-  tokenInAmount: Scalars["BigDecimal"];
+  /** Amount of the tokenIn in human form */
+  tokenInAmount: Scalars["AmountHumanReadable"];
+  /** Address of the tokenOut */
   tokenOut: Scalars["String"];
-  tokenOutAmount: Scalars["BigDecimal"];
+  /** Amount of the tokenOut in human form */
+  tokenOutAmount: Scalars["AmountHumanReadable"];
 }
 
+/** A hop of a route. A route can have many hops meaning it traverses more than one pool. */
 export interface GqlSorSwapRouteHop {
   __typename: "GqlSorSwapRouteHop";
+  /** The pool entity of this hop. */
   pool: GqlPoolMinimal;
+  /** The pool id of this hop. */
   poolId: Scalars["String"];
+  /** Address of the tokenIn */
   tokenIn: Scalars["String"];
-  tokenInAmount: Scalars["BigDecimal"];
+  /** Amount of the tokenIn in human form */
+  tokenInAmount: Scalars["AmountHumanReadable"];
+  /** Address of the tokenOut */
   tokenOut: Scalars["String"];
-  tokenOutAmount: Scalars["BigDecimal"];
+  /** Amount of the tokenOut in human form */
+  tokenOutAmount: Scalars["AmountHumanReadable"];
 }
 
 export type GqlSorSwapType = "EXACT_IN" | "EXACT_OUT";
@@ -2520,7 +2597,12 @@ export interface GqlTokenCandlestickChartDataItem {
   timestamp: Scalars["Int"];
 }
 
-export type GqlTokenChartDataRange = "NINETY_DAY" | "SEVEN_DAY" | "THIRTY_DAY";
+export type GqlTokenChartDataRange =
+  | "NINETY_DAY"
+  | "ONE_HUNDRED_EIGHTY_DAY"
+  | "ONE_YEAR"
+  | "SEVEN_DAY"
+  | "THIRTY_DAY";
 
 export interface GqlTokenData {
   __typename: "GqlTokenData";
@@ -3603,14 +3685,11 @@ export interface Mutation {
   protocolCacheMetrics: Scalars["String"];
   sftmxSyncStakingData: Scalars["String"];
   sftmxSyncWithdrawalRequests: Scalars["String"];
-  tokenDeletePrice: Scalars["Boolean"];
   tokenDeleteTokenType: Scalars["String"];
-  tokenInitChartData: Scalars["String"];
   tokenReloadAllTokenTypes: Scalars["String"];
   tokenReloadTokenPrices?: Maybe<Scalars["Boolean"]>;
   tokenSyncLatestFxPrices: Scalars["String"];
   tokenSyncTokenDefinitions: Scalars["String"];
-  tokenSyncTokenDynamicData: Scalars["String"];
   userInitStakedBalances: Scalars["String"];
   userInitWalletBalancesForAllPools: Scalars["String"];
   userInitWalletBalancesForPool: Scalars["String"];
@@ -3643,6 +3722,10 @@ export interface MutationPoolLoadSnapshotsForPoolsArgs {
   reload?: InputMaybe<Scalars["Boolean"]>;
 }
 
+export interface MutationPoolReloadAllPoolAprsArgs {
+  chain: GqlChain;
+}
+
 export interface MutationPoolReloadStakingForAllPoolsArgs {
   stakingTypes: Array<GqlPoolStakingType>;
 }
@@ -3655,9 +3738,8 @@ export interface MutationPoolSyncPoolArgs {
   poolId: Scalars["String"];
 }
 
-export interface MutationTokenDeletePriceArgs {
-  timestamp: Scalars["Int"];
-  tokenAddress: Scalars["String"];
+export interface MutationPoolUpdateAprsArgs {
+  chain: GqlChain;
 }
 
 export interface MutationTokenDeleteTokenTypeArgs {
@@ -3665,8 +3747,8 @@ export interface MutationTokenDeleteTokenTypeArgs {
   type: GqlTokenType;
 }
 
-export interface MutationTokenInitChartDataArgs {
-  tokenAddress: Scalars["String"];
+export interface MutationTokenReloadTokenPricesArgs {
+  chains: Array<GqlChain>;
 }
 
 export interface MutationTokenSyncLatestFxPricesArgs {
@@ -6114,7 +6196,9 @@ export interface Query {
   rewardTokens: Array<RewardToken>;
   rootGauge?: Maybe<RootGauge>;
   rootGauges: Array<RootGauge>;
+  /** Get the staking data and status for sFTMx */
   sftmxGetStakingData: GqlSftmxStakingData;
+  /** Retrieve the withdrawalrequests from a user */
   sftmxGetWithdrawalRequests: Array<GqlSftmxWithdrawalRequests>;
   singleRecipientGauge?: Maybe<SingleRecipientGauge>;
   singleRecipientGauges: Array<SingleRecipientGauge>;
@@ -6804,13 +6888,18 @@ export interface QueryTokenGetCurrentPricesArgs {
 
 export interface QueryTokenGetHistoricalPricesArgs {
   addresses: Array<Scalars["String"]>;
-  chain?: InputMaybe<GqlChain>;
+  chain: GqlChain;
+  range: GqlTokenChartDataRange;
 }
 
 export interface QueryTokenGetPriceChartDataArgs {
   address: Scalars["String"];
   chain?: InputMaybe<GqlChain>;
   range: GqlTokenChartDataRange;
+}
+
+export interface QueryTokenGetProtocolTokenPriceArgs {
+  chain?: InputMaybe<GqlChain>;
 }
 
 export interface QueryTokenGetRelativePriceChartDataArgs {
@@ -9762,6 +9851,8 @@ export interface _Block_ {
   hash?: Maybe<Scalars["Bytes"]>;
   /** The block number */
   number: Scalars["Int"];
+  /** The hash of the parent block */
+  parentHash?: Maybe<Scalars["Bytes"]>;
   /** Integer representation of the timestamp stored in blocks for the chain */
   timestamp?: Maybe<Scalars["Int"]>;
 }
@@ -12626,10 +12717,13 @@ export type BalancerPoolFeeSnapshotsQuery = {
       totalProtocolFee?: string | null;
       totalProtocolFeePaidInBPT?: string | null;
       totalSwapFee: string;
+      isInRecoveryMode?: boolean | null;
+      createTime: number;
       protocolAumFeeCache?: string | null;
       protocolSwapFeeCache?: string | null;
       protocolYieldFeeCache?: string | null;
       swapFee: string;
+      joinsExits?: Array<{ __typename: "JoinExit"; timestamp: number }> | null;
       tokens?: Array<{
         __typename: "PoolToken";
         address: string;
@@ -15745,6 +15839,11 @@ export const BalancerPoolFeeSnapshotsDocument = gql`
         totalProtocolFee
         totalProtocolFeePaidInBPT
         totalSwapFee
+        isInRecoveryMode
+        createTime
+        joinsExits(first: 1, orderBy: timestamp, orderDirection: desc) {
+          timestamp
+        }
         tokens {
           address
           decimals

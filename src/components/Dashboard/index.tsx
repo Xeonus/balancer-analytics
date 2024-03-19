@@ -248,6 +248,7 @@ function Dashboard() {
                             <Route path={"/:networkID/financials"} element={<Financials />} />
                             <Route path={"/financials"} element={<Financials />} />
                             <Route path={"/protocolFees"} element={<ProtocolFees />} />
+                            <Route path={"/:networkID/protocolFees"} element={<ProtocolFees />} />
                         </Routes>
                     </MainContent>
                 </Box>

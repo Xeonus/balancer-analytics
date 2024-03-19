@@ -40,6 +40,8 @@ import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
 import BaseLogo from  "../../../assets/svg/base.svg"
 import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
 import PoolCompositionFeeData from "../../PoolCompositionFeeData";
+import AvatarNew from "../../AvatarNew";
+import {unixToDate} from "../../../utils/date";
 
 
 interface Data {
@@ -47,9 +49,11 @@ interface Data {
     name: string;
     poolTokens: PoolTokenDataUnified[];
     poolData: PoolFeeData;
+    swapFees: number,
     earnedFees: number;
     tvl: number;
     isCore: boolean;
+    lastJoinExit: number;
 }
 
 function createData(
@@ -57,18 +61,22 @@ function createData(
     name: string,
     poolTokens: PoolTokenDataUnified[],
     poolData: PoolFeeData,
+    swapFees: number,
     earnedFees: number,
     tvl: number,
     isCore: boolean,
+    lastJoinExit: number,
 ): Data {
     return {
         network,
         name,
         poolTokens,
         poolData,
+        swapFees,
         earnedFees,
         tvl,
-        isCore
+        isCore,
+        lastJoinExit
     };
 }
 
@@ -138,7 +146,7 @@ const headCells: readonly HeadCell[] = [
         id: 'isCore',
         numeric: false,
         disablePadding: false,
-        label: 'Core Pool',
+        label: 'Pool Fee Type',
         isMobileVisible: true,
     },
     {
@@ -156,10 +164,24 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: true,
     },
     {
+        id: 'swapFees',
+        numeric: true,
+        disablePadding: false,
+        label: 'Swap Fees',
+        isMobileVisible: true,
+    },
+    {
         id: 'earnedFees',
         numeric: true,
         disablePadding: false,
         label: 'Earned Protocol Fees',
+        isMobileVisible: true,
+    },
+    {
+        id: 'lastJoinExit',
+        numeric: true,
+        disablePadding: false,
+        label: 'Latest Fee Stream',
         isMobileVisible: true,
     },
 ];
@@ -244,7 +266,7 @@ export default function ProtocolFeeTable({
     const rows = poolDatas.reduce((acc, poolData) => {
         // Check the necessary conditions before processing.
         if (poolData && poolData.poolType !== 'LIQUIDITY_BOOTSTRAPPING' &&
-            !POOL_HIDE.includes(poolData.id) && poolData.liquidity > 100) {
+            !POOL_HIDE.includes(poolData.id) && poolData.liquidity > 100 && ! poolData.isInRecoveryMode) {
             // Find the matching core pool record.
             const corePoolRecord = corePools.find(c => c.poolId === poolData.id);
 
@@ -257,9 +279,11 @@ export default function ProtocolFeeTable({
                     poolData.name,
                     poolData.tokens,
                     poolData,
+                    poolData.swapFees,
                     poolData.protocolFee,
                     poolData.liquidity,
                     false,
+                    poolData.joinExits[0].timestamp,
                 );
             if (corePoolRecord) {
                 rowData.isCore = true
@@ -368,7 +392,7 @@ export default function ProtocolFeeTable({
                                         <TableRow
                                             hover
                                             onClick={() => {
-                                                navigate(`${getLink(networkInfos[activeNetwork.id], row.poolData.id)}/`);
+                                                navigate(`${getLink(networkInfos[activeNetwork.v3NetworkID], row.poolData.id)}/`);
                                             }}
                                             role="number"
                                             tabIndex={-1}
@@ -381,14 +405,14 @@ export default function ProtocolFeeTable({
                                                         height: 20,
                                                         width: 20
                                                     }}
-                                                    src={networkLogoMap[activeNetwork.id]}
+                                                    src={networkLogoMap[activeNetwork.v3NetworkID]}
                                                 />
                                             </TableCell>
                                             <TableCell>
                                                 <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'}/>
                                             </TableCell>
                                             <TableCell>
-                                                {row.isCore ? 'CORE' : 'Non-Core'}
+                                                <AvatarNew text={row.isCore ? 'Core Pool' : 'Non-Core'} />
                                             </TableCell>
                                             <TableCell
                                                 component="th"
@@ -407,8 +431,20 @@ export default function ProtocolFeeTable({
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.earnedFees > 0 ?
+                                                    formatDollarAmount(row.swapFees) :
+                                                    0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.earnedFees > 0 ?
                                                     formatDollarAmount(row.earnedFees) :
                                                     0
+                                                }
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.lastJoinExit > 0 ?
+                                                    unixToDate(row.lastJoinExit, 'YYYY-MM-DD HH:mm') :
+                                                    '-'
                                                 }
                                             </TableCell>
                                         </TableRow>

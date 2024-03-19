@@ -17,6 +17,14 @@ export const GET_BLOCKS = (timestamps: string[]) => {
     return gql(queryString);
 };
 
+interface BlockData {
+    number: any; // Adjust the type according to the actual data
+    // Add other properties of block data if necessary
+}
+interface SplitQueryResults {
+    [key: string]: BlockData[]; // Assuming each key maps to an array of BlockData
+}
+
 /**
  * for a given array of timestamps, returns block entities
  * @param timestamps
@@ -25,57 +33,46 @@ export function useBlocksFromTimestamps(
     timestamps: number[],
     blockClientOverride?: ApolloClient<NormalizedCacheObject>,
 ): {
-    blocks:
-        | {
-              timestamp: string;
-              number: any;
-          }[]
-        | undefined;
+    blocks: { timestamp: string; number: any }[] | undefined;
     error: boolean;
 } {
     const [activeNetwork] = useActiveNetworkVersion();
-    const [blocks, setBlocks] = useState<any>();
+    const [blocks, setBlocks] = useState<{ [networkId: string]: { timestamp: string; number: any }[] }>({});
     const [error, setError] = useState(false);
-
     const { blockClient } = useClients();
     const activeBlockClient = blockClientOverride ?? blockClient;
 
-    // derive blocks based on active network
-    const networkBlocks = blocks?.[activeNetwork.id];
-
     useEffect(() => {
-        async function fetchData() {
-            const results = await splitQuery(GET_BLOCKS, activeBlockClient, [], timestamps);
-            if (results) {
-                setBlocks({ ...(blocks ?? {}), [activeNetwork.id]: results });
-            } else {
+        const fetchData = async () => {
+            setError(false); // Reset error state before fetching
+            try {
+                const results: SplitQueryResults | undefined = await splitQuery(GET_BLOCKS, activeBlockClient, [], timestamps);
+
+                if (results) {
+                    const formattedResults = Object.keys(results).map(key => {
+                        const blockData = results[key].length > 0 ? results[key][0] : null;
+                        const timestamp = key.split('t')[1]; // Assuming key is prefixed with something followed by the timestamp
+                        return blockData ? { timestamp, number: blockData.number } : null;
+                    }).filter(item => item !== null);
+
+                    setBlocks(prevBlocks => ({
+                        ...prevBlocks,
+                        [activeNetwork.id]: formattedResults,
+                    }));
+                } else {
+                    console.warn("splitQuery returned undefined.");
+                }
+            } catch (err) {
+                console.error("Error fetching blocks:", err);
                 setError(true);
             }
-        }
-        if (!networkBlocks && !error) {
-            fetchData();
-        }
-    }, [timestamps]);
+        };
 
-    const blocksFormatted = useMemo(() => {
-        if (blocks?.[activeNetwork.id]) {
-            const networkBlocks = blocks?.[activeNetwork.id];
-            const formatted = [];
-            for (const t in networkBlocks) {
-                if (networkBlocks[t].length > 0) {
-                    formatted.push({
-                        timestamp: t.split('t')[1],
-                        number: networkBlocks[t][0]['number'],
-                    });
-                }
-            }
-            return formatted;
-        }
-        return undefined;
-    }, [activeNetwork.id, blocks]);
+        fetchData();
+    }, [JSON.stringify(timestamps), activeBlockClient, activeNetwork.id]);
 
     return {
-        blocks: blocksFormatted,
+        blocks: blocks[activeNetwork.id],
         error,
     };
 }

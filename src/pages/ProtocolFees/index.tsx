@@ -29,6 +29,8 @@ import useGetCorePoolCurrentFees from "../../data/maxis/useGetCorePoolCurrentFee
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import useGetGaugeShares from "../../data/balancer-gauges/useGetGaugeShares";
 import useGetPoolUserBalances from "../../data/balancer/useGetPoolUserBalances";
+import {useBlocksFromTimestamps} from "../../hooks/useBlocksFromTimestamps";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface PoolsMapping {
     [key: string]: string[];
@@ -42,36 +44,36 @@ export default function ProtocolFees() {
         POLYGON: CORE_POOLS_POLYGON,
     };
 
-
-
     //States
     dayjs.extend(quarterOfYear);
     const currentQuarter = dayjs().quarter();
     const [activeNetwork] = useActiveNetworkVersion()
     //const corePools = POOLS[activeNetwork.v3NetworkID]
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-    const [timeRange, setTimeRange] = React.useState('30');
+    const [timeRange, setTimeRange] = React.useState('14');
     const [showDate, setShowDate] = React.useState(false);
+    const [feesAlert, setFeesAlert] = React.useState(true);
+    const feesAlertMessage = 'This view is using the Balancer subgraph as data source. User discretion is advised when consulting TVL metrics. Earned fee metrics are based on pool snapshots without calculating BPT TWAP.'
 
     //Poolsnapshots are taken OO:OO UTC.
     // Get the current UTC time
     const currentUTCTime = DateTime.utc();
     //const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
 
-// Get the UTC time for a week ago
+    // Get the UTC time for a week ago
     const weekAgoUTCTime = currentUTCTime.minus({ days: 7 });
     //const endTimeStamp = Math.floor(weekAgoUTCTime.startOf('day').toMillis() / 1000);
 
 
-    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().startOf('day').toMillis() / 1000));
-    const [endTimeStamp, setEndTimeStamp] = React.useState(Math.floor(DateTime.utc().minus({ days: 7 }).startOf('day').toMillis() / 1000));
+    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().minus({ minutes: 1 }).toMillis() / 1000));
+    const [endTimeStamp, setEndTimeStamp] = React.useState(Math.floor(DateTime.utc().minus({ days: 14 }).startOf('day').toMillis() / 1000));
     //console.log("startTimestamp", startTimestamp)
     //Date States
     const [startDate, setStartDate] = React.useState(startTimestamp);
     const [endDate, setEndDate] = React.useState(endTimeStamp);
-    const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
-    const aggregatedProtocolData = useAggregatedProtocolData();
-    const collectedFees = useGetCollectedFeesSummary()
+    //const poolsData = useBalancerPools(250, startDate, endDate).filter(pool => pool.poolType !== 'LiquidityBootstrapping');
+    //const aggregatedProtocolData = useAggregatedProtocolData();
+    //const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
     const [feeDelta, setFeeDelta] = React.useState<PoolFeeSnapshotData | undefined>();
@@ -79,14 +81,19 @@ export default function ProtocolFees() {
     const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
     const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
+    console.log("pastFeeSnapshot", pastFeeSnapshot)
+
+    // Handler
+    const handleFeesAlert = () => {
+        setFeesAlert(false);
+    };
+
     useEffect(() => {
         if (currentFeeSnapshot && pastFeeSnapshot) {
-            const newFeeDelta = getSnapshotFees(currentFeeSnapshot, pastFeeSnapshot);
+            const newFeeDelta = getSnapshotFees(currentFeeSnapshot, pastFeeSnapshot, endTimeStamp);
             setFeeDelta(newFeeDelta); // Update feeDelta state to trigger a re-render
         }
-    }, [currentFeeSnapshot?.pools, pastFeeSnapshot?.pools]);
-
-    //console.log("feeDelta", feeDelta)
+    }, [startTimestamp, endTimeStamp, currentFeeSnapshot?.pools.length, pastFeeSnapshot?.pools.length]);
 
     //Navigation
     const homeNav: NavElement = {
@@ -99,27 +106,25 @@ export default function ProtocolFees() {
     //Change management
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value as string);
-        let newStartDate, newEndDate;
 
         if (event.target.value === '1000') {
             setShowDate(true);
-            // Adjust newStartDate and newEndDate as needed
         } else if (event.target.value === '0') {
             setEndDate(EthereumNetworkInfo.startTimeStamp);
-            newStartDate = DateTime.utc().startOf('day');
-            newEndDate = DateTime.utc();
+
+            const newEndDate = DateTime.utc().startOf('day');
+            setStartDate(newEndDate.toSeconds());
             setShowDate(false);
         } else {
-            newStartDate = DateTime.utc().startOf('day');
-            newEndDate = DateTime.utc().minus({ days: Number(event.target.value) }).startOf('day');
+            const startTimestamp = DateTime.utc().startOf('day').toSeconds();
+            setStartDate(startTimestamp);
             setShowDate(false);
-        }
+            setStartTimestamp(startTimestamp)
 
-        if (newStartDate && newEndDate) {
-            setStartDate(newStartDate.toSeconds());
+            const daysToSubtract = Number(event.target.value);
+            const newEndDate = DateTime.utc().minus({days: daysToSubtract}).startOf('day');
             setEndDate(newEndDate.toSeconds());
-            setStartTimestamp(Math.floor(newStartDate.toMillis() / 1000));
-            setEndTimeStamp(Math.floor(newEndDate.toMillis() / 1000));
+            setEndTimeStamp(newEndDate.toMillis() / 1000)
         }
     };
 
@@ -169,13 +174,32 @@ export default function ProtocolFees() {
 
     return (
         <Box>
-            {feeDelta && feeDelta.pools ?
+            <Box mb={1} sx={{flexGrow: 2, justifyContent: "center"}}>
+                {feesAlert && (
+                    <Alert
+                        severity="info"
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleFeesAlert}
+                            >
+                                <CloseIcon fontSize="inherit"/>
+                            </IconButton>
+                        }
+                    >
+                        {feesAlertMessage}
+                    </Alert>
+                )}
+            </Box>
+            {currentFeeSnapshot && currentFeeSnapshot.pools && pastFeeSnapshot && pastFeeSnapshot.pools && feeDelta && feeDelta.pools ?
                 <Grid
                     container
                     spacing={1}
                     sx={{justifyContent: 'center'}}
                 >
-                    <Grid item xs={9}>
+                    <Grid item xs={11}>
                         <Box display="flex" alignItems="center" justifyContent="space-between">
                             <NavCrumbs crumbSet={navCrumbs} destination={'Reports'}/>
                         </Box>
@@ -184,7 +208,7 @@ export default function ProtocolFees() {
                         item
                         mt={1}
                         mb={1}
-                        xs={9}
+                        xs={11}
                     >
                         <Box display="flex" alignItems="center">
                             <Box>
@@ -201,7 +225,7 @@ export default function ProtocolFees() {
                         item
                         mt={1}
                         mb={1}
-                        xs={9}
+                        xs={11}
                     >
 
                         <Box display="flex" alignItems="center" mb={1}>
@@ -275,7 +299,7 @@ export default function ProtocolFees() {
                     <Grid
                         item
                         mt={2}
-                        xs={9}
+                        xs={11}
                     >
                         <Box  display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
@@ -289,7 +313,7 @@ export default function ProtocolFees() {
                     <Grid
                         item
                         mt={2}
-                        xs={9}
+                        xs={11}
                     >
                         <ProtocolFeeTable poolDatas={feeDelta?.pools || []} corePools={corePools} />
 
@@ -302,7 +326,21 @@ export default function ProtocolFees() {
                     mt='25%'
                     sx={{justifyContent: 'center'}}
                 >
-                    <CustomLinearProgress/>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
+                        <CustomLinearProgress/>
+                        <Box mt={1}>
+                        <Typography variant={'caption'}>Please stay patient friend. Subgraph goblins are indexing fees.</Typography>
+                        </Box>
+                    </Box>
+
+
+
+
                 </Grid>
                     }
         </Box>
