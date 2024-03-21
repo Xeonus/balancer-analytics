@@ -41,3 +41,18 @@ export function getUnixTimestamp1000DaysAgo(): number {
     // Convert to Unix timestamp (in seconds)
     return Math.floor(pastDate.getTime() / 1000);
 }
+
+export const parseDateString = (dateString: string): number | null => {
+    // Expected format "DD.MM.YYYY"
+    const parts = dateString.split('.');
+    if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // JS months start from 0
+        const year = parseInt(parts[2], 10);
+
+        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+            return new Date(year, month, day).getTime() / 1000; // Convert to UNIX timestamp
+        }
+    }
+    return null; // Return null if the format is incorrect
+};

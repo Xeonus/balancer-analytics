@@ -1,36 +1,35 @@
+import * as React from "react";
 import {useEffect} from "react";
-import {CORE_POOLS_ARBITRUM, CORE_POOLS_MAINNET, CORE_POOLS_POLYGON} from "../../constants";
 import dayjs from "dayjs";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import * as React from "react";
 import {DateTime} from "luxon";
-import {useBalancerPools} from "../../data/balancer/usePools";
-import useAggregatedProtocolData from "../../data/balancer/useAggregatedProtocolData";
-import useGetCollectedFeesSummary from "../../data/maxis/useGetCollectedFeesSummary";
 import {getSnapshotFees, useBalancerPoolFeeSnapshotData} from "../../data/balancer/useBalancerPoolFeeSnapshotData";
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
 import {EthereumNetworkInfo} from "../../constants/networks";
 import Select, {SelectChangeEvent} from "@mui/material/Select";
-import {Alert, Box, Card, CircularProgress, Divider, Grid, IconButton, Typography} from "@mui/material";
+import {Alert, Box, Divider, Grid, IconButton, Typography} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import {unixToDate} from "../../utils/date";
+import {parseDateString, unixToDate} from "../../utils/date";
 import TextField from "@mui/material/TextField";
-import CustomLinearProgress from "../../components/Progress/CustomLinearProgress";
 import {PoolFeeSnapshotData} from "../../data/balancer/balancerTypes";
 import ProtocolFeeTable from "../../components/Tables/ProtocolFeeTable";
 import useGetCorePoolCurrentFees from "../../data/maxis/useGetCorePoolCurrentFees";
-
-
-import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
-import useGetGaugeShares from "../../data/balancer-gauges/useGetGaugeShares";
-import useGetPoolUserBalances from "../../data/balancer/useGetPoolUserBalances";
-import {useBlocksFromTimestamps} from "../../hooks/useBlocksFromTimestamps";
+import BalancerLogoWhite from '../../assets/svg/logo-light.svg'
+import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
 import CloseIcon from "@mui/icons-material/Close";
+import {CustomThrobber} from "../../components/CustomThrobber";
+import {useTheme} from "@mui/material/styles";
+import MetricsCard from "../../components/Cards/MetricsCard";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import PieChartIcon from '@mui/icons-material/PieChart';
+
 
 interface PoolsMapping {
     [key: string]: string[];
@@ -38,16 +37,19 @@ interface PoolsMapping {
 
 export default function ProtocolFees() {
 
-    const POOLS: PoolsMapping = {
-        MAINNET: CORE_POOLS_MAINNET,
-        ARBITRUM: CORE_POOLS_ARBITRUM,
-        POLYGON: CORE_POOLS_POLYGON,
-    };
+    //Navigation
+    const homeNav: NavElement = {
+        name: 'Home',
+        link: ''
+    }
+    const navCrumbs: NavElement[] = []
+    navCrumbs.push(homeNav)
 
     //States
     dayjs.extend(quarterOfYear);
     const currentQuarter = dayjs().quarter();
     const [activeNetwork] = useActiveNetworkVersion()
+    const theme = useTheme();
     //const corePools = POOLS[activeNetwork.v3NetworkID]
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
     const [timeRange, setTimeRange] = React.useState('14');
@@ -56,17 +58,8 @@ export default function ProtocolFees() {
     const feesAlertMessage = 'This view is using the Balancer subgraph as data source. User discretion is advised when consulting TVL metrics. Earned fee metrics are based on pool snapshots without calculating BPT TWAP.'
 
     //Poolsnapshots are taken OO:OO UTC.
-    // Get the current UTC time
-    const currentUTCTime = DateTime.utc();
-    //const startTimestamp = Math.floor(currentUTCTime.startOf('day').toMillis() / 1000);
-
-    // Get the UTC time for a week ago
-    const weekAgoUTCTime = currentUTCTime.minus({ days: 7 });
-    //const endTimeStamp = Math.floor(weekAgoUTCTime.startOf('day').toMillis() / 1000);
-
-
-    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().minus({ minutes: 1 }).toMillis() / 1000));
-    const [endTimeStamp, setEndTimeStamp] = React.useState(Math.floor(DateTime.utc().minus({ days: 14 }).startOf('day').toMillis() / 1000));
+    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().minus({minutes: 10}).toMillis() / 1000));
+    const [endTimeStamp, setEndTimeStamp] = React.useState(Math.floor(DateTime.utc().minus({days: 14}).startOf('day').toMillis() / 1000));
     //console.log("startTimestamp", startTimestamp)
     //Date States
     const [startDate, setStartDate] = React.useState(startTimestamp);
@@ -83,6 +76,8 @@ export default function ProtocolFees() {
     const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
 
+
+
     // Handler
     const handleFeesAlert = () => {
         setFeesAlert(false);
@@ -95,13 +90,30 @@ export default function ProtocolFees() {
         }
     }, [startTimestamp, endTimeStamp, currentFeeSnapshot?.pools.length, pastFeeSnapshot?.pools.length]);
 
-    //Navigation
-    const homeNav: NavElement = {
-        name: 'Home',
-        link: ''
+
+    // Total fees earned non-core pools
+    let totalFeesNonCore = 0
+    if (feeDelta && feeDelta.pools && corePools && corePools.length){
+    totalFeesNonCore = feeDelta?.pools.filter(pool => {
+        const corePoolRecord = corePools.find(c => c.poolId === pool.id);
+        return corePoolRecord === undefined
+    }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }
-    const navCrumbs: NavElement[] = []
-    navCrumbs.push(homeNav)
+    console.log("totalFeesNonCore", totalFeesNonCore)
+
+    // Total fees earned core pools
+    let totalFeesCore = 0
+    if (feeDelta && feeDelta.pools && corePools && corePools.length){
+        totalFeesCore = feeDelta?.pools.filter(pool => {
+            const corePoolRecord = corePools.find(c => c.poolId === pool.id);
+            return corePoolRecord !== undefined
+        }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
+    }
+    console.log("totalFeesCore", totalFeesCore)
+
+    //Ratio core vs non-core
+    const ratioCoreNonCore = totalFeesCore / totalFeesNonCore ;
+
 
     //Change management
     const handleChange = (event: SelectChangeEvent) => {
@@ -126,22 +138,6 @@ export default function ProtocolFees() {
             setEndDate(newEndDate.toSeconds());
             setEndTimeStamp(newEndDate.toMillis() / 1000)
         }
-    };
-
-
-    const parseDateString = (dateString: string): number | null => {
-        // Expected format "DD.MM.YYYY"
-        const parts = dateString.split('.');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1; // JS months start from 0
-            const year = parseInt(parts[2], 10);
-
-            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                return new Date(year, month, day).getTime() / 1000; // Convert to UNIX timestamp
-            }
-        }
-        return null; // Return null if the format is incorrect
     };
 
     const handleStartDateChange = (value: number | null, keyboardInputValue?: string) => {
@@ -217,7 +213,8 @@ export default function ProtocolFees() {
 
                         </Box>
                         <Box>
-                            <Typography variant={"body2"}>Create aggregated views of protocol fees by specifying a time-range.
+                            <Typography variant={"body2"}>Create aggregated views of protocol fees by specifying a
+                                time-range.
                                 Metrics combine net fees earned unless stated otherwise</Typography>
                         </Box>
                     </Grid>
@@ -294,14 +291,49 @@ export default function ProtocolFees() {
                                     </LocalizationProvider>
                                 </Box> : null}
                         </Box>
-                        <Divider />
+                        <Divider/>
+                    </Grid>
+                    <Grid mb={1} item xs={11}>
+                        <Grid
+                            container
+                            columns={{xs: 4, sm: 8, md: 12}}
+                            sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
+                        >
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
+                                    mainMetric={totalFeesCore ? totalFeesCore : 0}
+                                    mainMetricInUSD={true}
+                                    metricName={'Total Core Fees'}
+                                    MetricIcon={MonetizationOnIcon}
+                                    toolTipText={'Total amount of fees collected from core pools. This includes swap fees and the protocol fee cut of 50% on yield-bearing assets.'}
+                                />
+                            </Box>
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
+                                    mainMetric={totalFeesNonCore ? totalFeesNonCore : 0}
+                                    mainMetricInUSD={true}
+                                    metricName={'Total Non-Core Fees'}
+                                    MetricIcon={MonetizationOnIcon}
+                                    toolTipText={'Protocol fees collected by non-core pools. These fees will be recycled and distributed to veBAL holders and voting incentives for core pools.'}
+                                />
+                            </Box>
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
+                                    mainMetric={ratioCoreNonCore ? ratioCoreNonCore : 0}
+                                    mainMetricInUSD={false}
+                                    metricName={'Core / Non-Core Fee Ratio'}
+                                    MetricIcon={PieChartIcon}
+                                    toolTipText={'Ratio of core vs. non-core fees earned.'}
+                                />
+                            </Box>
+                        </Grid>
                     </Grid>
                     <Grid
                         item
                         mt={2}
                         xs={11}
                     >
-                        <Box  display="flex" justifyContent="space-between" alignItems="row">
+                        <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
                                 <Typography variant="h5">Fees Earned Metrics</Typography>
                             </Box>
@@ -310,16 +342,16 @@ export default function ProtocolFees() {
                         <Box mb={1} display="flex" alignItems='center'>
                             <Typography variant="body2">Aggregated Fees earned for {activeNetwork.name}</Typography>
                         </Box>
-                    <Grid
-                        item
-                        mt={2}
-                        xs={11}
-                    >
-                        <ProtocolFeeTable poolDatas={feeDelta?.pools || []} corePools={corePools} />
+                        <Grid
+                            item
+                            mt={2}
+                            xs={11}
+                        >
+                            <ProtocolFeeTable poolDatas={feeDelta?.pools || []} corePools={corePools}/>
 
+                        </Grid>
                     </Grid>
-                    </Grid>
-                </Grid>:
+                </Grid> :
                 <Grid
                     container
                     spacing={2}
@@ -332,17 +364,16 @@ export default function ProtocolFees() {
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <CustomLinearProgress/>
+                        <CustomThrobber icon={theme.palette.mode === 'dark' ? BalancerLogoBlack : BalancerLogoWhite}/>
                         <Box mt={1}>
-                        <Typography variant={'caption'}>Please stay patient friend. Subgraph goblins are indexing fees.</Typography>
+                            <Typography variant={'caption'}>Please stay patient friend. Subgraph goblins are indexing
+                                fees.</Typography>
                         </Box>
                     </Box>
 
 
-
-
                 </Grid>
-                    }
+            }
         </Box>
     );
 }

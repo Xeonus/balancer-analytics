@@ -9,13 +9,19 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, CircularProgress, Grid, Typography} from '@mui/material';
+import {Avatar, CircularProgress, Grid, IconButton, InputBase, Menu, Radio, Typography} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import {visuallyHidden} from '@mui/utils';
-import {PoolFeeData} from '../../../data/balancer/balancerTypes';
+import {PoolFeeData, TokenFilters} from '../../../data/balancer/balancerTypes';
 import {formatAmount, formatDollarAmount} from '../../../utils/numbers';
-import {POOL_HIDE} from '../../../constants'
+import {
+    POOL_HIDE,
+    POOL_TYPE_DISPLAY_NAMES,
+    POOL_TYPE_DISPLAY_NAMES_SUBGRAPH,
+    POOL_TYPE_FILTERS, POOL_TYPE_FILTERS_SUBGRAPH,
+    TOKEN_FILTERS
+} from '../../../constants'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import {useTheme} from '@mui/material/styles'
@@ -30,7 +36,6 @@ import {
     PolygonNetworkInfo, PolygonZkEVMNetworkInfo
 } from '../../../constants/networks';
 import {PoolDataUnified, PoolTokenDataUnified} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
-import PoolCompositionUnified from "../../PoolCompositionUnified";
 import PoolCurrencyLogoUnified from "../../PoolCurrencyLogoUnified";
 import {PoolFeeRecord} from "../../../data/maxis/maxiStaticTypes";
 import EtherLogo from "../../../assets/svg/ethereum.svg";
@@ -39,9 +44,16 @@ import GnosisLogo from "../../../assets/svg/gnosis.svg";
 import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
 import BaseLogo from  "../../../assets/svg/base.svg"
 import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
+import ZkevmLogo from  "../../../assets/svg/zkevm.svg"
 import PoolCompositionFeeData from "../../PoolCompositionFeeData";
 import AvatarNew from "../../AvatarNew";
 import {unixToDate} from "../../../utils/date";
+import {useState} from "react";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
 
 
 interface Data {
@@ -53,6 +65,7 @@ interface Data {
     earnedFees: number;
     tvl: number;
     isCore: boolean;
+    poolType: string;
     lastJoinExit: number;
 }
 
@@ -65,6 +78,7 @@ function createData(
     earnedFees: number,
     tvl: number,
     isCore: boolean,
+    poolType: string,
     lastJoinExit: number,
 ): Data {
     return {
@@ -76,6 +90,7 @@ function createData(
         earnedFees,
         tvl,
         isCore,
+        poolType,
         lastJoinExit
     };
 }
@@ -143,6 +158,13 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: true,
     },
     {
+        id: 'poolType',
+        numeric: false,
+        disablePadding: false,
+        label: 'Pool Type',
+        isMobileVisible: true,
+    },
+    {
         id: 'isCore',
         numeric: false,
         disablePadding: false,
@@ -181,7 +203,7 @@ const headCells: readonly HeadCell[] = [
         id: 'lastJoinExit',
         numeric: true,
         disablePadding: false,
-        label: 'Latest Fee Stream',
+        label: 'Last Fee Collection',
         isMobileVisible: true,
     },
 ];
@@ -190,6 +212,11 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
+}
+
+interface SelectionState {
+    tokenType: keyof TokenFilters | null;
+    poolType: string | null;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -249,6 +276,12 @@ export default function ProtocolFeeTable({
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [activeNetwork] = useActiveNetworkVersion();
     let navigate = useNavigate();
+    const theme = useTheme()
+
+    //Search functionality
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState<null | HTMLElement>(null);
+    const [selection, setSelection] = useState<SelectionState>({ tokenType: null, poolType: null });
 
     if (!poolDatas && !corePools) {
         return <CircularProgress/>;
@@ -283,6 +316,7 @@ export default function ProtocolFeeTable({
                     poolData.protocolFee,
                     poolData.liquidity,
                     false,
+                    poolData.poolType,
                     poolData.joinExits[0].timestamp,
                 );
             if (corePoolRecord) {
@@ -319,6 +353,23 @@ export default function ProtocolFeeTable({
         setDense(event.target.checked);
     };
 
+    const handleTokenTypeChange = (tokenType: keyof TokenFilters | null) => {
+        setSelection(prev => ({ ...prev, tokenType }));
+    };
+
+    const handlePoolTypeChange = (poolType: string | null) => {
+        setSelection(prev => ({ ...prev, poolType }));
+    };
+
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setFilterMenuAnchorEl(event.currentTarget);
+    };
+
+    const resetFilters = () => {
+        setSelection({ tokenType: null, poolType: null });
+    };
+
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
@@ -343,6 +394,7 @@ export default function ProtocolFeeTable({
         ARBITRUM: ArbitrumLogo,
         AVALANCHE: AvaxLogo,
         BASE: BaseLogo,
+        ZKEVM: ZkevmLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {
@@ -352,6 +404,7 @@ export default function ProtocolFeeTable({
         ARBITRUM: "Arbitrum",
         AVALANCHE: "Avalanche",
         BASE: "Base",
+        ZKEVM: "ZkEVM"
     };
 
     const networkInfos: NetworkInfoMap = {
@@ -361,13 +414,110 @@ export default function ProtocolFeeTable({
         ARBITRUM: ArbitrumNetworkInfo,
         AVALANCHE: AvalancheNetworkInfo,
         BASE: BaseNetworkInfo,
+        ZKEVM: PolygonZkEVMNetworkInfo,
     }
+
+
+    const filteredRows = rows.filter((row) => {
+        const matchesSearchTerm = searchTerm === '' || row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.poolTokens.some(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
+
+        const tokenTypeMatch = selection.tokenType ? TOKEN_FILTERS[selection.tokenType].some(token => row.poolTokens.some(rowToken => rowToken.symbol === token)) : true;
+        const poolTypeMatch = selection.poolType ? row.poolData.poolType === selection.poolType : true;
+
+        return matchesSearchTerm && tokenTypeMatch && poolTypeMatch;
+    });
+
+    console.log("filteredRows", filteredRows)
+
+    const clearSearch = (): void => {
+        setSearchTerm("");
+    };
 
 
     //Table generation
 
     return (
         <Box sx={{width: '100%'}}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box>
+                    <Paper
+                        component="form"
+                        sx={{mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500, minWidth: 400}}
+                    >
+                        <InputBase
+                            sx={{ml: 1, flex: 1}}
+                            placeholder="Search for a Pool"
+                            inputProps={{'aria-label': 'search pools'}}
+                            value={searchTerm}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(event.target.value)}
+                        />
+                        <IconButton onClick={clearSearch} type="button" sx={{p: '10px'}} aria-label="search">
+                            {searchTerm !== "" ? <ClearIcon/> : <SearchIcon/>}
+                        </IconButton>
+
+                    </Paper>
+                </Box>
+                <Box m={1}>
+                    <Button
+                        sx={{
+                            backgroundColor: theme.palette.mode === 'dark' ? "background.paper" : null,
+                        }}
+                        variant="contained" aria-controls="filter-menu" onClick={handleClick}>
+                        Filters
+                    </Button>
+                </Box>
+                <Menu
+                    id="filter-menu"
+                    anchorEl={filterMenuAnchorEl}
+                    keepMounted
+                    open={Boolean(filterMenuAnchorEl)}
+                    onClose={() => setFilterMenuAnchorEl(null)}
+                    PaperProps={{
+                        style: {
+                            padding: '0', // Reduce padding around the menu
+                        },
+                    }}
+                >
+                    <MenuItem disabled>
+                        <Typography variant="h6" style={{ marginLeft: 16 }}>Token Types</Typography> {/* Add some margin if needed */}
+                    </MenuItem>
+                    {Object.keys(TOKEN_FILTERS).map((tokenType) => (
+                        <MenuItem key={tokenType} style={{ padding: '4px 16px' }}> {/* Reduce vertical padding */}
+                            <ListItemIcon style={{ minWidth: 'auto' }}> {/* Wrap Radio in ListItemIcon for alignment */}
+                                <Radio
+                                    checked={selection.tokenType === tokenType}
+                                    onChange={(event) => handleTokenTypeChange(event.target.value as keyof TokenFilters)}
+                                    value={tokenType}
+                                    name="token-type-group"
+                                />
+                            </ListItemIcon>
+                            <Typography variant="body1">{tokenType}</Typography> {/* Use Typography for consistent text styling */}
+                        </MenuItem>
+                    ))}
+                    <MenuItem disabled>
+                        <Typography variant="h6" style={{ marginLeft: 16 }}>Pool Types</Typography>
+                    </MenuItem>
+                    {POOL_TYPE_FILTERS_SUBGRAPH.map((poolType) => (
+                        <MenuItem key={poolType} style={{ padding: '4px 16px' }}>
+                            <ListItemIcon style={{ minWidth: 'auto' }}>
+                                <Radio
+                                    checked={selection.poolType === poolType}
+                                    onChange={(event) => handlePoolTypeChange(event.target.value)}
+                                    value={poolType}
+                                    name="pool-type-group"
+                                />
+                            </ListItemIcon>
+                            <Typography variant="body1">{POOL_TYPE_DISPLAY_NAMES_SUBGRAPH[poolType as keyof typeof POOL_TYPE_DISPLAY_NAMES_SUBGRAPH]}</Typography>
+                        </MenuItem>
+                    ))}
+                    <MenuItem style={{ padding: '8px 16px' }}>
+                        <Button fullWidth onClick={resetFilters} color="primary">
+                            Reset Filters
+                        </Button>
+                    </MenuItem>
+                </Menu>
+            </Box>
             <Paper sx={{mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table
@@ -383,7 +533,7 @@ export default function ProtocolFeeTable({
                         <TableBody>
                             {/* if you don't need to support IE11, you can replace the `stableSort` call with:
               rows.sort(getComparator(order, orderBy)).slice() */}
-                            {stableSort(rows, getComparator(order, orderBy))
+                            {stableSort(filteredRows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -410,6 +560,9 @@ export default function ProtocolFeeTable({
                                             </TableCell>
                                             <TableCell>
                                                 <PoolCurrencyLogoUnified tokens={row.poolTokens} size={'25px'}/>
+                                            </TableCell>
+                                            <TableCell>
+                                                {POOL_TYPE_DISPLAY_NAMES_SUBGRAPH[row.poolType]}
                                             </TableCell>
                                             <TableCell>
                                                 <AvatarNew text={row.isCore ? 'Core Pool' : 'Non-Core'} />

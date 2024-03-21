@@ -24,6 +24,15 @@ export const POOL_TYPE_FILTERS: string[] = [
     'GYROE'
 ];
 
+export const POOL_TYPE_FILTERS_SUBGRAPH: string[] = [
+    'Stable',
+    'MetaStable',
+    'Weighted',
+    'ComposableStable',
+    'GyroE',
+    'Managed'
+];
+
 export const RAINBOW_COLORS = [
     'rgb(32, 129, 240)',
     'rgb(255, 204, 0)',
@@ -37,6 +46,15 @@ export const POOL_TYPE_DISPLAY_NAMES: { [key: string]: string } = {
     WEIGHTED: 'Weighted',
     COMPOSABLE_STABLE: 'Composable Stable',
     GYROE: 'Gyro',
+};
+
+export const POOL_TYPE_DISPLAY_NAMES_SUBGRAPH: { [key: string]: string } = {
+    Stable: 'Stable',
+    MetaStable: 'Metastable',
+    Weighted: 'Weighted',
+    ComposableStable: 'Composable Stable',
+    GyroE: 'Gyro',
+    Managed: 'Managed'
 };
 
 export const YIELD_BEARING_TOKENS = [
