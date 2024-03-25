@@ -94,7 +94,7 @@ export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp
         // Reset poolFeeData to undefined or any initial state you prefer
         setPoolFeeData(undefined);
         // You might also want to re-fetch the pool data here if necessary
-    }, [clientUri]);
+    }, [clientUri, startTimestamp]);
 
     return poolFeeData;
 }

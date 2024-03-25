@@ -27,7 +27,10 @@ import {useTheme} from "@mui/material/styles";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PieChartIcon from '@mui/icons-material/PieChart';
+import SavingsIcon from '@mui/icons-material/Savings';
+import TollIcon from '@mui/icons-material/Toll';
 import {getLastThursdayOddWeek} from "../../data/maxis/static/dataHelpers";
+import useGetCollectedFees from "../../data/maxis/useGetTotalFeesCollected";
 
 
 interface PoolsMapping {
@@ -75,11 +78,12 @@ export default function ProtocolFees() {
     //----Fee data---
     const [feeDelta, setFeeDelta] = React.useState<PoolFeeSnapshotData | undefined>();
     const corePools = useGetCorePoolCurrentFees();
+    const historicalNetworkFees = useGetCollectedFees(unixToDate(startDate))
+    console.log("historicalNetworkFees", historicalNetworkFees)
     const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
     const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
-
 
 
     // Handler
@@ -97,17 +101,17 @@ export default function ProtocolFees() {
 
     // Total fees earned non-core pools
     let totalFeesNonCore = 0
-    if (feeDelta && feeDelta.pools && corePools && corePools.length){
-    totalFeesNonCore = feeDelta?.pools.filter(pool => {
-        const corePoolRecord = corePools.find(c => c.poolId === pool.id);
-        return corePoolRecord === undefined
-    }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
+    if (feeDelta && feeDelta.pools && corePools && corePools.length) {
+        totalFeesNonCore = feeDelta?.pools.filter(pool => {
+            const corePoolRecord = corePools.find(c => c.poolId === pool.id);
+            return corePoolRecord === undefined
+        }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }
     console.log("totalFeesNonCore", totalFeesNonCore)
 
     // Total fees earned core pools
     let totalFeesCore = 0
-    if (feeDelta && feeDelta.pools && corePools && corePools.length){
+    if (feeDelta && feeDelta.pools && corePools && corePools.length) {
         totalFeesCore = feeDelta?.pools.filter(pool => {
             const corePoolRecord = corePools.find(c => c.poolId === pool.id);
             return corePoolRecord !== undefined
@@ -116,10 +120,29 @@ export default function ProtocolFees() {
     console.log("totalFeesCore", totalFeesCore)
 
     //Ratio core vs non-core
-    const ratioCoreNonCore = totalFeesCore / totalFeesNonCore ;
+    const ratioCoreNonCore = totalFeesCore / totalFeesNonCore;
 
     //Total fees
     const totalFees = totalFeesCore + totalFeesNonCore;
+
+    let networkFees = 0
+    if (historicalNetworkFees && historicalNetworkFees.mainnet) {
+        if (activeNetwork.v3NetworkID.toLowerCase() === 'mainnet') {
+            networkFees = historicalNetworkFees.mainnet
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'arbitrum') {
+            networkFees = historicalNetworkFees.arbitrum
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'polygon') {
+            networkFees = historicalNetworkFees.polygon
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'avalanche') {
+            networkFees = historicalNetworkFees.avalanche
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'base') {
+            networkFees = historicalNetworkFees.base
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'gnosis') {
+            networkFees = historicalNetworkFees.gnosis
+        } else {
+            networkFees = historicalNetworkFees.mainnet
+        }
+    }
 
 
     //Change management
@@ -222,7 +245,7 @@ export default function ProtocolFees() {
                 const periodParts = selectedPeriod.split(" to ").map(part => part.trim());
 
                 const timestamp = dateToUnix(periodParts[0]);
-                const timestampEnd = timestamp - 60*60*24*14
+                const timestampEnd = timestamp - 60 * 60 * 24 * 14
                 console.log("timestamp", timestamp)
                 console.log("timestampEnd", timestampEnd)
                 if (timestamp) {
@@ -247,9 +270,6 @@ export default function ProtocolFees() {
     };
 
 
-
-
-
     return (
         <Box>
             <Box mb={1} sx={{flexGrow: 2, justifyContent: "center"}}>
@@ -271,49 +291,112 @@ export default function ProtocolFees() {
                     </Alert>
                 )}
             </Box>
-            {currentFeeSnapshot && currentFeeSnapshot.pools && pastFeeSnapshot && pastFeeSnapshot.pools && feeDelta && feeDelta.pools ?
+            <Grid
+                container
+                spacing={1}
+                sx={{justifyContent: 'center'}}
+            >
+                <Grid item xs={11}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <NavCrumbs crumbSet={navCrumbs} destination={'Reports'}/>
+                    </Box>
+                </Grid>
                 <Grid
-                    container
-                    spacing={1}
-                    sx={{justifyContent: 'center'}}
+                    item
+                    mt={1}
+                    mb={1}
+                    xs={11}
                 >
-                    <Grid item xs={11}>
-                        <Box display="flex" alignItems="center" justifyContent="space-between">
-                            <NavCrumbs crumbSet={navCrumbs} destination={'Reports'}/>
-                        </Box>
-                    </Grid>
-                    <Grid
-                        item
-                        mt={1}
-                        mb={1}
-                        xs={11}
-                    >
-                        <Box display="flex" alignItems="center">
-                            <Box>
-                                <Typography variant={"h5"}>Protocol Fees (Beta)</Typography>
-                            </Box>
-
-                        </Box>
+                    <Box display="flex" alignItems="center">
                         <Box>
-                            <Typography variant={"body2"}>Create aggregated views of protocol fees by specifying a
-                                time-range.
-                                Metrics combine net fees earned unless stated otherwise</Typography>
+                            <Typography variant={"h5"}>Protocol Fees (Beta) for {activeNetwork.name}</Typography>
                         </Box>
-                    </Grid>
+
+                    </Box>
+                    <Box>
+                        <Typography variant={"body2"}>Create aggregated views of protocol fees by specifying a
+                            time-range.
+                            Metrics combine net fees earned unless stated otherwise</Typography>
+                    </Box>
+                </Grid>
 
 
-                    <Grid
-                        item
-                        mt={1}
-                        mb={1}
-                        xs={11}
-                    >
+                <Grid
+                    item
+                    mt={1}
+                    mb={1}
+                    xs={11}
+                >
 
-                        <Box display="flex" alignItems="center" mb={1}>
-                            <Box>
-                                <Typography>Choose Time Range:</Typography>
-                            </Box>
-                            <Box ml={1}>
+                    <Box display="flex" alignItems="center" mb={1}>
+                        <Box>
+                            <Typography>Choose Time Range:</Typography>
+                        </Box>
+                        <Box ml={1}>
+                            <FormControl size="small">
+                                <Select
+                                    sx={{
+                                        backgroundColor: "background.paper",
+                                        boxShadow: 2,
+                                        borderRadius: 2,
+                                        borderColor: 0,
+                                    }}
+                                    color="primary"
+                                    labelId="timeRangeSelectLabel"
+                                    id="timeRangeSelect"
+                                    onChange={handleChange}
+                                    value={timeRange}
+                                    inputProps={{
+                                        name: 'timeRange',
+                                        id: 'timeRangeId-native-simple',
+                                    }}
+                                >
+                                    <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
+                                    <Divider/>
+                                    <MenuItem value={'7'}>Last 7 days</MenuItem>
+                                    <MenuItem value={'14'}>Last 14 days</MenuItem>
+                                    <MenuItem value={'30'}>Last 30 days</MenuItem>
+                                    <MenuItem value={'90'}>Last 90 days</MenuItem>
+                                    <MenuItem value={'180'}>Last 180 days</MenuItem>
+                                    <MenuItem value={'365'}>Last 365 days</MenuItem>
+                                    <MenuItem value={'0'}>All time</MenuItem>
+                                    <MenuItem value={'1000'}>Custom </MenuItem>
+                                    <MenuItem value={'-1'}>Fee Epochs </MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+
+
+                        {showDate ?
+                            <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Start Date"
+                                        maxDate={Date.now()}
+                                        minDate={EthereumNetworkInfo.startTimeStamp}
+                                        value={unixToDate(endDate)}
+                                        onChange={handleEndDateChange}
+                                        renderInput={(params) => <TextField size='small'
+                                                                            sx={{maxWidth: '150px'}} {...params} />}
+                                    />
+                                </LocalizationProvider>
+                                <Box p={1}>
+                                    <Typography>to</Typography>
+                                </Box>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="End Date"
+                                        maxDate={Date.now()}
+                                        minDate={EthereumNetworkInfo.startTimeStamp}
+                                        value={unixToDate(startDate)}
+                                        onChange={handleStartDateChange}
+                                        renderInput={(params) => <TextField size='small'
+                                                                            sx={{maxWidth: '150px'}} {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </Box> : null}
+                        {showFeeEpochs ?
+                            <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
                                 <FormControl size="small">
                                     <Select
                                         sx={{
@@ -325,91 +408,35 @@ export default function ProtocolFees() {
                                         color="primary"
                                         labelId="timeRangeSelectLabel"
                                         id="timeRangeSelect"
-                                        onChange={handleChange}
-                                        value={timeRange}
+                                        onChange={handlePeriodChange}
+                                        value={selectedPeriod}
                                         inputProps={{
                                             name: 'timeRange',
                                             id: 'timeRangeId-native-simple',
                                         }}
                                     >
-                                        <MenuItem disabled={true} dense={true}>Time range:</MenuItem>
-                                        <Divider/>
-                                        <MenuItem value={'7'}>Last 7 days</MenuItem>
-                                        <MenuItem value={'14'}>Last 14 days</MenuItem>
-                                        <MenuItem value={'30'}>Last 30 days</MenuItem>
-                                        <MenuItem value={'90'}>Last 90 days</MenuItem>
-                                        <MenuItem value={'180'}>Last 180 days</MenuItem>
-                                        <MenuItem value={'365'}>Last 365 days</MenuItem>
-                                        <MenuItem value={'0'}>All time</MenuItem>
-                                        <MenuItem value={'1000'}>Custom </MenuItem>
-                                        <MenuItem value={'-1'}>Fee Epochs </MenuItem>
+                                        {periods.map((period, index) => (
+                                            <MenuItem
+
+                                                key={index}
+                                                value={period === "Current Fee Epoch" ? period : period.split(" to ")[1]}>
+                                                {period}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
-                            </Box>
+                            </Box> : null}
+                    </Box>
+                    <Divider/>
+                </Grid>
+            </Grid>
+            {currentFeeSnapshot && currentFeeSnapshot.pools && pastFeeSnapshot && pastFeeSnapshot.pools && feeDelta && feeDelta.pools ?
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{justifyContent: 'center'}}
+                >
 
-
-                            {showDate ?
-                                <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker
-                                            label="Start Date"
-                                            maxDate={Date.now()}
-                                            minDate={EthereumNetworkInfo.startTimeStamp}
-                                            value={unixToDate(endDate)}
-                                            onChange={handleEndDateChange}
-                                            renderInput={(params) => <TextField size='small'
-                                                                                sx={{maxWidth: '150px'}} {...params} />}
-                                        />
-                                    </LocalizationProvider>
-                                    <Box p={1}>
-                                        <Typography>to</Typography>
-                                    </Box>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker
-                                            label="End Date"
-                                            maxDate={Date.now()}
-                                            minDate={EthereumNetworkInfo.startTimeStamp}
-                                            value={unixToDate(startDate)}
-                                            onChange={handleStartDateChange}
-                                            renderInput={(params) => <TextField size='small'
-                                                                                sx={{maxWidth: '150px'}} {...params} />}
-                                        />
-                                    </LocalizationProvider>
-                                </Box> : null}
-                            {showFeeEpochs ?
-                                <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
-                                    <FormControl size="small">
-                                        <Select
-                                            sx={{
-                                                backgroundColor: "background.paper",
-                                                boxShadow: 2,
-                                                borderRadius: 2,
-                                                borderColor: 0,
-                                            }}
-                                            color="primary"
-                                            labelId="timeRangeSelectLabel"
-                                            id="timeRangeSelect"
-                                            onChange={handlePeriodChange}
-                                            value={selectedPeriod}
-                                            inputProps={{
-                                                name: 'timeRange',
-                                                id: 'timeRangeId-native-simple',
-                                            }}
-                                        >
-                                            {periods.map((period, index) => (
-                                                <MenuItem
-
-                                                    key={index}
-                                                    value={period === "Current Fee Epoch" ? period : period.split(" to ")[1]}>
-                                                    {period}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box> : null }
-                        </Box>
-                        <Divider/>
-                    </Grid>
                     <Grid mb={1} item xs={11}>
                         <Grid
                             container
@@ -452,6 +479,26 @@ export default function ProtocolFees() {
                                     toolTipText={'Ratio of core vs. non-core fees earned.'}
                                 />
                             </Box>
+                            {showFeeEpochs && selectedPeriod !== "Current Fee Epoch" ?
+                                <Box mr={1} mb={1}>
+                                    <MetricsCard
+                                        mainMetric={networkFees ? networkFees : 0}
+                                        mainMetricInUSD={true}
+                                        metricName={'Mimic Swept Fees'}
+                                        MetricIcon={SavingsIcon}
+                                        toolTipText={'Effectively swept fees by the Mimic smart vault for that network'}
+                                    />
+                                </Box> : null}
+                            {showFeeEpochs && selectedPeriod !== "Current Fee Epoch" ?
+                                <Box mr={1} mb={1}>
+                                    <MetricsCard
+                                        mainMetric={networkFees && totalFees ? (totalFees - networkFees) : 0}
+                                        mainMetricInUSD={true}
+                                        metricName={'Earned vs. Swept Fees'}
+                                        MetricIcon={TollIcon}
+                                        toolTipText={'Earned fees for that epoch vs. effectively swept and processed fees from the Mimic Smart vaults after a fee cut.'}
+                                    />
+                                </Box> : null}
                         </Grid>
                     </Grid>
                     <Grid
