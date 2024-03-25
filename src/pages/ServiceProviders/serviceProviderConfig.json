@@ -80,6 +80,17 @@
             "ETH": 20,
             "BAL_VESTED": 37518
           }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x31a6bf7ae6ff43eeed41d32c2b75b89662903691004a807820fbe8bc731cd219",
+          "budget_requested": {
+            "USDC": 165120,
+            "BAL": 0,
+            "ETH": 0,
+            "BAL_VESTED": 18625
+          }
         }
       ]
     },
@@ -195,6 +206,16 @@
             "USDC": 20000,
             "BAL": 0,
             "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x232a09bdec09db2800a5f616a21ea9cd00c1c5c8e26525f2ffaec581967c7722",
+          "budget_requested": {
+            "USDC": 61000,
+            "BAL": 0,
+            "BAL_VESTED": 6342
           }
         }
       ]
@@ -372,6 +393,45 @@
             "BAL": 0,
             "BAL_VESTED": 28958.33
           }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x79e91e0ea5912af30a2e29c513fffad642bce554cf5c5c09d18f4b0ed3b65ea4",
+          "budget_requested": {
+            "USDC": 191045,
+            "BAL": 0,
+            "BAL_VESTED": 7855.5
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 3,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x79e91e0ea5912af30a2e29c513fffad642bce554cf5c5c09d18f4b0ed3b65ea4",
+          "budget_requested": {
+            "USDC": 182245,
+            "BAL": 0,
+            "BAL_VESTED": 7855.5
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balancer OpCo: Admin & Ops",
+      "short_description": "Balancer OpCo Limited (or the “Balancer OpCo”) is a wholly-owned subsidiary of the Balancer Foundation. It is an integral element of the Balancer Foundation  corporate structure supporting the BalancerDAO, and is intended to serve two primary functions: Admnisistrative & Operational as well as Front-End Dev and Engineering Workstream.",
+      "site_url": "",
+      "img_ref": "default.png",
+      "sunset": false,
+      "budgets": [
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x4c9889961c9fc2871c19f49a274894c9c7cb9ed2eb8e630cd2f83124a7cdce8f",
+          "budget_requested": {
+            "USDC": 59914,
+            "BAL": 750,
+            "BAL_VESTED": 0
+          }
         }
       ]
     },
@@ -498,6 +558,46 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x05d36e7cb6f2f63ac84eb279ff7bb274eb6375a81429edc77655212c79d6d0ae",
           "budget_requested": {
             "USDC": 78384,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x16efb32f66f58ce4ae5987f82ee28eb357f7c3720069167db862d2b622d7afa0",
+          "budget_requested": {
+            "USDC": 74543,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 3,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x16efb32f66f58ce4ae5987f82ee28eb357f7c3720069167db862d2b622d7afa0",
+          "budget_requested": {
+            "USDC": 46730,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x16efb32f66f58ce4ae5987f82ee28eb357f7c3720069167db862d2b622d7afa0",
+          "budget_requested": {
+            "USDC": 64730,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x16efb32f66f58ce4ae5987f82ee28eb357f7c3720069167db862d2b622d7afa0",
+          "budget_requested": {
+            "USDC": 86730,
             "BAL": 0,
             "BAL_VESTED": 0
           }

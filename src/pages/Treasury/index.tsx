@@ -59,38 +59,32 @@ export default function Treasury() {
         karpatkeyPortfolio && karpatkeyPortfolio.portfolio  && karpatkeyBalances && karpatkeyBalances.totalBalances &&
         opcoPortfolio && opcoPortfolio.portfolio && opcoBalances && opcoBalances.totalBalances
     ) {
-
         const portfolioValue = calculatePortfolioStablecoinValue([...portfolio, ...karpatkeyPortfolio.portfolio, ...opcoPortfolio.portfolio]);
         const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances, ...opcoBalances.totalBalances]);
         totalStablecoinValue = portfolioValue + balancesValue;
     }
 
-    //Obtain total portfolio values
-    const treasuryValue = totalBalances && portfolio ?
-        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
-        + portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+    //Obtain per wallet token value
+    const treasuryTokenBalances = totalBalances  ?
+        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0
 
-    const KarpatkeyValue = karpatkeyBalances && karpatkeyBalances.totalBalances && karpatkeyPortfolio && karpatkeyPortfolio.portfolio ?
-        karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
-        + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+    const karpatkeyTokenBalances = karpatkeyBalances && karpatkeyBalances.totalBalances ?
+        karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0
 
-    const opcoValue = opcoBalances && opcoBalances.totalBalances && opcoPortfolio && opcoPortfolio.portfolio ?
-        opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
-        + opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+    const opcoTokenBalances = opcoBalances && opcoBalances.totalBalances ?
+        opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0
 
+    //Obtain per wallet Portfolio (LP) value
+    const treasuryPortfolioValue = portfolio ?
+        portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
-    //Obtain wallet total worth and USDC
-    const walletTokenNetworth = totalBalances && karpatkeyBalances.totalBalances ?
-        totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0)
-        + karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    const karpatkeyTokenNetworth = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    let netWorth = portfolio && karpatkeyPortfolio.portfolio ?
-        portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
-        + karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0)
-        : 0;
-    let karpatkeyNetworth = karpatkeyPortfolio.portfolio ?
+    const karpatkeyPortfolioValue = karpatkeyPortfolio && karpatkeyPortfolio.portfolio ?
         karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
-    netWorth += walletTokenNetworth;
+
+    const opcoPortfolioValue = opcoPortfolio && opcoPortfolio.portfolio ?
+        opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
+
+
     const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
@@ -115,26 +109,15 @@ export default function Treasury() {
         }
     })?.amount : 0;
 
+    //Total USDC Reserves
     const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined && opcoUsdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves + opcoUsdcReserves : usdcReserves;
-
     //BAL insurance fund
     const BALinsuranceAmount = activeNetwork === EthereumNetworkInfo ? 1250000 : 0;
-
-
-    // Calculate the sum of the portfolio values
-    const portfolioValue = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
-    const karpatkeyPortfolioValue = karpatkeyPortfolio.portfolio ? karpatkeyPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
-
-    // Calculate the sum of the token balances
-    const totalTokenBalance = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    const karpatkeyTokenBalance = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-    const opcoTokenBalances = opcoBalances.totalBalances ? opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
-
     // Sum up all the values
-    const totalAssetValue = portfolioValue + karpatkeyPortfolioValue + totalTokenBalance + karpatkeyTokenBalance + opcoTokenBalances;
+    const totalAssetValue = treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances + treasuryPortfolioValue + karpatkeyPortfolioValue + opcoPortfolioValue;
 
 
-    //Token Balances Pie Chart
+    //Treasury Token Balances Pie Chart
     const tokenPieChartData: BalancerPieChartDataItem[] | null = totalBalances ? totalBalances.filter(
         x => x.chain === activeNetwork.debankId &&
             x.amount * x.price > 10).map((balance) => {
@@ -177,17 +160,17 @@ export default function Treasury() {
 
 
 // Add main address token value
-    if (totalTokenBalance > 0) {
+    if (treasuryTokenBalances > 0) {
         ratioPieChartData.push({
-            value: totalTokenBalance - BALinsuranceAmount,
-            name: 'Treasury Tokens'
+            value: treasuryTokenBalances - BALinsuranceAmount,
+            name: 'Treasury Tokens (*)'
         });
     }
 
 // Add Karpatkey token value
-    if (karpatkeyTokenBalance > 0) {
+    if (karpatkeyTokenBalances > 0) {
         ratioPieChartData.push({
-            value: karpatkeyTokenBalance,
+            value: karpatkeyTokenBalances,
             name: 'Karpatkey Managed Tokens'
         });
     }
@@ -199,10 +182,10 @@ export default function Treasury() {
         });
     }
 
-// Add portfolio values
-    if (portfolioValue > 0) {
+    // Add portfolio values
+    if (treasuryPortfolioValue > 0) {
         ratioPieChartData.push({
-            value: portfolioValue,
+            value: treasuryPortfolioValue,
             name: 'Treasury Portfolio Liquidity'
         });
     }
@@ -219,6 +202,14 @@ export default function Treasury() {
         ratioPieChartData.push({
             value: BALinsuranceAmount,
             name: 'Foundation BAL Insurance'
+        });
+    }
+
+    //OpCo Portfolio
+    if (opcoPortfolioValue > 0) {
+        ratioPieChartData.push({
+            value: opcoPortfolioValue,
+            name: 'OpCo Portfolio Liquidity'
         });
     }
 
@@ -261,7 +252,7 @@ export default function Treasury() {
                             >
                                 <Box mr={1} mb={1}>
                                     <MetricsCard
-                                        mainMetric={treasuryValue + KarpatkeyValue + opcoValue}
+                                        mainMetric={totalAssetValue}
                                         mainMetricInUSD={true}
                                         metricName='Net Worth'
                                         mainMetricChange={0}
@@ -270,7 +261,7 @@ export default function Treasury() {
                                 </Box>
                                 <Box mr={1} mb={1}>
                                     <MetricsCard
-                                        mainMetric={walletTokenNetworth}
+                                        mainMetric={treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances}
                                         mainMetricInUSD={true}
                                         metricName='Tokens in Wallets'
                                         mainMetricChange={0}
@@ -384,17 +375,41 @@ export default function Treasury() {
                                         </Typography>
                                     </Box>
                                     <Box mr={2}>
-                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryValue)}</Typography>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryPortfolioValue + treasuryTokenBalances)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
-
-                                <Typography variant="h6">Tokens in Treasury Wallet</Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Tokens in Treasury Wallet</Typography>
+                                        </Box>
+                                        <Typography variant="caption">
+                                            (*) Note that out of the BAL reserves reported hereafter, $1.25m are reserved for the DAO insurance fund and deducted in the asset distribution pie chart.
+                                        </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryTokenBalances)}</Typography>
+                                    </Box>
+                                </Box>
                                 {totalBalances && totalBalances.length > 0 ?
                                     <FeeCollectorTokenTable tokenBalances={totalBalances}/>
                                     : null}
-                                <Typography variant="h6">Liquidity Provisions</Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" mt={3}>
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Liquidity Provisions</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(treasuryPortfolioValue)}</Typography>
+                                    </Box>
+                                </Box>
                                 <Card
                                     sx={{boxShadow: 3}}
                                 >
@@ -441,18 +456,40 @@ export default function Treasury() {
                                         </Typography>
                                     </Box>
                                     <Box mr={2}>
-                                        <Typography variant="h6" align="right">{formatDollarAmount(KarpatkeyValue)}</Typography>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(karpatkeyTokenBalances + karpatkeyPortfolioValue)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
 
-                                        <Typography variant="h6">Managed Tokens</Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Managed Tokens</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(karpatkeyTokenBalances)}</Typography>
+                                    </Box>
+                                </Box>
 
                                 {karpatkeyBalances.totalBalances && karpatkeyBalances.totalBalances.length > 0 ?
 
                                         <FeeCollectorTokenTable tokenBalances={karpatkeyBalances.totalBalances}/> : null}
-                                <Typography variant="h6">Managed Liquidity Provisions</Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" mt={3}>
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Managed Liquidity Provisions</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(karpatkeyPortfolioValue)}</Typography>
+                                    </Box>
+                                </Box>
                                 <Card
                                     sx={{boxShadow: 3}}
                                 >
@@ -498,12 +535,23 @@ export default function Treasury() {
                                         </Typography>
                                     </Box>
                                     <Box mr={2}>
-                                        <Typography variant="h6" align="right">{formatDollarAmount(opcoValue)}</Typography>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(opcoTokenBalances + opcoPortfolioValue)}</Typography>
                                     </Box>
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography variant="h6">Managed Tokens</Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Managed Tokens</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(opcoTokenBalances)}</Typography>
+                                    </Box>
+                                </Box>
                                 {opcoBalances.totalBalances && opcoBalances.totalBalances.length > 0 ?
                                     <FeeCollectorTokenTable tokenBalances={opcoBalances.totalBalances}/> : null}
                             </AccordionDetails>
