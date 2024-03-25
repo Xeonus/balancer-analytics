@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
@@ -14,7 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import {parseDateString, unixToDate} from "../../utils/date";
+import {dateToUnix, parseDateString, unixToDate} from "../../utils/date";
 import TextField from "@mui/material/TextField";
 import {PoolFeeSnapshotData} from "../../data/balancer/balancerTypes";
 import ProtocolFeeTable from "../../components/Tables/ProtocolFeeTable";
@@ -26,13 +26,16 @@ import {CustomThrobber} from "../../components/CustomThrobber";
 import {useTheme} from "@mui/material/styles";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PieChartIcon from '@mui/icons-material/PieChart';
+import {getLastThursdayOddWeek} from "../../data/maxis/static/dataHelpers";
 
 
 interface PoolsMapping {
     [key: string]: string[];
+}
+
+function formatDate(date: Date) {
+    return date.toISOString().split('T')[0];
 }
 
 export default function ProtocolFees() {
@@ -54,11 +57,12 @@ export default function ProtocolFees() {
     //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
     const [timeRange, setTimeRange] = React.useState('14');
     const [showDate, setShowDate] = React.useState(false);
+    const [showFeeEpochs, setFeeEpochs] = React.useState(false);
     const [feesAlert, setFeesAlert] = React.useState(true);
     const feesAlertMessage = 'This view is using the Balancer subgraph as data source. User discretion is advised when consulting TVL metrics. Earned fee metrics are based on pool snapshots without calculating BPT TWAP.'
 
     //Poolsnapshots are taken OO:OO UTC.
-    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().minus({minutes: 10}).toMillis() / 1000));
+    const [startTimestamp, setStartTimestamp] = React.useState(Math.floor(DateTime.utc().minus({minutes: 30}).toMillis() / 1000));
     const [endTimeStamp, setEndTimeStamp] = React.useState(Math.floor(DateTime.utc().minus({days: 14}).startOf('day').toMillis() / 1000));
     //console.log("startTimestamp", startTimestamp)
     //Date States
@@ -114,6 +118,9 @@ export default function ProtocolFees() {
     //Ratio core vs non-core
     const ratioCoreNonCore = totalFeesCore / totalFeesNonCore ;
 
+    //Total fees
+    const totalFees = totalFeesCore + totalFeesNonCore;
+
 
     //Change management
     const handleChange = (event: SelectChangeEvent) => {
@@ -121,16 +128,20 @@ export default function ProtocolFees() {
 
         if (event.target.value === '1000') {
             setShowDate(true);
+        } else if (event.target.value === '-1') {
+            setFeeEpochs(true)
         } else if (event.target.value === '0') {
             setEndDate(EthereumNetworkInfo.startTimeStamp);
 
             const newEndDate = DateTime.utc().startOf('day');
             setStartDate(newEndDate.toSeconds());
             setShowDate(false);
+            setFeeEpochs(false)
         } else {
             const startTimestamp = DateTime.utc().startOf('day').toSeconds();
             setStartDate(startTimestamp);
             setShowDate(false);
+            setFeeEpochs(false)
             setStartTimestamp(startTimestamp)
 
             const daysToSubtract = Number(event.target.value);
@@ -167,6 +178,77 @@ export default function ProtocolFees() {
             }
         }
     };
+
+    // Fee epoch mgmt
+    const [selectedPeriod, setSelectedPeriod] = useState<string>("Current Fee Epoch");
+    const [periods, setPeriods] = useState<string[]>([]);
+    const lastOddWeekThu = getLastThursdayOddWeek();
+    const lastOddWeekThuString = formatDate(lastOddWeekThu)
+
+    useEffect(() => {
+        const generatePeriods = (firstDataOccurrence: string, lastOddThursday: Date): string[] => {
+            let tempPeriods: string[] = ["Current Fee Epoch"]; // Temporarily holds the periods, starting with the current epoch
+            let endDate = new Date(lastOddThursday);
+            let startDate = new Date(firstDataOccurrence);
+
+            while (startDate <= endDate) {
+                let periodStart = new Date(startDate);
+                let periodEnd = new Date(periodStart);
+                periodEnd.setDate(periodEnd.getDate() + 14); // Adjust to include the correct period span
+
+                if (periodEnd > endDate) {
+                    periodEnd = endDate;
+                }
+
+                // Constructing the period string
+                tempPeriods.push(`${formatDate(periodStart)} to ${formatDate(periodEnd)}`);
+
+                startDate.setDate(startDate.getDate() + 14); // Moving to the next period
+            }
+
+            // Reverse the order of periods to have them from most recent to oldest, excluding the "Current Fee Epoch"
+            return ["Current Fee Epoch", ...tempPeriods.slice(1).reverse()];
+        };
+
+        const lastOddThursday = getLastThursdayOddWeek();
+        const firstDataOccurrence = "2023-09-28"; // Assuming this is the correct start date
+        setPeriods(generatePeriods(firstDataOccurrence, lastOddThursday));
+    }, []);
+
+    useEffect(() => {
+        // Update selectedEndDate based on selectedPeriod
+        if (showFeeEpochs) {
+            if (selectedPeriod !== "Current Fee Epoch") {
+                const periodParts = selectedPeriod.split(" to ").map(part => part.trim());
+
+                const timestamp = dateToUnix(periodParts[0]);
+                const timestampEnd = timestamp - 60*60*24*14
+                console.log("timestamp", timestamp)
+                console.log("timestampEnd", timestampEnd)
+                if (timestamp) {
+                    setStartDate(timestamp);
+                    setStartTimestamp(timestamp);
+                }
+                if (timestampEnd) {
+                    setEndDate(timestampEnd);
+                    setEndTimeStamp(timestampEnd);
+                }
+            } else {
+                setStartDate(Math.floor(DateTime.utc().minus({minutes: 30}).toMillis() / 1000))
+                setStartTimestamp(Math.floor(DateTime.utc().minus({minutes: 30}).toMillis() / 1000))
+                setEndTimeStamp(dateToUnix(lastOddWeekThuString))
+                setEndDate(dateToUnix(lastOddWeekThuString)); // No historical data needed for "Current Fee Epoch"
+            }
+        }
+    }, [selectedPeriod, showFeeEpochs]);
+
+    const handlePeriodChange = (event: SelectChangeEvent) => {
+        setSelectedPeriod(event.target.value as string);
+    };
+
+
+
+
 
     return (
         <Box>
@@ -218,6 +300,8 @@ export default function ProtocolFees() {
                                 Metrics combine net fees earned unless stated otherwise</Typography>
                         </Box>
                     </Grid>
+
+
                     <Grid
                         item
                         mt={1}
@@ -258,9 +342,11 @@ export default function ProtocolFees() {
                                         <MenuItem value={'365'}>Last 365 days</MenuItem>
                                         <MenuItem value={'0'}>All time</MenuItem>
                                         <MenuItem value={'1000'}>Custom </MenuItem>
+                                        <MenuItem value={'-1'}>Fee Epochs </MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
+
 
                             {showDate ?
                                 <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
@@ -290,6 +376,37 @@ export default function ProtocolFees() {
                                         />
                                     </LocalizationProvider>
                                 </Box> : null}
+                            {showFeeEpochs ?
+                                <Box p={0.5} display="flex" justifyContent="left" sx={{alignSelf: 'flex-end'}}>
+                                    <FormControl size="small">
+                                        <Select
+                                            sx={{
+                                                backgroundColor: "background.paper",
+                                                boxShadow: 2,
+                                                borderRadius: 2,
+                                                borderColor: 0,
+                                            }}
+                                            color="primary"
+                                            labelId="timeRangeSelectLabel"
+                                            id="timeRangeSelect"
+                                            onChange={handlePeriodChange}
+                                            value={selectedPeriod}
+                                            inputProps={{
+                                                name: 'timeRange',
+                                                id: 'timeRangeId-native-simple',
+                                            }}
+                                        >
+                                            {periods.map((period, index) => (
+                                                <MenuItem
+
+                                                    key={index}
+                                                    value={period === "Current Fee Epoch" ? period : period.split(" to ")[1]}>
+                                                    {period}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box> : null }
                         </Box>
                         <Divider/>
                     </Grid>
@@ -301,9 +418,18 @@ export default function ProtocolFees() {
                         >
                             <Box mr={1} mb={1}>
                                 <MetricsCard
+                                    mainMetric={totalFees ? totalFees : 0}
+                                    mainMetricInUSD={true}
+                                    metricName={'Total Fees'}
+                                    MetricIcon={MonetizationOnIcon}
+                                    toolTipText={'Overall fees streamed to the fee collector over the given time period based on the first 250 pools fetched.'}
+                                />
+                            </Box>
+                            <Box mr={1} mb={1}>
+                                <MetricsCard
                                     mainMetric={totalFeesCore ? totalFeesCore : 0}
                                     mainMetricInUSD={true}
-                                    metricName={'Total Core Fees'}
+                                    metricName={'Core Pool Fees'}
                                     MetricIcon={MonetizationOnIcon}
                                     toolTipText={'Total amount of fees collected from core pools. This includes swap fees and the protocol fee cut of 50% on yield-bearing assets.'}
                                 />
@@ -312,7 +438,7 @@ export default function ProtocolFees() {
                                 <MetricsCard
                                     mainMetric={totalFeesNonCore ? totalFeesNonCore : 0}
                                     mainMetricInUSD={true}
-                                    metricName={'Total Non-Core Fees'}
+                                    metricName={'Non-Core Pool Fees'}
                                     MetricIcon={MonetizationOnIcon}
                                     toolTipText={'Protocol fees collected by non-core pools. These fees will be recycled and distributed to veBAL holders and voting incentives for core pools.'}
                                 />

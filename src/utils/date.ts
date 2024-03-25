@@ -4,6 +4,14 @@ export function unixToDate(unix: number, format = 'YYYY-MM-DD'): string {
     return dayjs.unix(unix).format(format);
 }
 
+export function dateToUnix(dateStr: string, format = 'YYYY-MM-DD'): number {
+    // Parse the date string according to the given format
+    const date = dayjs(dateStr, format);
+
+    // Return the Unix timestamp (in seconds)
+    return date.unix();
+}
+
 export const formatTime = (unix: string, buffer?: number) => {
     const now = dayjs();
     const timestamp = dayjs.unix(parseInt(unix)).add(buffer ?? 0, 'minute');
