@@ -85,33 +85,12 @@ export default function Treasury() {
         opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
 
-    const usdcReserves = totalBalances ? totalBalances.find(el => {
-        if (el.symbol === 'USDC') {
-            return el
-        } else {
-            return 0
-        }
-    })?.amount : 0;
+    const usdcReserves = totalBalances ? totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
+    const karpatkeyUsdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
+    const opcoUsdcReserves = opcoBalances.totalBalances ? opcoBalances.totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
 
-    const karpatkeyusdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => {
-        if (el.symbol === 'USDC') {
-            return el
-        } else {
-            return 0
-        }
-    })?.amount : 0;
+    const totalUSDCReserves = usdcReserves + karpatkeyUsdcReserves + opcoUsdcReserves
 
-    const opcoUsdcReserves = opcoBalances.totalBalances ? opcoBalances.totalBalances.find(el => {
-        if (el.symbol === 'USDC') {
-            return el
-        } else {
-            return 0
-        }
-    })?.amount : 0;
-
-    //Total USDC Reserves
-    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined && opcoUsdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves + opcoUsdcReserves : usdcReserves;
-    console.log("totalUSDCReserves", totalUSDCReserves)
     //BAL insurance fund
     const BALinsuranceAmount = activeNetwork === EthereumNetworkInfo ? 1250000 : 0;
     // Sum up all the values
