@@ -85,7 +85,7 @@ export default function Treasury() {
         opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
 
-    const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
+    const usdcReserves = totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
         } else {
@@ -111,6 +111,7 @@ export default function Treasury() {
 
     //Total USDC Reserves
     const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined && opcoUsdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves + opcoUsdcReserves : usdcReserves;
+    console.log("totalUSDCReserves", totalUSDCReserves)
     //BAL insurance fund
     const BALinsuranceAmount = activeNetwork === EthereumNetworkInfo ? 1250000 : 0;
     // Sum up all the values
@@ -315,7 +316,7 @@ export default function Treasury() {
                                                 gutterBottom
                                                 variant="h6"
                                             >
-                                                Asset Distribution
+                                                Asset Allocation across Safes
                                             </Typography>
                                         </Box>
                                         <GenericPieChart data={ratioPieChartData} height='295px'/>
@@ -337,7 +338,7 @@ export default function Treasury() {
                                                 gutterBottom
                                                 variant="h6"
                                             >
-                                                Token distribution
+                                                Liquid Token Distribution across Safes (non-LPs)
                                             </Typography>
                                         </Box>
                                         <GenericPieChart
