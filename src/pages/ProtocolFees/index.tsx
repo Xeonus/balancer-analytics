@@ -6,7 +6,7 @@ import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {DateTime} from "luxon";
 import {getSnapshotFees, useBalancerPoolFeeSnapshotData} from "../../data/balancer/useBalancerPoolFeeSnapshotData";
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
-import {EthereumNetworkInfo} from "../../constants/networks";
+import {EthereumNetworkInfo, PolygonNetworkInfo} from "../../constants/networks";
 import Select, {SelectChangeEvent} from "@mui/material/Select";
 import {Alert, Box, Divider, Grid, IconButton, Typography} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
@@ -76,14 +76,38 @@ export default function ProtocolFees() {
     //const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
+    const polygonUnpruned = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2'
     const [feeDelta, setFeeDelta] = React.useState<PoolFeeSnapshotData | undefined>();
     const corePools = useGetCorePoolCurrentFees();
     const historicalNetworkFees = useGetCollectedFees(unixToDate(startDate))
     console.log("historicalNetworkFees", historicalNetworkFees)
-    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
+    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork === PolygonNetworkInfo ? polygonUnpruned : activeNetwork.clientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
-    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
+    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork === PolygonNetworkInfo ? polygonUnpruned : activeNetwork.clientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
+
+    //Mimic fee settings
+    let networkFees = 0
+    let sweepThreshold = 100
+    if (historicalNetworkFees && historicalNetworkFees.mainnet) {
+        if (activeNetwork.v3NetworkID.toLowerCase() === 'mainnet') {
+            networkFees = historicalNetworkFees.mainnet
+            sweepThreshold = 1000
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'arbitrum') {
+            networkFees = historicalNetworkFees.arbitrum
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'polygon') {
+            networkFees = historicalNetworkFees.polygon
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'avalanche') {
+            networkFees = historicalNetworkFees.avalanche
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'base') {
+            networkFees = historicalNetworkFees.base
+        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'gnosis') {
+            networkFees = historicalNetworkFees.gnosis
+        } else {
+            networkFees = historicalNetworkFees.mainnet
+            sweepThreshold = 1000
+        }
+    }
 
 
     // Handler
@@ -103,7 +127,7 @@ export default function ProtocolFees() {
     let totalFeesNonCore = 0
     if (feeDelta && feeDelta.pools && corePools && corePools.length) {
         totalFeesNonCore = feeDelta?.pools.filter(pool => {
-            const corePoolRecord = corePools.find(c => c.poolId === pool.id);
+            const corePoolRecord = corePools.find(c => c.poolId === pool.id && pool.protocolFee >= sweepThreshold);
             return corePoolRecord === undefined
         }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }
@@ -113,7 +137,7 @@ export default function ProtocolFees() {
     let totalFeesCore = 0
     if (feeDelta && feeDelta.pools && corePools && corePools.length) {
         totalFeesCore = feeDelta?.pools.filter(pool => {
-            const corePoolRecord = corePools.find(c => c.poolId === pool.id);
+            const corePoolRecord = corePools.find(c => c.poolId === pool.id && pool.protocolFee >= sweepThreshold);
             return corePoolRecord !== undefined
         }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }
@@ -124,25 +148,6 @@ export default function ProtocolFees() {
 
     //Total fees
     const totalFees = totalFeesCore + totalFeesNonCore;
-
-    let networkFees = 0
-    if (historicalNetworkFees && historicalNetworkFees.mainnet) {
-        if (activeNetwork.v3NetworkID.toLowerCase() === 'mainnet') {
-            networkFees = historicalNetworkFees.mainnet
-        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'arbitrum') {
-            networkFees = historicalNetworkFees.arbitrum
-        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'polygon') {
-            networkFees = historicalNetworkFees.polygon
-        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'avalanche') {
-            networkFees = historicalNetworkFees.avalanche
-        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'base') {
-            networkFees = historicalNetworkFees.base
-        } else if (activeNetwork.v3NetworkID.toLowerCase() === 'gnosis') {
-            networkFees = historicalNetworkFees.gnosis
-        } else {
-            networkFees = historicalNetworkFees.mainnet
-        }
-    }
 
 
     //Change management
