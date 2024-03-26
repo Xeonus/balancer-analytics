@@ -2,13 +2,12 @@ import {useBlocksFromTimestamps} from "../../hooks/useBlocksFromTimestamps";
 import {useBalancerPoolFeeSnapshotsLazyQuery,} from "../../apollo/generated/graphql-codegen-generated";
 import {ApolloClient, NormalizedCacheObject} from "@apollo/client";
 import {useEffect, useState} from "react";
-import {PoolFeeSnapshotData} from "./balancerTypes";
+import {JoinExitTimestamp, PoolFeeSnapshotData} from "./balancerTypes";
 
 export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp: number, blockClientOverride?: ApolloClient<NormalizedCacheObject>, clientOverride?: ApolloClient<NormalizedCacheObject>): PoolFeeSnapshotData | undefined {
 
     const {blocks, error: blockError} = useBlocksFromTimestamps([startTimestamp], blockClientOverride);
     const [block] = blocks ?? [];
-    //console.log("block: ", block.number)
     const [getPoolData, {data}] = useBalancerPoolFeeSnapshotsLazyQuery({client: clientOverride});
     const [poolFeeData, setPoolFeeData] = useState<PoolFeeSnapshotData | undefined>();
 
@@ -28,7 +27,7 @@ export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp
                 },
             });
         }
-    }, [block, startTimestamp]);
+    }, [block]);
 
     useEffect(() => {
         if (data && data.poolSnapshots) {
@@ -50,7 +49,7 @@ export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp
             // Step 2: Select the most recent snapshot for each pool
             const mostRecentSnapshots = Object.values(groupedByPoolId).map(snapshots => {
                 return snapshots.reduce((mostRecent, current) => {
-                    return (mostRecent.timestamp> current.timestamp) ? mostRecent : current;
+                    return (mostRecent.timestamp > current.timestamp) ? mostRecent : current;
                 });
             });
 
@@ -81,29 +80,54 @@ export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp
                     liquidity: parseFloat(snapshot.liquidity),
                     poolType: snapshot.pool.poolType ? snapshot.pool.poolType : '',
                     name: snapshot.pool.name ? snapshot.pool.name : '',
+                    isInRecoveryMode: snapshot.pool.isInRecoveryMode ? snapshot.pool.isInRecoveryMode : false,
+                    createTime: snapshot.pool.createTime,
+                    joinExits: snapshot.pool.joinsExits ? snapshot.pool.joinsExits : [{timestamp: 0}],
                 })),
             };
             setPoolFeeData(transformedData);
         }
-    }, [data?.poolSnapshots, startTimestamp]);
+    }, [data?.poolSnapshots.length, startTimestamp]);
+
+    // Effect to reset pool fee data when clientUri changes
+    useEffect(() => {
+        // Reset poolFeeData to undefined or any initial state you prefer
+        setPoolFeeData(undefined);
+        // You might also want to re-fetch the pool data here if necessary
+    }, [clientUri, startTimestamp]);
 
     return poolFeeData;
 }
 
-export function getSnapshotFees(feeSnapshotNow: PoolFeeSnapshotData, feeSnapshotPast: PoolFeeSnapshotData): PoolFeeSnapshotData {
+export function getSnapshotFees(feeSnapshotNow: PoolFeeSnapshotData, feeSnapshotPast: PoolFeeSnapshotData, pastTimestamp: number): PoolFeeSnapshotData {
     return {
         pools: feeSnapshotNow.pools.map(nowPool => {
             const pastPool = feeSnapshotPast.pools.find(past => past.id === nowPool.id);
 
+            if (!pastPool && !(nowPool.createTime > pastTimestamp)) {
+                return {
+                    ...nowPool,
+                    swapFees: 0,
+                    totalSwapFee: 0,
+                    totalProtocolFee: 0,
+                    totalProtocolFeePaidInBPT: 0,
+                    swapVolume: 0,
+                    protocolFee: 0,
+                    tokens: nowPool.tokens.map(token => ({
+                        ...token,
+                        paidProtocolFees: 0,
+                    })),
+                };
+            }
             // Default to 0 if no corresponding past pool is found
             const swapFees = nowPool.swapFees - (pastPool?.swapFees || 0);
             const totalSwapFee = nowPool.totalSwapFee - (pastPool?.totalSwapFee || 0);
-            const totalProtocolFee = nowPool.totalProtocolFee - (pastPool?.totalProtocolFee || 0);
+            const totalProtocolFee = nowPool.totalProtocolFee - (pastPool?.totalProtocolFee ||0);
             const totalProtocolFeePaidInBPT = nowPool.totalProtocolFeePaidInBPT - (pastPool?.totalProtocolFeePaidInBPT || 0);
-            const liquidity = nowPool.liquidity - (pastPool?.liquidity || 0);
+            const liquidity = nowPool.liquidity;
             const swapVolume = nowPool.swapVolume - (pastPool?.swapVolume || 0);
             const protocolFee = nowPool.protocolFee - (pastPool?.protocolFee || 0)
-
+            const isInRecoveryMode = nowPool.isInRecoveryMode //if the pool is in recovery mode at newest snapshot date, then tag as such
             return {
                 ...nowPool, // Copy all current pool data
                 swapFees,
@@ -113,6 +137,7 @@ export function getSnapshotFees(feeSnapshotNow: PoolFeeSnapshotData, feeSnapshot
                 liquidity,
                 swapVolume,
                 protocolFee,
+                isInRecoveryMode,
                 // Update other fields as necessary
                 tokens: nowPool.tokens.map(token => {
                     const pastToken = pastPool?.tokens.find(p => p.symbol === token.symbol);

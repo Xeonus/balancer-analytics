@@ -175,7 +175,6 @@ const MenuDrawer = ({
                         <HubIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Core Pools'} />
-                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
                     <ListItemIcon>
@@ -192,6 +191,13 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Revenue Projections'} />
                 </ListItemButton>*/}
+                <ListItemButton key={'Fees'} component={NavLink} to={networkPrefix(activeNetwork) + 'protocolfees'}>
+                    <ListItemIcon>
+                        <MonetizationOnIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Fees'} />
+                    <AvatarNew text={"NEW"} />
+                </ListItemButton>
                 <ListItemButton key={'DAO Treasury'} component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'}>
                     <ListItemIcon>
                         <AccountBalanceWalletIcon />
@@ -216,7 +222,6 @@ const MenuDrawer = ({
                         <AssessmentIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Reports'} />
-                    <AvatarNew text={"NEW"} />
                 </ListItemButton>
                 <Divider />
                 <ListItem>

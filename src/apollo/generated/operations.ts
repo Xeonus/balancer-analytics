@@ -1050,6 +1050,11 @@ export const BalancerPoolFeeSnapshots = gql`
         totalProtocolFee
         totalProtocolFeePaidInBPT
         totalSwapFee
+        isInRecoveryMode
+        createTime
+        joinsExits(first: 1, orderBy: timestamp, orderDirection: desc) {
+          timestamp
+        }
         tokens {
           address
           decimals

@@ -257,4 +257,13 @@ export interface PoolFeeData {
     liquidity: number,
     poolType: string,
     name: string,
+    isInRecoveryMode: boolean,
+    createTime: number,
+    joinExits: JoinExitTimestamp[],
 }
+
+export interface JoinExitTimestamp {
+    timestamp: number,
+}
+
+
