@@ -52,6 +52,10 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'Balancer OpCo Gnosis Safe',
         walletId: '0x3B8910F378034FD6E103Df958863e5c684072693',
+    },
+    {
+        name: 'BD Unit',
+        walletId: '0x5ca24e2a586834a7b96216d68b26a82405e3dc15'
     }
 ]
 

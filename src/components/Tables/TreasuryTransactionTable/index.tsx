@@ -245,7 +245,7 @@ export default function TreasuryTransactionTable({ txnHistory }:
             sends.forEach(send => {
                     let price = 0
                     if (prices && prices.data) {
-                       const hit = prices.data.find(el => el.address.toLowerCase() === send.to_addr.toLowerCase())
+                       const hit = prices.data.find(el => el.address.toLowerCase() === send.token_id.toLowerCase())
                         if (hit?.price) {
                             price = hit.price
                         }
@@ -276,10 +276,11 @@ export default function TreasuryTransactionTable({ txnHistory }:
 
     //Create Rows
     const rows = txnHistory.history_list.map(el =>
+
         createData(
             el.cate_id === 'receive' ? 'Receive' : 'Send', 
             obtainSendReceives(el.sends, el.receives), 
-            el.sends.length > 0 && el.receives.length > 0 ? 'Multicall' : getSPWalletName(obtainSPsSendsReceives(el.sends, el.receives)),
+            el.sends.length > 0 ? 'Multicall' : getSPWalletName(obtainSPsSendsReceives(el.sends, el.receives)),
             obtainValue(el.sends, el.receives, txnHistory.token_dict), 
             el.time_at, 
             el.id)

@@ -7,7 +7,7 @@ import NavCrumbs, {NavElement} from "../../components/NavCrumbs";
 import DashboardOverviewChart from "../../components/Echarts/VotingIncentives/DashboardOverviewChart";
 import {unixToDate} from "../../utils/date";
 import MetricsCard from "../../components/Cards/MetricsCard";
-import {CurrencyExchange, Handshake} from "@mui/icons-material";
+import {AddShoppingCart, CurrencyExchange, Handshake, ShoppingCartCheckout} from "@mui/icons-material";
 import SingleRoundBarChart from "../../components/Echarts/VotingIncentives/SingleRoundBarChart";
 import {useGetHiddenHandVotingIncentives} from "../../data/hidden-hand/useGetHiddenHandVotingIncentives";
 import {HiddenHandIncentives} from "../../data/hidden-hand/hiddenHandTypes";
@@ -21,6 +21,7 @@ import HiddenHandCard from "../../components/Cards/HiddenHandCard";
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
+import {useGetEmissionPerVote} from "../../data/hidden-hand/usgetEmissionPerVote";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -79,6 +80,7 @@ export default function VotingIncentives() {
     //const { address } = useAccount();
     //const addressRewards = useGetHiddenHandRewards(address ? address : '')
     const gaugeData = useGetBalancerV3StakingGauges();
+    const {emissionValuePerVote, emissionsPerDollarSpent} = useGetEmissionPerVote(currentRoundNew);
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -263,15 +265,28 @@ export default function VotingIncentives() {
                                                      mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
                                         : <CircularProgress/>}
                                 </Box>
-                                {/* <Box mr={1}>
-                                    {historicalData ?
+                                <Box mr={1}>
+                                    {totalAmountDollarsSum ?
+                                        <MetricsCard mainMetric={emissionValuePerVote} metricName={"Emission $/Vote"}
+                                                     metricDecimals={4}
+                                                     mainMetricInUSD={true}
+                                                     MetricIcon={ShoppingCartCheckout}
+                                                     toolTipText={'Emission value generated per veBAL'}
+                                        />
+
+                                        : <CircularProgress/>}
+                                </Box>
+                                <Box mr={1}>
+                                    {emissionsPerDollarSpent ?
                                         <MetricsCard
-                                            mainMetric={1 + (emissionPerVote - incentivePerVote) / emissionPerVote}
+                                            mainMetric={emissionsPerDollarSpent}
                                             metricName={"Emissions per $1"} mainMetricInUSD={true}
                                             metricDecimals={4}
-                                            MetricIcon={Handshake}/>
+                                            MetricIcon={AddShoppingCart}
+                                            toolTipText={'BAL emissions received for 1$ spent in incentives'}
+                                        />
                                         : <CircularProgress/>}
-                                </Box> */}
+                                </Box>
                             </Grid>
                         </Grid>
                         {hiddenHandData.incentives === null ? (

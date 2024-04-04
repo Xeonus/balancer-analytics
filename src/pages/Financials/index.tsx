@@ -126,7 +126,7 @@ export default function Financials() {
     const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
 
     //---USDC: Cumulative in- and outflows---
-// FIX: receive and send start and end dates need to be considered!
+    // FIX: receive and send start and end dates need to be considered!
     const startDates: Date[] = [
         ...(usdcReceived.length > 0 ? [new Date(usdcReceived[0].time)] : []),
         ...(usdcSend.length > 0 ? [new Date(usdcSend[0].time)] : []),

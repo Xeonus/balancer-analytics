@@ -19,7 +19,7 @@ export function extractTransactionsByTokenAndType(
         if (el.cate_id === type && type === 'receive') {
             el.receives.forEach(
                 receive => {
-                    if (tokenAddress === receive.token_id) {
+                    if (tokenAddress.toLowerCase() === receive.token_id) {
                         if (sender ? receive.from_addr === sender : true) {
                             tnxChartData.push(
                                 {
@@ -39,8 +39,13 @@ export function extractTransactionsByTokenAndType(
                 send => {
                     // Only list taxations that happened between the DAO and SP wallets
                     const wallet = SERVICE_PROVIDER_WALLETS.find(el => el.walletId.toLowerCase() === send.to_addr);
-                    // Make BAL sends an exception and always track them!
-                    if (tokenAddress === send.token_id && (wallet || send.token_id === '0xba100000625a3754423978a60c9317c58a424e3d')) {
+                    let to_addr = wallet?.walletId ? wallet.walletId : '';
+                    // Special exclusion for multi-call executions
+                    if (send.to_addr === '0x166f54f44f271407f24aa1be415a730035637325' || send.token_id === '0xba100000625a3754423978a60c9317c58a424e3d') {
+                        to_addr = '0x166f54f44f271407f24aa1be415a730035637325'
+                    }
+                    //
+                    if ((tokenAddress.toLowerCase() === send.token_id && to_addr !== '')) {
                         tnxChartData.push(
                             {
                                 value: send.amount < 0 ? send.amount : -send.amount,
