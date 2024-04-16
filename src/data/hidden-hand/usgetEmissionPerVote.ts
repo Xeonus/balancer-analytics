@@ -6,6 +6,9 @@ import {useGetHiddenHandVotingIncentives} from "./useGetHiddenHandVotingIncentiv
 import {ethers} from "ethers";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import useGetSimpleTokenPrices from "../balancer-api-v3/useGetSimpleTokenPrices";
+import useGetHistoricalTokenPrice from "../balancer-api-v3/useGetHistoricalTokenPrice";
+import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
+import {unixToDate} from "../../utils/date";
 
 
 const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
@@ -19,6 +22,7 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
     const [emissionValuePerVote, setEmissionValuePerVote] = useState(0);
     const [emissionsPerDollarSpent, setEmissionsPerDollarSpent] = useState(0)
     const coinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
+    const { data: historicalBALCoinData } = useGetHistoricalTokenPrice(balAddress, 'MAINNET')
     const hiddenHandDataCurrent = useGetHiddenHandVotingIncentives(timestampCurrentRound === 0 ? '' : String(timestampCurrentRound));
     const hiddenHandDataPrevious = useGetHiddenHandVotingIncentives(String(timestampPreviousRound));
 
@@ -30,9 +34,10 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     const WEEK = 604800;
                     const currentTime = Date.now() ;
 
-
+                    const balTsPrice = historicalBALCoinData?.find(el => el.time === unixToDate(timestampCurrentRound) ? el.value : 0)
                     const provider = new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com');
-                    const balPrice = coinData.data[balAddress].price
+                    const balPrice = balTsPrice ? balTsPrice.value : coinData.data[balAddress].price
+                    console.log("BAL price: ", balPrice)
                     const balTokenAdminAddress = '0xf302f9F50958c5593770FDf4d4812309fF77414f';
 
                     const balTokenAdmin = new ethers.Contract(
@@ -41,7 +46,16 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                         provider
                     );
 
-                    const weeklyBalEmissions = (await balTokenAdmin.rate()).mul(WEEK);
+                    // Simple BAL emission map based on https://dune.com/balancer/bal-supply
+                    const weeklyBalEmission = (await balTokenAdmin.rate()).mul(WEEK);
+                    let weeklyBalEmissionFormatted = 145000
+                    if (timestampCurrentRound < 1711975297 && timestampCurrentRound > 1680180097) {
+                        weeklyBalEmissionFormatted = 121929.98
+                    } else {
+                        weeklyBalEmissionFormatted = parseFloat(ethers.utils.formatEther(weeklyBalEmission))
+                    }
+
+                    console.log("Weekly BAL emission: ", weeklyBalEmissionFormatted)
 
                     // Calculate Aura's voting power in Balancer
                     const veBalAddress = '0xc128a9954e6c874ea3d62ce62b468ba073093f25';
@@ -89,7 +103,7 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     console.log("approximateTotalVote", approximateTotalVote)
 
                     const biweeklyBalEmissionPerAura =
-                        (parseFloat(ethers.utils.formatEther(weeklyBalEmissions)) * veBALShare) /
+                        (weeklyBalEmissionFormatted * veBALShare) /
                         approximateTotalVote;
 
 
