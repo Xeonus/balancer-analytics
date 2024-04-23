@@ -1,7 +1,7 @@
 import { Avatar, Card, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useTheme } from '@mui/material/styles'
-import { ChainPortfolio, PortfolioItemList } from "../../data/debank/debankTypes";
+import {ChainPortfolio, PortfolioItemList, SupplyTokenList} from "../../data/debank/debankTypes";
 import { formatDollarAmount, formatNumber } from "../../utils/numbers";
 import PoolCurrencyLogo from "../PoolCurrencyLogo";
 import Table from '@mui/material/Table';
@@ -35,28 +35,29 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
 
     const poolPosition = (portfolioItemList: PortfolioItemList[]) => {
 
-        const rows = portfolioItemList.map(item => {
+        const rows = portfolioItemList.map((item: PortfolioItemList) => {
+            // Check if supply_token_list is defined, if not, use an empty array
+            const supplyTokenList = item.detail.supply_token_list || [];
+
             return {
-                names: item.detail.supply_token_list.reduce((accumulator: string[], currentValue) => {
-                    accumulator.push(
-                        currentValue.symbol
-                    );
+                names: supplyTokenList.reduce((accumulator: string[], currentValue: SupplyTokenList) => {
+                    accumulator.push(currentValue.symbol);
                     return accumulator;
                 }, []),
-                tokens: item.detail.supply_token_list.reduce((accumulator: { address: string }[], currentValue) => {
+                tokens: supplyTokenList.reduce((accumulator: { address: string }[], currentValue: SupplyTokenList) => {
                     accumulator.push({
                         address: currentValue.id
                     });
                     return accumulator;
                 }, []),
-                balances: item.detail.supply_token_list.reduce((accumulator: number[], currentValue) => {
+                balances: supplyTokenList.reduce((accumulator: number[], currentValue: SupplyTokenList) => {
                     accumulator.push(currentValue.amount);
                     return accumulator;
                 }, []),
-                totalAmount: item.detail.supply_token_list.reduce((acc, el) => acc + el.amount * el.price, 0),
-                description: item.detail.description ? item.detail.description : '',
+                totalAmount: supplyTokenList.reduce((acc: number, el: SupplyTokenList) => acc + el.amount * el.price, 0),
+                description: item.detail.description || '',
             }
-        })
+        });
 
         return (
 
