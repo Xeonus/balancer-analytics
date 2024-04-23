@@ -33,6 +33,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
+import useGetCombinedIncentives from "../../data/maxis/useGetCombinedIncentives";
 
 function formatDate(date: Date) {
     return date.toISOString().split('T')[0];
@@ -106,7 +107,7 @@ export default function CorePools() {
             let endDate = new Date(lastOddThursday);
             let startDate = new Date(firstDataOccurrence);
 
-            while (startDate <= endDate) {
+            while (startDate < endDate) {
                 let periodStart = new Date(startDate);
                 let periodEnd = new Date(periodStart);
                 periodEnd.setDate(periodEnd.getDate() + 14); // Adjust to include the correct period span

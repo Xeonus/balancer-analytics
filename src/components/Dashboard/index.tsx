@@ -36,6 +36,7 @@ import VotingIncentives from '../../pages/VotingIncentives';
 import Reports from "../../pages/Reports";
 import CorePools from "../../pages/CorePools";
 import ProtocolFees from "../../pages/ProtocolFees";
+import CorePool from "../../pages/CorePool";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -249,6 +250,8 @@ function Dashboard() {
                             <Route path={"/financials"} element={<Financials />} />
                             <Route path={"/protocolFees"} element={<ProtocolFees />} />
                             <Route path={"/:networkID/protocolFees"} element={<ProtocolFees />} />
+                            <Route path={"/corePool/:poolId"} element={<CorePool />} />
+                            <Route path={"/:networkID/corePool/:poolId"} element={<CorePool />} />
                         </Routes>
                     </MainContent>
                 </Box>
