@@ -34,12 +34,19 @@ export const POOL_TYPE_FILTERS_SUBGRAPH: string[] = [
 ];
 
 export const RAINBOW_COLORS = [
-    'rgb(32, 129, 240)',
-    'rgb(255, 204, 0)',
-    'rgb(126, 217, 87)',
-    'rgb(255, 87, 87)',
-    'rgb(140, 82, 255)',
+    'rgb(32, 129, 240)',   // Blue
+    'rgb(255, 204, 0)',    // Yellow
+    'rgb(126, 217, 87)',   // Green
+    'rgb(255, 87, 87)',    // Red
+    'rgb(140, 82, 255)',   // Purple
+    'rgb(255, 150, 0)',    // Orange
+    'rgb(75, 192, 192)',   // Cyan
+    'rgb(255, 64, 129)',   // Pink
+    'rgb(0, 201, 167)',    // Teal
+    'rgb(241, 58, 19)',    // Vermillion
+    'rgb(178, 102, 255)'   // Lavender
 ];
+
 
 export const POOL_TYPE_DISPLAY_NAMES: { [key: string]: string } = {
     META_STABLE: 'Metastable',

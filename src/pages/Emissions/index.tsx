@@ -62,7 +62,7 @@ export default function Emissions() {
     const now = Math.round(new Date().getTime() / 1000)
     const totalBalEmissions = balEmissions.between(now, now + 365 * 86400)
     const weeklyEmissions = balEmissions.weekly(now)
-    let globalPools = useGetAllPools([activeNetwork.v3NetworkID as GqlChain]);
+    let globalPools = useGetAllPools([activeNetwork.v3NetworkID as GqlChain], [""]);
     const gaugeData = useGetBalancerV3StakingGauges();
 
     if (globalPools && gaugeData) {

@@ -72,7 +72,7 @@ export default function CorePools() {
 
 
     //DATA
-    const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS']);
+
     const currentData = useGetCorePoolCurrentFees();
     const lastOddWeekThu = getLastThursdayOddWeek();
     const lastOddWeekThuString = formatDate(lastOddWeekThu)
@@ -80,6 +80,8 @@ export default function CorePools() {
     const historicalData = useGetCorePoolHistoricalFees(selectedEndDate);
     const historicalCollectedNetworkFees = useGetCollectedFees(selectedEndDate)
     const collectedFeesSummary = useGetCollectedFeesSummary();
+    const corePoolIDs : string[] = currentData.map(item => item.poolId)
+    const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS'], corePoolIDs);
 
 
     let delta = 0

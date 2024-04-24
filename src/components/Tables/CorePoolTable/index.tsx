@@ -342,7 +342,7 @@ export default function CorePoolTable({
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const getLink = (activeNetwork: NetworkInfo, id: string) => {
-        return networkPrefix(activeNetwork) + 'corePool/' + id;
+        return networkPrefix(activeNetwork) + 'pools/' + id;
     }
 
     interface NetworkLogoMap {
