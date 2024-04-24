@@ -683,9 +683,9 @@ export const GetPoolSnapshots = gql`
   }
 `;
 export const GetAllPools = gql`
-  query GetAllPools($chainIn: [GqlChain!]) {
+  query GetAllPools($chainIn: [GqlChain!], $idIn: [String!]) {
     poolGetPools(
-      where: { chainIn: $chainIn }
+      where: { chainIn: $chainIn, idIn: $idIn }
       orderBy: totalLiquidity
       orderDirection: desc
     ) {

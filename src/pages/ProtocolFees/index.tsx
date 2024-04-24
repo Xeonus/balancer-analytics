@@ -219,7 +219,7 @@ export default function ProtocolFees() {
             let endDate = new Date(lastOddThursday);
             let startDate = new Date(firstDataOccurrence);
 
-            while (startDate <= endDate) {
+            while (startDate < endDate) {
                 let periodStart = new Date(startDate);
                 let periodEnd = new Date(periodStart);
                 periodEnd.setDate(periodEnd.getDate() + 14); // Adjust to include the correct period span

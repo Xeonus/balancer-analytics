@@ -18,6 +18,7 @@ export type CoinCardProps = {
   MetricIcon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
   svgContent?: string;
   toolTipText?: string;
+
 };
 
 const MetricsCard = ({

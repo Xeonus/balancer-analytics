@@ -2,12 +2,13 @@ import {GqlChain, useGetAllPoolsQuery} from "../../apollo/generated/graphql-code
 import { PoolDataUnified } from "./balancerUnifiedTypes";
 import { balancerV3APIClient } from "../../apollo/client";
 
-export default function useGetAllPools(chainInIds: GqlChain[]): PoolDataUnified[] | undefined {
+export default function useGetAllPools(chainInIds: GqlChain[], poolInIDs: string[]): PoolDataUnified[] | undefined {
     const { data, loading, error } = useGetAllPoolsQuery(
         {
             client: balancerV3APIClient,
             variables: {
-                chainIn: chainInIds
+                chainIn: chainInIds,
+                idIn: poolInIDs,
             }
         }
     );

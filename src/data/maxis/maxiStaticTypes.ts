@@ -11,6 +11,8 @@ export interface PoolFeeRecord {
     bal_incentives: string;
     redirected_incentives: string;
     reroute_incentives: number;
+    date_string?: string;
+    last_join_exit?: string;
 }
 
 export interface FeeAllocations {
