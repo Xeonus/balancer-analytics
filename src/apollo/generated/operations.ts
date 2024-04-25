@@ -283,11 +283,7 @@ export const BalancerSnapshot = gql`
 `;
 export const GetTokenPrice = gql`
   query GetTokenPrice($address: String!, $chain: GqlChain!) {
-    tokenGetPriceChartData(
-      address: $address
-      chain: $chain
-      range: NINETY_DAY
-    ) {
+    tokenGetPriceChartData(address: $address, chain: $chain, range: ONE_YEAR) {
       price
       timestamp
     }

@@ -22,6 +22,10 @@ import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import {useGetEmissionPerVote} from "../../data/hidden-hand/usgetEmissionPerVote";
+import useGetHistoricalTokenPrice from "../../data/balancer-api-v3/useGetHistoricalTokenPrice";
+import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
+import VeBALIncentiveAPRChart from "../../components/Echarts/VotingIncentives/veBALIncentiveAPRChart";
+import {HISTORICAL_VEBAL_PRICE} from "../../constants";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -81,6 +85,9 @@ export default function VotingIncentives() {
     //const addressRewards = useGetHiddenHandRewards(address ? address : '')
     const gaugeData = useGetBalancerV3StakingGauges();
     const {emissionValuePerVote, emissionsPerDollarSpent} = useGetEmissionPerVote(currentRoundNew);
+    const priceData = HISTORICAL_VEBAL_PRICE
+    const { data: veBALHistoricalPrice} = useGetHistoricalTokenPrice('0x5c6ee304399dbdb9c8ef030ab642b10820db8f56', 'MAINNET')
+    //console.log("veBALHistoricalPrice", veBALHistoricalPrice)
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -119,9 +126,9 @@ export default function VotingIncentives() {
     const historicalData = useGetHiddenHandHistoricalIncentives();
 
     // LLAMA API
-    let dollarPerVlAssetData;
+    let dollarPerVlAssetData: number[] = [];
     let totalAmountDollarsData;
-    let xAxisData;
+    let xAxisData: string[] = [];
     let totalAmountDollarsSum;
     if (historicalData) {
         let newDollarPerVlAssetData = [];
@@ -146,6 +153,43 @@ export default function VotingIncentives() {
         totalAmountDollarsSum = historicalData.totalAmountDollarsSum;
         xAxisData = newXAxisData;
     }
+
+
+
+    // APR chart: match the dollarPerVLAssetData with price Data to calculate APR
+    let historicalAPR : number[] = []
+    if (xAxisData && xAxisData.length > 0 && dollarPerVlAssetData) {
+        const dollarPerVlHistoricalAssetData = [...dollarPerVlAssetData]
+
+        historicalAPR = xAxisData.map((el) => {
+            const price = priceData.find(price => el === price.time);
+            const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : 0
+
+            if (price && price.value) {
+                return dollarPerVlHistoricalAssetData[xAxisData.indexOf(el)] * 52 / price.value;
+            } else if (veBALHistoricalPrice && fallbackPrice) {
+                return dollarPerVlHistoricalAssetData[xAxisData.indexOf(el)] * 52/ fallbackPrice.value;
+            }
+            else {
+                return 0; // Fallback value
+            }
+        });
+
+    }
+    //console.log("historicalAPR", historicalAPR)
+
+    let historicalPrice = xAxisData.map((el) => {
+        const price = priceData.find(price => el === price.time);
+        const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : 0
+        if (price) {
+            return price.value;
+        } else if (veBALHistoricalPrice && fallbackPrice) {
+            return fallbackPrice.value;
+        }
+        else {
+            return 0; // Fallback value
+        }
+    });
 
     return (<>
             {(
@@ -214,6 +258,20 @@ export default function VotingIncentives() {
                                 </Card>
                             </Grid>
                             : <CircularProgress/>}
+                        <Grid item xs={11} sm={9}>
+                            <Typography sx={{fontSize: '24px'}}>Historical Aura Price vs. Incentive APR</Typography>
+                        </Grid>
+                        {historicalPrice && historicalPrice.length > 0 && historicalAPR ?
+                            <Grid item xs={11} sm={9}>
+                                <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
+                                    <VeBALIncentiveAPRChart
+                                        auraPrice={historicalPrice}
+                                        auraAPR={historicalAPR}
+                                        xAxisData={xAxisData}
+                                        height={"400px"}/>
+                                </Card>
+                            </Grid> :
+                            <CircularProgress/>}
                         <Grid item xs={11} sm={9} mt={1}>
                             <Typography sx={{fontSize: '24px'}} mb={1}>Voting Epoch Metrics</Typography>
                         </Grid>
