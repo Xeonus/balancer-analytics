@@ -34,6 +34,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
 import useGetCombinedIncentives from "../../data/maxis/useGetCombinedIncentives";
+import {AggregateChainFeesPerRound} from "../../components/Echarts/VotingIncentives/AggregateChainFeesPerRound";
 
 function formatDate(date: Date) {
     return date.toISOString().split('T')[0];
@@ -54,6 +55,14 @@ function calculateDelta(historicalFees: NetworkFees, poolFeeRecords: PoolFeeReco
     // Calculate the delta
     return totalSwept - totalHistoricalSum;
 }
+
+export interface RoundChainFees {
+    date: string;
+    chains: {
+        [key: string]: number;
+    };
+}
+
 
 export default function CorePools() {
 
@@ -82,6 +91,7 @@ export default function CorePools() {
     const collectedFeesSummary = useGetCollectedFeesSummary();
     const corePoolIDs : string[] = currentData.map(item => item.poolId)
     const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS'], corePoolIDs);
+    const combinedFees = useGetCombinedIncentives();
 
 
     let delta = 0
@@ -286,6 +296,31 @@ export default function CorePools() {
             return pool.chain === chain.toLowerCase() ? sum + parseFloat(pool.earned_fees) : sum;
         }, 0) : 0,
     }));
+
+    // Aggregated per round stats
+    const roundData: { [date: string]: { [chain: string]: number } } = {};
+
+    combinedFees.forEach(record => {
+        if (record.date_string) {
+            const roundDate = record.date_string.split('_')[0]; // Adjust based on your date format needs
+            roundData[roundDate] = roundData[roundDate] || {};
+
+            activeChains.forEach(chain => {
+                const chainKey = chain.toLowerCase();
+                if (record.chain === chainKey) {
+                    roundData[roundDate][chainKey] = (roundData[roundDate][chainKey] || 0) + parseFloat(record.earned_fees);
+                }
+            });
+        }
+    });
+
+    //Return an agregated chain object, sorted by date
+    const combinedData = Object.entries(roundData).map(([date, chains]) => ({
+        date,
+        chains
+    })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());;
+
+    console.log("combinedData", combinedData)
 
     //Fee distribution
     const feeDistroPieChartData: BalancerPieChartDataItem[] = [
@@ -837,6 +872,11 @@ export default function CorePools() {
                                 />
 
                         </Card> : null}
+                    </Grid>
+                    <Grid item xs={11}>
+                        <Card>
+                            <AggregateChainFeesPerRound sortedRounds={combinedData} />
+                        </Card>
                     </Grid>
 
                 </Grid>
