@@ -192,13 +192,12 @@ export default function VotingIncentives() {
     });
 
     return (<>
-            {(
-                !historicalData
-                && !hiddenHandData.incentives
-                && bribeRewardsNew.length < 1
-                && !totalAmountDollarsSum
-                && incentivePerVote === 0
-                && roundIncentives === 0
+            {(  !historicalData
+                || !hiddenHandData.incentives
+                || bribeRewardsNew.length < 1
+                || !totalAmountDollarsSum
+                || incentivePerVote === 0
+                || roundIncentives === 0
             ) ? (
                 <Grid
                     container
@@ -259,7 +258,7 @@ export default function VotingIncentives() {
                             </Grid>
                             : <CircularProgress/>}
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '24px'}}>Historical Aura Price vs. Incentive APR</Typography>
+                            <Typography sx={{fontSize: '24px'}}>Historical veBAL Price vs. Incentive APR</Typography>
                         </Grid>
                         {historicalPrice && historicalPrice.length > 0 && historicalAPR ?
                             <Grid item xs={11} sm={9}>

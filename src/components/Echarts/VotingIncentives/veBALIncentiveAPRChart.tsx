@@ -25,7 +25,7 @@ export default function VeBALIncentiveAPRChart({auraPrice, auraAPR, xAxisData, h
             axisPointer: {
                 type: 'cross',
                 label: {
-                    backgroundColor: '#6a7985',
+                    backgroundColor: '#198eec',
                 }
             },
             formatter: function (params:TooltipParam[]) {
@@ -64,7 +64,7 @@ export default function VeBALIncentiveAPRChart({auraPrice, auraAPR, xAxisData, h
                 position: 'right',
                 axisLine: {
                     lineStyle: {
-                        color: '#646c8c'
+                        color: 'rgb(255, 204, 0)'
                     }
                 },
                 axisLabel: {
@@ -100,7 +100,7 @@ export default function VeBALIncentiveAPRChart({auraPrice, auraAPR, xAxisData, h
                 name:'veBAL Price',
                 type:'line',
                 itemStyle: {
-                    color: '#646c8c'
+                    color: 'rgb(255, 204, 0)'
                 },
                 data:auraPrice,
                 yAxisIndex: 0,
