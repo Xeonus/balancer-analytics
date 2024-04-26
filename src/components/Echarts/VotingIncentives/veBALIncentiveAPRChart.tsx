@@ -41,7 +41,7 @@ export default function VeBALIncentiveAPRChart({auraPrice, auraAPR, xAxisData, h
             }
         },
         legend: {
-            data:['vlAura APR', 'Aura Price'],
+            data:['veBAL APR', 'veBAL Price'],
             textStyle: {
                 color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#3a465d'
             }
@@ -75,7 +75,7 @@ export default function VeBALIncentiveAPRChart({auraPrice, auraAPR, xAxisData, h
             },
             {
                 type: 'value',
-                name: 'vlAura APR',
+                name: 'veBAL APR',
                 min: 0,
                 max: Math.max(...auraAPR),
                 position: 'left',

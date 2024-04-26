@@ -786,7 +786,7 @@ export default function CorePools() {
                             </Box>
                                 <MixedLineBarChart
                                     barChartData={auraIncentivesChartData}
-                                    barChartName={'Incentives to vlAURA markets'}
+                                    barChartName={'Incentives to veBAL markets'}
                                     lineChartData={cumulativeAuraIncentivesData}
                                     lineChartName={'Cumulative Incentives'}
                                     noRainbowColors={true}
