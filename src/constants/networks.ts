@@ -34,6 +34,7 @@ export type NetworkInfo = {
   balAddress: string,
   feeCollectorThreshold: number
   decentralicedClientUri: string
+  blockClientUri: string
   gaugeClientUri: string
   alchemyRPCUrl: string
   alchemyKey: string
@@ -49,6 +50,8 @@ export type NetworkInfo = {
   blurb?: string
 }
 
+const DECENTRALIZED_ENDPOINT = 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/'
+
 export const EthereumNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ETHEREUM,
   chainId: '1',
@@ -63,7 +66,8 @@ export const EthereumNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV',
+  blockClientUri: DECENTRALIZED_ENDPOINT + '9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC',
   alchemyRPCUrl: ALCHEMY_URL,
   alchemyKey: ALCHEMY_KEY,
   bgColor: BALANCER_PRIMARY_COLOR,
@@ -86,7 +90,8 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/arbitrum/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-arbitrum-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-arbitrum/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
+  blockClientUri: DECENTRALIZED_ENDPOINT + 'JBnWrv9pvBvSi2pUZzba3VweGBTde6s44QvsDABP47Gt',
   alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
   alchemyKey: ALCHEMY_KEY_ARBITRUM,
   imageURL: ARBITRUM_LOGO_URL,
@@ -110,7 +115,8 @@ export const PolygonNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/polygon/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-polygon-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-polygon/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp',
+  blockClientUri: DECENTRALIZED_ENDPOINT + 'DMnXZnphMTkcFiK5NHm6LzwhJ7yUy7seVnZuNkNsXLHp',
   alchemyRPCUrl: ALCHEMY_URL_POLYGON,
   alchemyKey: ALCHEMY_KEY_POLYGON,
   bgColor: '#8247e5',
@@ -135,6 +141,7 @@ export const PolygonZkEVMNetworkInfo: NetworkInfo = {
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest',
   decentralicedClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest',
+  blockClientUri: '',
   alchemyRPCUrl: ALCHEMY_URL_ZKEVM,
   alchemyKey: ALCHEMY_KEY_ZKEVM,
   bgColor: '#a176e8',
@@ -158,7 +165,8 @@ export const GnosisNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/gnosis-chain/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gnosis-chain-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-gnosis-chain/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg',
+  blockClientUri: DECENTRALIZED_ENDPOINT + '8ZD25Ff1efVjqHkGmPdgn7oevwe3FkSB7WFygyNEsAco',
   alchemyRPCUrl: 'https://rpc.gnosis.gateway.fm',
   alchemyKey: '',
   bgColor: '#8247e5',
@@ -182,7 +190,8 @@ export const AvalancheNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/avalanche/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-avalanche-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-avalanche/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu',
+  blockClientUri: DECENTRALIZED_ENDPOINT + '97YH6dMhGcXoTvVwDAML6GxYm9hBh7PCz6WPscUkrFhv',
   alchemyRPCUrl: ' https://api.avax.network/ext/bc/C/rpc ',
   alchemyKey: '',
   bgColor: '#F01B36',
@@ -207,6 +216,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest',
   decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
+  blockClientUri: '',
   alchemyRPCUrl: 'https://base.publicnode.com',
   alchemyKey: '',
   bgColor: '#0030a6',
