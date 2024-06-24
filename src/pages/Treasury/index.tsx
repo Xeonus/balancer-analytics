@@ -21,6 +21,7 @@ import * as React from "react";
 import {EthereumNetworkInfo} from "../../constants/networks";
 import LaunchIcon from "@mui/icons-material/Launch";
 import {formatDollarAmount} from "../../utils/numbers";
+import {ChainPortfolio, TokenBalance} from "../../data/debank/debankTypes";
 
 export default function Treasury() {
 
@@ -52,6 +53,27 @@ export default function Treasury() {
     const {totalBalances} = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
     const opcoBalances = useGetTotalBalances(OPCO_SAFE);
+
+    // Function to classify tokens into groups
+    const classifyToken = (symbol: string): string => {
+        const stables = ['USDC', 'DAI', 'USDT'];
+        const highLiquidity = ['ETH', 'WETH', 'WBTC', 'WSTETH'];
+        const tokenSwap = ['GNO', 'AAVE', 'D2D'];
+        if (stables.includes(symbol)) return 'Stables';
+        if (highLiquidity.includes(symbol)) return 'High Liquidity Tokens';
+        if (tokenSwap.includes(symbol)) return 'Token Swap Tokens';
+        if (symbol === 'BAL') return 'BAL';
+        return 'Other';
+    };
+
+    // Aggregate token and portfolio values by groups
+    const aggregatedValues: { [key: string]: number } = {
+        'Stables': 0,
+        'High Liquidity Tokens': 0,
+        'Token Swap Tokens': 0,
+        'BAL': 0,
+        'Other': 0,
+    };
 
 
     let totalStablecoinValue = 0
@@ -193,6 +215,47 @@ export default function Treasury() {
         });
     }
 
+    // Aggregate token balances
+    const aggregateBalances = (balances: TokenBalance[]) => {
+        if (!balances) return;
+        balances.forEach(balance => {
+            const group = classifyToken(balance.symbol.toUpperCase());
+            aggregatedValues[group] += balance.amount * balance.price;
+        });
+    };
+
+    if (totalBalances) aggregateBalances(totalBalances);
+    if (karpatkeyBalances && karpatkeyBalances.totalBalances) aggregateBalances(karpatkeyBalances.totalBalances);
+    if (opcoBalances && opcoBalances.totalBalances) aggregateBalances(opcoBalances.totalBalances);
+
+    // Aggregate portfolio values
+    const aggregatePortfolioValues = (portfolios: ChainPortfolio[]) => {
+        if (!portfolios) return;
+        portfolios.forEach(portfolio => {
+            if (portfolio.portfolio_item_list) {
+                portfolio.portfolio_item_list.forEach(pel => {
+                    if (pel.detail.supply_token_list) {
+                        pel.detail.supply_token_list.forEach(supplyToken => {
+                            const group = classifyToken(supplyToken.symbol.toUpperCase());
+                            aggregatedValues[group] += supplyToken.amount * supplyToken.price;
+                        });
+                    }
+                });
+            }
+        });
+    };
+
+    if (portfolio) aggregatePortfolioValues(portfolio);
+    if (karpatkeyPortfolio && karpatkeyPortfolio.portfolio) aggregatePortfolioValues(karpatkeyPortfolio.portfolio);
+    if (opcoPortfolio && opcoPortfolio.portfolio) aggregatePortfolioValues(opcoPortfolio.portfolio);
+
+    // Create pie chart data
+    const groupedPieChart = Object.keys(aggregatedValues).map(group => ({
+        value: aggregatedValues[group],
+        name: group,
+    }));
+
+    console.log("grouped PieChart", groupedPieChart);
     console.log("totalASsetValue", totalAssetValue)
     console.log("ratioPieChartData", ratioPieChartData)
 
@@ -303,7 +366,7 @@ export default function Treasury() {
                                 </Box>
 
                             </Grid>
-                            {tokenPieChartData && tokenPieChartData.length > 0 && tokenPieChartDataKarpatkey && tokenPieChartDataKarpatkey.length > 0 ?
+                            {groupedPieChart && groupedPieChart.length > 0  ?
                                 <Grid
                                     item
                                     xs={11}
@@ -317,11 +380,11 @@ export default function Treasury() {
                                                 gutterBottom
                                                 variant="h6"
                                             >
-                                                Liquid Token Distribution across Safes (non-LPs)
+                                                Asset Distribution by Type across Safes
                                             </Typography>
                                         </Box>
                                         <GenericPieChart
-                                            data={overallTokenDistro}
+                                            data={groupedPieChart}
                                             height='295px'/>
                                     </Card>
                                 </Grid> : null}

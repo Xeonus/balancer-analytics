@@ -215,7 +215,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/base/',
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest',
-  decentralicedClientUri: 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
   blockClientUri: '',
   alchemyRPCUrl: 'https://base.publicnode.com',
   alchemyKey: '',

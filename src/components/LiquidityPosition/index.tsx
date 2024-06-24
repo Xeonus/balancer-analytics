@@ -35,29 +35,34 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
 
     const poolPosition = (portfolioItemList: PortfolioItemList[]) => {
 
-        const rows = portfolioItemList.map((item: PortfolioItemList) => {
-            // Check if supply_token_list is defined, if not, use an empty array
-            const supplyTokenList = item.detail.supply_token_list || [];
+        const rows = portfolioItemList
+            .filter((item: PortfolioItemList) => {
+                const supplyTokenList = item.detail.supply_token_list || [];
+                const totalAmount = supplyTokenList.reduce((acc: number, el: SupplyTokenList) => acc + el.amount * el.price, 0);
+                return totalAmount > 100;
+            })
+            .map((item: PortfolioItemList) => {
+                const supplyTokenList = item.detail.supply_token_list || [];
 
-            return {
-                names: supplyTokenList.reduce((accumulator: string[], currentValue: SupplyTokenList) => {
-                    accumulator.push(currentValue.symbol);
-                    return accumulator;
-                }, []),
-                tokens: supplyTokenList.reduce((accumulator: { address: string }[], currentValue: SupplyTokenList) => {
-                    accumulator.push({
-                        address: currentValue.id
-                    });
-                    return accumulator;
-                }, []),
-                balances: supplyTokenList.reduce((accumulator: number[], currentValue: SupplyTokenList) => {
-                    accumulator.push(currentValue.amount);
-                    return accumulator;
-                }, []),
-                totalAmount: supplyTokenList.reduce((acc: number, el: SupplyTokenList) => acc + el.amount * el.price, 0),
-                description: item.detail.description || '',
-            }
-        });
+                return {
+                    names: supplyTokenList.reduce((accumulator: string[], currentValue: SupplyTokenList) => {
+                        accumulator.push(currentValue.symbol);
+                        return accumulator;
+                    }, []),
+                    tokens: supplyTokenList.reduce((accumulator: { address: string }[], currentValue: SupplyTokenList) => {
+                        accumulator.push({
+                            address: currentValue.id
+                        });
+                        return accumulator;
+                    }, []),
+                    balances: supplyTokenList.reduce((accumulator: number[], currentValue: SupplyTokenList) => {
+                        accumulator.push(currentValue.amount);
+                        return accumulator;
+                    }, []),
+                    totalAmount: supplyTokenList.reduce((acc: number, el: SupplyTokenList) => acc + el.amount * el.price, 0),
+                    description: item.detail.description || '',
+                }
+            });
 
         return (
 
@@ -66,7 +71,7 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
                     <TableHead>
                         <TableRow>
                             <TableCell>Pool</TableCell>
-                            <TableCell 
+                            <TableCell
                                 align="right"
                                 sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                 >

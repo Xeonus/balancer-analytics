@@ -216,21 +216,23 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
     const sortedTokenDatas = filteredTokenDatas.sort(function (a, b) {
         return b.amount * b.price - a.amount * a.price;
     });
-    
+
     //Overwrite ETH id with WETH id
     let eth = sortedTokenDatas.find(el => el.symbol === 'ETH')
     if(eth){
         eth.id = getWethTokenAddress(activeNetwork.id)
-    } 
+    }
 
     //Calculate TVL to obtain relative ratio
     const tvl = sortedTokenDatas.reduce((acc, el) => acc + el.amount * el.price, 0)
 
-    //Create rows
-    const rows = sortedTokenDatas.map(el =>
-        createData(el, el.price, el.amount, el.price * el.amount, 100 / tvl * el.price * el.amount)
+//Create rows
+    const rows = sortedTokenDatas
+        .filter(el => el.price * el.amount > 100)
+        .map(el =>
+            createData(el, el.price, el.amount, el.price * el.amount, 100 / tvl * el.price * el.amount)
+        );
 
-    )
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -303,20 +305,20 @@ export default function FeeCollectorTokenTable({tokenBalances}: FeeCollectorTabl
                                                     <Typography variant="caption" >({row.token.name})</Typography>
                                                 </Box>
                                             </TableCell>
-                                            <TableCell 
+                                            <TableCell
                                                 align="right"
                                                 sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                             >
                                                 {formatDollarAmount(row.price)}
                                             </TableCell>
-                                            <TableCell 
+                                            <TableCell
                                                 align="right"
                                                 sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                                 >
                                                 {formatNumber(row.balance, 2)}
                                             </TableCell>
                                             <TableCell align="right">{formatDollarAmount(row.value)}</TableCell>
-                                            <TableCell 
+                                            <TableCell
                                                 align="right"
                                                 sx={{ display: {xs: 'none', md: 'table-cell' }}}
                                                 >{formatPercentageAmount(row.ratio)}%
