@@ -126,7 +126,7 @@ export default function LiquidityPosition({ position }: LiquidityPositionProps) 
 
     return (
         <Grid>
-            {getPostionUsdValue(position.portfolio_item_list) > 0 ?
+            {getPostionUsdValue(position.portfolio_item_list) > 0 && getPostionUsdValue(position.portfolio_item_list) > 100 ?
                 <Grid item >
                     <Box mt={2} mb={2} display="flex" alignItems="center" justifyContent="space-between">
                         <Box display="flex" alignItems={"center"} >
