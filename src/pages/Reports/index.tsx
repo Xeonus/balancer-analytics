@@ -180,7 +180,7 @@ export default function Reports() {
 
     cumulativeValue = 0;
     const cumulativeIncentives: BalancerChartDataItem[] = filteredFeesData.map((el) => {
-        cumulativeValue += el.feesToVebal; // Accumulate the value
+        cumulativeValue += el.auraIncentives + el.balIncentives; // Accumulate the value
         return {
             value: cumulativeValue,
             time: unixToDate(el.periodEnd)
