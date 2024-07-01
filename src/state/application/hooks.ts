@@ -3,9 +3,9 @@ import {
     arbitrumBlockClient,
     arbitrumClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient,
     blockClient,
-    client,
+    client, fraxtalBlockClient, fraxtalClient,
     gnosisBlockClient,
-    gnosisClient,
+    gnosisClient, modeBlockClient, modeClient,
     polygonBlockClient,
     polygonClient,
     polygonZKEVMBlockClient,
@@ -77,6 +77,10 @@ export function useDataClient(): ApolloClient<NormalizedCacheObject> {
             return avalancheClient
         case SupportedNetwork.BASE:
             return baseClient
+        case SupportedNetwork.MODE:
+            return modeClient
+        case SupportedNetwork.FRAXTAL:
+            return fraxtalClient
         default:
             return client
     }
@@ -100,6 +104,10 @@ export function useBlockClient(): ApolloClient<NormalizedCacheObject> {
             return avalancheBlockClient
         case SupportedNetwork.BASE:
             return baseBlockClient
+        case SupportedNetwork.MODE:
+            return modeBlockClient
+        case SupportedNetwork.FRAXTAL:
+            return fraxtalBlockClient
         default:
             return blockClient
     }

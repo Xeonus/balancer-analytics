@@ -31,6 +31,8 @@ interface ProtocolBarChartProps {
     avalancheData: number[],
     gnosisData: number[],
     baseData: number[],
+    modeData: number[],
+    fraxtalData: number[],
     xAxis: string[],
     isUSD: boolean,
 }
@@ -38,7 +40,7 @@ interface ProtocolBarChartProps {
 
 
 export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData,
-                                                   avalancheData, baseData, xAxis, isUSD}: ProtocolBarChartProps) {
+                                                   avalancheData, baseData, modeData, fraxtalData, xAxis, isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
@@ -50,7 +52,9 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
             '#3a0f5d',
             '#0d8e74',
             '#F01B36',
-            '#0021a2'],
+            '#0021a2',
+            '#b7ff00',
+            '#8a8a8a'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -63,7 +67,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Mode', 'Fraxtal'],
             inactiveColor: "red",
             textStyle:{
                 color: theme.palette.mode === 'dark' ? 'white' : 'black'
@@ -255,6 +259,52 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                     }
                 },
                 data: baseData
+            },
+            {
+                name: 'Mode',
+                type: 'bar',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                itemStyle: {
+                    opacity: 0.95,
+                    color: 'rgb(183,255,0)'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
+                    }
+                },
+                data: modeData
+            },
+            {
+                name: 'Fraxtal',
+                type: 'bar',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                itemStyle: {
+                    opacity: 0.95,
+                    color: 'rgb(138,138,138)'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
+                    }
+                },
+                data: fraxtalData
             },
         ]
     };

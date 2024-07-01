@@ -15,8 +15,8 @@ import {
     ArbitrumNetworkInfo,
     AvalancheNetworkInfo,
     BaseNetworkInfo,
-    EthereumNetworkInfo,
-    GnosisNetworkInfo,
+    EthereumNetworkInfo, FraxtalNetworkInfo,
+    GnosisNetworkInfo, ModeNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
@@ -26,9 +26,9 @@ import {
     avalancheBlockClient,
     avalancheClient,
     baseBlockClient,
-    baseClient,
+    baseClient, fraxtalBlockClient, fraxtalClient,
     gnosisBlockClient,
-    gnosisClient,
+    gnosisClient, modeBlockClient, modeClient,
     polygonBlockClient,
     polygonClient,
     polygonZKEVMBlockClient,
@@ -46,6 +46,8 @@ import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
+import ModeLogo from '../../assets/svg/mode.svg'
+import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 import {smoothData} from "../../utils/data";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
@@ -103,6 +105,8 @@ export default function Protocol() {
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient);
     const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient);
     const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), baseBlockClient, baseClient);
+    const modeProtocolData = useBalancerChainProtocolData(ModeNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), modeBlockClient, modeClient);
+    const fraxtalProtocolData = useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), fraxtalBlockClient, fraxtalClient);
 
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
@@ -269,6 +273,8 @@ export default function Protocol() {
         {name: 'Gnosis', linkTarget: 'gnosis/chain', svgPath: GnosisLogo},
         {name: 'Avalanche', linkTarget: 'avalanche/chain', svgPath: AvalancheLogo},
         {name: 'Base', linkTarget: 'base/chain', svgPath: BaseLogo},
+        {name: 'Mode', linkTarget: 'mode/chain', svgPath: ModeLogo},
+        {name: 'Fraxtal', linkTarget: 'fraxtal/chain', svgPath: FraxtalLogo},
 
     ];
 
@@ -434,6 +440,8 @@ export default function Protocol() {
                                 gnosisProtocolData={gnosisProtocolData}
                                 avalancheProtocolData={avalancheProtocolData}
                                 baseProtocolData={baseProtocolData}
+                                modeProtocolData={modeProtocolData}
+                                fraxtalProtocolData={fraxtalProtocolData}
                             />
                         </Grid>
                     ) : (
@@ -538,6 +546,8 @@ export default function Protocol() {
                             gnosisProtocolData={smoothData(gnosisProtocolData.volumeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.volumeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.volumeData, 100000000)}
+                            modeProtocolData={smoothData(modeProtocolData.volumeData, 100000000)}
+                            fraxtalProtocolData={smoothData(fraxtalProtocolData.volumeData, 100000000)}
                             isUSD={true}
                         />
                         </Grid>
@@ -638,6 +648,8 @@ export default function Protocol() {
                             gnosisProtocolData={smoothData(gnosisProtocolData.protocolFeeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.protocolFeeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.protocolFeeData, 100000000)}
+                            modeProtocolData={smoothData(modeProtocolData.protocolFeeData, 100000000)}
+                            fraxtalProtocolData={smoothData(fraxtalProtocolData.protocolFeeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>) : (
@@ -738,6 +750,8 @@ export default function Protocol() {
                             gnosisProtocolData={smoothData(gnosisProtocolData.feeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.feeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.feeData, 100000000)}
+                            modeProtocolData={smoothData(modeProtocolData.feeData, 100000000)}
+                            fraxtalProtocolData={smoothData(fraxtalProtocolData.feeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid> ) : (
@@ -837,6 +851,8 @@ export default function Protocol() {
                             gnosisProtocolData={gnosisProtocolData.swapData}
                             avalancheProtocolData={avalancheProtocolData.swapData}
                             baseProtocolData={baseProtocolData.swapData}
+                            modeProtocolData={modeProtocolData.swapData}
+                            fraxtalProtocolData={fraxtalProtocolData.swapData}
                             isUSD={false}
                         />
                     </Grid> ) : (

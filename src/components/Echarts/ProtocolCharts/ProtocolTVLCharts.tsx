@@ -32,6 +32,8 @@ interface ProtocolAreaChartProps {
     gnosisData: number[],
     avalancheData: number[],
     baseData: number[],
+    modeData: number[],
+    fraxtalData: number[],
     xAxis: string[],
 }
 
@@ -44,6 +46,8 @@ export default function ProtocolTVLCharts({
                                               gnosisData,
                                               avalancheData,
                                               baseData,
+                                              modeData,
+                                              fraxtalData,
                                               xAxis }: ProtocolAreaChartProps) {
 
 
@@ -57,7 +61,10 @@ export default function ProtocolTVLCharts({
             '#3a0f5d',
             '#0d8e74',
             '#F01B36',
-            '#0021a2'],
+            '#0021a2',
+            '#b7ff00',
+            '#8a8a8a'
+        ],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -70,7 +77,7 @@ export default function ProtocolTVLCharts({
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Mode', 'Fraxtal'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -325,13 +332,77 @@ export default function ProtocolTVLCharts({
                 },
                 data: baseData
             },
+            {
+                name: 'Mode',
+                type: 'line',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.95,
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(183,255,0)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(132,181,1)'
+                        }
+                    ])
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
+                data: modeData
+            },
+            {
+                name: 'Fraxtal',
+                type: 'line',
+                stack: 'Total',
+                smooth: true,
+                lineStyle: {
+                    width: 0
+                },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.95,
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(138,138,138)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(101,101,101)'
+                        }
+                    ])
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                tooltip: {
+                    valueFormatter: function (value: number) {
+                        return formatDollarAmount(value)
+                    }
+                },
+                data: fraxtalData
+            },
         ]
     };
 
     const onChartHover = (params: any) => {
         console.log('Chart mouse trigger params:', params);
       };
-    
+
       const onEvents = {
         mousemove: onChartHover,
       };
