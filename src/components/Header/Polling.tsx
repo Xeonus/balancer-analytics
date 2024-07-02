@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from '@mui/material/styles'
 import { green, orange } from '@mui/material/colors';
-import { useActiveNetworkVersion, useSubgraphStatus } from '../../state/application/hooks'
+import {useActiveNetworkVersion, useClients, useSubgraphStatus} from '../../state/application/hooks'
 import { getEtherscanLink } from '../../utils'
 import {EthereumNetworkInfo, PolygonZkEVMNetworkInfo} from '../../constants/networks'
 import { Link, CircularProgress, Box, IconButton } from '@mui/material'
 import useLatestAlchemyBlock from "../../data/blocks/useLatestAlchemyBlock";
 import {ALCHEMY_URL_ZKEVM} from "../../data/balancer/constants";
+import {useLatestBlock} from "../../data/blocks/useLatestBlock";
 
 
 export default function Polling() {
     const theme = useTheme()
     const mode = theme.palette.mode;
     const [activeNetwork] = useActiveNetworkVersion()
-    const [status] = useSubgraphStatus()
+    const { blockClient } = useClients();
     const [isMounted, setIsMounted] = useState(true)
-    const latestBlock = activeNetwork === EthereumNetworkInfo ? status.headBlock : status.syncedBlock
-    //TODO: Fix logic for all chains here!
+    const { blockNumber, loading } = useLatestBlock(blockClient);
     const latestAlchemyBlock = useLatestAlchemyBlock(ALCHEMY_URL_ZKEVM)
-    const activeBlock = (latestAlchemyBlock && activeNetwork === PolygonZkEVMNetworkInfo ) ? latestAlchemyBlock : latestBlock
-
+    const activeBlock = (latestAlchemyBlock && activeNetwork === PolygonZkEVMNetworkInfo ) ? latestAlchemyBlock : blockNumber
     useEffect(
         () => {
             const timer1 = setTimeout(() => setIsMounted(true), 1000)
@@ -30,7 +29,7 @@ export default function Polling() {
                 clearTimeout(timer1)
             }
         },
-        [status] //useEffect will run only one time
+        [loading] //useEffect will run only one time
         //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
     )
 

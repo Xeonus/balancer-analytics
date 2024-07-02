@@ -6,6 +6,8 @@ import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
 import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
 import AVALANCHE_LOGO_URL from '../assets/svg/avalancheLogo.svg'
 import BASE_LOGO_URL from '../assets/svg/base.svg'
+import MODE_LOGO_URL from '../assets/svg/mode.svg'
+import FRAXTAL_LOGO_URL from '../assets/svg/fraxtal.svg'
 
 import {
   ALCHEMY_KEY,
@@ -23,6 +25,8 @@ export enum SupportedNetwork {
   ZKEVM,
   AVALANCHE,
   BASE,
+  MODE,
+  FRAXTAL
 }
 
 export type NetworkInfo = {
@@ -226,6 +230,56 @@ export const BaseNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
+export const ModeNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.MODE,
+  chainId: '34443',
+  v3NetworkID: 'MODE',
+  coingeckoId: 'mode',
+  debankId: 'mode',
+  balAddress: '0xd08a2917653d4e460893203471f0000826fb4034',
+  feeCollectorThreshold: 5000,
+  route: 'mode',
+  name: 'Mode',
+  startTimeStamp: 1718834400,
+  appUri: 'https://app.balancer.fi/#/mode/',
+  clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-mode-v2/version/latest',
+  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-mode/version/latest',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '',
+  blockClientUri: '',
+  alchemyRPCUrl: 'https://mainnet.mode.network/',
+  alchemyKey: '',
+  bgColor: '#b7ff00',
+  primaryColor: '#84b501',
+  secondaryColor: '#415900',
+  imageURL: MODE_LOGO_URL,
+  blurb: 'Beta',
+}
+
+export const FraxtalNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.FRAXTAL,
+  chainId: '252',
+  v3NetworkID: 'FRAXTAL',
+  coingeckoId: 'fraxtal',
+  debankId: 'fraxtal',
+  balAddress: '0x2fc7447f6cf71f9aa9e7ff8814b37e55b268ec91',
+  feeCollectorThreshold: 5000,
+  route: 'fraxtal',
+  name: 'Fraxtal',
+  startTimeStamp: 1718834400,
+  appUri: 'https://app.balancer.fi/#/fraxtal/',
+  clientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-fraxtal-v2/1.0.0/gn',
+  gaugeClientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-gauges-fraxtal/1.0.0/gn',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '',
+  blockClientUri: '',
+  alchemyRPCUrl: 'https://mainnet.mode.network/',
+  alchemyKey: '',
+  bgColor: '#8a8a8a',
+  primaryColor: '#656565',
+  secondaryColor: '#3c3c3c',
+  imageURL: FRAXTAL_LOGO_URL,
+  blurb: 'Beta',
+}
+
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
@@ -233,5 +287,7 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   PolygonZkEVMNetworkInfo,
   GnosisNetworkInfo,
   AvalancheNetworkInfo,
-  BaseNetworkInfo
+  BaseNetworkInfo,
+  ModeNetworkInfo,
+  FraxtalNetworkInfo
 ]

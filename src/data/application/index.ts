@@ -6,7 +6,7 @@ import {
     ArbitrumNetworkInfo,
     AvalancheNetworkInfo,
     BaseNetworkInfo,
-    EthereumNetworkInfo,
+    EthereumNetworkInfo, FraxtalNetworkInfo, ModeNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
@@ -69,6 +69,10 @@ export function useFetchedSubgraphStatus(): {
                                     ? 'lynnshaoyu/avalanche-blocks'
                                     : activeNetwork === BaseNetworkInfo
                                         ? 'query/48427/bleu-base-blocks/version/latest'
+                                        : activeNetwork === ModeNetworkInfo
+                                            ? 'query/48427/bleu-mode-blocks/version/latest'
+                                            : activeNetwork === FraxtalNetworkInfo
+                                                ? 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/fraxtal-blocks/1.0.0/gn'
                                         : 'x0swapsubgraph/xdai-blocks'
         },
     });

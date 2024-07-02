@@ -5,8 +5,8 @@ import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { SupportedChainId } from '@uniswap/sdk-core';
 import {
-    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
-    GnosisNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo, FraxtalNetworkInfo,
+    GnosisNetworkInfo, ModeNetworkInfo,
     NetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
@@ -126,6 +126,44 @@ export function getEtherscanLink(
 
     if (networkVersion === BaseNetworkInfo) {
         prefix = 'https://basescan.org/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === ModeNetworkInfo) {
+        prefix = 'https://modescan.io/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === FraxtalNetworkInfo) {
+        prefix = 'https://fraxscan.com/';
         switch (type) {
             case 'transaction': {
                 return `${prefix}/tx/${data}`;

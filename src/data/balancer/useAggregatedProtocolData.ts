@@ -6,7 +6,7 @@ import {
     GnosisNetworkInfo,
     PolygonZkEVMNetworkInfo,
     AvalancheNetworkInfo,
-    BaseNetworkInfo
+    BaseNetworkInfo, ModeNetworkInfo, FraxtalNetworkInfo
 } from '../../constants/networks';
 import {
     blockClient,
@@ -22,7 +22,7 @@ import {
     avalancheBlockClient,
     avalancheClient,
     baseBlockClient,
-    baseClient,
+    baseClient, modeBlockClient, modeClient, fraxtalBlockClient, fraxtalClient,
 } from '../../apollo/client';
 import { ProtocolData } from './useProtocolDataWithClientOverride';
 import { getUnixTimestamp1000DaysAgo } from "../../utils/date";
@@ -36,6 +36,8 @@ export interface AggregatedProtocolData {
     gnosisData: ProtocolData,
     avalancheData: ProtocolData,
     baseData: ProtocolData,
+    modeData: ProtocolData,
+    fraxtalData: ProtocolData,
     volume: number;
     volumeChange: number;
     fees24: number;
@@ -94,6 +96,8 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.clientUri, startDate, baseBlockClient, baseClient),
+        useBalancerChainProtocolData(ModeNetworkInfo.clientUri, startDate, modeBlockClient, modeClient),
+        useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];
 
     // Aggregate numeric metrics
@@ -123,6 +127,8 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         gnosisData: protocolsData[4],
         avalancheData: protocolsData[5],
         baseData: protocolsData[6],
+        modeData: protocolsData[7],
+        fraxtalData: protocolsData[8],
         volume,
         volumeChange,
         fees24,
