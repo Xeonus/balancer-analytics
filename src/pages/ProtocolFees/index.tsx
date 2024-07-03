@@ -76,14 +76,13 @@ export default function ProtocolFees() {
     //const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
-    const polygonUnpruned = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2'
     const [feeDelta, setFeeDelta] = React.useState<PoolFeeSnapshotData | undefined>();
     const corePools = useGetCorePoolCurrentFees();
     const historicalNetworkFees = useGetCollectedFees(unixToDate(startDate))
     console.log("historicalNetworkFees", historicalNetworkFees)
-    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork === PolygonNetworkInfo ? polygonUnpruned : activeNetwork.clientUri, startTimestamp)
+    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
-    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork === PolygonNetworkInfo ? polygonUnpruned : activeNetwork.clientUri, endTimeStamp)
+    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
 
     //Mimic fee settings
