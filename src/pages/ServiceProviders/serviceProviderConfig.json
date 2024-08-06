@@ -769,7 +769,7 @@
       "short_description": "We're a group of developers, researchers, data scientists, investors, and executive leaders. We have something in common though, we all love building cool sh*t.",
       "site_url": "https://defi.sucks/",
       "img_ref": "wonderlandSP.png",
-      "sunset": false,
+      "sunset": true,
       "budgets": [
         {
           "year": 2024,
@@ -794,26 +794,6 @@
         {
           "year": 2024,
           "quarter": 3,
-          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x9fe1a6db598e3224b84219228becf87861a29e8e6ae0409c66dde5e67c4919c2",
-          "budget_requested": {
-            "USDC": 90000,
-            "BAL": 0,
-            "BAL_VESTED": 0
-          }
-        },
-        {
-          "year": 2024,
-          "quarter": 4,
-          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x9fe1a6db598e3224b84219228becf87861a29e8e6ae0409c66dde5e67c4919c2",
-          "budget_requested": {
-            "USDC": 90000,
-            "BAL": 0,
-            "BAL_VESTED": 0
-          }
-        },
-        {
-          "year": 2025,
-          "quarter": 1,
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x9fe1a6db598e3224b84219228becf87861a29e8e6ae0409c66dde5e67c4919c2",
           "budget_requested": {
             "USDC": 90000,
