@@ -25,7 +25,7 @@ import {getUnixTimestamp1000DaysAgo} from "../../utils/date";
 export default function Chain() {
 
     const [activeNetwork] = useActiveNetworkVersion()
-    const protocolData = useBalancerChainProtocolData(activeNetwork.clientUri, getUnixTimestamp1000DaysAgo());
+    const protocolData = useBalancerChainProtocolData(activeNetwork.decentralicedClientUri, getUnixTimestamp1000DaysAgo());
     const poolData = useBalancerPools(20);
 
 

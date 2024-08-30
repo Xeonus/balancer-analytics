@@ -43,7 +43,7 @@ export default function Tokens() {
     });
 
 
-    //Create bar chart data for token distribution
+    //Create bar chart data for token distribution‡
     const tokenBarChartData: BalancerChartDataItem[] = [];
     sortedTokenDats.map((token) =>
         tokenBarChartData.push(
@@ -93,8 +93,8 @@ export default function Tokens() {
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
                     container
-                    sx={{ 
-                        direction: { xs: 'column', sm: 'row' } 
+                    sx={{
+                        direction: { xs: 'column', sm: 'row' }
                     }}
                     justifyContent="center"
                     alignItems="left"
@@ -108,7 +108,7 @@ export default function Tokens() {
                             xs={10}
                             md={5}
                         >
-                                
+
                                     <Card
                                         sx={{ boxShadow: 3 }}
                                     >
@@ -119,7 +119,7 @@ export default function Tokens() {
                                             lineChartName={'Trading Fees 24h'}
                                             rotateAxis={true} />
                                     </Card>
-                                
+
 
                             </Grid> : null}
                         <Grid

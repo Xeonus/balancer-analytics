@@ -80,9 +80,9 @@ export default function ProtocolFees() {
     const corePools = useGetCorePoolCurrentFees();
     const historicalNetworkFees = useGetCollectedFees(unixToDate(startDate))
     console.log("historicalNetworkFees", historicalNetworkFees)
-    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
+    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
-    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
+    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
 
     //Mimic fee settings

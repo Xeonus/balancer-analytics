@@ -71,9 +71,9 @@ export default function Reports() {
     const collectedFees = useGetCollectedFeesSummary()
 
     //----Fee data---
-    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
+    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
-    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
+    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
     if (currentFeeSnapshot && pastFeeSnapshot) {
         const feeDelta = getSnapshotFees(currentFeeSnapshot, pastFeeSnapshot, endTimeStamp)

@@ -113,11 +113,11 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
                     first: first,
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 }
             });
         }
-    }, [block24, first, activeNetwork.clientUri, startunixTime, endunixTime]);
+    }, [block24, first, activeNetwork.decentralicedClientUri, startunixTime, endunixTime]);
 
     if (!data) {
         return [];
@@ -182,7 +182,7 @@ export function useBalancerSwapFeePoolData(startTimestamp: number, endTimeStamp:
     const { data } = useBalancerPoolSwapFeeSnapshotQuery({
         variables: { startTimestamp: startTimestamp, endTimeStamp: endTimeStamp },
         context: {
-            uri: activeNetwork.clientUri,
+            uri: activeNetwork.decentralicedClientUri,
         }
     });
 
@@ -226,7 +226,7 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
 
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 }
             });
         }
@@ -306,7 +306,7 @@ export function useBalancerPoolPageData(poolId: string): {
     const { data } = useGetPoolChartDataQuery({
         variables: { poolId, startTimestamp: activeNetwork.startTimeStamp },
         context: {
-            uri: activeNetwork.clientUri,
+            uri: activeNetwork.decentralicedClientUri,
         },
     });
 

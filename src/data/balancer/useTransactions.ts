@@ -28,7 +28,7 @@ export function useBalancerTransactionData(
                     startTimestamp: activeNetwork.startTimeStamp,
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 },
             });
         }

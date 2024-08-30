@@ -41,7 +41,7 @@ export function useBalancerProtocolData(): ProtocolData {
                     block48: { number: parseInt(block48.number) },
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 },
             });
         }

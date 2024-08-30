@@ -89,12 +89,12 @@ const aggregateChartData = (protocolsData: ProtocolData[], metricKey: keyof Prot
 export default function useAggregatedProtocolData(): AggregatedProtocolData {
     const startDate = getUnixTimestamp1000DaysAgo();
     const protocolsData = [
-        useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, startDate, blockClient, client),
-        useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, startDate, arbitrumBlockClient, arbitrumClient),
-        useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, startDate, polygonBlockClient, polygonClient),
+        useBalancerChainProtocolData(EthereumNetworkInfo.decentralicedClientUri, startDate, blockClient, client),
+        useBalancerChainProtocolData(ArbitrumNetworkInfo.decentralicedClientUri, startDate, arbitrumBlockClient, arbitrumClient),
+        useBalancerChainProtocolData(PolygonNetworkInfo.decentralicedClientUri, startDate, polygonBlockClient, polygonClient),
         useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, startDate, polygonZKEVMBlockClient, polygonZKEVMClient),
-        useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, startDate, gnosisBlockClient, gnosisClient),
-        useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, startDate, avalancheBlockClient, avalancheClient),
+        useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
+        useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.clientUri, startDate, baseBlockClient, baseClient),
         useBalancerChainProtocolData(ModeNetworkInfo.clientUri, startDate, modeBlockClient, modeClient),
         useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
