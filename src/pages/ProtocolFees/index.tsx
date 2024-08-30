@@ -80,9 +80,9 @@ export default function ProtocolFees() {
     const corePools = useGetCorePoolCurrentFees();
     const historicalNetworkFees = useGetCollectedFees(unixToDate(startDate))
     console.log("historicalNetworkFees", historicalNetworkFees)
-    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, startTimestamp)
+    const currentFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, startTimestamp)
     console.log("currentFeeSnapshot", currentFeeSnapshot)
-    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.clientUri, endTimeStamp)
+    const pastFeeSnapshot = useBalancerPoolFeeSnapshotData(activeNetwork.decentralicedClientUri, endTimeStamp)
     console.log("pastFeeSnapshot", pastFeeSnapshot)
 
     //Mimic fee settings
@@ -90,20 +90,20 @@ export default function ProtocolFees() {
     let sweepThreshold = 100
     if (historicalNetworkFees && historicalNetworkFees.mainnet) {
         if (activeNetwork.v3NetworkID.toLowerCase() === 'mainnet') {
-            networkFees = historicalNetworkFees.mainnet
+            networkFees = historicalNetworkFees.mainnet / 1000000
             sweepThreshold = 1000
         } else if (activeNetwork.v3NetworkID.toLowerCase() === 'arbitrum') {
-            networkFees = historicalNetworkFees.arbitrum
+            networkFees = historicalNetworkFees.arbitrum / 1000000
         } else if (activeNetwork.v3NetworkID.toLowerCase() === 'polygon') {
-            networkFees = historicalNetworkFees.polygon
+            networkFees = historicalNetworkFees.polygon / 1000000
         } else if (activeNetwork.v3NetworkID.toLowerCase() === 'avalanche') {
-            networkFees = historicalNetworkFees.avalanche
+            networkFees = historicalNetworkFees.avalanche / 1000000
         } else if (activeNetwork.v3NetworkID.toLowerCase() === 'base') {
-            networkFees = historicalNetworkFees.base
+            networkFees = historicalNetworkFees.base / 1000000
         } else if (activeNetwork.v3NetworkID.toLowerCase() === 'gnosis') {
-            networkFees = historicalNetworkFees.gnosis
+            networkFees = historicalNetworkFees.gnosis / 1000000
         } else {
-            networkFees = historicalNetworkFees.mainnet
+            networkFees = historicalNetworkFees.mainnet / 1000000
             sweepThreshold = 1000
         }
     }

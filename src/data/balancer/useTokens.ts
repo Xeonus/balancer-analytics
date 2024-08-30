@@ -89,11 +89,11 @@ export function useBalancerTokens(first = 100) {
                     first: first,
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 },
             });
         }
-    }, [block24, activeNetwork.clientUri, first, getTokenData]);
+    }, [block24, activeNetwork.decentralicedClientUri, first, getTokenData]);
 
     if (!data || pricesLoading) {
         return [];
@@ -166,7 +166,7 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
                     block24: { number: parseInt(block24.number) },
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: activeNetwork.decentralicedClientUri,
                 },
             });
         }
@@ -268,7 +268,7 @@ export function useBalancerTokenPageData(address: string): {
     const { data } = useGetTokenPageDataQuery({
         variables: { address, startTimestamp: activeNetwork.startTimeStamp },
         context: {
-            uri: activeNetwork.clientUri,
+            uri: activeNetwork.decentralicedClientUri,
         },
     });
     const [coingeckoSnapshotData, setCoingeckoSnapshotData] = useState<CoingeckoSnapshotPriceData>();

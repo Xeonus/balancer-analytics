@@ -13,7 +13,7 @@ export default function useGetPoolUserBalances(poolId: string, gaugeId = ''): Us
 
     const { data  } = useGetUserPoolBalancesQuery({
         context: {
-            uri: activeNetwork.clientUri,
+            uri: activeNetwork.decentralicedClientUri,
         },
         variables: {
             poolId: poolId,

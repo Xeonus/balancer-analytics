@@ -27,7 +27,7 @@ export const blockClient = new ApolloClient({
 });
 
 export const client = new ApolloClient({
-    uri: EthereumNetworkInfo.clientUri,
+    uri: EthereumNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
@@ -55,7 +55,7 @@ export const client = new ApolloClient({
 });
 
 export const arbitrumClient = new ApolloClient({
-    uri: ArbitrumNetworkInfo.clientUri,
+    uri: ArbitrumNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
       typePolicies: {
         Token: {
@@ -98,7 +98,7 @@ export const arbitrumClient = new ApolloClient({
   })
 
   export const polygonClient = new ApolloClient({
-    uri: PolygonNetworkInfo.clientUri,
+    uri: PolygonNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
       typePolicies: {
         Token: {
@@ -184,7 +184,7 @@ export const polygonZKEVMBlockClient = new ApolloClient({
 })
 
   export const gnosisClient = new ApolloClient({
-    uri: GnosisNetworkInfo.clientUri,
+    uri: GnosisNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
       typePolicies: {
         Token: {
@@ -242,7 +242,7 @@ export const avalancheBlockClient = new ApolloClient({
 })
 
 export const avalancheClient = new ApolloClient({
-    uri: AvalancheNetworkInfo.clientUri,
+    uri: AvalancheNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
@@ -285,7 +285,7 @@ export const baseBlockClient = new ApolloClient({
 })
 
 export const baseClient = new ApolloClient({
-    uri: BaseNetworkInfo.clientUri,
+    uri: BaseNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
