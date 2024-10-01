@@ -35,7 +35,7 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     const currentTime = Date.now() ;
 
                     const balTsPrice = historicalBALCoinData?.find(el => el.time === unixToDate(timestampCurrentRound) ? el.value : 0)
-                    const provider = new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com');
+                    const provider = new ethers.providers.JsonRpcProvider('https://rpc.mevblocker.io/fast');
                     const balPrice = balTsPrice ? balTsPrice.value : coinData.data[balAddress].price
                     console.log("BAL price: ", balPrice)
                     const balTokenAdminAddress = '0xf302f9F50958c5593770FDf4d4812309fF77414f';

@@ -6,6 +6,16 @@ query GetTokenPrice($address: String!, $chain: GqlChain!){
     }
 }
 
+query GetTokenSetHistoricalPrices($addresses: [String!]!, $chain: GqlChain!) {
+    tokenGetHistoricalPrices(addresses: $addresses, chain: $chain, range: ONE_YEAR,) {
+        address
+        prices {
+            price
+            timestamp
+        }
+    }
+}
+
 query TokenGetCurrentPrices($chains: [GqlChain!]) {
     tokenGetCurrentPrices(chains: $chains) {
         address
