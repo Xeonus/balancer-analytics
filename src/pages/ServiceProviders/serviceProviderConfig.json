@@ -102,6 +102,28 @@
             "ETH": 0,
             "BAL_VESTED": 14464
           }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x866d1a8a02edd75b7c0cf882bdae6ad072c2a70d837df46471d52c5840c893ac",
+          "budget_requested": {
+            "USDC": 199067.5,
+            "BAL": 0,
+            "ETH": 0,
+            "BAL_VESTED": 16369
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x866d1a8a02edd75b7c0cf882bdae6ad072c2a70d837df46471d52c5840c893ac",
+          "budget_requested": {
+            "USDC": 199067.5,
+            "BAL": 0,
+            "ETH": 0,
+            "BAL_VESTED": 16369
+          }
         }
       ]
     },
@@ -277,6 +299,26 @@
             "USDC": 36000,
             "BAL": 0,
             "BAL_VESTED": 4386
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x2632be3399adac44b0c25aad08ceeeee5426dcac8e8ac229e87667b59ddc1ecd",
+          "budget_requested": {
+            "USDC": 36000,
+            "BAL": 0,
+            "BAL_VESTED": 3390
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x2632be3399adac44b0c25aad08ceeeee5426dcac8e8ac229e87667b59ddc1ecd",
+          "budget_requested": {
+            "USDC": 36000,
+            "BAL": 0,
+            "BAL_VESTED": 3390
           }
         }
       ]
@@ -474,6 +516,26 @@
             "BAL": 0,
             "BAL_VESTED": 7855.5
           }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x6e655d8f44bf5d8ef9099e981e071d396b21bc3f5b023c1cf416d37b3086c766",
+          "budget_requested": {
+            "USDC": 166662.5,
+            "BAL": 0,
+            "BAL_VESTED": 937.5
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x6e655d8f44bf5d8ef9099e981e071d396b21bc3f5b023c1cf416d37b3086c766",
+          "budget_requested": {
+            "USDC": 166662.5,
+            "BAL": 0,
+            "BAL_VESTED": 937.5
+          }
         }
       ]
     },
@@ -611,6 +673,17 @@
           "budget_requested": {
             "USDC": 6900,
             "BAL": 33527,
+            "WETH": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2024,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0xafca9352e403cf6ddb5a1f99f2ba2f364f5facf7c60ce93415aae1516576f55c",
+          "budget_requested": {
+            "USDC": 7800,
+            "BAL": 46113,
             "WETH": 0,
             "BAL_VESTED": 0
           }
