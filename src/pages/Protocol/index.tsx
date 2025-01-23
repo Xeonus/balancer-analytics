@@ -107,9 +107,6 @@ export default function Protocol() {
     const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, 1706015447, baseBlockClient, baseClient);
     const modeProtocolData = useBalancerChainProtocolData(ModeNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), modeBlockClient, modeClient);
     const fraxtalProtocolData = useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), fraxtalBlockClient, fraxtalClient);
-
-    console.log("polygonZkEVMProtocolData", polygonZkEVMProtocolData)
-    console.log("zkevmendpoint", PolygonZkEVMNetworkInfo.decentralicedClientUri)
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
     const mainnetTVLChange = protocolData.tvlChange ? protocolData.tvlChange : 0
