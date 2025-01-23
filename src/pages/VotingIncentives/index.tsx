@@ -26,6 +26,8 @@ import useGetHistoricalTokenPrice from "../../data/balancer-api-v3/useGetHistori
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import VeBALIncentiveAPRChart from "../../components/Echarts/VotingIncentives/veBALIncentiveAPRChart";
 import {HISTORICAL_VEBAL_PRICE} from "../../constants";
+import {useGetPaladinHistoricalIncentives} from "../../data/paladin/useGetPaladinHistoricalIncentives";
+import CombinedOverviewChart from "../../components/Echarts/VotingIncentives/CombinedOverviewChart";
 import VoteMarketCard from "../../components/Cards/VoteMarketCard";
 
 // Helper functions to parse data types to Llama model
@@ -55,6 +57,66 @@ const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => 
         });
     }
     return poolRewards;
+};
+
+//Combined stats for HH and Paladin
+type CombinedIncentiveData = {
+    dollarPerVlAssetData: number[];
+    totalAmountDollarsData: number[];
+    xAxisData: string[];
+    totalAmountDollarsSum: number;
+};
+
+const combineIncentiveData = (
+    hiddenHandData: CombinedIncentiveData | null,
+    paladinData: CombinedIncentiveData | null
+): CombinedIncentiveData | null => {
+    if (!hiddenHandData && !paladinData) return null;
+    if (!hiddenHandData) return paladinData;
+    if (!paladinData) return hiddenHandData;
+
+    // Create a map of all unique dates
+    const dateMap = new Map<string, number>();
+    hiddenHandData.xAxisData.forEach((date, index) => {
+        dateMap.set(date, index);
+    });
+    paladinData.xAxisData.forEach((date, index) => {
+        if (!dateMap.has(date)) {
+            dateMap.set(date, dateMap.size);
+        }
+    });
+
+    // Sort dates chronologically
+    const sortedDates = Array.from(dateMap.keys()).sort();
+
+    // Initialize arrays for combined data
+    const combinedDollarPerVlAsset: number[] = new Array(sortedDates.length).fill(0);
+    const combinedTotalAmount: number[] = new Array(sortedDates.length).fill(0);
+
+    // Combine Hidden Hand data
+    sortedDates.forEach((date, newIndex) => {
+        const hhIndex = hiddenHandData.xAxisData.indexOf(date);
+        if (hhIndex !== -1) {
+            combinedDollarPerVlAsset[newIndex] += hiddenHandData.dollarPerVlAssetData[hhIndex] || 0;
+            combinedTotalAmount[newIndex] += hiddenHandData.totalAmountDollarsData[hhIndex] || 0;
+        }
+    });
+
+    // Add Paladin data
+    sortedDates.forEach((date, newIndex) => {
+        const palIndex = paladinData.xAxisData.indexOf(date);
+        if (palIndex !== -1) {
+            combinedDollarPerVlAsset[newIndex] += paladinData.dollarPerVlAssetData[palIndex] || 0;
+            combinedTotalAmount[newIndex] += paladinData.totalAmountDollarsData[palIndex] || 0;
+        }
+    });
+
+    return {
+        dollarPerVlAssetData: combinedDollarPerVlAsset,
+        totalAmountDollarsData: combinedTotalAmount,
+        xAxisData: sortedDates,
+        totalAmountDollarsSum: hiddenHandData.totalAmountDollarsSum + paladinData.totalAmountDollarsSum
+    };
 };
 
 
@@ -88,7 +150,10 @@ export default function VotingIncentives() {
     const {emissionValuePerVote, emissionsPerDollarSpent} = useGetEmissionPerVote(currentRoundNew);
     const priceData = HISTORICAL_VEBAL_PRICE
     const { data: veBALHistoricalPrice} = useGetHistoricalTokenPrice('0x5c6ee304399dbdb9c8ef030ab642b10820db8f56', 'MAINNET')
-    //console.log("veBALHistoricalPrice", veBALHistoricalPrice)
+
+    //Paladin data
+    const paladinHistoricalData = useGetPaladinHistoricalIncentives();
+    console.log("paladinData", paladinHistoricalData);
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -192,6 +257,19 @@ export default function VotingIncentives() {
         }
     });
 
+    // Add Paladin data preparation
+    let paladinDollarPerVlAssetData: number[] = [];
+    let paladinTotalAmountDollarsData: number[] = [];
+    let paladinXAxisData: string[] = [];
+    let paladinTotalAmountDollarsSum = 0;
+
+    if (paladinHistoricalData.historicalData) {
+        paladinDollarPerVlAssetData = paladinHistoricalData.historicalData.dollarPerVlAssetData;
+        paladinTotalAmountDollarsData = paladinHistoricalData.historicalData.totalAmountDollarsData;
+        paladinXAxisData = paladinHistoricalData.historicalData.xAxisData;
+        paladinTotalAmountDollarsSum = paladinHistoricalData.historicalData.totalAmountDollarsSum;
+    }
+
     return (<>
             {(  !historicalData
                 || !hiddenHandData.incentives
@@ -199,6 +277,7 @@ export default function VotingIncentives() {
                 || !totalAmountDollarsSum
                 || incentivePerVote === 0
                 || roundIncentives === 0
+                || paladinHistoricalData.loading
             ) ? (
                 <Grid
                     container
@@ -276,7 +355,10 @@ export default function VotingIncentives() {
                             </Grid>
                         </Grid>
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '24px'}}>Historical Incentives on Hidden Hand</Typography>
+                            <Typography sx={{fontSize: '24px'}}>Overview</Typography>
+                        </Grid>
+                        <Grid item xs={11} sm={9}>
+                            <Typography sx={{fontSize: '15px'}}>Hidden Hand Marketplace</Typography>
                         </Grid>
                         {dollarPerVlAssetData && totalAmountDollarsData && xAxisData ?
                             <Grid item xs={11} sm={9}>
@@ -285,6 +367,21 @@ export default function VotingIncentives() {
                                         dollarPerVlAssetData={dollarPerVlAssetData}
                                         totalAmountDollarsData={totalAmountDollarsData}
                                         xAxisData={xAxisData}
+                                        height="400px"
+                                    />
+                                </Card>
+                            </Grid>
+                            : <CircularProgress/>}
+                        <Grid item xs={11} sm={9}>
+                            <Typography sx={{fontSize: '15px'}}>Paladin Quest Marketplace</Typography>
+                        </Grid>
+                        {paladinDollarPerVlAssetData && paladinTotalAmountDollarsData && paladinXAxisData ?
+                            <Grid item xs={11} sm={9}>
+                                <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
+                                    <DashboardOverviewChart
+                                        dollarPerVlAssetData={paladinDollarPerVlAssetData}
+                                        totalAmountDollarsData={paladinTotalAmountDollarsData}
+                                        xAxisData={paladinXAxisData}
                                         height="400px"
                                     />
                                 </Card>
