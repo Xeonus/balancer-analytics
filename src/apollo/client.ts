@@ -141,7 +141,7 @@ export const polygonBlockClient = new ApolloClient({
 })
 
 export const polygonZKEVMClient = new ApolloClient({
-    uri: PolygonZkEVMNetworkInfo.clientUri,
+    uri: PolygonZkEVMNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
@@ -169,7 +169,7 @@ export const polygonZKEVMClient = new ApolloClient({
 })
 
 export const polygonZKEVMBlockClient = new ApolloClient({
-    uri: 'https://api.studio.thegraph.com/query/48427/bleu-polygon-zkevm-blocks/version/latest',
+    uri: PolygonZkEVMNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {

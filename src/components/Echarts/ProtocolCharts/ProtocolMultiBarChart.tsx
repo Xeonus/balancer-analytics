@@ -114,10 +114,10 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
 
     let fraxtalData = fraxtalProtocolData.map(el => Number(el.value.toFixed(2)));
 
-    if (mainnetData && modeData) {
+    if (mainnetData && fraxtalData) {
         const diffSize = mainnetData.length - fraxtalData.length;
         const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        modeData = zeroArray.concat(fraxtalData);
+        fraxtalData = zeroArray.concat(fraxtalData);
     }
 
     //Generic x-Axis
@@ -129,7 +129,7 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
     const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);
     const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
-    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonData);
+    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonZkEVMData);
     const [rangedGnosisData, setrangedGnosisnData] = React.useState(gnosisData);
     const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
     const [rangedBaseData, setRangedBasenData] = React.useState(baseData);
@@ -232,8 +232,8 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
                 gnosisData={rangedGnosisData}
                 avalancheData={rangedAvalancheData}
                 baseData={rangedBaseData}
-                modeData={modeData}
-                fraxtalData={fraxtalData}
+                modeData={rangedModeData}
+                fraxtalData={rangedFraxtalData}
                 xAxis={rangedxAxis}
                 isUSD={isUSD}
                 />

@@ -408,7 +408,7 @@ export default function ProtocolTVLCharts({
       };
 
     return (
-        mainnetData.length > 1 && arbitrumData.length > 1 && polygonData.length > 1 && xAxis ?
+        mainnetData.length > 1 && arbitrumData.length > 1 && polygonData.length > 1 && baseData.length > 1 && xAxis ?
             <ReactEcharts
                 option={option}
                 style={{ height: '350px' }}

@@ -101,13 +101,15 @@ export default function Protocol() {
     console.log("protocolData", protocolData)
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), arbitrumBlockClient, arbitrumClient);
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonBlockClient, polygonClient);
-    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
+    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.decentralicedClientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient);
     const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient);
-    const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), baseBlockClient, baseClient);
+    const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, 1706015447, baseBlockClient, baseClient);
     const modeProtocolData = useBalancerChainProtocolData(ModeNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), modeBlockClient, modeClient);
     const fraxtalProtocolData = useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), fraxtalBlockClient, fraxtalClient);
 
+    console.log("polygonZkEVMProtocolData", polygonZkEVMProtocolData)
+    console.log("zkevmendpoint", PolygonZkEVMNetworkInfo.decentralicedClientUri)
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
     const mainnetTVLChange = protocolData.tvlChange ? protocolData.tvlChange : 0

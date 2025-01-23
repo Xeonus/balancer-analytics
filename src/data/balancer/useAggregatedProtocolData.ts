@@ -92,7 +92,7 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(EthereumNetworkInfo.decentralicedClientUri, startDate, blockClient, client),
         useBalancerChainProtocolData(ArbitrumNetworkInfo.decentralicedClientUri, startDate, arbitrumBlockClient, arbitrumClient),
         useBalancerChainProtocolData(PolygonNetworkInfo.decentralicedClientUri, startDate, polygonBlockClient, polygonClient),
-        useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.clientUri, startDate, polygonZKEVMBlockClient, polygonZKEVMClient),
+        useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.decentralicedClientUri, startDate, polygonZKEVMBlockClient, polygonZKEVMClient),
         useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.clientUri, startDate, baseBlockClient, baseClient),
