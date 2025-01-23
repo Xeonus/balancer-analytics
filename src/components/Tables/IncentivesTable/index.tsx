@@ -371,7 +371,7 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
                     </Paper>
                 </Box>
                 <Box>
-                    <CSVLink data={downloadData} filename={filename}>
+                    <CSVLink data={downloadData} filename={filename} >
                         <Button sx={{
                             backgroundColor: "background.paper",
                             boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
