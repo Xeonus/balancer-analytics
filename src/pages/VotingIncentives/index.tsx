@@ -26,8 +26,10 @@ import useGetHistoricalTokenPrice from "../../data/balancer-api-v3/useGetHistori
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import VeBALIncentiveAPRChart from "../../components/Echarts/VotingIncentives/veBALIncentiveAPRChart";
 import {HISTORICAL_VEBAL_PRICE} from "../../constants";
-import {useGetPaladinHistoricalIncentives} from "../../data/paladin/useGetPaladinHistoricalIncentives";
 import CombinedOverviewChart from "../../components/Echarts/VotingIncentives/CombinedOverviewChart";
+import {ethers} from "ethers";
+import {useGetPaladinHistoricalQuests} from "../../data/paladin/useGetPaladinHistoricalQuests";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 import VoteMarketCard from "../../components/Cards/VoteMarketCard";
 
 // Helper functions to parse data types to Llama model
