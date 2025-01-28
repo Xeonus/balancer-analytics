@@ -2,7 +2,7 @@ import {PoolFeeRecord} from "./maxiStaticTypes";
 import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 
-const feeEndpoint = 'https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/gha-fees-report/fee_allocator/allocations/current_fees.csv'
+const feeEndpoint = 'https://raw.githubusercontent.com/BalancerMaxis/protocol_fee_allocator/collect-fees-cron/fee_allocator/allocations/current_fees.csv'
 
 export default function useGetCorePoolCurrentFees () : PoolFeeRecord[] {
 
