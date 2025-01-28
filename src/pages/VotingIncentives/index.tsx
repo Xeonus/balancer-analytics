@@ -26,8 +26,10 @@ import useGetHistoricalTokenPrice from "../../data/balancer-api-v3/useGetHistori
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import VeBALIncentiveAPRChart from "../../components/Echarts/VotingIncentives/veBALIncentiveAPRChart";
 import {HISTORICAL_VEBAL_PRICE} from "../../constants";
-import {useGetPaladinHistoricalIncentives} from "../../data/paladin/useGetPaladinHistoricalIncentives";
 import CombinedOverviewChart from "../../components/Echarts/VotingIncentives/CombinedOverviewChart";
+import {ethers} from "ethers";
+import {useGetPaladinHistoricalQuests} from "../../data/paladin/useGetPaladinHistoricalQuests";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -142,6 +144,8 @@ export default function VotingIncentives() {
     const [emissionVotesTotal, setEmissionVotesTotal] = useState<number>(0);
     const [decoratedGauges, setDecoratedGagues] = useState<BalancerStakingGauges[]>([]);
     const hiddenHandData = useGetHiddenHandVotingIncentives(currentRoundNew === 0 ? '' : String(currentRoundNew));
+    const [paladinHistoricalData, setPaladinHistoricalData] = useState<CombinedIncentiveData | null>(null);
+
     // const currentHiddenHandData = useGetHiddenHandVotingIncentives();
     //const { address } = useAccount();
     //const addressRewards = useGetHiddenHandRewards(address ? address : '')
@@ -151,8 +155,68 @@ export default function VotingIncentives() {
     const { data: veBALHistoricalPrice} = useGetHistoricalTokenPrice('0x5c6ee304399dbdb9c8ef030ab642b10820db8f56', 'MAINNET')
 
     //Paladin data
-    const paladinHistoricalData = useGetPaladinHistoricalIncentives();
-    console.log("paladinData", paladinHistoricalData);
+    const { questData, loading: questsLoading } = useGetPaladinHistoricalQuests();
+    const { data: tokenPrices, loading: pricesLoading } = useGetSimpleTokenPrices(
+        questData ? Array.from(questData.tokenAddresses) : [],
+        'MAINNET'
+    );
+
+    useEffect(() => {
+        // Only process when we have both quest data and token prices
+        if (!questData || !tokenPrices || questsLoading || pricesLoading) {
+            return;
+        }
+
+        const processedData = questData.quests.map(questPeriod => {
+            let periodTotalValue = 0;
+            let totalRewardPerVote = 0;
+            let validQuestCount = 0;
+
+            questPeriod.data.forEach(quest => {
+                // Validate all required fields exist
+                if (!quest.rewardToken || !quest.rewardDistributed || !quest.rewardPerVote) {
+                    return;
+                }
+
+                const rewardTokenPrice = tokenPrices[quest.rewardToken]?.price || 0;
+
+                try {
+                    // Calculate value using token price - wrap in try/catch for safety
+                    const rewardDistributedEther = Number(ethers.utils.formatEther(quest.rewardDistributed || '0'));
+                    const rewardValueUSD = rewardDistributedEther * rewardTokenPrice;
+                    periodTotalValue += rewardValueUSD;
+
+                    // Calculate reward per vote in USD
+                    const questRewardPerVote = Number(ethers.utils.formatEther(quest.rewardPerVote || '0'));
+                    const rewardPerVoteUSD = questRewardPerVote * rewardTokenPrice;
+                    totalRewardPerVote += rewardPerVoteUSD;
+                    validQuestCount++;
+                } catch (error) {
+                    console.error('Error processing quest:', error);
+                    // Continue to next quest if there's an error
+                    return;
+                }
+            });
+
+            return {
+                totalValue: periodTotalValue,
+                valuePerVote: validQuestCount > 0 ? totalRewardPerVote / validQuestCount : 0,
+                xAxis: unixToDate(questPeriod.timestamp)
+            };
+        });
+
+        const totalValueList = processedData.map(result => result.totalValue);
+        const valuePerVoteList = processedData.map(result => result.valuePerVote);
+        const xAxisData = processedData.map(result => result.xAxis);
+        const totalAmountDollarsSum = totalValueList.reduce((acc, curr) => acc + curr, 0);
+
+        setPaladinHistoricalData({
+            dollarPerVlAssetData: valuePerVoteList,
+            totalAmountDollarsData: totalValueList,
+            totalAmountDollarsSum,
+            xAxisData
+        });
+    }, [JSON.stringify(questData), JSON.stringify(tokenPrices), questsLoading, pricesLoading]);
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -262,11 +326,11 @@ export default function VotingIncentives() {
     let paladinXAxisData: string[] = [];
     let paladinTotalAmountDollarsSum = 0;
 
-    if (paladinHistoricalData.historicalData) {
-        paladinDollarPerVlAssetData = paladinHistoricalData.historicalData.dollarPerVlAssetData;
-        paladinTotalAmountDollarsData = paladinHistoricalData.historicalData.totalAmountDollarsData;
-        paladinXAxisData = paladinHistoricalData.historicalData.xAxisData;
-        paladinTotalAmountDollarsSum = paladinHistoricalData.historicalData.totalAmountDollarsSum;
+    if (paladinHistoricalData) {
+        paladinDollarPerVlAssetData = paladinHistoricalData.dollarPerVlAssetData;
+        paladinTotalAmountDollarsData = paladinHistoricalData.totalAmountDollarsData;
+        paladinXAxisData = paladinHistoricalData.xAxisData;
+        paladinTotalAmountDollarsSum = paladinHistoricalData.totalAmountDollarsSum;
     }
 
     return (<>
@@ -276,7 +340,7 @@ export default function VotingIncentives() {
                 || !totalAmountDollarsSum
                 || incentivePerVote === 0
                 || roundIncentives === 0
-                || paladinHistoricalData.loading
+                || paladinHistoricalData
             ) ? (
                 <Grid
                     container

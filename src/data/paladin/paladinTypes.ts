@@ -34,3 +34,11 @@ export const PALADIN_CHAINS = {
     ETHEREUM: 1,
     ARBITRUM: 42161
 } as const;
+
+export interface RawHistoricalQuestData {
+    quests: {
+        timestamp: number;
+        data: PaladinQuest[];
+    }[];
+    tokenAddresses: Set<string>;
+}
