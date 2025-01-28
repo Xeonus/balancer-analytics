@@ -1,7 +1,7 @@
 import {Box, Card, CircularProgress, Grid, MenuItem, Select, Typography} from "@mui/material";
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {SelectChangeEvent} from "@mui/material/Select";
 import NavCrumbs, {NavElement} from "../../components/NavCrumbs";
 import DashboardOverviewChart from "../../components/Echarts/VotingIncentives/DashboardOverviewChart";
@@ -30,6 +30,10 @@ import CombinedOverviewChart from "../../components/Echarts/VotingIncentives/Com
 import {ethers} from "ethers";
 import {useGetPaladinHistoricalQuests} from "../../data/paladin/useGetPaladinHistoricalQuests";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
+import {
+    getTokenPriceAtTimestamp,
+    useGetHistoricalTokenPricesAggregated
+} from "../../data/balancer-api-v3/useGetHistoricalTokenPricesAggregated";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -125,6 +129,36 @@ export type PoolReward = {
     pool: string;
     [token: string]: string | number; // this represents any number of token properties with their corresponding `amountDollars` value
 };
+
+// Helper function to find the nearest price for a given timestamp
+const findNearestPrice = (
+    prices: { [key: string]: { price: number } },
+    timestamp: number,
+    tokenAddress: string
+): number => {
+    if (!prices[tokenAddress]) return 0;
+
+    const targetDate = new Date(timestamp * 1000);
+    let nearestDate = null;
+    let nearestPrice = 0;
+    let smallestDiff = Infinity;
+
+    // Iterate through all available dates for this token
+    Object.entries(prices[tokenAddress]).forEach(([dateStr, priceData]) => {
+        const currentDate = new Date(dateStr);
+        const timeDiff = Math.abs(currentDate.getTime() - targetDate.getTime());
+
+        if (timeDiff < smallestDiff) {
+            smallestDiff = timeDiff;
+            nearestDate = dateStr;
+            nearestPrice = priceData;
+        }
+    });
+
+    return nearestPrice;
+};
+
+
 export default function VotingIncentives() {
     const homeNav: NavElement = {
         name: 'Home',
@@ -145,6 +179,7 @@ export default function VotingIncentives() {
     const [decoratedGauges, setDecoratedGagues] = useState<BalancerStakingGauges[]>([]);
     const hiddenHandData = useGetHiddenHandVotingIncentives(currentRoundNew === 0 ? '' : String(currentRoundNew));
     const [paladinHistoricalData, setPaladinHistoricalData] = useState<CombinedIncentiveData | null>(null);
+    console.log("paladinHistoricalData", paladinHistoricalData);
 
     // const currentHiddenHandData = useGetHiddenHandVotingIncentives();
     //const { address } = useAccount();
@@ -156,14 +191,26 @@ export default function VotingIncentives() {
 
     //Paladin data
     const { questData, loading: questsLoading } = useGetPaladinHistoricalQuests();
-    const { data: tokenPrices, loading: pricesLoading } = useGetSimpleTokenPrices(
+    const questTimestamps = useMemo(() => {
+        if (!questData) return [];
+        return Array.from(new Set(questData.quests.map(q => q.timestamp)));
+    }, [questData]);
+
+    // Use the new hook for historical price data
+    const {
+        priceData: historicalTokenPrices,
+        loading: pricesLoading
+    } = useGetHistoricalTokenPricesAggregated(
         questData ? Array.from(questData.tokenAddresses) : [],
-        'MAINNET'
+        questTimestamps
     );
+
+    console.log("questData", questData);
+    console.log("historicalTokenPrices", historicalTokenPrices)
 
     useEffect(() => {
         // Only process when we have both quest data and token prices
-        if (!questData || !tokenPrices || questsLoading || pricesLoading) {
+        if (!questData || !historicalTokenPrices || questsLoading || pricesLoading) {
             return;
         }
 
@@ -178,22 +225,31 @@ export default function VotingIncentives() {
                     return;
                 }
 
-                const rewardTokenPrice = tokenPrices[quest.rewardToken]?.price || 0;
-
                 try {
-                    // Calculate value using token price - wrap in try/catch for safety
+                    // Get historical price for this token at this timestamp
+                    const tokenPrice = getTokenPriceAtTimestamp(
+                        historicalTokenPrices,
+                        quest.rewardToken,
+                        questPeriod.timestamp
+                    );
+
+                    if (tokenPrice === 0) {
+                        console.warn(`No price found for token ${quest.rewardToken} at timestamp ${questPeriod.timestamp}`);
+                        return;
+                    }
+
+                    // Calculate value using historical token price
                     const rewardDistributedEther = Number(ethers.utils.formatEther(quest.rewardDistributed || '0'));
-                    const rewardValueUSD = rewardDistributedEther * rewardTokenPrice;
+                    const rewardValueUSD = rewardDistributedEther * tokenPrice;
                     periodTotalValue += rewardValueUSD;
 
                     // Calculate reward per vote in USD
                     const questRewardPerVote = Number(ethers.utils.formatEther(quest.rewardPerVote || '0'));
-                    const rewardPerVoteUSD = questRewardPerVote * rewardTokenPrice;
+                    const rewardPerVoteUSD = questRewardPerVote * tokenPrice;
                     totalRewardPerVote += rewardPerVoteUSD;
                     validQuestCount++;
                 } catch (error) {
-                    console.error('Error processing quest:', error);
-                    // Continue to next quest if there's an error
+                    console.error('Error processing quest:', error, quest);
                     return;
                 }
             });
@@ -205,9 +261,14 @@ export default function VotingIncentives() {
             };
         });
 
-        const totalValueList = processedData.map(result => result.totalValue);
-        const valuePerVoteList = processedData.map(result => result.valuePerVote);
-        const xAxisData = processedData.map(result => result.xAxis);
+        // Filter out periods with no valid data and sort chronologically
+        const validProcessedData = processedData
+            .filter(data => data.totalValue > 0)
+            .sort((a, b) => new Date(a.xAxis).getTime() - new Date(b.xAxis).getTime());
+
+        const totalValueList = validProcessedData.map(result => result.totalValue);
+        const valuePerVoteList = validProcessedData.map(result => result.valuePerVote);
+        const xAxisData = validProcessedData.map(result => result.xAxis);
         const totalAmountDollarsSum = totalValueList.reduce((acc, curr) => acc + curr, 0);
 
         setPaladinHistoricalData({
@@ -216,7 +277,7 @@ export default function VotingIncentives() {
             totalAmountDollarsSum,
             xAxisData
         });
-    }, [JSON.stringify(questData), JSON.stringify(tokenPrices), questsLoading, pricesLoading]);
+    }, [JSON.stringify(questData), JSON.stringify(historicalTokenPrices), questsLoading, pricesLoading]);
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -340,7 +401,7 @@ export default function VotingIncentives() {
                 || !totalAmountDollarsSum
                 || incentivePerVote === 0
                 || roundIncentives === 0
-                || paladinHistoricalData
+                || questsLoading
             ) ? (
                 <Grid
                     container

@@ -1,7 +1,7 @@
 schema:
-  - 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks'
-  - 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2'
-  - 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges'
+  - 'https://gateway-arbitrum.network.thegraph.com/api/' + PROCESS.ENV.PERSONAL_GRAPH_KEY + '/subgraphs/id/9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC'
+  - 'https://gateway-arbitrum.network.thegraph.com/api/' + PROCESS.ENV.PERSONAL_GRAPH_KEY + '/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV'
+  - 'https://api.studio.thegraph.com/query/75376/balancer-gauges/version/latest'
   - 'https://api-v3.balancer.fi/'
 documents:
   - 'src/**/*.gql'

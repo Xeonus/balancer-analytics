@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { GqlChain, useGetTokenPriceQuery } from "../../apollo/generated/graphql-codegen-generated";
-import { balancerV3APIClient } from "../../apollo/client";
-import { BalancerChartDataItem } from "../balancer/balancerTypes";
+import { GqlChain, useGetTokenSetHistoricalPricesQuery } from "../../apollo/generated/graphql-codegen-generated";
 import { unixToDate } from "../../utils/date";
+import {balancerV3APIClient} from "../../apollo/client";
 
 // Token price data with timestamp
 export interface TokenPriceData {
@@ -15,75 +14,78 @@ export const useGetHistoricalTokenPricesAggregated = (
     tokenAddresses: string[],
     timestamps: number[]
 ) => {
-    const [priceData, setPriceData] = useState<TokenPriceData>({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [aggregatedPriceData, setAggregatedPriceData] = useState<TokenPriceData>({});
+
+    // Normalize addresses to lowercase
+    const normalizedAddresses = tokenAddresses.map(addr => addr.toLowerCase());
+
+    // Skip the query if we don't have addresses
+    const { data, loading, error } = useGetTokenSetHistoricalPricesQuery({
+        client: balancerV3APIClient,
+        variables: {
+            addresses: normalizedAddresses,
+            chain: "MAINNET" as GqlChain,
+        },
+        skip: !normalizedAddresses.length,
+    });
 
     useEffect(() => {
-        const fetchPrices = async () => {
-            if (!tokenAddresses.length || !timestamps.length) {
-                setLoading(false);
+        console.log("Token Addresses:", normalizedAddresses);
+        console.log("Timestamps:", timestamps);
+        console.log("Raw Query Data:", data);
+
+        if (loading || error || !timestamps.length) {
+            console.log("Early return due to:", { loading, error, timestampsLength: timestamps.length });
+            return;
+        }
+
+        if (!data?.tokenGetHistoricalPrices) {
+            console.log("No historical prices data");
+            return;
+        }
+
+        const newPriceData: TokenPriceData = {};
+
+        data.tokenGetHistoricalPrices.forEach(tokenData => {
+            if (!tokenData?.prices || !tokenData.address) {
+                console.log("Skipping token due to missing data:", tokenData);
                 return;
             }
 
-            try {
-                setLoading(true);
-                const tokenPrices: TokenPriceData = {};
+            // Store data with lowercase address
+            const normalizedAddress = tokenData.address.toLowerCase();
+            newPriceData[normalizedAddress] = {};
 
-                // Fetch historical prices for each token
-                await Promise.all(
-                    tokenAddresses.map(async (address) => {
-                        const { data } = await balancerV3APIClient.query({
-                            query: useGetTokenPriceQuery.document,
-                            variables: {
-                                address: address,
-                                chain: 'MAINNET' as GqlChain,
-                            },
-                        });
+            // Create a sorted array of all price points for this token
+            const sortedPrices = [...tokenData.prices]
+                .sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
 
-                        if (data?.tokenGetPriceChartData) {
-                            tokenPrices[address] = {};
+            console.log(`Processing prices for token ${normalizedAddress}:`, sortedPrices);
 
-                            // Create a map of all price data points
-                            const pricePoints = new Map<string, number>();
-                            data.tokenGetPriceChartData.forEach(item => {
-                                const dateStr = unixToDate(item.timestamp);
-                                pricePoints.set(dateStr, parseFloat(item.price));
-                            });
+            // For each timestamp we need, find the closest price
+            timestamps.forEach(targetTimestamp => {
+                const dateStr = unixToDate(targetTimestamp);
 
-                            // For each timestamp we care about, find the closest price
-                            timestamps.forEach(timestamp => {
-                                const dateStr = unixToDate(timestamp);
-                                let price = pricePoints.get(dateStr);
+                // Find the closest price point that's not after our target timestamp
+                const closestPrice = sortedPrices
+                    .filter(p => Number(p.timestamp) <= targetTimestamp)
+                    .slice(-1)[0];
 
-                                if (!price) {
-                                    // If no exact match, find the closest previous date
-                                    const sortedDates = Array.from(pricePoints.keys()).sort();
-                                    const closestDate = sortedDates.find(date => date >= dateStr)
-                                        || sortedDates[sortedDates.length - 1];
-                                    price = pricePoints.get(closestDate) || 0;
-                                }
+                newPriceData[normalizedAddress][dateStr] = closestPrice
+                    ? Number(closestPrice.price)
+                    : 0;
+            });
+        });
 
-                                tokenPrices[address][dateStr] = price;
-                            });
-                        }
-                    })
-                );
+        console.log("Setting new price data:", newPriceData);
+        setAggregatedPriceData(newPriceData);
+    }, [data, loading, error, JSON.stringify(timestamps), JSON.stringify(normalizedAddresses)]);
 
-                setPriceData(tokenPrices);
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching historical token prices:', err);
-                setError(err instanceof Error ? err.message : 'Failed to fetch token prices');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPrices();
-    }, [JSON.stringify(tokenAddresses), JSON.stringify(timestamps)]);
-
-    return { priceData, loading, error };
+    return {
+        priceData: aggregatedPriceData,
+        loading,
+        error
+    };
 };
 
 // Helper function to get the price for a specific token at a specific timestamp
@@ -93,5 +95,6 @@ export const getTokenPriceAtTimestamp = (
     timestamp: number
 ): number => {
     const dateStr = unixToDate(timestamp);
-    return priceData[tokenAddress]?.[dateStr] || 0;
+    const normalizedAddress = tokenAddress.toLowerCase();
+    return priceData[normalizedAddress]?.[dateStr] || 0;
 };
