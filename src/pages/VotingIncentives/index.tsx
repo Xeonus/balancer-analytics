@@ -30,6 +30,10 @@ import CombinedOverviewChart from "../../components/Echarts/VotingIncentives/Com
 import {ethers} from "ethers";
 import {useGetPaladinHistoricalQuests} from "../../data/paladin/useGetPaladinHistoricalQuests";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
+import {
+    getTokenPriceAtTimestamp,
+    useGetHistoricalTokenPricesAggregated
+} from "../../data/balancer-api-v3/useGetHistoricalTokenPricesAggregated";
 import VoteMarketCard from "../../components/Cards/VoteMarketCard";
 
 // Helper functions to parse data types to Llama model
@@ -145,6 +149,9 @@ export default function VotingIncentives() {
     const [emissionVotesTotal, setEmissionVotesTotal] = useState<number>(0);
     const [decoratedGauges, setDecoratedGagues] = useState<BalancerStakingGauges[]>([]);
     const hiddenHandData = useGetHiddenHandVotingIncentives(currentRoundNew === 0 ? '' : String(currentRoundNew));
+    const [paladinHistoricalData, setPaladinHistoricalData] = useState<CombinedIncentiveData | null>(null);
+    console.log("paladinHistoricalData", paladinHistoricalData);
+
     // const currentHiddenHandData = useGetHiddenHandVotingIncentives();
     //const { address } = useAccount();
     //const addressRewards = useGetHiddenHandRewards(address ? address : '')
@@ -154,8 +161,94 @@ export default function VotingIncentives() {
     const { data: veBALHistoricalPrice} = useGetHistoricalTokenPrice('0x5c6ee304399dbdb9c8ef030ab642b10820db8f56', 'MAINNET')
 
     //Paladin data
-    const paladinHistoricalData = useGetPaladinHistoricalIncentives();
-    console.log("paladinData", paladinHistoricalData);
+    const { questData, loading: questsLoading } = useGetPaladinHistoricalQuests();
+    const questTimestamps = useMemo(() => {
+        if (!questData) return [];
+        return Array.from(new Set(questData.quests.map(q => q.timestamp)));
+    }, [questData]);
+
+    // Use the new hook for historical price data
+    const {
+        priceData: historicalTokenPrices,
+        loading: pricesLoading
+    } = useGetHistoricalTokenPricesAggregated(
+        questData ? Array.from(questData.tokenAddresses) : [],
+        questTimestamps
+    );
+
+    console.log("questData", questData);
+    console.log("historicalTokenPrices", historicalTokenPrices)
+
+    useEffect(() => {
+        // Only process when we have both quest data and token prices
+        if (!questData || !historicalTokenPrices || questsLoading || pricesLoading) {
+            return;
+        }
+
+        const processedData = questData.quests.map(questPeriod => {
+            let periodTotalValue = 0;
+            let totalRewardPerVote = 0;
+            let validQuestCount = 0;
+
+            questPeriod.data.forEach(quest => {
+                // Validate all required fields exist
+                if (!quest.rewardToken || !quest.rewardDistributed || !quest.rewardPerVote) {
+                    return;
+                }
+
+                try {
+                    // Get historical price for this token at this timestamp
+                    const tokenPrice = getTokenPriceAtTimestamp(
+                        historicalTokenPrices,
+                        quest.rewardToken,
+                        questPeriod.timestamp
+                    );
+
+                    if (tokenPrice === 0) {
+                        console.warn(`No price found for token ${quest.rewardToken} at timestamp ${questPeriod.timestamp}`);
+                        return;
+                    }
+
+                    // Calculate value using historical token price
+                    const rewardDistributedEther = Number(ethers.utils.formatEther(quest.rewardDistributed || '0'));
+                    const rewardValueUSD = rewardDistributedEther * tokenPrice;
+                    periodTotalValue += rewardValueUSD;
+
+                    // Calculate reward per vote in USD
+                    const questRewardPerVote = Number(ethers.utils.formatEther(quest.rewardPerVote || '0'));
+                    const rewardPerVoteUSD = questRewardPerVote * tokenPrice;
+                    totalRewardPerVote += rewardPerVoteUSD;
+                    validQuestCount++;
+                } catch (error) {
+                    console.error('Error processing quest:', error, quest);
+                    return;
+                }
+            });
+
+            return {
+                totalValue: periodTotalValue,
+                valuePerVote: validQuestCount > 0 ? totalRewardPerVote / validQuestCount : 0,
+                xAxis: unixToDate(questPeriod.timestamp)
+            };
+        });
+
+        // Filter out periods with no valid data and sort chronologically
+        const validProcessedData = processedData
+            .filter(data => data.totalValue > 0)
+            .sort((a, b) => new Date(a.xAxis).getTime() - new Date(b.xAxis).getTime());
+
+        const totalValueList = validProcessedData.map(result => result.totalValue);
+        const valuePerVoteList = validProcessedData.map(result => result.valuePerVote);
+        const xAxisData = validProcessedData.map(result => result.xAxis);
+        const totalAmountDollarsSum = totalValueList.reduce((acc, curr) => acc + curr, 0);
+
+        setPaladinHistoricalData({
+            dollarPerVlAssetData: valuePerVoteList,
+            totalAmountDollarsData: totalValueList,
+            totalAmountDollarsSum,
+            xAxisData
+        });
+    }, [JSON.stringify(questData), JSON.stringify(historicalTokenPrices), questsLoading, pricesLoading]);
 
     useEffect(() => {
         const data = extractPoolRewards(hiddenHandData.incentives);
@@ -265,11 +358,11 @@ export default function VotingIncentives() {
     let paladinXAxisData: string[] = [];
     let paladinTotalAmountDollarsSum = 0;
 
-    if (paladinHistoricalData.historicalData) {
-        paladinDollarPerVlAssetData = paladinHistoricalData.historicalData.dollarPerVlAssetData;
-        paladinTotalAmountDollarsData = paladinHistoricalData.historicalData.totalAmountDollarsData;
-        paladinXAxisData = paladinHistoricalData.historicalData.xAxisData;
-        paladinTotalAmountDollarsSum = paladinHistoricalData.historicalData.totalAmountDollarsSum;
+    if (paladinHistoricalData) {
+        paladinDollarPerVlAssetData = paladinHistoricalData.dollarPerVlAssetData;
+        paladinTotalAmountDollarsData = paladinHistoricalData.totalAmountDollarsData;
+        paladinXAxisData = paladinHistoricalData.xAxisData;
+        paladinTotalAmountDollarsSum = paladinHistoricalData.totalAmountDollarsSum;
     }
 
     return (<>
@@ -279,7 +372,7 @@ export default function VotingIncentives() {
                 || !totalAmountDollarsSum
                 || incentivePerVote === 0
                 || roundIncentives === 0
-                || paladinHistoricalData.loading
+                || questsLoading
             ) ? (
                 <Grid
                     container
