@@ -7,7 +7,13 @@ import { TransactionHistory } from '../../data/debank/debankTypes';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQuarter, getCumulativeSumTrace, getDailyChartDataByDateRange, getMonthlyChartDataByDateRange } from './helpers';
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
-import { FEE_STREAMER, FEE_STREAMER_2, getTreasuryConfig, KARPATKEY_SAFE } from '../../constants/wallets';
+import {
+    CANTINA_CONTEST,
+    FEE_STREAMER,
+    FEE_STREAMER_2,
+    getTreasuryConfig,
+    KARPATKEY_SAFE
+} from '../../constants/wallets';
 import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
 import TreasuryTransactionTable from '../../components/Tables/TreasuryTransactionTable';
 import { useGetTotalBalances } from '../../data/debank/useGetTotalBalances';
@@ -110,8 +116,9 @@ export default function Financials() {
     //---USDC: SEND and RECEIVE---
     let usdcReceived =  extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
+    const usdcReceivedCantina = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', CANTINA_CONTEST);
     //const usdcReceivedFjord = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', '0xA5033A6BDb31E52Ce6ba9c67Bff7331aC2686e72'.toLowerCase());
-    usdcReceived = usdcReceived.concat(usdcReceived2)
+    usdcReceived = usdcReceived.concat(usdcReceived2).concat(usdcReceivedCantina);
     //USDC Send
     const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
     //temporary fix: exclude tribe tx:

@@ -63,7 +63,7 @@ const PaladinQuestsCard = () => {
                 underline="none"
                 target="_blank"
                 rel="noopener noreferrer"
-            >Go to Paladin quests to learn more</Link>
+            >Learn more</Link>
         </StyledCard>
     );
 };
