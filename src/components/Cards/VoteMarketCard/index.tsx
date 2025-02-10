@@ -48,9 +48,9 @@ const VoteMarketCard = () => {
         <StyledCard>
             <ContentContainer container>
                 <Grid item xs={9}>
-                    <Title variant="h5">Vote Market</Title>
+                    <Title variant="h5">VoteMarket</Title>
                     <Description variant="body2">
-                        Explore voting incentive aggregation on Vote Market!
+                        The liquidity incentive marketplace. Empower your liquidity with vote-based incentives. Turn your votes into rewards.
                     </Description>
                 </Grid>
 
