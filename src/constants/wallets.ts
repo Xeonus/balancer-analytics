@@ -7,6 +7,8 @@ export const FEE_STREAMER = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
 
 export const FEE_STREAMER_2 = '0x7c68c42de679ffb0f16216154c996c354cf1161b';
 
+export const CANTINA_CONTEST = '0x3Dcb7CFbB431A11CAbb6f7F2296E2354f488Efc2';
+
 //Service Providers
 export const SERVICE_PROVIDER_WALLETS = [
     {
@@ -56,6 +58,14 @@ export const SERVICE_PROVIDER_WALLETS = [
     {
         name: 'BD Unit',
         walletId: '0x5ca24e2a586834a7b96216d68b26a82405e3dc15'
+    },
+    {
+        name: 'Cantina Contest',
+        walletId: '0x3Dcb7CFbB431A11CAbb6f7F2296E2354f488Efc2'
+    },
+    {
+        name: 'CoW Protocol: Transation',
+        walletId: '0x9008D19f58AAbD9eD0D60971565AA8510560ab41'
     }
 ]
 

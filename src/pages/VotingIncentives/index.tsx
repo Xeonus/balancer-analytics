@@ -26,6 +26,7 @@ import useGetHistoricalTokenPrice from "../../data/balancer-api-v3/useGetHistori
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import VeBALIncentiveAPRChart from "../../components/Echarts/VotingIncentives/veBALIncentiveAPRChart";
 import {HISTORICAL_VEBAL_PRICE} from "../../constants";
+import VoteMarketCard from "../../components/Cards/VoteMarketCard";
 
 // Helper functions to parse data types to Llama model
 const extractPoolRewards = (data: HiddenHandIncentives | null): PoolReward[] => {
@@ -220,30 +221,62 @@ export default function VotingIncentives() {
                             </Box>
                         </Grid>
                         <Grid item xs={11} sm={9}>
+                            <Grid
+                                container
+                                spacing={2}
+                                columns={{ xs: 4, sm: 8, md: 12 }}
+                                sx={{
+                                    justifyContent: { md: 'space-between', xs: 'center' },
+                                    mb: 2
+                                }}
+                            >
+                                <Grid item>
+                                    {totalAmountDollarsSum ? (
+                                        <MetricsCard
+                                            mainMetric={totalAmountDollarsSum}
+                                            metricName="All time incentives"
+                                            mainMetricInUSD={true}
+                                            MetricIcon={CurrencyExchange}
+                                        />
+                                    ) : (
+                                        <CircularProgress />
+                                    )}
+                                </Grid>
+                                <Grid item>
+                                    {totalAmountDollarsSum ? (
+                                        <MetricsCard
+                                            mainMetric={dollarPerVlAssetData[dollarPerVlAssetData.length - 1]}
+                                            metricName="Last round $/veBAL"
+                                            mainMetricInUSD={true}
+                                            MetricIcon={CurrencyExchange}
+                                        />
+                                    ) : (
+                                        <CircularProgress />
+                                    )}
+                                </Grid>
+                            </Grid>
 
                             <Grid
                                 container
-                                columns={{xs: 4, sm: 8, md: 12}}
-                                sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
+                                spacing={2}  // Consistent spacing
+                                columns={{ xs: 4, sm: 8, md: 12 }}
+                                sx={{
+                                    justifyContent: { md: 'space-between', xs: 'center' }
+                                }}
                             >
-
-                                <Box mt={1}>
-                                    {totalAmountDollarsSum ?
-                                        <MetricsCard mainMetric={totalAmountDollarsSum}
-                                                     metricName={"All time incentives"} mainMetricInUSD={true}
-                                                     MetricIcon={CurrencyExchange}/>
-                                        : <CircularProgress/>}
-                                </Box>
-                                    <Box sx={{ mt: { xs: 1 } }}>
-                                        <HiddenHandCard />
-                                    </Box>
-                                    <Box sx={{mt: {xs: 1}}}>
-                                        <PaladinQuestsCard/>
-                                    </Box>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <HiddenHandCard />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <PaladinQuestsCard />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <VoteMarketCard />
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '24px'}}>Overview</Typography>
+                            <Typography sx={{fontSize: '24px'}}>Historical Incentives on Hidden Hand</Typography>
                         </Grid>
                         {dollarPerVlAssetData && totalAmountDollarsData && xAxisData ?
                             <Grid item xs={11} sm={9}>
@@ -272,7 +305,7 @@ export default function VotingIncentives() {
                             </Grid> :
                             <CircularProgress/>}
                         <Grid item xs={11} sm={9} mt={1}>
-                            <Typography sx={{fontSize: '24px'}} mb={1}>Voting Epoch Metrics</Typography>
+                            <Typography sx={{fontSize: '24px'}} mb={1}>Hidden Hand: Voting Epoch Metrics</Typography>
                         </Grid>
                         <Grid item xs={11} sm={9}>
                             <Box>

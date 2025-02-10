@@ -1,6 +1,6 @@
-import {Card, CardContent, CardMedia, Grid, Link, Typography} from '@mui/material';
+import {Card, Grid, Link, Typography} from '@mui/material';
 import { styled } from '@mui/system';
-import HHLogo from '../../../assets/png/hiddenHandLogo.png';
+import StakeDAO from '../../../assets/svg/stakeDAO.svg';
 import OrbBg from '../../../assets/png/orbz.png';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -28,13 +28,14 @@ const Description = styled(Typography)(({ theme }) => ({
 }));
 
 const LogoImage = styled('img')({
-    height: '60px',
+    height: '45px',
     width: 'auto',
     alignSelf: 'flex-end',
     background: `url(${OrbBg}) no-repeat center center`,
     backgroundSize: 'cover',
     overflow: 'hidden',
     border: 'none',
+    filter: 'brightness(0) invert(1)', // This will make the SVG white
 });
 
 const LogoContainer = styled(Grid)({
@@ -42,24 +43,24 @@ const LogoContainer = styled(Grid)({
     alignItems: 'flex-end',
 });
 
-const HiddenHandCard = () => {
+const VoteMarketCard = () => {
     return (
         <StyledCard>
             <ContentContainer container>
                 <Grid item xs={9}>
-                    <Title variant="h5">HiddenHand</Title>
+                    <Title variant="h5">Vote Market</Title>
                     <Description variant="body2">
-                        Explore a range of voting incentives available
+                        Explore voting incentive aggregation on Vote Market!
                     </Description>
                 </Grid>
 
                 <LogoContainer item xs={3}>
-                    <LogoImage src={HHLogo} alt="HiddenHand Logo" />
+                    <LogoImage src={StakeDAO} alt="VoteMarket Logo" />
                 </LogoContainer>
 
             </ContentContainer>
             <Link
-                href="https://hiddenhand.finance/balancer"
+                href="https://classic.votemarket.org/?market=bal"
                 underline="none"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -68,4 +69,4 @@ const HiddenHandCard = () => {
     );
 };
 
-export default HiddenHandCard;
+export default VoteMarketCard;
