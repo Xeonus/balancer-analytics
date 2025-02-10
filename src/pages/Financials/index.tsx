@@ -9,7 +9,6 @@ import { extractTransactionsByTokenAndType, getChartDataByMonth, getChartDataByQ
 import { useGetTransactions } from '../../data/debank/useGetTransactions';
 import {
     CANTINA_CONTEST,
-    COW_SETTLEMENT,
     FEE_STREAMER,
     FEE_STREAMER_2,
     getTreasuryConfig,
