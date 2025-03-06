@@ -212,6 +212,26 @@
             "BAL": 0,
             "BAL_VESTED": 0
           }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.org/#/s:balancer.eth/proposal/0xc877bd9073421d8c0361bfbf749332c24d7dc7b8a8010b7b2f417dfdc43d6c69",
+          "budget_requested": {
+            "USDC": 87000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.org/#/s:balancer.eth/proposal/0xc877bd9073421d8c0361bfbf749332c24d7dc7b8a8010b7b2f417dfdc43d6c69",
+          "budget_requested": {
+            "USDC": 87000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
         }
       ]
     },
@@ -376,6 +396,46 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x58e317ba908ee8e75bf0c32c7b45eccdefa948ba46d00b112508fc9783a40cdc",
           "budget_requested": {
             "USDC": 15000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 1,
+          "snapshotReference": "https://snapshot.box/#/s:balancer.eth/proposal/0xc4cd4570b4e6d48bca408501b12f928029dcf096f3baa1148b77fb6940b498d4",
+          "budget_requested": {
+            "USDC": 20000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://snapshot.box/#/s:balancer.eth/proposal/0xc4cd4570b4e6d48bca408501b12f928029dcf096f3baa1148b77fb6940b498d4",
+          "budget_requested": {
+            "USDC": 20000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 3,
+          "snapshotReference": "https://snapshot.box/#/s:balancer.eth/proposal/0xc4cd4570b4e6d48bca408501b12f928029dcf096f3baa1148b77fb6940b498d4",
+          "budget_requested": {
+            "USDC": 20000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 4,
+          "snapshotReference": "https://snapshot.box/#/s:balancer.eth/proposal/0xc4cd4570b4e6d48bca408501b12f928029dcf096f3baa1148b77fb6940b498d4",
+          "budget_requested": {
+            "USDC": 20000,
             "BAL": 0,
             "BAL_VESTED": 0
           }
