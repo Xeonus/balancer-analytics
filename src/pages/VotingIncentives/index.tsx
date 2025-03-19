@@ -1,7 +1,7 @@
 import {Box, Card, CircularProgress, Grid, MenuItem, Select, Typography} from "@mui/material";
 import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {SelectChangeEvent} from "@mui/material/Select";
 import NavCrumbs, {NavElement} from "../../components/NavCrumbs";
 import DashboardOverviewChart from "../../components/Echarts/VotingIncentives/DashboardOverviewChart";
@@ -450,10 +450,10 @@ export default function VotingIncentives() {
                             </Grid>
                         </Grid>
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '24px'}}>Overview</Typography>
+                            <Typography sx={{fontSize: '24px'}}>Voting Markets: Historical Overview</Typography>
                         </Grid>
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '15px'}}>Hidden Hand Marketplace</Typography>
+                            <Typography sx={{fontSize: '15px'}}>Hidden Hand: Historical Performance</Typography>
                         </Grid>
                         {dollarPerVlAssetData && totalAmountDollarsData && xAxisData ?
                             <Grid item xs={11} sm={9}>
@@ -468,7 +468,7 @@ export default function VotingIncentives() {
                             </Grid>
                             : <CircularProgress/>}
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '15px'}}>Paladin Quest Marketplace</Typography>
+                            <Typography sx={{fontSize: '15px'}}>Paladin Quests: Historical Performance</Typography>
                         </Grid>
                         {paladinDollarPerVlAssetData && paladinTotalAmountDollarsData && paladinXAxisData ?
                             <Grid item xs={11} sm={9}>
@@ -528,26 +528,26 @@ export default function VotingIncentives() {
                                 columns={{xs: 4, sm: 8, md: 12}}
                                 sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                             >
-                                <Box mr={1}>
+                                <Box mr={1} mb={1}>
                                     {totalAmountDollarsSum ?
                                         <MetricsCard mainMetric={roundIncentives} metricName={"Total Incentives"}
                                                      mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
                                         : <CircularProgress/>}
                                 </Box>
-                                <Box mr={1}>
+                                <Box mr={1} mb={1}>
                                     {emissionVotesTotal ?
                                         <MetricsCard mainMetric={emissionVotesTotal} metricName={"Total Incentive Votes"}
                                                      mainMetricInUSD={false} MetricIcon={HowToVoteIcon}/>
                                         : <CircularProgress/>}
                                 </Box>
-                                <Box mr={1}>
+                                <Box mr={1} mb={1}>
                                     {totalAmountDollarsSum ?
                                         <MetricsCard mainMetric={emissionPerVote} metricName={"Incentive $/Vote"}
                                                      metricDecimals={4}
                                                      mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
                                         : <CircularProgress/>}
                                 </Box>
-                                <Box mr={1}>
+                                <Box mr={1} mb={1}>
                                     {totalAmountDollarsSum ?
                                         <MetricsCard mainMetric={emissionValuePerVote} metricName={"Emission $/Vote"}
                                                      metricDecimals={4}
@@ -558,7 +558,7 @@ export default function VotingIncentives() {
 
                                         : <CircularProgress/>}
                                 </Box>
-                                <Box mr={1}>
+                                <Box mr={1} mb={1}>
                                     {emissionsPerDollarSpent ?
                                         <MetricsCard
                                             mainMetric={emissionsPerDollarSpent}
