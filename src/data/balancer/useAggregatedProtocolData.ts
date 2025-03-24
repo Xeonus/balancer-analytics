@@ -95,7 +95,7 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.decentralicedClientUri, startDate, polygonZKEVMBlockClient, polygonZKEVMClient),
         useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
-        useBalancerChainProtocolData(BaseNetworkInfo.clientUri, startDate, baseBlockClient, baseClient),
+        useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, startDate, baseBlockClient, baseClient),
         useBalancerChainProtocolData(ModeNetworkInfo.clientUri, startDate, modeBlockClient, modeClient),
         useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];

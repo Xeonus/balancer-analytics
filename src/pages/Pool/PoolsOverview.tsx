@@ -153,7 +153,7 @@ export default function PoolsOverview() {
                         mt={1}
                         xs={11}
                     >
-                        <Typography variant='h5'>Top 20 Pools by TVL</Typography>
+                        <Typography variant='h5'>Top 20 v2 Pools by TVL</Typography>
                     </Grid> : null}
                 {filteredPoolBarChartData.length > 1 ?
                     <Grid
@@ -203,7 +203,7 @@ export default function PoolsOverview() {
                     mt={1}
                     mb={1}>
                     <Typography variant="h5" mb={1}>
-                        Deployed Liquidity on {activeNetwork.name}
+                        Deployed Liquidity on v2 ({activeNetwork.name})
                     </Typography>
                     {poolData.length > 10 ?
                         <PoolTable poolDatas={poolData} /> :

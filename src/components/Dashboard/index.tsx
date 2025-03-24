@@ -193,7 +193,7 @@ function Dashboard() {
                                 >
                                     Analytics
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: (mode === 'dark') ? 'white' : 'black', }}>Beta</Typography>
+                                <Typography variant="caption" sx={{ color: (mode === 'dark') ? 'white' : 'black', }}>V2</Typography>
                                 <Box position="absolute" right="10px" >
                                     <Box display="flex" alignItems="center" alignContent="center" justifyContent='flex-end'>
 

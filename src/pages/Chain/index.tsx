@@ -58,7 +58,7 @@ export default function Chain() {
                 <Grid item xs={11}>
                     <Box display="flex" alignItems="center">
                         <Box mb={1}>
-                            <Typography variant={"h5"}>Chain Metrics ({activeNetwork.name})</Typography>
+                            <Typography variant={"h5"}>Balancer v2 Metrics ({activeNetwork.name})</Typography>
                         </Box>
                     </Box>
                 </Grid>
@@ -140,7 +140,7 @@ export default function Chain() {
                 </Grid>
                 <Grid item xs={11}>
                     <Box mt={2}>
-                        <Typography variant="h5" mb={1}> Top 10 Liquidity Pools by TVL</Typography>
+                        <Typography variant="h5" mb={1}> Top 10 v2 Liquidity Pools by TVL</Typography>
                     </Box>
                 </Grid>
                 {poolData.length >= 1 ?

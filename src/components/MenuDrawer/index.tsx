@@ -195,8 +195,7 @@ const MenuDrawer = ({
                     <ListItemIcon>
                         <MonetizationOnIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'Fees'} />
-                    <AvatarNew text={"NEW"} />
+                    <ListItemText primary={'Protocol Fees'} />
                 </ListItemButton>
                 <ListItemButton key={'DAO Treasury'} component={NavLink} to={networkPrefix(activeNetwork) + 'treasury'}>
                     <ListItemIcon>
