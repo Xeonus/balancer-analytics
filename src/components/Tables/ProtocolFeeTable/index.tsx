@@ -45,6 +45,7 @@ import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
 import BaseLogo from  "../../../assets/svg/base.svg"
 import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
 import ZkevmLogo from  "../../../assets/svg/zkevm.svg"
+import FraxtalLogo from  "../../../assets/svg/fraxtal.svg"
 import PoolCompositionFeeData from "../../PoolCompositionFeeData";
 import AvatarNew from "../../AvatarNew";
 import {unixToDate} from "../../../utils/date";
@@ -395,6 +396,7 @@ export default function ProtocolFeeTable({
         AVALANCHE: AvaxLogo,
         BASE: BaseLogo,
         ZKEVM: ZkevmLogo,
+        FRAXTAL: FraxtalLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {

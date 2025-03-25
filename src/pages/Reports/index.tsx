@@ -295,7 +295,7 @@ export default function Reports() {
                     >
                         <Box display="flex" alignItems="center">
                             <Box>
-                                <Typography variant={"h5"}>Reports Dashboard (Beta)</Typography>
+                                <Typography variant={"h5"}>Balancer v2: Reports Dashboard</Typography>
                             </Box>
 
                         </Box>
@@ -387,7 +387,7 @@ export default function Reports() {
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
-                                <Typography variant="h5">Protocol TVL Metrics</Typography>
+                                <Typography variant="h5">Protocol TVL Metrics (v2)</Typography>
                             </Box>
 
                         </Box>
@@ -436,7 +436,7 @@ export default function Reports() {
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
-                                <Typography variant="h5">Protocol Volume Metrics</Typography>
+                                <Typography variant="h5">Protocol Volume Metrics (v2)</Typography>
                             </Box>
                         </Box>
                         <Box mb={1} display="flex" alignItems='center'>
@@ -488,7 +488,7 @@ export default function Reports() {
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="row">
                             <Box display="flex" alignItems='center'>
-                                <Typography variant="h5">Protocol Fee Metrics</Typography>
+                                <Typography variant="h5">Protocol Fee Metrics (v2)</Typography>
                             </Box>
                         </Box>
                         <Box mb={1} display="flex" alignItems='center'>
@@ -544,7 +544,7 @@ export default function Reports() {
                         >
                             <Box display="flex" justifyContent="space-between" alignItems="row">
                                 <Box display="flex" alignItems='center'>
-                                    <Typography variant="h5">Protocol Revenue Metrics</Typography>
+                                    <Typography variant="h5">Protocol Revenue Metrics (v2)</Typography>
                                 </Box>
                             </Box>
                             <Box mb={1} display="flex" alignItems='center'>

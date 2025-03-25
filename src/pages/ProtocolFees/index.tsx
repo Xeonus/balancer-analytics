@@ -313,7 +313,7 @@ export default function ProtocolFees() {
                 >
                     <Box display="flex" alignItems="center">
                         <Box>
-                            <Typography variant={"h5"}>Protocol Fees (Beta) for {activeNetwork.name}</Typography>
+                            <Typography variant={"h5"}>Balancer v2 Protocol Fee Metrics for {activeNetwork.name}</Typography>
                         </Box>
 
                     </Box>

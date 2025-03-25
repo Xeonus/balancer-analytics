@@ -337,7 +337,7 @@ export default function Protocol() {
                     sx={{justifyContent: 'center'}}
                 >
                     <Grid item xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Global Balancer Stats</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Balancer v2: Global Stats</Typography>
                     </Grid>
 
                     <Grid item xs={11}>
@@ -417,7 +417,7 @@ export default function Protocol() {
 
 
                     <Grid item mt={1} xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical TVL</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical TVL (v2)</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <Button
@@ -523,7 +523,7 @@ export default function Protocol() {
 
 
                     <Grid item mt={1} xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Volume</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Volume (v2)</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <Button
@@ -625,7 +625,7 @@ export default function Protocol() {
                         </Grid>
                     )}
                     <Grid item mt={1} xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Collected Protocol Fees</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Collected Protocol Fees (v2)</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <Button
@@ -727,7 +727,7 @@ export default function Protocol() {
                         )}
 
                     <Grid item mt={1} xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Trading Fees</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Trading Fees (v2)</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <Button
@@ -828,7 +828,7 @@ export default function Protocol() {
                         </Grid>
                     )}
                     <Grid item mt={1} xs={11}>
-                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Swaps</Typography>
+                        <Typography sx={{fontSize: '24px'}} mb={1}>Historical Swaps (v2)</Typography>
                     </Grid>
                     <Grid item xs={11}>
                         <Button
