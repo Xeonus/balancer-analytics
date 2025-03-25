@@ -95,7 +95,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-arbitrum-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-arbitrum/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
-  blockClientUri: DECENTRALIZED_ENDPOINT + 'JBnWrv9pvBvSi2pUZzba3VweGBTde6s44QvsDABP47Gt',
+  blockClientUri: DECENTRALIZED_ENDPOINT + '64DCU8nq48qdDABnobpDafsg7RF75Rx5soKrHiGA8mqp',
   alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
   alchemyKey: ALCHEMY_KEY_ARBITRUM,
   imageURL: ARBITRUM_LOGO_URL,

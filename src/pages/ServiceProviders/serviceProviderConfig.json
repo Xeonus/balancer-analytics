@@ -124,6 +124,28 @@
             "ETH": 0,
             "BAL_VESTED": 16369
           }
+        },
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x6eef82f23c93e0a15a509da637f448a77b191e1e26817798588dc690735bc392",
+          "budget_requested": {
+            "USDC": 202500,
+            "BAL": 0,
+            "ETH": 0,
+            "BAL_VESTED": 18750
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 3,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x6eef82f23c93e0a15a509da637f448a77b191e1e26817798588dc690735bc392",
+          "budget_requested": {
+            "USDC": 202500,
+            "BAL": 0,
+            "ETH": 0,
+            "BAL_VESTED": 18750
+          }
         }
       ]
     },
@@ -236,11 +258,40 @@
       ]
     },
     {
+      "name": "Foundation/OpCo: Marketing",
+      "site_url": "",
+      "short_description": "Marketing initiative overseen by the Balancer Foundation.",
+      "img_ref": "default.png",
+      "sunset": false,
+      "budgets": [
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x776379fdfd30e1f79142ab330bca684a74e84bf875fe5467fe004387553a5d74",
+          "budget_requested": {
+            "USDC": 97500,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 3,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x776379fdfd30e1f79142ab330bca684a74e84bf875fe5467fe004387553a5d74",
+          "budget_requested": {
+            "USDC": 97500,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+        ]
+    },
+    {
       "name": "Beethoven-X DAO: Marketing",
       "site_url": "https://beets.fi/",
       "short_description": "The Beethoven-X marketing team comprises of experts providing marketing advisory services to the DAO further developing the Balancer brand.",
       "img_ref": "beethoven-x-dao_small.png",
-      "sunset": false,
+      "sunset": true,
       "budgets": [
         {
           "year": 2024,
@@ -289,7 +340,7 @@
       "site_url": "-",
       "short_description": "The Business Development unit comprises of 2 core contributors advancing the DAOs efforts to secure strategic partnerships.",
       "img_ref": "default.png",
-      "sunset": false,
+      "sunset": true,
       "budgets": [
         {
           "year": 2024,
@@ -596,6 +647,16 @@
             "BAL": 0,
             "BAL_VESTED": 937.5
           }
+        },
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0xabe9f96a6e2dc42a1521037f0f4f3ccd63f04ad74430a2741e16a747c31dfde7",
+          "budget_requested": {
+            "USDC": 114862,
+            "BAL": 0,
+            "BAL_VESTED": 5000
+          }
         }
       ]
     },
@@ -642,8 +703,8 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x4c9889961c9fc2871c19f49a274894c9c7cb9ed2eb8e630cd2f83124a7cdce8f",
           "budget_requested": {
             "USDC": 130542,
-            "BAL": 3000,
-            "BAL_VESTED": 0
+            "BAL": 0,
+            "BAL_VESTED": 3000
           }
         },
         {
@@ -652,8 +713,8 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x4c9889961c9fc2871c19f49a274894c9c7cb9ed2eb8e630cd2f83124a7cdce8f",
           "budget_requested": {
             "USDC": 130542,
-            "BAL": 3000,
-            "BAL_VESTED": 0
+            "BAL": 0,
+            "BAL_VESTED": 3000
           }
         }
       ]
@@ -843,6 +904,46 @@
           "snapshotReference": "https://snapshot.org/#/balancer.eth/proposal/0x16efb32f66f58ce4ae5987f82ee28eb357f7c3720069167db862d2b622d7afa0",
           "budget_requested": {
             "USDC": 86730,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 2,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x4588d27134c45f85ca925c6c41badf8fad596120398913645d27ae8a14b266ff",
+          "budget_requested": {
+            "USDC": 59400,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 3,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x4588d27134c45f85ca925c6c41badf8fad596120398913645d27ae8a14b266ff",
+          "budget_requested": {
+            "USDC": 59400,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2025,
+          "quarter": 4,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x4588d27134c45f85ca925c6c41badf8fad596120398913645d27ae8a14b266ff",
+          "budget_requested": {
+            "USDC": 59400,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 1,
+          "snapshotReference": "https://vote.balancer.fi/#/proposal/0x4588d27134c45f85ca925c6c41badf8fad596120398913645d27ae8a14b266ff",
+          "budget_requested": {
+            "USDC": 59400,
             "BAL": 0,
             "BAL_VESTED": 0
           }
