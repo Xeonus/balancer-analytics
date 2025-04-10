@@ -330,7 +330,14 @@ export default function Protocol() {
                 </Grid>
 
             </Grid>
-            {protocolData.feeData.length > 10 && arbitrumProtocolData.feeData.length > 10 && polygonProtocolData.feeData.length > 10 ?
+            {protocolData.feeData.length > 10
+                && arbitrumProtocolData.feeData.length > 10
+                && polygonProtocolData.feeData.length > 10
+                && baseProtocolData.feeData.length > 10
+                && avalancheProtocolData.feeData.length > 10
+                && modeProtocolData.feeData.length > 10
+                && fraxtalProtocolData.feeData.length > 10
+                && gnosisProtocolData.feeData.length > 10 ?
                 <Grid
                     container
                     spacing={1}

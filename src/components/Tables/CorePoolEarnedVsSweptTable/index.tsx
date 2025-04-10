@@ -231,7 +231,7 @@ export default function CorePoolEarnedVsSweptTable({
         const earnedFees = item.value;
         // Accessing dynamic property names in TypeScript, ensure historicalCollectedNetworkFees is properly typed or use any as a fallback
         const sweptFees = historicalCollectedNetworkFees[networkLowerCase as keyof NetworkFees] ?? 0;
-        const difference = sweptFees > 0 ? ((sweptFees / earnedFees)) : 0;
+        const difference = sweptFees > 0 ? (((sweptFees / 1000000) / earnedFees)) : 0;
 
         return createData(item.name, earnedFees, sweptFees, difference);
     }, [] as Data[]);
@@ -326,7 +326,7 @@ export default function CorePoolEarnedVsSweptTable({
                                                 {formatDollarAmount(row.earnedFees)}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatDollarAmount(row.sweptFees)}
+                                                {formatDollarAmount(row.sweptFees / 1000000)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatNumber(row.difference, 4)}
