@@ -41,7 +41,7 @@ function formatDate(date: Date) {
 
 function calculateDelta(historicalFees: NetworkFees, poolFeeRecords: PoolFeeRecord[]): number {
     // Calculate total amount from historicalCollectedNetworkFees
-    const totalSwept = Object.values(historicalFees).reduce((acc, current) => acc + current, 0);
+    const totalSwept = Object.values(historicalFees).reduce((acc, current) => (acc / 10000000) + current, 0);
 
     // Sum up fees_to_vebal, fees_to_dao, and total_incentives from historicalData
     const totalHistoricalSum = poolFeeRecords.reduce((acc, record) => {
@@ -84,11 +84,13 @@ export default function CorePools() {
     const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS'], corePoolIDs);
 
 
+    console.log("historicalCollectedNetworkFees", historicalCollectedNetworkFees);
     let delta = 0
     let totalSwept = 0
     let totalHistoricalSum = 0
     if (historicalCollectedNetworkFees && historicalData) {
         totalSwept = Object.values(historicalCollectedNetworkFees).reduce((acc, current) => acc + current, 0);
+        totalSwept = totalSwept / 1000000
         // Sum up fees_to_vebal, fees_to_dao, and total_incentives from historicalData
         totalHistoricalSum = historicalData.reduce((acc, record) => {
             const feesToVebal = parseFloat(record.fees_to_vebal);
