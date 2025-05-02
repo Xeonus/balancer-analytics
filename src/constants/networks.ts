@@ -244,7 +244,7 @@ export const ModeNetworkInfo: NetworkInfo = {
   appUri: 'https://app.balancer.fi/#/mode/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-mode-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-mode/version/latest',
-  decentralicedClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-mode-v2/version/latest',
+  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '8Lssq3MmAPrv4JBTjpK8BhVTNRHbofP3tJ6rrBnErbTf',
   blockClientUri: '',
   alchemyRPCUrl: 'https://mainnet.mode.network/',
   alchemyKey: '',

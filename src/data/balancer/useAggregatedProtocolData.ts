@@ -96,7 +96,7 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, startDate, baseBlockClient, baseClient),
-        useBalancerChainProtocolData(ModeNetworkInfo.clientUri, startDate, modeBlockClient, modeClient),
+        useBalancerChainProtocolData(ModeNetworkInfo.decentralicedClientUri, startDate, modeBlockClient, modeClient),
         useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];
 

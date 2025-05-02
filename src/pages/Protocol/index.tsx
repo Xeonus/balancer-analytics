@@ -105,7 +105,7 @@ export default function Protocol() {
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient);
     const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient);
     const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, 1706015447, baseBlockClient, baseClient);
-    const modeProtocolData = useBalancerChainProtocolData(ModeNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), modeBlockClient, modeClient);
+    const modeProtocolData = useBalancerChainProtocolData(ModeNetworkInfo.decentralicedClientUri, getUnixTimestamp1000DaysAgo(), modeBlockClient, modeClient);
     const fraxtalProtocolData = useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), fraxtalBlockClient, fraxtalClient);
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
