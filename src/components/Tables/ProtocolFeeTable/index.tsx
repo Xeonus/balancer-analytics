@@ -302,7 +302,7 @@ export default function ProtocolFeeTable({
         if (poolData && poolData.poolType !== 'LIQUIDITY_BOOTSTRAPPING' &&
             !POOL_HIDE.includes(poolData.id) && poolData.liquidity > 100 && ! poolData.isInRecoveryMode) {
             // Find the matching core pool record.
-            const corePoolRecord = corePools.find(c => c.poolId === poolData.id);
+            const corePoolRecord = corePools.find(c => c.pool_id === poolData.id);
 
 
                 // Parse 'earned_fees' as a float to ensure numeric sorting.

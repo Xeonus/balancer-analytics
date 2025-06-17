@@ -1,6 +1,6 @@
 // Define the structure of a single record in your CSV data.
 export interface PoolFeeRecord {
-    poolId: string;
+    pool_id: string;
     chain: string;
     symbol: string;
     earned_fees: string;

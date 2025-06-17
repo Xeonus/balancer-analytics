@@ -126,7 +126,7 @@ export default function ProtocolFees() {
     let totalFeesNonCore = 0
     if (feeDelta && feeDelta.pools && corePools && corePools.length) {
         totalFeesNonCore = feeDelta?.pools.filter(pool => {
-            const corePoolRecord = corePools.find(c => c.poolId === pool.id && pool.protocolFee >= sweepThreshold);
+            const corePoolRecord = corePools.find(c => c.pool_id === pool.id && pool.protocolFee >= sweepThreshold);
             return corePoolRecord === undefined
         }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }
@@ -136,7 +136,7 @@ export default function ProtocolFees() {
     let totalFeesCore = 0
     if (feeDelta && feeDelta.pools && corePools && corePools.length) {
         totalFeesCore = feeDelta?.pools.filter(pool => {
-            const corePoolRecord = corePools.find(c => c.poolId === pool.id && pool.protocolFee >= sweepThreshold);
+            const corePoolRecord = corePools.find(c => c.pool_id === pool.id && pool.protocolFee >= sweepThreshold);
             return corePoolRecord !== undefined
         }).reduce((acc, curr) => acc + curr.totalProtocolFee, 0);
     }

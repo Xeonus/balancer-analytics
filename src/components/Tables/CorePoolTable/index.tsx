@@ -289,7 +289,7 @@ export default function CorePoolTable({
         if (poolData && poolData.poolType !== 'LIQUIDITY_BOOTSTRAPPING' &&
             !POOL_HIDE.includes(poolData.poolId) && poolData.totalLiquidity > 100) {
             // Find the matching core pool record.
-            const corePoolRecord = corePools.find(c => c.poolId === poolData.poolId);
+            const corePoolRecord = corePools.find(c => c.pool_id === poolData.poolId);
 
 
 

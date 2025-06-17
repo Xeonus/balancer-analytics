@@ -39,19 +39,19 @@ export default function CorePool() {
     //Aggregate data for given pool
 
     //Lifetime earned fees - DATA SOURCE: Fee allocator
-    const lifeTimeFees = combinedFees.filter(record => record.poolId === poolId)
+    const lifeTimeFees = combinedFees.filter(record => record.pool_id === poolId)
         .reduce((acc, record) => acc + parseFloat(record.earned_fees), 0);
 
-    const lifeTimeFeesToDAO = combinedFees.filter(record => record.poolId === poolId)
+    const lifeTimeFeesToDAO = combinedFees.filter(record => record.pool_id === poolId)
         .reduce((acc, record) => acc + parseFloat(record.fees_to_dao), 0);
 
-    const lifeTimeFeesToveBAL = combinedFees.filter(record => record.poolId === poolId)
+    const lifeTimeFeesToveBAL = combinedFees.filter(record => record.pool_id === poolId)
         .reduce((acc, record) => acc + parseFloat(record.fees_to_vebal), 0);
 
-    const lifeTimeRedirects = combinedFees.filter(record => record.poolId === poolId)
+    const lifeTimeRedirects = combinedFees.filter(record => record.pool_id === poolId)
         .reduce((acc, record) => acc + parseFloat(record.redirected_incentives), 0);
 
-    const lifeTimeIncentives = combinedFees.filter(record => record.poolId === poolId)
+    const lifeTimeIncentives = combinedFees.filter(record => record.pool_id === poolId)
         .reduce((acc, record) => acc + parseFloat(record.total_incentives), 0);
 
     //Lifetime fees - DATA SOURCE: subgraph pool data
@@ -79,7 +79,7 @@ export default function CorePool() {
     const lifeTimeVolume = volumeData.reduce((acc, record) => acc + record.value, 0);
 
     let balIncentiveChartData: BalancerChartDataItem[] = [];
-    balIncentiveChartData = combinedFees.filter(record => record.poolId === poolId && record.date_string != null)
+    balIncentiveChartData = combinedFees.filter(record => record.pool_id === poolId && record.date_string != null)
         .map(record => {
             const lastDate = record.date_string!.split('_').pop() || ''; // Safely extract the last date
             return {
@@ -99,7 +99,7 @@ export default function CorePool() {
     })
 
     let auraIncentiveChartData: BalancerChartDataItem[] = [];
-    auraIncentiveChartData = combinedFees.filter(record => record.poolId === poolId && record.date_string != null)
+    auraIncentiveChartData = combinedFees.filter(record => record.pool_id === poolId && record.date_string != null)
         .map(record => {
             const lastDate = record.date_string!.split('_').pop() || ''; // Safely extract the last date
             return {
