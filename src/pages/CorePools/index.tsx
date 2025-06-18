@@ -80,7 +80,7 @@ export default function CorePools() {
     const historicalData = useGetCorePoolHistoricalFees(selectedEndDate);
     const historicalCollectedNetworkFees = useGetCollectedFees(selectedEndDate)
     const collectedFeesSummary = useGetCollectedFeesSummary();
-    const corePoolIDs : string[] = currentData.map(item => item.poolId)
+    const corePoolIDs : string[] = currentData.map(item => item.pool_id)
     const globalPools = useGetAllPools(['MAINNET', 'POLYGON', 'ARBITRUM', 'ZKEVM', 'AVALANCHE', 'BASE', 'GNOSIS'], corePoolIDs);
 
 
@@ -155,7 +155,7 @@ export default function CorePools() {
 
 
     const totalFees = corePools?.reduce((acc, pool) => acc + parseFloat(pool.earned_fees), 0)
-    const corePoolIds = new Set(corePools?.map(pool => pool.poolId));
+    const corePoolIds = new Set(corePools?.map(pool => pool.pool_id));
     const coreGlobalPools = globalPools?.filter(pool => corePoolIds.has(pool.poolId));
 
 
@@ -249,7 +249,7 @@ export default function CorePools() {
         const sortedCoreGlobalPools = [...coreGlobalPools].sort((a, b) => b.totalLiquidity - a.totalLiquidity);
 
         // Create a mapping for quick access to earned_fees from corePools using poolId
-        const feesByPoolId = new Map(corePools.map(pool => [pool.poolId, parseFloat(pool.earned_fees)]));
+        const feesByPoolId = new Map(corePools.map(pool => [pool.pool_id, parseFloat(pool.earned_fees)]));
 
         // Construct the data for the charts, ensuring alignment in pool ordering between the bar and line chart data.
         sortedCoreGlobalPools.forEach(pool => {
