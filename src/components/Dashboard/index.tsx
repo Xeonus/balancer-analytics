@@ -37,6 +37,7 @@ import Reports from "../../pages/Reports";
 import CorePools from "../../pages/CorePools";
 import ProtocolFees from "../../pages/ProtocolFees";
 import CorePool from "../../pages/CorePool";
+import IncentiveSimulator from "../../pages/IncentiveSimulator";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -233,6 +234,8 @@ function Dashboard() {
                             <Route path={networkPrefix(activeNetwork) + 'reports'} element={<Reports />} />
                             <Route path={networkPrefix(activeNetwork) + 'voting-incentives'}
                                    element={<VotingIncentives/>}/>
+                            <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
+                                   element={<IncentiveSimulator/>}/>
                             <Route path={networkPrefix(activeNetwork) + 'corePools'}
                                    element={<CorePools/>}/>
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}
