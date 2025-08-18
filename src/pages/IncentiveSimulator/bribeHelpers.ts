@@ -1,8 +1,8 @@
 export function calculateAPR(bribeValue: number, poolTotalValue: number, emissionPerVote: number, incentivePerVote: number) {
     let APR = 0.0;
-    
+
     if (Number(bribeValue) && Number(incentivePerVote)) {
-        const weeklyEmissions = emissionPerVote * bribeValue / incentivePerVote;
+        const weeklyEmissions = emissionPerVote * bribeValue / incentivePerVote / 2;
         // 52 weeks per year for weekly emissions
         APR = weeklyEmissions / poolTotalValue * 52 * 100;
     }
@@ -12,10 +12,10 @@ export function calculateAPR(bribeValue: number, poolTotalValue: number, emissio
 
 export function calculateBribeValue(targetAPR: number, poolTotalValue: number, emissionPerVote: number, incentivePerVote: number) {
     let bribeValue = 0.0;
-    
+
     if (Number(targetAPR) && Number(emissionPerVote)) {
         // 52 weeks per year for weekly emissions
-        bribeValue = (targetAPR / (52 * 100) * poolTotalValue * incentivePerVote) / emissionPerVote;
+        bribeValue = (targetAPR / (52 * 100) * poolTotalValue * incentivePerVote) / emissionPerVote * 2;
     }
 
     return Number(bribeValue).toFixed(2);
