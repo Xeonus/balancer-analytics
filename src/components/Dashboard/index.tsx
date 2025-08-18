@@ -44,7 +44,7 @@ interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 //Color mode
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
