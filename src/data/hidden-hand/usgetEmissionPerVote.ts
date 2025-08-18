@@ -106,8 +106,6 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                         (weeklyBalEmissionFormatted * veBALShare) /
                         approximateTotalVote;
 
-
-
                     const emissionValuePerVote =
                         biweeklyBalEmissionPerAura * balPrice ;
                     setEmissionValuePerVote(emissionValuePerVote);

@@ -28,7 +28,7 @@ import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
 import DefilyticaIcon from '../../assets/png/defilytica.png'
-import {Handshake} from "@mui/icons-material";
+import {Handshake, Science} from "@mui/icons-material";
 //import Stellate from '../../assets/svg/stellate.svg'
 import BeetsIcon from '../../assets/png/beets-icon-large.png';
 import AuraIcon from '../../assets/png/AURA_ISO_colors.png';
@@ -181,6 +181,12 @@ const MenuDrawer = ({
                         <Handshake />
                     </ListItemIcon>
                     <ListItemText primary={'Voting Incentives'} />
+                </ListItemButton>
+                <ListItemButton key={'Incentive Simulator'} component={NavLink} to={'/' + route + 'incentiveSimulator'}>
+                    <ListItemIcon>
+                        <Science />
+                    </ListItemIcon>
+                    <ListItemText primary={'Incentive Simulator'} />
                 </ListItemButton>
             </List>
             <List>
