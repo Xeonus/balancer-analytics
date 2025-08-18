@@ -15,7 +15,7 @@ import {
     TableCell,
     Divider,
 } from '@mui/material';
-import { BalancerSDK, balEmissions } from "@balancer-labs/sdk";
+import { balEmissions } from "@balancer-labs/sdk";
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import { useBalancerPools } from "../../data/balancer/usePools";
