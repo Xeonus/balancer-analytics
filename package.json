@@ -33,7 +33,7 @@
     "echarts-for-react": "^3.0.2",
     "ethers": "^5.7.2",
     "ethereum-multicall": "^2.21.0",
-    "firebase": "^9.22.1",
+    "firebase": "^9.23.0",
     "graphql-tag": "^2.12.6",
     "identicon.js": "^2.3.3",
     "jsbi": "^4.3.0",
@@ -96,5 +96,19 @@
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/react-csv": "^1.1.10",
     "prettier": "^3.1.0"
+  },
+  "resolutions": {
+    "sha.js": "^2.4.12",
+    "elliptic": "^6.6.1", 
+    "@babel/traverse": "^7.23.2",
+    "axios": "^1.6.2",
+    "path-to-regexp": "^0.1.12",
+    "cross-spawn": "^7.0.5",
+    "form-data": "^4.0.0",
+    "protobufjs": "^7.2.5",
+    "webpack": "^5.94.0",
+    "http-proxy-middleware": "^2.0.9",
+    "rollup": "^2.79.2",
+    "body-parser": "^1.20.3"
   }
 }
