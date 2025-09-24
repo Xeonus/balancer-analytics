@@ -1,5 +1,5 @@
 import {Box, Card, CircularProgress, Grid, MenuItem, Select, Typography} from "@mui/material";
-import CustomLinearProgress from '../../components/Progress/CustomLinearProgress';
+import IntelligentLoadingIndicator from '../../components/Progress/IntelligentLoadingIndicator';
 import * as React from "react";
 import {useEffect, useMemo, useState} from "react";
 import {SelectChangeEvent} from "@mui/material/Select";
@@ -130,6 +130,14 @@ export type PoolReward = {
     pool: string;
     [token: string]: string | number; // this represents any number of token properties with their corresponding `amountDollars` value
 };
+// Loading state interface for better tracking
+interface LoadingState {
+    name: string;
+    loading: boolean;
+    completed: boolean;
+    error?: string | null;
+}
+
 export default function VotingIncentives() {
     const homeNav: NavElement = {
         name: 'Home',
@@ -150,7 +158,6 @@ export default function VotingIncentives() {
     const [decoratedGauges, setDecoratedGagues] = useState<BalancerStakingGauges[]>([]);
     const hiddenHandData = useGetHiddenHandVotingIncentives(currentRoundNew === 0 ? '' : String(currentRoundNew));
     const [paladinHistoricalData, setPaladinHistoricalData] = useState<CombinedIncentiveData | null>(null);
-    console.log("paladinHistoricalData", paladinHistoricalData);
 
     // const currentHiddenHandData = useGetHiddenHandVotingIncentives();
     //const { address } = useAccount();
@@ -176,8 +183,8 @@ export default function VotingIncentives() {
         questTimestamps
     );
 
-    console.log("questData", questData);
-    console.log("historicalTokenPrices", historicalTokenPrices)
+    // Historical data - moved here to fix variable hoisting issue
+    const historicalData = useGetHiddenHandHistoricalIncentives();
 
     useEffect(() => {
         // Only process when we have both quest data and token prices
@@ -283,15 +290,17 @@ export default function VotingIncentives() {
         setCurrentRoundNew(Number(event.target.value));
     };
 
-    //Historical data
-    const historicalData = useGetHiddenHandHistoricalIncentives();
+    // LLAMA API - Memoize the processed historical data
+    const { dollarPerVlAssetData, totalAmountDollarsData, xAxisData, totalAmountDollarsSum } = useMemo(() => {
+        if (!historicalData) {
+            return {
+                dollarPerVlAssetData: [],
+                totalAmountDollarsData: [],
+                xAxisData: [],
+                totalAmountDollarsSum: 0
+            };
+        }
 
-    // LLAMA API
-    let dollarPerVlAssetData: number[] = [];
-    let totalAmountDollarsData;
-    let xAxisData: string[] = [];
-    let totalAmountDollarsSum;
-    if (historicalData) {
         let newDollarPerVlAssetData = [];
         let newTotalAmountDollarsData = [];
         let newXAxisData = [];
@@ -309,78 +318,119 @@ export default function VotingIncentives() {
             }
         }
 
-        dollarPerVlAssetData = newDollarPerVlAssetData;
-        totalAmountDollarsData = newTotalAmountDollarsData;
-        totalAmountDollarsSum = historicalData.totalAmountDollarsSum;
-        xAxisData = newXAxisData;
-    }
+        return {
+            dollarPerVlAssetData: newDollarPerVlAssetData,
+            totalAmountDollarsData: newTotalAmountDollarsData,
+            totalAmountDollarsSum: historicalData.totalAmountDollarsSum,
+            xAxisData: newXAxisData
+        };
+    }, [historicalData]);
 
 
 
-    // APR chart: match the dollarPerVLAssetData with price Data to calculate APR
-    let historicalAPR : number[] = []
-    if (xAxisData && xAxisData.length > 0 && dollarPerVlAssetData) {
-        const dollarPerVlHistoricalAssetData = [...dollarPerVlAssetData]
+    // APR chart: memoize the APR and price calculations
+    const { historicalAPR, historicalPrice } = useMemo(() => {
+        if (!xAxisData || xAxisData.length === 0 || !dollarPerVlAssetData) {
+            return { historicalAPR: [], historicalPrice: [] };
+        }
 
-        historicalAPR = xAxisData.map((el) => {
+        const dollarPerVlHistoricalAssetData = [...dollarPerVlAssetData];
+
+        const aprData = xAxisData.map((el) => {
             const price = priceData.find(price => el === price.time);
-            const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : 0
+            const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : null;
 
             if (price && price.value) {
                 return dollarPerVlHistoricalAssetData[xAxisData.indexOf(el)] * 52 / price.value;
-            } else if (veBALHistoricalPrice && fallbackPrice) {
-                return dollarPerVlHistoricalAssetData[xAxisData.indexOf(el)] * 52/ fallbackPrice.value;
+            } else if (fallbackPrice && fallbackPrice.value) {
+                return dollarPerVlHistoricalAssetData[xAxisData.indexOf(el)] * 52 / fallbackPrice.value;
             }
-            else {
-                return 0; // Fallback value
-            }
+            return 0; // Fallback value
         });
 
-    }
-    //console.log("historicalAPR", historicalAPR)
-
-    let historicalPrice = xAxisData.map((el) => {
-        const price = priceData.find(price => el === price.time);
-        const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : 0
-        if (price) {
-            return price.value;
-        } else if (veBALHistoricalPrice && fallbackPrice) {
-            return fallbackPrice.value;
-        }
-        else {
+        const priceHistory = xAxisData.map((el) => {
+            const price = priceData.find(price => el === price.time);
+            const fallbackPrice = veBALHistoricalPrice ? veBALHistoricalPrice.find(price => el === price.time) : null;
+            if (price && price.value) {
+                return price.value;
+            } else if (fallbackPrice && fallbackPrice.value) {
+                return fallbackPrice.value;
+            }
             return 0; // Fallback value
+        });
+
+        return { historicalAPR: aprData, historicalPrice: priceHistory };
+    }, [xAxisData, dollarPerVlAssetData, priceData, veBALHistoricalPrice]);
+
+    // Add Paladin data preparation with memoization
+    const { paladinDollarPerVlAssetData, paladinTotalAmountDollarsData, paladinXAxisData, paladinTotalAmountDollarsSum } = useMemo(() => {
+        if (!paladinHistoricalData) {
+            return {
+                paladinDollarPerVlAssetData: [],
+                paladinTotalAmountDollarsData: [],
+                paladinXAxisData: [],
+                paladinTotalAmountDollarsSum: 0
+            };
         }
-    });
+        return {
+            paladinDollarPerVlAssetData: paladinHistoricalData.dollarPerVlAssetData,
+            paladinTotalAmountDollarsData: paladinHistoricalData.totalAmountDollarsData,
+            paladinXAxisData: paladinHistoricalData.xAxisData,
+            paladinTotalAmountDollarsSum: paladinHistoricalData.totalAmountDollarsSum
+        };
+    }, [paladinHistoricalData]);
 
-    // Add Paladin data preparation
-    let paladinDollarPerVlAssetData: number[] = [];
-    let paladinTotalAmountDollarsData: number[] = [];
-    let paladinXAxisData: string[] = [];
-    let paladinTotalAmountDollarsSum = 0;
+    // Create loading states array for better tracking - moved here after all computations
+    const loadingStates: LoadingState[] = useMemo(() => [
+        {
+            name: 'Historical Data',
+            loading: !historicalData,
+            completed: !!historicalData,
+        },
+        {
+            name: 'Hidden Hand Incentives',
+            loading: !hiddenHandData.incentives,
+            completed: !!hiddenHandData.incentives,
+        },
+        {
+            name: 'Bribe Rewards',
+            loading: bribeRewardsNew.length < 1,
+            completed: bribeRewardsNew.length >= 1,
+        },
+        {
+            name: 'Dashboard Metrics',
+            loading: !totalAmountDollarsSum || incentivePerVote === 0 || roundIncentives === 0,
+            completed: !!totalAmountDollarsSum && incentivePerVote !== 0 && roundIncentives !== 0,
+        },
+        {
+            name: 'Paladin Quests',
+            loading: questsLoading,
+            completed: !questsLoading && !!questData,
+        },
+        {
+            name: 'Token Prices',
+            loading: pricesLoading,
+            completed: !pricesLoading && !!historicalTokenPrices,
+        },
+    ], [historicalData, hiddenHandData.incentives, bribeRewardsNew.length, totalAmountDollarsSum, incentivePerVote, roundIncentives, questsLoading, questData, pricesLoading, historicalTokenPrices]);
 
-    if (paladinHistoricalData) {
-        paladinDollarPerVlAssetData = paladinHistoricalData.dollarPerVlAssetData;
-        paladinTotalAmountDollarsData = paladinHistoricalData.totalAmountDollarsData;
-        paladinXAxisData = paladinHistoricalData.xAxisData;
-        paladinTotalAmountDollarsSum = paladinHistoricalData.totalAmountDollarsSum;
-    }
+    // Check if any data is still loading
+    const isStillLoading = loadingStates.some(state => state.loading)
 
     return (<>
-            {(  !historicalData
-                || !hiddenHandData.incentives
-                || bribeRewardsNew.length < 1
-                || !totalAmountDollarsSum
-                || incentivePerVote === 0
-                || roundIncentives === 0
-                || questsLoading
-            ) ? (
+            {isStillLoading ? (
                 <Grid
                     container
                     spacing={2}
-                    mt='25%'
+                    mt='10%'
                     sx={{justifyContent: 'center'}}
                 >
-                    <CustomLinearProgress/>
+                    <Grid item xs={12}>
+                        <IntelligentLoadingIndicator
+                            loadingStates={loadingStates}
+                            title="Loading Voting Incentives Data"
+                        />
+                    </Grid>
                 </Grid>
             ) : (
                 <Box sx={{flexGrow: 2}}>
@@ -405,28 +455,20 @@ export default function VotingIncentives() {
                                 }}
                             >
                                 <Grid item>
-                                    {totalAmountDollarsSum ? (
-                                        <MetricsCard
-                                            mainMetric={totalAmountDollarsSum}
-                                            metricName="All time incentives"
-                                            mainMetricInUSD={true}
-                                            MetricIcon={CurrencyExchange}
-                                        />
-                                    ) : (
-                                        <CircularProgress />
-                                    )}
+                                    <MetricsCard
+                                        mainMetric={totalAmountDollarsSum || 0}
+                                        metricName="All time incentives"
+                                        mainMetricInUSD={true}
+                                        MetricIcon={CurrencyExchange}
+                                    />
                                 </Grid>
                                 <Grid item>
-                                    {totalAmountDollarsSum ? (
-                                        <MetricsCard
-                                            mainMetric={dollarPerVlAssetData[dollarPerVlAssetData.length - 1]}
-                                            metricName="Last round $/veBAL"
-                                            mainMetricInUSD={true}
-                                            MetricIcon={CurrencyExchange}
-                                        />
-                                    ) : (
-                                        <CircularProgress />
-                                    )}
+                                    <MetricsCard
+                                        mainMetric={dollarPerVlAssetData && dollarPerVlAssetData.length > 0 ? dollarPerVlAssetData[dollarPerVlAssetData.length - 1] : 0}
+                                        metricName="Last round $/veBAL"
+                                        mainMetricInUSD={true}
+                                        MetricIcon={CurrencyExchange}
+                                    />
                                 </Grid>
                             </Grid>
 
@@ -455,7 +497,7 @@ export default function VotingIncentives() {
                         <Grid item xs={11} sm={9}>
                             <Typography sx={{fontSize: '15px'}}>Hidden Hand: Historical Performance</Typography>
                         </Grid>
-                        {dollarPerVlAssetData && totalAmountDollarsData && xAxisData ?
+                        {dollarPerVlAssetData && dollarPerVlAssetData.length > 0 && totalAmountDollarsData && xAxisData && xAxisData.length > 0 &&
                             <Grid item xs={11} sm={9}>
                                 <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
                                     <DashboardOverviewChart
@@ -466,11 +508,11 @@ export default function VotingIncentives() {
                                     />
                                 </Card>
                             </Grid>
-                            : <CircularProgress/>}
+                        }
                         <Grid item xs={11} sm={9}>
                             <Typography sx={{fontSize: '15px'}}>Paladin Quests: Historical Performance</Typography>
                         </Grid>
-                        {paladinDollarPerVlAssetData && paladinTotalAmountDollarsData && paladinXAxisData ?
+                        {paladinDollarPerVlAssetData && paladinDollarPerVlAssetData.length > 0 && paladinTotalAmountDollarsData && paladinXAxisData && paladinXAxisData.length > 0 &&
                             <Grid item xs={11} sm={9}>
                                 <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
                                     <DashboardOverviewChart
@@ -481,11 +523,11 @@ export default function VotingIncentives() {
                                     />
                                 </Card>
                             </Grid>
-                            : <CircularProgress/>}
+                        }
                         <Grid item xs={11} sm={9}>
                             <Typography sx={{fontSize: '24px'}}>Historical veBAL Price vs. Incentive APR</Typography>
                         </Grid>
-                        {historicalPrice && historicalPrice.length > 0 && historicalAPR ?
+                        {historicalPrice && historicalPrice.length > 0 && historicalAPR && historicalAPR.length > 0 &&
                             <Grid item xs={11} sm={9}>
                                 <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
                                     <VeBALIncentiveAPRChart
@@ -494,8 +536,8 @@ export default function VotingIncentives() {
                                         xAxisData={xAxisData}
                                         height={"400px"}/>
                                 </Card>
-                            </Grid> :
-                            <CircularProgress/>}
+                            </Grid>
+                        }
                         <Grid item xs={11} sm={9} mt={1}>
                             <Typography sx={{fontSize: '24px'}} mb={1}>Hidden Hand: Voting Epoch Metrics</Typography>
                         </Grid>
@@ -529,54 +571,55 @@ export default function VotingIncentives() {
                                 sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                             >
                                 <Box mr={1} mb={1}>
-                                    {totalAmountDollarsSum ?
-                                        <MetricsCard mainMetric={roundIncentives} metricName={"Total Incentives"}
-                                                     mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
-                                        : <CircularProgress/>}
+                                    <MetricsCard
+                                        mainMetric={roundIncentives || 0}
+                                        metricName={"Total Incentives"}
+                                        mainMetricInUSD={true}
+                                        MetricIcon={CurrencyExchange}
+                                    />
                                 </Box>
                                 <Box mr={1} mb={1}>
-                                    {emissionVotesTotal ?
-                                        <MetricsCard mainMetric={emissionVotesTotal} metricName={"Total Incentive Votes"}
-                                                     mainMetricInUSD={false} MetricIcon={HowToVoteIcon}/>
-                                        : <CircularProgress/>}
+                                    <MetricsCard
+                                        mainMetric={emissionVotesTotal || 0}
+                                        metricName={"Total Incentive Votes"}
+                                        mainMetricInUSD={false}
+                                        MetricIcon={HowToVoteIcon}
+                                    />
                                 </Box>
                                 <Box mr={1} mb={1}>
-                                    {totalAmountDollarsSum ?
-                                        <MetricsCard mainMetric={emissionPerVote} metricName={"Incentive $/Vote"}
-                                                     metricDecimals={4}
-                                                     mainMetricInUSD={true} MetricIcon={CurrencyExchange}/>
-                                        : <CircularProgress/>}
+                                    <MetricsCard
+                                        mainMetric={emissionPerVote || 0}
+                                        metricName={"Incentive $/Vote"}
+                                        metricDecimals={4}
+                                        mainMetricInUSD={true}
+                                        MetricIcon={CurrencyExchange}
+                                    />
                                 </Box>
                                 <Box mr={1} mb={1}>
-                                    {totalAmountDollarsSum ?
-                                        <MetricsCard mainMetric={emissionValuePerVote} metricName={"Emission $/Vote"}
-                                                     metricDecimals={4}
-                                                     mainMetricInUSD={true}
-                                                     MetricIcon={ShoppingCartCheckout}
-                                                     toolTipText={'Emission value generated per veBAL'}
-                                        />
-
-                                        : <CircularProgress/>}
+                                    <MetricsCard
+                                        mainMetric={emissionValuePerVote || 0}
+                                        metricName={"Emission $/Vote"}
+                                        metricDecimals={4}
+                                        mainMetricInUSD={true}
+                                        MetricIcon={ShoppingCartCheckout}
+                                        toolTipText={'Emission value generated per veBAL'}
+                                    />
                                 </Box>
                                 <Box mr={1} mb={1}>
-                                    {emissionsPerDollarSpent ?
-                                        <MetricsCard
-                                            mainMetric={emissionsPerDollarSpent}
-                                            metricName={"Emissions per $1"} mainMetricInUSD={true}
-                                            metricDecimals={4}
-                                            MetricIcon={AddShoppingCart}
-                                            toolTipText={'BAL emissions received for 1$ spent in incentives'}
-                                        />
-                                        : <CircularProgress/>}
+                                    <MetricsCard
+                                        mainMetric={emissionsPerDollarSpent || 0}
+                                        metricName={"Emissions per $1"}
+                                        mainMetricInUSD={true}
+                                        metricDecimals={4}
+                                        MetricIcon={AddShoppingCart}
+                                        toolTipText={'BAL emissions received for 1$ spent in incentives'}
+                                    />
                                 </Box>
                             </Grid>
                         </Grid>
-                        {hiddenHandData.incentives === null ? (
-                            <CircularProgress/>
-                        ) : (
+                        {hiddenHandData.incentives && bribeRewardsNew.length > 0 && xAxisDataRoundNew.length > 0 &&
                             <Grid item mt={1} xs={11} sm={9}>
                                 <Card sx={{boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",}}>
-
                                     <SingleRoundBarChart
                                         rewardData={bribeRewardsNew}
                                         xAxisData={xAxisDataRoundNew}
@@ -584,17 +627,15 @@ export default function VotingIncentives() {
                                     />
                                 </Card>
                             </Grid>
-                        )}
+                        }
 
                         <Grid item xs={11} sm={9}>
                             {currentRoundNew < 1689019200 && currentRoundNew !== 0 && hiddenHandData.incentives !== null ? (
                                 <HistoricalIncentivesTable
                                     key={currentRoundNew}
                                     gaugeDatas={hiddenHandData.incentives.data} />
-                            ) : decoratedGauges && decoratedGauges.length > 0 ? (
+                            ) : decoratedGauges && decoratedGauges.length > 0 && (
                                 <IncentivesTable gaugeDatas={decoratedGauges} currentRound={currentRoundNew} />
-                            ) : (
-                                <CircularProgress />
                             )}
                         </Grid>
                         {/*<Grid item xs={11} sm={9}>

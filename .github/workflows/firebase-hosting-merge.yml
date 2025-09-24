@@ -33,11 +33,6 @@ jobs:
       REACT_APP_FAVICON: "https://github.com/defilytica/aura-analytics/blob/f4484016bfbcb135e8654979a5a9171220970805/src/assets/png/defilytica.png"
       REACT_APP_MANIFEST: "https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/public/manifest.json"
       REACT_APP_INFURA_KEY: '${{ secrets.REACT_APP_INFURA_KEY }}'
-      REACT_APP_ALCHEMY_KEY: '${{ secrets.REACT_APP_ALCHEMY_KEY }}'
-      REACT_APP_ALCHEMY_URL: '${{ secrets.REACT_APP_ALCHEMY_URL }}'
-      REACT_APP_ALCHEMY_URL_POLYGON: '${{ secrets.REACT_APP_ALCHEMY_URL_POLYGON }}'
-      REACT_APP_ALCHEMY_URL_ZKEVM: '${{ secrets.REACT_APP_ALCHEMY_URL_ZKEVM }}'
-      REACT_APP_ALCHEMY_URL_ARBITRUM: '${{ secrets.REACT_APP_ALCHEMY_URL_ARBITRUM }}'
       REACT_APP_CG_KEY: '${{ secrets.REACT_APP_CG_KEY }}'
       REACT_APP_PERSONAL_GRAPH_KEY: '${{ secrets.REACT_APP_PERSONAL_GRAPH_KEY }}'
     strategy:

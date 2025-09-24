@@ -6,11 +6,6 @@ import {
     PolygonZkEVMNetworkInfo
 } from "../constants/networks";
 
-export const healthClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/index-node/graphql',
-    cache: new InMemoryCache(),
-});
-
 export const blockClient = new ApolloClient({
     uri: EthereumNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
