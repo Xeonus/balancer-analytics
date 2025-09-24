@@ -11,7 +11,7 @@ export async function useDecoratePoolsWithEmissions(poolDatas: PoolData[] | unde
     //Init SDK
     const sdk = new BalancerSDK({
         network: Number(activeNetwork.chainId),
-        rpcUrl: activeNetwork.alchemyRPCUrl,
+        rpcUrl: activeNetwork.rpcUrl,
     });
 
     const { data } = sdk;

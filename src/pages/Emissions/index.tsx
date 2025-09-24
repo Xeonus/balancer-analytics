@@ -54,7 +54,7 @@ export default function Emissions() {
     //Init SDK - static for Mainnet
     const sdk = new BalancerSDK({
         network: Number(EthereumNetworkInfo.chainId),
-        rpcUrl: EthereumNetworkInfo.alchemyRPCUrl,
+        rpcUrl: EthereumNetworkInfo.rpcUrl,
     });
 
     //Obtain weekly and yearly BAL emissions

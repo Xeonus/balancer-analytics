@@ -25,7 +25,7 @@ export default function useDecoratePools(
     //Init SDK
     const sdk = new BalancerSDK({
         network: Number(activeNetwork.chainId),
-        rpcUrl: activeNetwork.alchemyRPCUrl,
+        rpcUrl: activeNetwork.rpcUrl,
     });
 
     const { pools } = sdk;

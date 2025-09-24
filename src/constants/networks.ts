@@ -10,9 +10,6 @@ import MODE_LOGO_URL from '../assets/svg/mode.svg'
 import FRAXTAL_LOGO_URL from '../assets/svg/fraxtal.svg'
 
 import {
-  ALCHEMY_KEY,
-  ALCHEMY_KEY_ARBITRUM, ALCHEMY_KEY_POLYGON, ALCHEMY_KEY_ZKEVM,
-  ALCHEMY_URL, ALCHEMY_URL_ARBITRUM, ALCHEMY_URL_POLYGON, ALCHEMY_URL_ZKEVM,
   BALANCER_PRIMARY_COLOR,
   BALANCER_SECONDARY_COLOR, PERSONAL_GRAPH_KEY
 } from '../data/balancer/constants';
@@ -40,8 +37,7 @@ export type NetworkInfo = {
   decentralicedClientUri: string
   blockClientUri: string
   gaugeClientUri: string
-  alchemyRPCUrl: string
-  alchemyKey: string
+  rpcUrl: string
   route: string
   name: string
   startTimeStamp: number
@@ -72,8 +68,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV',
   blockClientUri: DECENTRALIZED_ENDPOINT + '9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC',
-  alchemyRPCUrl: ALCHEMY_URL,
-  alchemyKey: ALCHEMY_KEY,
+  rpcUrl: 'https://eth.llamarpc.com',
   bgColor: BALANCER_PRIMARY_COLOR,
   primaryColor: BALANCER_PRIMARY_COLOR,
   secondaryColor: BALANCER_SECONDARY_COLOR,
@@ -96,8 +91,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-arbitrum/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
   blockClientUri: DECENTRALIZED_ENDPOINT + '64DCU8nq48qdDABnobpDafsg7RF75Rx5soKrHiGA8mqp',
-  alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
-  alchemyKey: ALCHEMY_KEY_ARBITRUM,
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
   imageURL: ARBITRUM_LOGO_URL,
   bgColor: '#0A294B',
   primaryColor: '#0490ED',
@@ -121,8 +115,7 @@ export const PolygonNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-polygon/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp',
   blockClientUri: DECENTRALIZED_ENDPOINT + 'DMnXZnphMTkcFiK5NHm6LzwhJ7yUy7seVnZuNkNsXLHp',
-  alchemyRPCUrl: ALCHEMY_URL_POLYGON,
-  alchemyKey: ALCHEMY_KEY_POLYGON,
+  rpcUrl: 'https://polygon-rpc.com',
   bgColor: '#8247e5',
   primaryColor: '#8247e5',
   secondaryColor: '#FB7876',
@@ -146,8 +139,7 @@ export const PolygonZkEVMNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '2Pn2rKmJdkKs9b4wK7CXQN9z5jHXkY4HbBuTVAEo4aoS',
   blockClientUri: DECENTRALIZED_ENDPOINT + 'EPWJiod7hQ7yy4QhXihL9ssw82NosmRnu8txcf5D9Duo',
-  alchemyRPCUrl: ALCHEMY_URL_ZKEVM,
-  alchemyKey: ALCHEMY_KEY_ZKEVM,
+  rpcUrl: 'https://zkevm-rpc.com',
   bgColor: '#a176e8',
   primaryColor: '#620df3',
   secondaryColor: '#FB7876',
@@ -171,8 +163,7 @@ export const GnosisNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-gnosis-chain/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg',
   blockClientUri: DECENTRALIZED_ENDPOINT + '8ZD25Ff1efVjqHkGmPdgn7oevwe3FkSB7WFygyNEsAco',
-  alchemyRPCUrl: 'https://rpc.gnosis.gateway.fm',
-  alchemyKey: '',
+  rpcUrl: 'https://rpc.gnosis.gateway.fm',
   bgColor: '#8247e5',
   primaryColor: '#0d8e74',
   secondaryColor: '#FB7876',
@@ -196,8 +187,7 @@ export const AvalancheNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-avalanche/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu',
   blockClientUri: DECENTRALIZED_ENDPOINT + '97YH6dMhGcXoTvVwDAML6GxYm9hBh7PCz6WPscUkrFhv',
-  alchemyRPCUrl: ' https://api.avax.network/ext/bc/C/rpc ',
-  alchemyKey: '',
+  rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
   bgColor: '#F01B36',
   primaryColor: '#F01B36',
   secondaryColor: '#FB7876',
@@ -221,8 +211,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'E7XyutxXVLrp8njmjF16Hh38PCJuHm12RRyMt5ma4ctX',
   blockClientUri: '',
-  alchemyRPCUrl: 'https://base.publicnode.com',
-  alchemyKey: '',
+  rpcUrl: 'https://base.publicnode.com',
   bgColor: '#0030a6',
   primaryColor: '#0027a2',
   secondaryColor: '#005094',
@@ -246,8 +235,7 @@ export const ModeNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-mode/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '8Lssq3MmAPrv4JBTjpK8BhVTNRHbofP3tJ6rrBnErbTf',
   blockClientUri: '',
-  alchemyRPCUrl: 'https://mainnet.mode.network/',
-  alchemyKey: '',
+  rpcUrl: 'https://mainnet.mode.network/',
   bgColor: '#b7ff00',
   primaryColor: '#84b501',
   secondaryColor: '#415900',
@@ -271,8 +259,7 @@ export const FraxtalNetworkInfo: NetworkInfo = {
   gaugeClientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-gauges-fraxtal/latest/gn',
   decentralicedClientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-fraxtal-v2/latest/gn',
   blockClientUri: '',
-  alchemyRPCUrl: 'https://mainnet.mode.network/',
-  alchemyKey: '',
+  rpcUrl: 'https://rpc.frax.com',
   bgColor: '#8a8a8a',
   primaryColor: '#656565',
   secondaryColor: '#3c3c3c',

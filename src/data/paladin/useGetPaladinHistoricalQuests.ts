@@ -6,6 +6,10 @@ import { unixToDate } from '../../utils/date';
 
 const API_URL = 'https://dev.paladin.vote/quest/v3/board/bal';
 
+// Batching constants to avoid overwhelming the API
+const BATCH_SIZE = 5; // Process 5 requests at a time
+const DELAY_MS = 200; // 200ms delay between batches
+
 export const useGetPaladinHistoricalQuests = (): {
     questData: RawHistoricalQuestData | null;
     loading: boolean;
@@ -37,18 +41,40 @@ export const useGetPaladinHistoricalQuests = (): {
                     }
                 }
 
-                // Fetch all quests
-                const questResponses = await Promise.all(
-                    timestamps.map(async timestamp => {
-                        try {
-                            const response = await axios.get<PaladinQuest[]>(`${API_URL}/${timestamp}`);
-                            return { timestamp, data: response.data, error: null };
-                        } catch (err) {
-                            console.error(`Error fetching data for timestamp ${timestamp}:`, err);
-                            return { timestamp, data: null, error: err };
-                        }
-                    })
-                );
+                // Fetch all quests using batch processing
+                const questResponses: Array<{
+                    timestamp: number;
+                    data: PaladinQuest[] | null;
+                    error: any;
+                }> = [];
+
+                // Process timestamps in batches to avoid overwhelming the API
+                for (let i = 0; i < timestamps.length; i += BATCH_SIZE) {
+                    const batch = timestamps.slice(i, i + BATCH_SIZE);
+
+                    console.log(`Fetching Paladin quest batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(timestamps.length / BATCH_SIZE)}`);
+
+                    const batchResponses = await Promise.all(
+                        batch.map(async timestamp => {
+                            try {
+                                const response = await axios.get<PaladinQuest[]>(`${API_URL}/${timestamp}`, {
+                                    timeout: 10000, // 10 second timeout
+                                });
+                                return { timestamp, data: response.data, error: null };
+                            } catch (err) {
+                                console.error(`Error fetching data for timestamp ${timestamp}:`, err);
+                                return { timestamp, data: null, error: err };
+                            }
+                        })
+                    );
+
+                    questResponses.push(...batchResponses);
+
+                    // Add delay between batches to avoid overwhelming the API
+                    if (i + BATCH_SIZE < timestamps.length) {
+                        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+                    }
+                }
 
                 // Collect token addresses and filter valid responses
                 const allTokenAddresses = new Set<string>();
