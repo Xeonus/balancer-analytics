@@ -7,7 +7,7 @@ import {
     GnosisNetworkInfo, NetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo,
-    AvalancheNetworkInfo, BaseNetworkInfo, ModeNetworkInfo, FraxtalNetworkInfo
+    AvalancheNetworkInfo, BaseNetworkInfo, FraxtalNetworkInfo
 } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
@@ -17,7 +17,6 @@ import GnosisLogo from '../../assets/svg/gnosis.svg'
 import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
-import ModeLogo from '../../assets/svg/mode.svg'
 import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 
 import {useLocation, useNavigate} from "react-router-dom";
@@ -72,10 +71,6 @@ export default function NetworkSelector() {
         } else if (chainId === BaseNetworkInfo.chainId) {
             update(BaseNetworkInfo)
             const newPath = updatePathForNetwork(BaseNetworkInfo, location.pathname)
-            navigate(newPath)
-        } else if (chainId === ModeNetworkInfo.chainId) {
-            update(ModeNetworkInfo)
-            const newPath = updatePathForNetwork(ModeNetworkInfo, location.pathname)
             navigate(newPath)
         } else if (chainId === FraxtalNetworkInfo.chainId) {
             update(FraxtalNetworkInfo)
@@ -215,22 +210,6 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Base
-                        </Box>
-                    </Box>
-                </MenuItem>
-                <MenuItem value={ModeNetworkInfo.chainId} key="mode">
-                    <Box display="flex" alignItems="center">
-                        <Box mr={0.5}>
-                            <Avatar
-                                sx={{
-                                    height: 20,
-                                    width: 20
-                                }}
-                                src={ModeLogo}
-                            />
-                        </Box>
-                        <Box>
-                            Mode
                         </Box>
                     </Box>
                 </MenuItem>
