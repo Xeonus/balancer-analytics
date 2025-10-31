@@ -1403,7 +1403,6 @@ export type GqlChain =
   | "FRAXTAL"
   | "GNOSIS"
   | "MAINNET"
-  | "MODE"
   | "OPTIMISM"
   | "POLYGON"
   | "SEPOLIA"

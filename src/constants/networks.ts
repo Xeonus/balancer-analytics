@@ -6,7 +6,6 @@ import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
 import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
 import AVALANCHE_LOGO_URL from '../assets/svg/avalancheLogo.svg'
 import BASE_LOGO_URL from '../assets/svg/base.svg'
-import MODE_LOGO_URL from '../assets/svg/mode.svg'
 import FRAXTAL_LOGO_URL from '../assets/svg/fraxtal.svg'
 
 import {
@@ -22,7 +21,6 @@ export enum SupportedNetwork {
   ZKEVM,
   AVALANCHE,
   BASE,
-  MODE,
   FRAXTAL
 }
 
@@ -219,30 +217,6 @@ export const BaseNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
-export const ModeNetworkInfo: NetworkInfo = {
-  id: SupportedNetwork.MODE,
-  chainId: '34443',
-  v3NetworkID: 'MODE',
-  coingeckoId: 'mode',
-  debankId: 'mode',
-  balAddress: '0xd08a2917653d4e460893203471f0000826fb4034',
-  feeCollectorThreshold: 5000,
-  route: 'mode',
-  name: 'Mode',
-  startTimeStamp: 1718834400,
-  appUri: 'https://app.balancer.fi/#/mode/',
-  clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-mode-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-mode/version/latest',
-  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '8Lssq3MmAPrv4JBTjpK8BhVTNRHbofP3tJ6rrBnErbTf',
-  blockClientUri: '',
-  rpcUrl: 'https://mainnet.mode.network/',
-  bgColor: '#b7ff00',
-  primaryColor: '#84b501',
-  secondaryColor: '#415900',
-  imageURL: MODE_LOGO_URL,
-  blurb: 'Beta',
-}
-
 export const FraxtalNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.FRAXTAL,
   chainId: '252',
@@ -275,6 +249,5 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   GnosisNetworkInfo,
   AvalancheNetworkInfo,
   BaseNetworkInfo,
-  ModeNetworkInfo,
   FraxtalNetworkInfo
 ]

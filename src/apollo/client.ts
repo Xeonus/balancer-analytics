@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
-    EthereumNetworkInfo, FraxtalNetworkInfo, GnosisNetworkInfo, ModeNetworkInfo,
+    EthereumNetworkInfo, FraxtalNetworkInfo, GnosisNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from "../constants/networks";
@@ -281,49 +281,6 @@ export const baseBlockClient = new ApolloClient({
 
 export const baseClient = new ApolloClient({
     uri: BaseNetworkInfo.decentralicedClientUri,
-    cache: new InMemoryCache({
-        typePolicies: {
-            Token: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-            Pool: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-        },
-    }),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
-export const modeBlockClient = new ApolloClient({
-    uri: 'https://api.studio.thegraph.com/query/48427/bleu-mode-blocks/version/latest',
-    cache: new InMemoryCache(),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
-export const modeClient = new ApolloClient({
-    uri: ModeNetworkInfo.clientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {

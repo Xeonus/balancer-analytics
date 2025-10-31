@@ -6,7 +6,7 @@ import {
     GnosisNetworkInfo,
     PolygonZkEVMNetworkInfo,
     AvalancheNetworkInfo,
-    BaseNetworkInfo, ModeNetworkInfo, FraxtalNetworkInfo
+    BaseNetworkInfo, FraxtalNetworkInfo
 } from '../../constants/networks';
 import {
     blockClient,
@@ -22,7 +22,7 @@ import {
     avalancheBlockClient,
     avalancheClient,
     baseBlockClient,
-    baseClient, modeBlockClient, modeClient, fraxtalBlockClient, fraxtalClient,
+    baseClient, fraxtalBlockClient, fraxtalClient,
 } from '../../apollo/client';
 import { ProtocolData } from './useProtocolDataWithClientOverride';
 import { getUnixTimestamp1000DaysAgo } from "../../utils/date";
@@ -36,7 +36,6 @@ export interface AggregatedProtocolData {
     gnosisData: ProtocolData,
     avalancheData: ProtocolData,
     baseData: ProtocolData,
-    modeData: ProtocolData,
     fraxtalData: ProtocolData,
     volume: number;
     volumeChange: number;
@@ -96,7 +95,6 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, startDate, baseBlockClient, baseClient),
-        useBalancerChainProtocolData(ModeNetworkInfo.decentralicedClientUri, startDate, modeBlockClient, modeClient),
         useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];
 
@@ -127,8 +125,7 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         gnosisData: protocolsData[4],
         avalancheData: protocolsData[5],
         baseData: protocolsData[6],
-        modeData: protocolsData[7],
-        fraxtalData: protocolsData[8],
+        fraxtalData: protocolsData[7],
         volume,
         volumeChange,
         fees24,

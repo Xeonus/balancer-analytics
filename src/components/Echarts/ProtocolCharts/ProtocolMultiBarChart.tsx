@@ -35,7 +35,6 @@ interface ProtocolAreaChartProps {
     gnosisProtocolData: BalancerChartDataItem[],
     avalancheProtocolData: BalancerChartDataItem[],
     baseProtocolData: BalancerChartDataItem[],
-    modeProtocolData: BalancerChartDataItem[],
     fraxtalProtocolData: BalancerChartDataItem[],
     isUSD : boolean
 }
@@ -49,7 +48,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
                                                   gnosisProtocolData,
                                                   avalancheProtocolData,
                                                   baseProtocolData,
-                                                  modeProtocolData,
                                                   fraxtalProtocolData,
                                                   isUSD}: ProtocolAreaChartProps) {
 
@@ -104,14 +102,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
         baseData = zeroArray.concat(baseData);
     }
 
-    let modeData = modeProtocolData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && modeData) {
-        const diffSize = mainnetData.length - modeData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        modeData = zeroArray.concat(modeData);
-    }
-
     let fraxtalData = fraxtalProtocolData.map(el => Number(el.value.toFixed(2)));
 
     if (mainnetData && fraxtalData) {
@@ -133,7 +123,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
     const [rangedGnosisData, setrangedGnosisnData] = React.useState(gnosisData);
     const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
     const [rangedBaseData, setRangedBasenData] = React.useState(baseData);
-    const [rangedModeData, setRangedModeData] = React.useState(modeData);
     const [rangedFraxtalData, setRangedFraxtalData] = React.useState(fraxtalData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
@@ -146,7 +135,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedGnosisnData(gnosisData)
             setrangedAvalanchenData(avalancheData)
             setRangedBasenData(baseData)
-            setRangedModeData(modeData)
             setRangedFraxtalData(fraxtalData)
             setRangedxAxis(mainnetxAxisData)
         } else {
@@ -157,7 +145,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(timeRange)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(timeRange)))
             setRangedBasenData(baseData.slice(baseData.length - Number(timeRange)))
-            setRangedModeData(modeData.slice(modeData.length - Number(timeRange)))
             setRangedFraxtalData(fraxtalData.slice(fraxtalData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
@@ -172,7 +159,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisnData(gnosisData);
             setRangedBasenData(baseData)
-            setRangedModeData(modeData)
             setRangedFraxtalData(fraxtalData)
             setrangedAvalanchenData(avalancheData)
         } else if (mainnetData.length >= Number(event.target.value)) {
@@ -183,7 +169,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
             setRangedBasenData(baseData.slice(baseData.length - Number(event.target.value)))
-            setRangedModeData(modeData.slice(modeData.length - Number(event.target.value)))
             setRangedFraxtalData(fraxtalData.slice(fraxtalData.length - Number(event.target.value)))
         }
     };
@@ -232,7 +217,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
                 gnosisData={rangedGnosisData}
                 avalancheData={rangedAvalancheData}
                 baseData={rangedBaseData}
-                modeData={rangedModeData}
                 fraxtalData={rangedFraxtalData}
                 xAxis={rangedxAxis}
                 isUSD={isUSD}

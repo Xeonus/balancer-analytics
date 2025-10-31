@@ -32,7 +32,6 @@ interface ProtocolAreaChartProps {
     gnosisData: number[],
     avalancheData: number[],
     baseData: number[],
-    modeData: number[],
     fraxtalData: number[],
     xAxis: string[],
 }
@@ -46,7 +45,6 @@ export default function ProtocolTVLCharts({
                                               gnosisData,
                                               avalancheData,
                                               baseData,
-                                              modeData,
                                               fraxtalData,
                                               xAxis }: ProtocolAreaChartProps) {
 
@@ -62,7 +60,6 @@ export default function ProtocolTVLCharts({
             '#0d8e74',
             '#F01B36',
             '#0021a2',
-            '#b7ff00',
             '#8a8a8a'
         ],
         tooltip: {
@@ -77,7 +74,7 @@ export default function ProtocolTVLCharts({
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Mode', 'Fraxtal'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Fraxtal'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -331,38 +328,6 @@ export default function ProtocolTVLCharts({
                     }
                 },
                 data: baseData
-            },
-            {
-                name: 'Mode',
-                type: 'line',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: {
-                    width: 0
-                },
-                showSymbol: false,
-                areaStyle: {
-                    opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(183,255,0)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(132,181,1)'
-                        }
-                    ])
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                tooltip: {
-                    valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
-                    }
-                },
-                data: modeData
             },
             {
                 name: 'Fraxtal',
