@@ -133,14 +133,14 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
         //TODO: token price information is not stored in PoolData Object model anymore -> remove
 
         // Sanitize pool metrics (hack data corruption fix)
-        const sanitizedTvl = sanitizeScalarValue(poolData.tvl, 0);
-        const sanitizedTvl24 = sanitizeScalarValue(poolData24.tvl, 0);
-        const sanitizedVolume = sanitizeScalarValue(poolData.volume, 0);
-        const sanitizedVolume24 = sanitizeScalarValue(poolData24.volume, 0);
-        const sanitizedFees = sanitizeScalarValue(poolData.fees, 0);
-        const sanitizedFees24 = sanitizeScalarValue(poolData24.fees, 0);
-        const sanitizedFeesEpoch = sanitizeScalarValue(poolData.feesEpoch, 0);
-        const sanitizedProtocolFeesEpoch = sanitizeScalarValue(poolData.protcolFeesEpoch, 0);
+        const sanitizedTvl = sanitizeScalarValue(poolData.tvl, 0, 'tvl');
+        const sanitizedTvl24 = sanitizeScalarValue(poolData24.tvl, 0, 'tvl');
+        const sanitizedVolume = sanitizeScalarValue(poolData.volume, 0, 'volume');
+        const sanitizedVolume24 = sanitizeScalarValue(poolData24.volume, 0, 'volume');
+        const sanitizedFees = sanitizeScalarValue(poolData.fees, 0, 'fees');
+        const sanitizedFees24 = sanitizeScalarValue(poolData24.fees, 0, 'fees');
+        const sanitizedFeesEpoch = sanitizeScalarValue(poolData.feesEpoch, 0, 'fees');
+        const sanitizedProtocolFeesEpoch = sanitizeScalarValue(poolData.protcolFeesEpoch, 0, 'protocolFees');
 
         const volumeDelta = sanitizedVolume - sanitizedVolume24;
         const feesDelta = sanitizedFees - sanitizedFees24;
@@ -259,12 +259,12 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
 
 
     // Sanitize pool metrics (hack data corruption fix)
-    const sanitizedTvl = sanitizeScalarValue(parseFloat(pool.totalLiquidity), 0);
-    const sanitizedTvl24 = sanitizeScalarValue(parseFloat(pool24.totalLiquidity), 0);
-    const sanitizedVolume = sanitizeScalarValue(parseFloat(pool.totalSwapVolume), 0);
-    const sanitizedVolume24 = sanitizeScalarValue(parseFloat(pool24.totalSwapVolume), 0);
-    const sanitizedFees = sanitizeScalarValue(parseFloat(pool.totalSwapFee), 0);
-    const sanitizedFees24 = sanitizeScalarValue(parseFloat(pool24.totalSwapFee), 0);
+    const sanitizedTvl = sanitizeScalarValue(parseFloat(pool.totalLiquidity), 0, 'tvl');
+    const sanitizedTvl24 = sanitizeScalarValue(parseFloat(pool24.totalLiquidity), 0, 'tvl');
+    const sanitizedVolume = sanitizeScalarValue(parseFloat(pool.totalSwapVolume), 0, 'volume');
+    const sanitizedVolume24 = sanitizeScalarValue(parseFloat(pool24.totalSwapVolume), 0, 'volume');
+    const sanitizedFees = sanitizeScalarValue(parseFloat(pool.totalSwapFee), 0, 'fees');
+    const sanitizedFees24 = sanitizeScalarValue(parseFloat(pool24.totalSwapFee), 0, 'fees');
 
     const volumeDelta = sanitizedVolume - sanitizedVolume24;
     const feesDelta = sanitizedFees - sanitizedFees24;
@@ -457,10 +457,10 @@ export function useBalancerPoolPageData(poolId: string): {
 
     // Sanitize chart data (hack data corruption fix)
     return {
-        tvlData: sanitizeChartData(tvlData),
-        volumeData: sanitizeChartData(volumeData),
-        feesData: sanitizeChartData(feesData),
-        protocolFeesData: sanitizeChartData(protocolFeesData),
+        tvlData: sanitizeChartData(tvlData, 'tvl'),
+        volumeData: sanitizeChartData(volumeData, 'volume'),
+        feesData: sanitizeChartData(feesData, 'fees'),
+        protocolFeesData: sanitizeChartData(protocolFeesData, 'protocolFees'),
         tokenDatas,
     };
 }

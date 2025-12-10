@@ -100,23 +100,23 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
     ];
 
     // Aggregate numeric metrics and sanitize (hack data corruption fix)
-    const volume = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'volume24'), 0);
+    const volume = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'volume24'), 0, 'volume');
     const volumeChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'volumeChange'), 0);
-    const fees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'fees24'), 0);
-    const protocolFees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'protocolFees24'), 0);
+    const fees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'fees24'), 0, 'fees');
+    const protocolFees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'protocolFees24'), 0, 'protocolFees');
     const feesChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'feesChange'), 0);
     const protocolFeesChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'protocolFeesChange'), 0);
-    const tvl = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'tvl'), 0);
+    const tvl = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'tvl'), 0, 'tvl');
     const tvlChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'tvlChange'), 0);
-    const swaps24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'swaps24'), 0);
+    const swaps24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'swaps24'), 0, 'swaps');
     const swapsChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'swapsChange'), 0);
 
     // Aggregate chart data and sanitize (hack data corruption fix)
-    const overallTvlData = sanitizeChartData(aggregateChartData(protocolsData, 'tvlData'));
-    const overallProtocolFeeData = sanitizeChartData(aggregateChartData(protocolsData, 'protocolFeeData'));
-    const overallVolumeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'volumeData'));
-    const overallFeeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'feeData'));
-    const overallSwapsChartData = sanitizeChartData(aggregateChartData(protocolsData, 'swapData'));
+    const overallTvlData = sanitizeChartData(aggregateChartData(protocolsData, 'tvlData'), 'tvl');
+    const overallProtocolFeeData = sanitizeChartData(aggregateChartData(protocolsData, 'protocolFeeData'), 'protocolFees');
+    const overallVolumeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'volumeData'), 'volume');
+    const overallFeeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'feeData'), 'fees');
+    const overallSwapsChartData = sanitizeChartData(aggregateChartData(protocolsData, 'swapData'), 'swaps');
 
     return {
         mainnetData: protocolsData[0],

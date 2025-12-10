@@ -124,10 +124,10 @@ export function useBalancerTokens(first = 100) {
 
 
         // Sanitize token metrics (hack data corruption fix)
-        const sanitizedTvl = token.symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0);
-        const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0);
-        const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0);
-        const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0);
+        const sanitizedTvl = token.symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0, 'tvl');
+        const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0, 'tvl');
+        const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0, 'volume');
+        const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0, 'volume');
 
         const volumeDelta = sanitizedVolume - sanitizedVolume24;
         const tvlChange = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
@@ -252,10 +252,10 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
     const valueUSDCollected = 0;
 
     // Sanitize token metrics (hack data corruption fix)
-    const sanitizedTvl = tokens[0].symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0);
-    const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0);
-    const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0);
-    const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0);
+    const sanitizedTvl = tokens[0].symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0, 'tvl');
+    const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0, 'tvl');
+    const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0, 'volume');
+    const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0, 'volume');
 
     const volumeDelta = sanitizedVolume - sanitizedVolume24;
     const tvlChangeCalc = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
@@ -370,8 +370,8 @@ export function useBalancerTokenPageData(address: string): {
 
     // Sanitize chart data (hack data corruption fix)
     return {
-        tvlData: sanitizeChartData(tvlData),
-        volumeData: sanitizeChartData(volumeData),
+        tvlData: sanitizeChartData(tvlData, 'tvl'),
+        volumeData: sanitizeChartData(volumeData, 'volume'),
         priceData,
     };
 }
