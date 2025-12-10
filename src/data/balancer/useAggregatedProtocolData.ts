@@ -27,6 +27,7 @@ import {
 import { ProtocolData } from './useProtocolDataWithClientOverride';
 import { getUnixTimestamp1000DaysAgo } from "../../utils/date";
 import {BalancerChartDataItem} from "./balancerTypes";
+import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
 export interface AggregatedProtocolData {
     mainnetData: ProtocolData,
@@ -98,24 +99,24 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];
 
-    // Aggregate numeric metrics
-    const volume = aggregateNumericMetrics(protocolsData, 'volume24');
-    const volumeChange = aggregateNumericMetrics(protocolsData, 'volumeChange');
-    const fees24 = aggregateNumericMetrics(protocolsData, 'fees24');
-    const protocolFees24 = aggregateNumericMetrics(protocolsData, 'protocolFees24');
-    const feesChange = aggregateNumericMetrics(protocolsData, 'feesChange');
-    const protocolFeesChange = aggregateNumericMetrics(protocolsData, 'protocolFeesChange');
-    const tvl = aggregateNumericMetrics(protocolsData, 'tvl');
-    const tvlChange = aggregateNumericMetrics(protocolsData, 'tvlChange');
-    const swaps24 = aggregateNumericMetrics(protocolsData, 'swaps24');
-    const swapsChange = aggregateNumericMetrics(protocolsData, 'swapsChange');
+    // Aggregate numeric metrics and sanitize (hack data corruption fix)
+    const volume = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'volume24'), 0);
+    const volumeChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'volumeChange'), 0);
+    const fees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'fees24'), 0);
+    const protocolFees24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'protocolFees24'), 0);
+    const feesChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'feesChange'), 0);
+    const protocolFeesChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'protocolFeesChange'), 0);
+    const tvl = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'tvl'), 0);
+    const tvlChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'tvlChange'), 0);
+    const swaps24 = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'swaps24'), 0);
+    const swapsChange = sanitizeScalarValue(aggregateNumericMetrics(protocolsData, 'swapsChange'), 0);
 
-    // Aggregate chart data
-    const overallTvlData = aggregateChartData(protocolsData, 'tvlData');
-    const overallProtocolFeeData = aggregateChartData(protocolsData, 'protocolFeeData');
-    const overallVolumeChartData = aggregateChartData(protocolsData, 'volumeData');
-    const overallFeeChartData = aggregateChartData(protocolsData, 'feeData');
-    const overallSwapsChartData = aggregateChartData(protocolsData, 'swapData');
+    // Aggregate chart data and sanitize (hack data corruption fix)
+    const overallTvlData = sanitizeChartData(aggregateChartData(protocolsData, 'tvlData'));
+    const overallProtocolFeeData = sanitizeChartData(aggregateChartData(protocolsData, 'protocolFeeData'));
+    const overallVolumeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'volumeData'));
+    const overallFeeChartData = sanitizeChartData(aggregateChartData(protocolsData, 'feeData'));
+    const overallSwapsChartData = sanitizeChartData(aggregateChartData(protocolsData, 'swapData'));
 
     return {
         mainnetData: protocolsData[0],

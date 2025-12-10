@@ -15,6 +15,7 @@ import { BalancerChartDataItem, PoolData } from './balancerTypes';
 import { CoingeckoSnapshotPriceData } from './useTokens';
 import { DateTime } from 'luxon';
 import {CG_KEY} from "./constants";
+import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
 function getPoolValues(
     poolId: string,
@@ -131,6 +132,21 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
 
         //TODO: token price information is not stored in PoolData Object model anymore -> remove
 
+        // Sanitize pool metrics (hack data corruption fix)
+        const sanitizedTvl = sanitizeScalarValue(poolData.tvl, 0);
+        const sanitizedTvl24 = sanitizeScalarValue(poolData24.tvl, 0);
+        const sanitizedVolume = sanitizeScalarValue(poolData.volume, 0);
+        const sanitizedVolume24 = sanitizeScalarValue(poolData24.volume, 0);
+        const sanitizedFees = sanitizeScalarValue(poolData.fees, 0);
+        const sanitizedFees24 = sanitizeScalarValue(poolData24.fees, 0);
+        const sanitizedFeesEpoch = sanitizeScalarValue(poolData.feesEpoch, 0);
+        const sanitizedProtocolFeesEpoch = sanitizeScalarValue(poolData.protcolFeesEpoch, 0);
+
+        const volumeDelta = sanitizedVolume - sanitizedVolume24;
+        const feesDelta = sanitizedFees - sanitizedFees24;
+        const tvlChange = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
+        const volumeChange = sanitizedVolume24 !== 0 ? volumeDelta / sanitizedVolume24 : 0;
+
         return {
             ...pool,
             name: pool.name || '',
@@ -152,18 +168,17 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
                     balance,
                 };
             }),
-            liquidity: poolData.tvl,
+            liquidity: sanitizedTvl,
             sqrtPrice: 0,
             tick: 0,
-            volumeUSD: poolData.volume - poolData24.volume,
-            volumeUSDChange:
-                (poolData.volume - poolData24.volume) / poolData24.volume,
+            volumeUSD: sanitizeScalarValue(volumeDelta, 0),
+            volumeUSDChange: sanitizeScalarValue(volumeChange, 0),
             //volumeUSDChange: 100 / poolData24.volume * poolData.volume,
-            feesUSD: poolData.fees - poolData24.fees,
-            feesEpochUSD: poolData.feesEpoch,
-            protocolFeesEpocUSD: poolData.protcolFeesEpoch,
-            tvlUSD: poolData.tvl,
-            tvlUSDChange: (poolData.tvl - poolData24.tvl) / poolData24.tvl,
+            feesUSD: sanitizeScalarValue(feesDelta, 0),
+            feesEpochUSD: sanitizedFeesEpoch,
+            protocolFeesEpocUSD: sanitizedProtocolFeesEpoch,
+            tvlUSD: sanitizedTvl,
+            tvlUSDChange: sanitizeScalarValue(tvlChange, 0),
             //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,
             poolType: poolData.poolType + "",
             amp: pool.amp ? pool.amp : '0',
@@ -243,6 +258,19 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
     }
 
 
+    // Sanitize pool metrics (hack data corruption fix)
+    const sanitizedTvl = sanitizeScalarValue(parseFloat(pool.totalLiquidity), 0);
+    const sanitizedTvl24 = sanitizeScalarValue(parseFloat(pool24.totalLiquidity), 0);
+    const sanitizedVolume = sanitizeScalarValue(parseFloat(pool.totalSwapVolume), 0);
+    const sanitizedVolume24 = sanitizeScalarValue(parseFloat(pool24.totalSwapVolume), 0);
+    const sanitizedFees = sanitizeScalarValue(parseFloat(pool.totalSwapFee), 0);
+    const sanitizedFees24 = sanitizeScalarValue(parseFloat(pool24.totalSwapFee), 0);
+
+    const volumeDelta = sanitizedVolume - sanitizedVolume24;
+    const feesDelta = sanitizedFees - sanitizedFees24;
+    const tvlChange = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
+    const volumeChange = sanitizedVolume24 !== 0 ? volumeDelta / sanitizedVolume24 : 0;
+
     return {
         ...pool,
         name: pool.name || '',
@@ -264,18 +292,17 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
                 balance,
             };
         }),
-        liquidity: parseFloat(pool.totalLiquidity),
+        liquidity: sanitizedTvl,
         sqrtPrice: 0,
         tick: 0,
-        volumeUSD: parseFloat(pool.totalSwapVolume) - parseFloat(pool24.totalSwapVolume),
-        volumeUSDChange:
-            (parseFloat(pool.totalSwapVolume) - parseFloat(pool24.totalSwapVolume)) / parseFloat(pool24.totalSwapVolume),
+        volumeUSD: sanitizeScalarValue(volumeDelta, 0),
+        volumeUSDChange: sanitizeScalarValue(volumeChange, 0),
         //volumeUSDChange: 100 / poolData24.volume * poolData.volume,
-        feesUSD: parseFloat(pool.totalSwapFee) - parseFloat(pool24.totalSwapFee),
+        feesUSD: sanitizeScalarValue(feesDelta, 0),
         feesEpochUSD: 0,
         protocolFeesEpocUSD: 0,
-        tvlUSD: parseFloat(pool.totalLiquidity),
-        tvlUSDChange: (parseFloat(pool.totalLiquidity) - parseFloat(pool24.totalLiquidity)) / parseFloat(pool24.totalLiquidity),
+        tvlUSD: sanitizedTvl,
+        tvlUSDChange: sanitizeScalarValue(tvlChange, 0),
         //tvlUSDChange: 100 / poolData24.tvl * poolData.tvl,
         poolType: pool.poolType + "",
         amp: pool.amp ? pool.amp : '0',
@@ -428,11 +455,12 @@ export function useBalancerPoolPageData(poolId: string): {
 
     const tokenDatas = coingeckoSnapshotData;
 
+    // Sanitize chart data (hack data corruption fix)
     return {
-        tvlData,
-        volumeData,
-        feesData,
-        protocolFeesData,
+        tvlData: sanitizeChartData(tvlData),
+        volumeData: sanitizeChartData(volumeData),
+        feesData: sanitizeChartData(feesData),
+        protocolFeesData: sanitizeChartData(protocolFeesData),
         tokenDatas,
     };
 }
