@@ -3,6 +3,7 @@ import {useBalancerPoolFeeSnapshotsLazyQuery,} from "../../apollo/generated/grap
 import {ApolloClient, NormalizedCacheObject} from "@apollo/client";
 import {useEffect, useState} from "react";
 import {JoinExitTimestamp, PoolFeeSnapshotData} from "./balancerTypes";
+import { sanitizeScalarValue } from '../../utils/dataValidation';
 
 export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp: number, blockClientOverride?: ApolloClient<NormalizedCacheObject>, clientOverride?: ApolloClient<NormalizedCacheObject>): PoolFeeSnapshotData | undefined {
 
@@ -120,13 +121,14 @@ export function getSnapshotFees(feeSnapshotNow: PoolFeeSnapshotData, feeSnapshot
                 };
             }
             // Default to 0 if no corresponding past pool is found
-            const swapFees = nowPool.swapFees - (pastPool?.swapFees || 0);
-            const totalSwapFee = nowPool.totalSwapFee - (pastPool?.totalSwapFee || 0);
-            const totalProtocolFee = nowPool.totalProtocolFee - (pastPool?.totalProtocolFee ||0);
-            const totalProtocolFeePaidInBPT = nowPool.totalProtocolFeePaidInBPT - (pastPool?.totalProtocolFeePaidInBPT || 0);
-            const liquidity = nowPool.liquidity;
-            const swapVolume = nowPool.swapVolume - (pastPool?.swapVolume || 0);
-            const protocolFee = nowPool.protocolFee - (pastPool?.protocolFee || 0)
+            // Sanitize fee snapshot values (hack data corruption fix)
+            const swapFees = sanitizeScalarValue(nowPool.swapFees - (pastPool?.swapFees || 0), 0, 'fees');
+            const totalSwapFee = sanitizeScalarValue(nowPool.totalSwapFee - (pastPool?.totalSwapFee || 0), 0, 'fees');
+            const totalProtocolFee = sanitizeScalarValue(nowPool.totalProtocolFee - (pastPool?.totalProtocolFee || 0), 0, 'protocolFees');
+            const totalProtocolFeePaidInBPT = sanitizeScalarValue(nowPool.totalProtocolFeePaidInBPT - (pastPool?.totalProtocolFeePaidInBPT || 0), 0, 'protocolFees');
+            const liquidity = sanitizeScalarValue(nowPool.liquidity, 0, 'tvl');
+            const swapVolume = sanitizeScalarValue(nowPool.swapVolume - (pastPool?.swapVolume || 0), 0, 'volume');
+            const protocolFee = sanitizeScalarValue(nowPool.protocolFee - (pastPool?.protocolFee || 0), 0, 'protocolFees');
             const isInRecoveryMode = nowPool.isInRecoveryMode //if the pool is in recovery mode at newest snapshot date, then tag as such
             return {
                 ...nowPool, // Copy all current pool data
@@ -141,7 +143,7 @@ export function getSnapshotFees(feeSnapshotNow: PoolFeeSnapshotData, feeSnapshot
                 // Update other fields as necessary
                 tokens: nowPool.tokens.map(token => {
                     const pastToken = pastPool?.tokens.find(p => p.symbol === token.symbol);
-                    const paidProtocolFees = (token.paidProtocolFees ? token.paidProtocolFees : 0) - (pastToken?.paidProtocolFees || 0);
+                    const paidProtocolFees = sanitizeScalarValue((token.paidProtocolFees ? token.paidProtocolFees : 0) - (pastToken?.paidProtocolFees || 0), 0, 'protocolFees');
                     // Subtract other token-specific fields as necessary
                     return {
                         ...token,

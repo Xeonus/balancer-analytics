@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem } from './balancerTypes';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
+import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
 export interface ProtocolData {
     volume24?: number;
@@ -127,22 +128,37 @@ export function useBalancerProtocolData(): ProtocolData {
     const swaps24 = parseFloat(balancer24.totalSwapCount);
     const swaps48 = parseFloat(balancer48.totalSwapCount)
 
+    // Sanitize scalar values (hack data corruption fix)
+    const sanitizedTvl = sanitizeScalarValue(tvl, 0, 'tvl');
+    const sanitizedTvl24 = sanitizeScalarValue(tvl24, 0, 'tvl');
+    const sanitizedVolume24Delta = sanitizeScalarValue(volume - volume24, 0, 'volume');
+    const sanitizedVolume24 = sanitizeScalarValue(volume24, 0, 'volume');
+    const sanitizedVolume48 = sanitizeScalarValue(volume48, 0, 'volume');
+    const sanitizedFees24Delta = sanitizeScalarValue(fees - fees24, 0, 'fees');
+    const sanitizedProtocolFees24Delta = sanitizeScalarValue(protocolFees - protocolFees24, 0, 'protocolFees');
+    const sanitizedSwaps24Delta = sanitizeScalarValue(swaps - swaps24, 0, 'swaps');
+
+    // Calculate changes with sanitized values
+    const volume24Delta = sanitizedVolume24 - sanitizedVolume48;
+    const volumeChangeCalc = volume24Delta !== 0 ? (sanitizedVolume24Delta - volume24Delta) / volume24Delta : 0;
+    const tvlChangeCalc = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
+
     return {
-        volume24: volume - volume24,
-        volumeChange: (volume - volume24 - (volume24 - volume48)) / (volume24 - volume48),
-        tvl,
-        tvlChange: (tvl - tvl24) / tvl24,
-        fees24: fees - fees24,
-        protocolFees24: protocolFees - protocolFees24,
-        protocolFeesChange: (protocolFees - protocolFees24 - (protocolFees24 - protocolFees48)) / (protocolFees24 - protocolFees48),
-        feesChange: (fees - fees24 - (fees24 - fees48)) / (fees24 - fees48),
-        swaps24: swaps - swaps24,
-        swapsChange: (swaps - swaps24 - (swaps24 - swaps48)) / (swaps24 - swaps48),
-        tvlData,
-        volumeData,
-        swapData,
-        feeData,
-        protocolFeeData,
+        volume24: sanitizedVolume24Delta,
+        volumeChange: sanitizeScalarValue(volumeChangeCalc, 0),
+        tvl: sanitizedTvl,
+        tvlChange: sanitizeScalarValue(tvlChangeCalc, 0),
+        fees24: sanitizedFees24Delta,
+        protocolFees24: sanitizedProtocolFees24Delta,
+        protocolFeesChange: sanitizeScalarValue((protocolFees - protocolFees24 - (protocolFees24 - protocolFees48)) / (protocolFees24 - protocolFees48), 0),
+        feesChange: sanitizeScalarValue((fees - fees24 - (fees24 - fees48)) / (fees24 - fees48), 0),
+        swaps24: sanitizedSwaps24Delta,
+        swapsChange: sanitizeScalarValue((swaps - swaps24 - (swaps24 - swaps48)) / (swaps24 - swaps48), 0),
+        tvlData: sanitizeChartData(tvlData, 'tvl'),
+        volumeData: sanitizeChartData(volumeData, 'volume'),
+        swapData: sanitizeChartData(swapData, 'swaps'),
+        feeData: sanitizeChartData(feeData, 'fees'),
+        protocolFeeData: sanitizeChartData(protocolFeeData, 'protocolFees'),
         whaleSwaps: data.whaleSwaps,
     };
 }

@@ -14,6 +14,7 @@ import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useState } from 'react';
 import useGetSimpleTokenPrices from "../balancer-api-v3/useGetSimpleTokenPrices";
 import {CG_KEY} from "./constants";
+import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
 //Coingecko Token price Interface
 export interface CoingeckoRawData {
@@ -122,19 +123,29 @@ export function useBalancerTokens(first = 100) {
         const priceChangePercentage = price24hAgo !== 0 ? (absolutePriceChange / price24hAgo) * 100 : 0;
 
 
+        // Sanitize token metrics (hack data corruption fix)
+        const sanitizedTvl = token.symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0, 'tvl');
+        const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0, 'tvl');
+        const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0, 'volume');
+        const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0, 'volume');
+
+        const volumeDelta = sanitizedVolume - sanitizedVolume24;
+        const tvlChange = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
+        const volumeChange = sanitizedVolume24 !== 0 ? volumeDelta / sanitizedVolume24 : 0;
+
         return {
             ...token,
             name: token.name || '',
             symbol: token.symbol || '',
             exists: true,
-            volumeUSD: tokenData.volume - tokenData24.volume,
-            volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
+            volumeUSD: sanitizeScalarValue(volumeDelta, 0),
+            volumeUSDChange: sanitizeScalarValue(volumeChange, 0),
             txCount: parseFloat(token.totalSwapCount),
             feesUSD: 0,
             tvlToken: tokenData.tvlToken,
-            tvlUSD: (token.symbol?.includes('bb-') ? 0 : tokenData.tvl),
+            tvlUSD: sanitizedTvl,
             valueUSDCollected: 0,
-            tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
+            tvlUSDChange: sanitizeScalarValue(tvlChange, 0),
             priceUSD: priceData.price,
             priceUSDChange: priceChangePercentage,
             isCoingeckoPriceSource: false, // Update this as needed based on your logic
@@ -240,19 +251,29 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
 
     const valueUSDCollected = 0;
 
+    // Sanitize token metrics (hack data corruption fix)
+    const sanitizedTvl = tokens[0].symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0, 'tvl');
+    const sanitizedTvl24 = sanitizeScalarValue(tokenData24.tvl, 0, 'tvl');
+    const sanitizedVolume = sanitizeScalarValue(tokenData.volume, 0, 'volume');
+    const sanitizedVolume24 = sanitizeScalarValue(tokenData24.volume, 0, 'volume');
+
+    const volumeDelta = sanitizedVolume - sanitizedVolume24;
+    const tvlChangeCalc = sanitizedTvl24 !== 0 ? (sanitizedTvl - sanitizedTvl24) / sanitizedTvl24 : 0;
+    const volumeChangeCalc = sanitizedVolume24 !== 0 ? volumeDelta / sanitizedVolume24 : 0;
+
     return {
         address: tokens[0].address,
         name: tokens[0].name || '',
         symbol: tokens[0].symbol || '',
         exists: true,
-        volumeUSD: tokenData.volume - tokenData24.volume,
-        volumeUSDChange: (tokenData.volume - tokenData24.volume) / tokenData24.volume,
+        volumeUSD: sanitizeScalarValue(volumeDelta, 0),
+        volumeUSDChange: sanitizeScalarValue(volumeChangeCalc, 0),
         txCount: parseFloat(tokens[0].totalSwapCount),
         feesUSD: 0,
         tvlToken: tokenData.tvlToken,
-        tvlUSD: (tokens[0].symbol?.includes('bb-') ? 0 : tokenData.tvl),
+        tvlUSD: sanitizedTvl,
         valueUSDCollected: valueUSDCollected,
-        tvlUSDChange: (tokenData.tvl - tokenData24.tvl) / tokenData24.tvl,
+        tvlUSDChange: sanitizeScalarValue(tvlChangeCalc, 0),
         priceUSD: priceData.price,
         priceUSDChange: priceChange,
         isCoingeckoPriceSource: priceChange !== 0 ? true : false,
@@ -347,9 +368,10 @@ export function useBalancerTokenPageData(address: string): {
         };
     });
 
+    // Sanitize chart data (hack data corruption fix)
     return {
-        tvlData,
-        volumeData,
+        tvlData: sanitizeChartData(tvlData, 'tvl'),
+        volumeData: sanitizeChartData(volumeData, 'volume'),
         priceData,
     };
 }
