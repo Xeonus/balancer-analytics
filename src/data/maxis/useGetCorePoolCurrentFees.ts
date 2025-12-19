@@ -32,32 +32,34 @@ export default function useGetCorePoolCurrentFees(): PoolFeeRecord[] {
         const fetchData = async () => {
             try {
                 const feeEndpoint = generateFeeEndpoint();
-                console.log('Fetching from:', feeEndpoint); // Optional: for debugging
+                console.log('Fetching current fees from:', feeEndpoint);
 
                 const response = await fetch(feeEndpoint);
-                const reader = response.body?.getReader();
-                const result = await reader?.read(); // raw array
-                const decoder = new TextDecoder('utf-8');
-                const csv = decoder.decode(result?.value); // convert the raw array to string
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn('Current fees file not found:', feeEndpoint);
+                        setData([]);
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                // Modify the CSV string to insert 'poolId' as the first header.
-                const correctedCsv = csv.replace(/^,/, 'poolId,');
-
-                // Now, parse the corrected CSV string.
-                const results = Papa.parse(correctedCsv, {
+                const csv = await response.text();
+                const results = Papa.parse(csv, {
                     header: true,
                     skipEmptyLines: true,
                 });
 
                 if (results.errors.length > 0) {
-                    // Handle the error or throw it.
-                    console.log("CSV PARSING", results);
-                    throw new Error('Error parsing CSV data');
+                    console.log("CSV PARSING errors:", results.errors);
                 }
 
-                setData(results.data as PoolFeeRecord[]);
+                const parsedData = results.data as PoolFeeRecord[];
+                console.log('Parsed current fees, count:', parsedData.length);
+                setData(parsedData);
             } catch (error) {
-                console.error("Error fetching data: ", error);
+                console.error("Error fetching current fees data:", error);
+                setData([]);
             }
         };
 

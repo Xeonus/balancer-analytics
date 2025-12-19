@@ -35,18 +35,26 @@ export default function useGetCorePoolHistoricalFees(endDate: string): PoolFeeRe
                     feeEndpoint = `${basePath}${pathSegment}/allocations/incentives_${startDate}_${endDate}.csv`;
                 }
 
-                console.log('Fetching historical data from:', feeEndpoint); // Optional: for debugging
+                console.log('Fetching historical data from:', feeEndpoint);
 
                 const response = await fetch(feeEndpoint);
-                const reader = response.body?.getReader();
-                const result = await reader?.read(); // raw array
-                const decoder = new TextDecoder('utf-8');
-                let csv = decoder.decode(result?.value); // convert the raw array to string
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // File doesn't exist yet (current epoch not processed), return empty data
+                        console.warn(`Historical data not available yet for ${startDate} to ${endDate}`);
+                        setData([]);
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Use response.text() to get the entire response body
+                let csv = await response.text();
 
                 let correctedCsv: string;
                 if (useNewEndpoint) {
-                    // New endpoint: leave as is (should have pool_id), just handle missing header
-                    correctedCsv = csv.replace(/^,/, 'pool_id,');
+                    // New endpoint: v2 format already has proper headers (pool_id)
+                    correctedCsv = csv;
                 } else {
                     // Old endpoint: convert poolId to pool_id for consistency
                     correctedCsv = csv.replace(/^,/, 'poolId,'); // First handle missing header
@@ -60,7 +68,6 @@ export default function useGetCorePoolHistoricalFees(endDate: string): PoolFeeRe
                 });
 
                 if (results.errors.length > 0) {
-                    // Handle the error or throw it.
                     console.log("CSV PARSING ERROR:", results.errors);
                     throw new Error('Error parsing CSV data');
                 }
