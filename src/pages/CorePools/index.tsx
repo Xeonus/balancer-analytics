@@ -93,9 +93,9 @@ export default function CorePools() {
         totalSwept = totalSwept / 1000000
         // Sum up fees_to_vebal, fees_to_dao, and total_incentives from historicalData
         totalHistoricalSum = historicalData.reduce((acc, record) => {
-            const feesToVebal = parseFloat(record.fees_to_vebal);
-            const feesToDao = parseFloat(record.fees_to_dao);
-            const totalIncentives = parseFloat(record.total_incentives);
+            const feesToVebal = parseFloat(record.fees_to_vebal || '0');
+            const feesToDao = parseFloat(record.fees_to_dao || '0');
+            const totalIncentives = parseFloat(record.total_incentives || '0');
             return acc + feesToVebal + feesToDao + totalIncentives;
         }, 0);
 

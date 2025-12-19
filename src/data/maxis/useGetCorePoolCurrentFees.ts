@@ -32,29 +32,29 @@ export default function useGetCorePoolCurrentFees(): PoolFeeRecord[] {
         const fetchData = async () => {
             try {
                 const feeEndpoint = generateFeeEndpoint();
-                console.log('Fetching from:', feeEndpoint); // Optional: for debugging
+                console.log('Fetching from:', feeEndpoint);
 
                 const response = await fetch(feeEndpoint);
-                const reader = response.body?.getReader();
-                const result = await reader?.read(); // raw array
-                const decoder = new TextDecoder('utf-8');
-                const csv = decoder.decode(result?.value); // convert the raw array to string
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                // Modify the CSV string to insert 'poolId' as the first header.
-                const correctedCsv = csv.replace(/^,/, 'poolId,');
+                // Use response.text() to get the entire response body
+                const csv = await response.text();
 
-                // Now, parse the corrected CSV string.
-                const results = Papa.parse(correctedCsv, {
+                // Parse the CSV string - v2 format already has proper headers
+                const results = Papa.parse(csv, {
                     header: true,
                     skipEmptyLines: true,
                 });
 
                 if (results.errors.length > 0) {
-                    // Handle the error or throw it.
-                    console.log("CSV PARSING", results);
+                    console.log("CSV PARSING errors:", results.errors);
                     throw new Error('Error parsing CSV data');
                 }
 
+                // The current_fees CSV only has: pool_id, chain, symbol, earned_fees
+                // Other fields will be undefined but that's okay - they're calculated in the UI
                 setData(results.data as PoolFeeRecord[]);
             } catch (error) {
                 console.error("Error fetching data: ", error);
