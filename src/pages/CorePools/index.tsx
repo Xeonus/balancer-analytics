@@ -577,7 +577,7 @@ export default function CorePools() {
 
                 {selectedPeriod === "Current Fee Epoch" ?
                     <Grid item xs={11}>
-                        {corePools && globalPools && globalPools.length > 10 ?
+                        {corePools && globalPools && globalPools.length > 0 ?
                             <CorePoolTable poolDatas={globalPools} corePools={corePools}/> :
                             <Grid
                                 container
@@ -591,7 +591,7 @@ export default function CorePools() {
 
                     </Grid> :
                     <Grid item xs={11}>
-                        {corePools && globalPools && globalPools.length > 10 ?
+                        {corePools && globalPools && globalPools.length > 0 ?
                             <CorePoolHistoricalTable poolDatas={globalPools} corePools={corePools}/> :
                             <Grid
                                 container

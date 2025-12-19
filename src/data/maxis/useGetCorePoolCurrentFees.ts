@@ -32,17 +32,19 @@ export default function useGetCorePoolCurrentFees(): PoolFeeRecord[] {
         const fetchData = async () => {
             try {
                 const feeEndpoint = generateFeeEndpoint();
-                console.log('Fetching from:', feeEndpoint);
+                console.log('Fetching current fees from:', feeEndpoint);
 
                 const response = await fetch(feeEndpoint);
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn('Current fees file not found:', feeEndpoint);
+                        setData([]);
+                        return;
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Use response.text() to get the entire response body
                 const csv = await response.text();
-
-                // Parse the CSV string - v2 format already has proper headers
                 const results = Papa.parse(csv, {
                     header: true,
                     skipEmptyLines: true,
@@ -50,14 +52,14 @@ export default function useGetCorePoolCurrentFees(): PoolFeeRecord[] {
 
                 if (results.errors.length > 0) {
                     console.log("CSV PARSING errors:", results.errors);
-                    throw new Error('Error parsing CSV data');
                 }
 
-                // The current_fees CSV only has: pool_id, chain, symbol, earned_fees
-                // Other fields will be undefined but that's okay - they're calculated in the UI
-                setData(results.data as PoolFeeRecord[]);
+                const parsedData = results.data as PoolFeeRecord[];
+                console.log('Parsed current fees, count:', parsedData.length);
+                setData(parsedData);
             } catch (error) {
-                console.error("Error fetching data: ", error);
+                console.error("Error fetching current fees data:", error);
+                setData([]);
             }
         };
 

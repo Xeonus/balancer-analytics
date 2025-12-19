@@ -39,6 +39,12 @@ export default function useGetCorePoolHistoricalFees(endDate: string): PoolFeeRe
 
                 const response = await fetch(feeEndpoint);
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        // File doesn't exist yet (current epoch not processed), return empty data
+                        console.warn(`Historical data not available yet for ${startDate} to ${endDate}`);
+                        setData([]);
+                        return;
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 

@@ -37,11 +37,16 @@ export default function useGetCollectedFees(endDate: string): NetworkFees | unde
                     feeEndpoint = `${basePath}${pathSegment}/fees_collected/fees_${startDate}_${endDate}.json`;
                 }
 
-                console.log('Fetching collected fees from:', feeEndpoint); // Optional: for debugging
+                console.log('Fetching collected fees from:', feeEndpoint);
 
                 const response = await fetch(feeEndpoint);
                 if (!response.ok) {
-                    // If the server response was not ok, throw an error
+                    if (response.status === 404) {
+                        // File doesn't exist yet (current epoch not processed), return undefined
+                        console.warn(`Collected fees data not available yet for ${startDate} to ${endDate}`);
+                        setData(undefined);
+                        return;
+                    }
                     throw new Error(`Error fetching data: ${response.statusText}`);
                 }
                 const fees: NetworkFees = await response.json();
