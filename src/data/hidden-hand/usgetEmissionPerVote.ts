@@ -34,10 +34,20 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     const WEEK = 604800;
                     const currentTime = Date.now() ;
 
-                    const balTsPrice = historicalBALCoinData?.find(el => el.time === unixToDate(timestampCurrentRound) ? el.value : 0)
+                    // Determine BAL price to use
+                    let balPrice: number;
+                    if (timestampCurrentRound === 0) {
+                        // For current round, use the most recent historical price (last entry)
+                        const latestHistoricalPrice = historicalBALCoinData?.[historicalBALCoinData.length - 1];
+                        balPrice = latestHistoricalPrice?.value ?? coinData.data[balAddress].price;
+                    } else {
+                        // For historical rounds, find the price at that specific date
+                        const targetDate = unixToDate(timestampCurrentRound);
+                        const balTsPrice = historicalBALCoinData?.find(el => el.time === targetDate);
+                        balPrice = balTsPrice?.value ?? coinData.data[balAddress].price;
+                    }
+
                     const provider = new ethers.providers.JsonRpcProvider('https://rpc.mevblocker.io/fast');
-                    const balPrice = balTsPrice ? balTsPrice.value : coinData.data[balAddress].price
-                    console.log("BAL price: ", balPrice)
                     const balTokenAdminAddress = '0xf302f9F50958c5593770FDf4d4812309fF77414f';
 
                     const balTokenAdmin = new ethers.Contract(
