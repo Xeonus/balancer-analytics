@@ -34,10 +34,20 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     const WEEK = 604800;
                     const currentTime = Date.now() ;
 
-                    const balTsPrice = historicalBALCoinData?.find(el => el.time === unixToDate(timestampCurrentRound) ? el.value : 0)
+                    // Determine BAL price to use
+                    let balPrice: number;
+                    if (timestampCurrentRound === 0) {
+                        // For current round, use the most recent historical price (last entry)
+                        const latestHistoricalPrice = historicalBALCoinData?.[historicalBALCoinData.length - 1];
+                        balPrice = latestHistoricalPrice?.value ?? coinData.data[balAddress].price;
+                    } else {
+                        // For historical rounds, find the price at that specific date
+                        const targetDate = unixToDate(timestampCurrentRound);
+                        const balTsPrice = historicalBALCoinData?.find(el => el.time === targetDate);
+                        balPrice = balTsPrice?.value ?? coinData.data[balAddress].price;
+                    }
+
                     const provider = new ethers.providers.JsonRpcProvider('https://rpc.mevblocker.io/fast');
-                    const balPrice = balTsPrice ? balTsPrice.value : coinData.data[balAddress].price
-                    console.log("BAL price: ", balPrice)
                     const balTokenAdminAddress = '0xf302f9F50958c5593770FDf4d4812309fF77414f';
 
                     const balTokenAdmin = new ethers.Contract(
@@ -46,16 +56,24 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                         provider
                     );
 
-                    // Simple BAL emission map based on https://dune.com/balancer/bal-supply
-                    const weeklyBalEmission = (await balTokenAdmin.rate()).mul(WEEK);
-                    let weeklyBalEmissionFormatted = 145000
-                    if (timestampCurrentRound < 1711975297 && timestampCurrentRound > 1680180097) {
-                        weeklyBalEmissionFormatted = 121929.98
-                    } else {
-                        weeklyBalEmissionFormatted = parseFloat(ethers.utils.formatEther(weeklyBalEmission))
-                    }
+                    // BAL emission schedule based on governance decisions
+                    // Use current timestamp for current round (0), otherwise use the round timestamp
+                    const effectiveTimestamp = timestampCurrentRound === 0
+                        ? Math.floor(Date.now() / 1000)
+                        : timestampCurrentRound;
 
-                    console.log("Weekly BAL emission: ", weeklyBalEmissionFormatted)
+                    let weeklyBalEmissionFormatted: number;
+                    if (effectiveTimestamp > 1680127200 && effectiveTimestamp < 1743030000) {
+                        weeklyBalEmissionFormatted = 102530.5;
+                    } else if (effectiveTimestamp > 1743372000 && effectiveTimestamp < 1774306800) {
+                        weeklyBalEmissionFormatted = 86217.5;
+                    } else if (effectiveTimestamp > 1774652400 && effectiveTimestamp < 1805929200) {
+                        weeklyBalEmissionFormatted = 72500;
+                    } else {
+                        // Fallback to on-chain rate for timestamps outside defined ranges
+                        const weeklyBalEmission = (await balTokenAdmin.rate()).mul(WEEK);
+                        weeklyBalEmissionFormatted = parseFloat(ethers.utils.formatEther(weeklyBalEmission));
+                    }
 
                     // Calculate Aura's voting power in Balancer
                     const veBalAddress = '0xc128a9954e6c874ea3d62ce62b468ba073093f25';
