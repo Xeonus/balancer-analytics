@@ -20,7 +20,6 @@ import { useActiveNetworkVersion } from "../../state/application/hooks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import { useBalancerPools } from "../../data/balancer/usePools";
 import { useEffect, useState } from "react";
-import { useGetHiddenHandVotingIncentives } from "../../data/hidden-hand/useGetHiddenHandVotingIncentives";
 import CoinCard from "../../components/Cards/CoinCard";
 import CircularProgress from "@mui/material/CircularProgress";
 import PoolComposition from "../../components/PoolComposition";
@@ -30,10 +29,9 @@ import { calculateAPR, calculateBribeValue } from "./bribeHelpers";
 import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import Switch from "@mui/material/Switch";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-import { BALANCER_TIMESTAMPS } from "../../data/hidden-hand/constants";
-import { useGetEmissionPerVote } from "../../data/hidden-hand/usgetEmissionPerVote";
+import { useGetEmissionPerVote } from "../../data/votemarket/useGetEmissionPerVote";
+import { useGetVoteMarketIncentives, getTotalVotesFromAnalytics, getTotalIncentivesUSD } from "../../data/votemarket/useGetVoteMarketIncentives";
 import { AddShoppingCart, ShoppingCartCheckout } from "@mui/icons-material";
-import { unixToDate } from "../../utils/date";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
@@ -68,10 +66,9 @@ export default function IncentiveSimulator() {
     const now = Math.round(new Date().getTime() / 1000);
     const weeklyEmissions = balEmissions.weekly(now);
 
-    const timestamps = BALANCER_TIMESTAMPS;
-    const currentRoundNew = timestamps[timestamps.length - 2];
-    const hhIncentives = useGetHiddenHandVotingIncentives(currentRoundNew.toString());
-    const { emissionValuePerVote, emissionsPerDollarSpent } = useGetEmissionPerVote(currentRoundNew);
+    // Vote Market data (current round)
+    const { analytics: voteMarketAnalytics, loading: vmLoading } = useGetVoteMarketIncentives();
+    const { emissionValuePerVote, emissionsPerDollarSpent } = useGetEmissionPerVote();
 
     const [selectedPoolId, setSelectedPoolId] = useState<string>("");
     const [targetAPR, setTargetAPR] = useState<number>(0);
@@ -148,10 +145,7 @@ export default function IncentiveSimulator() {
 
 
     useEffect(() => {
-        if (hhIncentives.incentives && hhIncentives.incentives.data.length > 1) {
-            let totalVotes = 0;
-            let totalValue = 0;
-
+        if (voteMarketAnalytics && !vmLoading) {
             if (!useNewPoolValue && selectedPoolId) {
                 const selectedPool = pools.find((pool) => pool.address === selectedPoolId);
                 if (selectedPool) {
@@ -159,17 +153,14 @@ export default function IncentiveSimulator() {
                 }
             }
 
-            hhIncentives.incentives.data.forEach((item) => {
-                if (item.totalValue > 0) {
-                    totalValue += item.totalValue;
-                    totalVotes += item.voteCount;
-                }
-            });
+            // Get totals from Vote Market analytics
+            const totalVotes = getTotalVotesFromAnalytics(voteMarketAnalytics);
+            const totalValue = getTotalIncentivesUSD(voteMarketAnalytics);
 
-            const incentiveEfficency = totalVotes > 0 ? totalValue / totalVotes : 0;
-            setIncentivePerVote(incentiveEfficency);
+            const incentiveEfficiency = totalVotes > 0 ? totalValue / totalVotes : 0;
+            setIncentivePerVote(incentiveEfficiency);
         }
-    }, [hhIncentives.incentives, useNewPoolValue, selectedPoolId, pools]);
+    }, [voteMarketAnalytics, vmLoading, useNewPoolValue, selectedPoolId, pools]);
 
     const selectedPool = pools.find((pool) => pool.address === selectedPoolId);
 
@@ -252,7 +243,7 @@ export default function IncentiveSimulator() {
                     </Grid>
                 </Grid>
                 <Grid item xs={11} md={9}>
-                    <Typography variant={"h5"}>HH Voting Market Metrics as of voting round {unixToDate(currentRoundNew)}</Typography>
+                    <Typography variant={"h5"}>Vote Market Metrics (Current Round)</Typography>
                 </Grid>
                 <Grid item xs={11} md={9}>
                     <Grid
