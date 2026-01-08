@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import erc20Abi from '../../constants/abis/erc20.json';
 import { ethers } from 'ethers';
-import { useActiveNetworkVersion } from '../../state/application/hooks';
-import useGetSimpleTokenPrices from '../balancer-api-v3/useGetSimpleTokenPrices';
-import useGetHistoricalTokenPrice from '../balancer-api-v3/useGetHistoricalTokenPrice';
+import useGetCurrentTokenPrices from '../balancer-api-v3/useGetCurrentTokenPrices';
 import { useGetVoteMarketIncentives, getTotalVotesFromAnalytics, getTotalIncentivesUSD } from './useGetVoteMarketIncentives';
 
 const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
@@ -81,29 +79,30 @@ const getWeeklyBalEmission = (timestamp: number): number => {
 
 // For current round using live Vote Market data
 export const useGetEmissionPerVote = (): EmissionPerVoteResult => {
-    const [activeNetwork] = useActiveNetworkVersion();
     const [emissionValuePerVote, setEmissionValuePerVote] = useState(0);
     const [emissionsPerDollarSpent, setEmissionsPerDollarSpent] = useState(0);
     const [loading, setLoading] = useState(true);
     const hasCalculated = useRef(false);
 
-    const coinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
-    const { data: historicalBALCoinData } = useGetHistoricalTokenPrice(balAddress, 'MAINNET');
+    // Get current token prices from Balancer API
+    const { data: currentPrices, loading: pricesLoading } = useGetCurrentTokenPrices(["MAINNET"]);
     const { analytics, loading: vmLoading } = useGetVoteMarketIncentives();
 
     useEffect(() => {
         const fetchData = async () => {
             // Only calculate once when all data is available
-            if (vmLoading || !coinData || !analytics || hasCalculated.current) {
+            if (vmLoading || pricesLoading || !currentPrices || !analytics || hasCalculated.current) {
                 return;
             }
 
             try {
                 setLoading(true);
 
-                // Get BAL price (use latest historical or current)
-                const latestHistoricalPrice = historicalBALCoinData?.[historicalBALCoinData.length - 1];
-                const balPrice = latestHistoricalPrice?.value ?? coinData.data[balAddress]?.price ?? 0;
+                // Get BAL price from current prices, filtering by address
+                const balPriceData = currentPrices.find(
+                    (token) => token.address.toLowerCase() === balAddress.toLowerCase()
+                );
+                const balPrice = balPriceData?.price ?? 0;
 
                 if (balPrice === 0) {
                     console.warn('BAL price not available');
@@ -179,7 +178,7 @@ export const useGetEmissionPerVote = (): EmissionPerVoteResult => {
         };
 
         fetchData();
-    }, [coinData, historicalBALCoinData, analytics, vmLoading]);
+    }, [currentPrices, pricesLoading, analytics, vmLoading]);
 
     return {
         emissionValuePerVote,

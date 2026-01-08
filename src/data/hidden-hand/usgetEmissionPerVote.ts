@@ -4,10 +4,8 @@ import erc20Abi from '../../constants/abis/erc20.json';
 import { BALANCER_TIMESTAMPS } from "./constants";
 import {useGetHiddenHandVotingIncentives} from "./useGetHiddenHandVotingIncentives";
 import {ethers} from "ethers";
-import {useActiveNetworkVersion} from "../../state/application/hooks";
-import useGetSimpleTokenPrices from "../balancer-api-v3/useGetSimpleTokenPrices";
+import useGetCurrentTokenPrices from "../balancer-api-v3/useGetCurrentTokenPrices";
 import useGetHistoricalTokenPrice from "../balancer-api-v3/useGetHistoricalTokenPrice";
-import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import {unixToDate} from "../../utils/date";
 
 
@@ -16,12 +14,12 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
     const timestamps = BALANCER_TIMESTAMPS;
     const indexOfCurrent = timestamps.indexOf(timestampCurrentRound);
     const timestampPreviousRound = timestamps[indexOfCurrent - 1]
-    const [activeNetwork] = useActiveNetworkVersion()
     // If a round is currently active we need to set the appropriate pattern
 
     const [emissionValuePerVote, setEmissionValuePerVote] = useState(0);
     const [emissionsPerDollarSpent, setEmissionsPerDollarSpent] = useState(0)
-    const coinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
+    const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
+    const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
     const { data: historicalBALCoinData } = useGetHistoricalTokenPrice(balAddress, 'MAINNET')
     const hiddenHandDataCurrent = useGetHiddenHandVotingIncentives(timestampCurrentRound === 0 ? '' : String(timestampCurrentRound));
     const hiddenHandDataPrevious = useGetHiddenHandVotingIncentives(String(timestampPreviousRound));
@@ -29,7 +27,7 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if ((timestampCurrentRound === 0 || timestampCurrentRound) && coinData  && hiddenHandDataCurrent.incentives && hiddenHandDataPrevious.incentives) {
+                if ((timestampCurrentRound === 0 || timestampCurrentRound) && balPriceData && hiddenHandDataCurrent.incentives && hiddenHandDataPrevious.incentives) {
                     const DAY = 86400;
                     const WEEK = 604800;
                     const currentTime = Date.now() ;
@@ -39,12 +37,12 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
                     if (timestampCurrentRound === 0) {
                         // For current round, use the most recent historical price (last entry)
                         const latestHistoricalPrice = historicalBALCoinData?.[historicalBALCoinData.length - 1];
-                        balPrice = latestHistoricalPrice?.value ?? coinData.data[balAddress].price;
+                        balPrice = latestHistoricalPrice?.value ?? balPriceData.price;
                     } else {
                         // For historical rounds, find the price at that specific date
                         const targetDate = unixToDate(timestampCurrentRound);
                         const balTsPrice = historicalBALCoinData?.find(el => el.time === targetDate);
-                        balPrice = balTsPrice?.value ?? coinData.data[balAddress].price;
+                        balPrice = balTsPrice?.value ?? balPriceData.price;
                     }
 
                     const provider = new ethers.providers.JsonRpcProvider('https://rpc.mevblocker.io/fast');
@@ -140,7 +138,7 @@ export const useGetEmissionPerVote = (timestampCurrentRound: number) => {
         };
 
         fetchData();
-    }, [coinData, hiddenHandDataCurrent, hiddenHandDataPrevious]);
+    }, [balPriceData, hiddenHandDataCurrent, hiddenHandDataPrevious]);
 
     return{
         emissionValuePerVote: emissionValuePerVote,

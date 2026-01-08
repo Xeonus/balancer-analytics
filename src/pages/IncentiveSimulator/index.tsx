@@ -34,7 +34,7 @@ import { useGetVoteMarketIncentives, getTotalVotesFromAnalytics, getTotalIncenti
 import { AddShoppingCart, ShoppingCartCheckout } from "@mui/icons-material";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
-import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
+import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
 
 interface TableData {
     parameter: string;
@@ -62,7 +62,8 @@ export default function IncentiveSimulator() {
 
     const [isPOL, setIsPOL] = useState<boolean>(false);
 
-    const coinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
+    const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
+    const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
     const now = Math.round(new Date().getTime() / 1000);
     const weeklyEmissions = balEmissions.weekly(now);
 
@@ -220,13 +221,13 @@ export default function IncentiveSimulator() {
                             alignContent: "center",
                         }}
                     >
-                        {coinData && coinData.data[balAddress] && coinData.data[balAddress].price ? (
+                        {balPriceData && balPriceData.price ? (
                             <Box m={{ xs: 0, sm: 1 }}>
                                 <CoinCard
                                     tokenAddress={balAddress}
                                     tokenName="BAL"
-                                    tokenPrice={coinData.data[balAddress].price}
-                                    tokenPriceChange={coinData.data[balAddress].priceChangePercentage24h}
+                                    tokenPrice={balPriceData.price}
+                                    tokenPriceChange={0}
                                 />
                             </Box>
                         ) : (

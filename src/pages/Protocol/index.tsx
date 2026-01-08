@@ -48,8 +48,7 @@ import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
 import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 import {smoothData} from "../../utils/data";
-import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
-import {useActiveNetworkVersion} from "../../state/application/hooks";
+import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
 import {getUnixTimestamp1000DaysAgo, unixToDate} from "../../utils/date";
 import CloseIcon from '@mui/icons-material/Close';
 import * as React from "react";
@@ -91,10 +90,10 @@ export default function Protocol() {
 
     //Data
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
-    const [activeNetwork] = useActiveNetworkVersion()
     //Data
     const aggregatedProtocolData = useAggregatedProtocolData();
-    const v3CoinData = useGetSimpleTokenPrices([balAddress], activeNetwork.chainId);
+    const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
+    const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
 
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo());
     console.log("protocolData", protocolData)
@@ -350,13 +349,12 @@ export default function Protocol() {
                             sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                         >
                             <Box m={{xs: 0, sm: 1}}>
-                                {v3CoinData && v3CoinData.data[balAddress] && v3CoinData.data[balAddress].price ?
+                                {balPriceData && balPriceData.price ?
                                     <CoinCard
                                         tokenAddress={balAddress}
                                         tokenName='BAL'
-                                        tokenPrice={v3CoinData.data[balAddress].price}
-                                        tokenPriceChange={v3CoinData.data[balAddress].priceChangePercentage24h}
-
+                                        tokenPrice={balPriceData.price}
+                                        tokenPriceChange={0}
                                     />
                                     : <CircularProgress/>}
                             </Box>

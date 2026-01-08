@@ -7,12 +7,12 @@ import {
     useGetTokenPageDataQuery,
     useGetTokenSingleDataLazyQuery,
 } from '../../apollo/generated/graphql-codegen-generated';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, TokenData } from './balancerTypes';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useState } from 'react';
-import useGetSimpleTokenPrices from "../balancer-api-v3/useGetSimpleTokenPrices";
+import useGetCurrentTokenPrices from "../balancer-api-v3/useGetCurrentTokenPrices";
 import {CG_KEY} from "./constants";
 import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
@@ -79,8 +79,18 @@ export function useBalancerTokens(first = 100) {
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24, block48, blockWeek] = blocks ?? [];
     const [getTokenData, { data }] = useGetTokenDataLazyQuery();
-    const tokenAddresses = data?.tokens.map(token => token.address) ?? [];
-    const { data: tokenPrices, loading: pricesLoading, error: pricesError } = useGetSimpleTokenPrices(tokenAddresses, activeNetwork.chainId);
+    const { data: currentPrices, loading: pricesLoading } = useGetCurrentTokenPrices(["MAINNET"]);
+
+    // Transform array to object format for backward compatibility
+    const tokenPrices = useMemo(() => {
+        if (!currentPrices) return null;
+        return Object.fromEntries(
+            currentPrices.map(token => [
+                token.address.toLowerCase(),
+                { price: token.price, priceChange24h: 0 }
+            ])
+        );
+    }, [currentPrices]);
 
     useEffect(() => {
         if (block24) {
@@ -109,16 +119,17 @@ export function useBalancerTokens(first = 100) {
         let priceData = { price: token.latestUSDPrice ? Number(token.latestUSDPrice) : 0 };
         let priceData24 = getTokenPriceValues(token.address, tokens24);
         // Override with new API data if available
-        if (tokenPrices && tokenPrices[token.address]) {
-            const { price, priceChange24h } = tokenPrices[token.address];
+        const tokenAddressLower = token.address.toLowerCase();
+        if (tokenPrices && tokenPrices[tokenAddressLower]) {
+            const { price, priceChange24h } = tokenPrices[tokenAddressLower];
             priceData.price = price;
             // Assuming you adjust getTokenPriceValues or similar to handle the new data structure
             //priceData24 = { ...priceData24, priceChange24h };
         }
 
         // Relative price change in percentage terms:
-        const currentPrice = tokenPrices[token.address]?.price ?? 0;
-        const absolutePriceChange = tokenPrices[token.address]?.priceChange24h ?? 0;
+        const currentPrice = tokenPrices?.[tokenAddressLower]?.price ?? 0;
+        const absolutePriceChange = tokenPrices?.[tokenAddressLower]?.priceChange24h ?? 0;
         const price24hAgo = currentPrice - absolutePriceChange;
         const priceChangePercentage = price24hAgo !== 0 ? (absolutePriceChange / price24hAgo) * 100 : 0;
 

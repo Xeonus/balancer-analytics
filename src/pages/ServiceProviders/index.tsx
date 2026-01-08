@@ -11,8 +11,8 @@ import GenericPieChart from '../../components/Echarts/GenericPieChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import { getTotalsBySp, useGetQuarterlyTotalSpendData, useGetSPTableEntry } from './helpers';
 import ServiceProviderSpendingTable from '../../components/Tables/ServiceProviderSpendingTable';
-import { useActiveNetworkVersion } from "../../state/application/hooks";
-import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
+import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
+import { useMemo } from "react";
 
 
 
@@ -22,10 +22,17 @@ export default function ServiceProviders() {
     //States
     dayjs.extend(quarterOfYear);
     const currentQuarter = dayjs().quarter();
-    const [activeNetwork] = useActiveNetworkVersion()
     const sps: ServiceProvidersConfig = JSON.parse(JSON.stringify(spJson));
-    //const balPriceData = useCoinGeckoSimpleTokenPrices([activeNetwork.balAddress]);
-    const balPriceData = useGetSimpleTokenPrices([activeNetwork.balAddress], activeNetwork.chainId);
+
+    // Get current token prices and transform to expected format
+    const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
+    const balPriceData = useMemo(() => {
+        if (!currentPrices) return { data: undefined };
+        const priceMap = Object.fromEntries(
+            currentPrices.map(token => [token.address.toLowerCase(), { price: token.price }])
+        );
+        return { data: priceMap };
+    }, [currentPrices]);
 
     // Splitting the service providers into active and alumni groups
     const activeServiceProviders = sps.service_provider.filter(sp => !sp.sunset);
