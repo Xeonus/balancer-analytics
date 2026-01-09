@@ -1,11 +1,58 @@
 {
   "service_provider": [
     {
+      "name": "Ecosystem Contractors",
+      "short_description": "Consolidated ecosystem budget for contractors, infrastructure, governance expenses, and business development as defined in BIP-873. This includes payroll for core contributors, software/infrastructure costs, and BD activities.",
+      "site_url": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+      "img_ref": "default.png",
+      "sunset": false,
+      "budgets": [
+        {
+          "year": 2025,
+          "quarter": 4,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 337519,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 1,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 373054,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 2,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 321554,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "MAXYZ",
+      "short_description": "MAXYZ is a professional legal entity providing comprehensive EVM blockchain services to the Balancer ecosystem. Building upon the foundation established by the former Balancer Maxis, MAXYZ delivers reliable onchain operations, strategic partner management, operational tooling, and white-glove technical services. Our core mission focuses on flawless onchain execution.",
+      "site_url": "https://maxyz.xyz",
+      "img_ref": "default.png",
+      "sunset": false,
+      "budgets": []
+    },
+    {
       "name": "Balancer Maxis",
-      "short_description": "The Balancer Maxis are a passionate group of Balancer community contributors. A center of excellence that keeps the Balancer ecosystem operating at a first class level.",
+      "short_description": "The Balancer Maxis were a passionate group of Balancer community contributors. A center of excellence that kept the Balancer ecosystem operating at a first class level. The Maxis have transitioned to MAXYZ, a professional legal entity, as of Q4 2025.",
       "site_url": "https://www.notion.so/Balancer-Maxis-b2825faaad2a46a39b7eda2992ae4251",
       "img_ref": "balancerMaxis.png",
-      "sunset": false,
+      "sunset": true,
       "budgets": [
         {
           "year": 2022,
@@ -293,6 +340,36 @@
             "BAL": 0,
             "BAL_VESTED": 0
           }
+        },
+        {
+          "year": 2025,
+          "quarter": 4,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 30000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 1,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 30000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 2,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 30000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
         }
         ]
     },
@@ -497,6 +574,16 @@
           "snapshotReference": "https://snapshot.box/#/s:balancer.eth/proposal/0xc4cd4570b4e6d48bca408501b12f928029dcf096f3baa1148b77fb6940b498d4",
           "budget_requested": {
             "USDC": 20000,
+            "BAL": 0,
+            "BAL_VESTED": 0
+          }
+        },
+        {
+          "year": 2026,
+          "quarter": 1,
+          "snapshotReference": "https://forum.balancer.fi/t/bip-873-balancer-ecosystem-roadmap-proposal-and-funding/6668",
+          "budget_requested": {
+            "USDC": 80000,
             "BAL": 0,
             "BAL_VESTED": 0
           }

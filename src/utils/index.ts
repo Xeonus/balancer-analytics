@@ -3,7 +3,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import { SupportedChainId } from '@uniswap/sdk-core';
+import { ChainId } from '@uniswap/sdk-core';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo, FraxtalNetworkInfo,
     GnosisNetworkInfo,
@@ -242,8 +242,8 @@ export function notEmpty<TValue>(value: TValue | null | undefined): value is TVa
  * if not, return undefined
  * @param chainId
  */
-export function supportedChainId(chainId: number): SupportedChainId | undefined {
-    if (chainId in SupportedChainId) {
+export function supportedChainId(chainId: number): ChainId | undefined {
+    if (chainId in ChainId) {
         return chainId;
     }
     return undefined;

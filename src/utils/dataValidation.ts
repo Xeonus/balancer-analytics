@@ -7,14 +7,15 @@ export const HACK_TIMESTAMP_1 = 1730592000; // Nov 3, 2025 00:00:00 UTC
 export const HACK_TIMESTAMP_2 = 1732924800; // Nov 30, 2025 00:00:00 UTC
 
 // Metric-specific thresholds - values above these are considered corrupted
-export const MAX_VALID_TVL = 3_000_000_000; // $3B
-export const MAX_VALID_VOLUME = 3_000_000_000; // $3B
+// Note: Balancer v2 TVL is typically around $1-1.5B, so $2B is a reasonable upper bound
+export const MAX_VALID_TVL = 2_000_000_000; // $2B
+export const MAX_VALID_VOLUME = 2_000_000_000; // $2B
 export const MAX_VALID_FEES = 1_000_000; // $1M per day
 export const MAX_VALID_PROTOCOL_FEES = 1_000_000; // $1M per day
 export const MAX_VALID_SWAPS = 100_000; // 100k swaps per day
 
 // Default fallback threshold
-export const MAX_VALID_VALUE = 3_000_000_000; // $3B
+export const MAX_VALID_VALUE = 2_000_000_000; // $2B
 
 // Metric types for type-safe threshold selection
 export type MetricType = 'tvl' | 'volume' | 'fees' | 'protocolFees' | 'swaps' | 'default';
