@@ -537,7 +537,7 @@ export default function VotingIncentives() {
                             <Typography sx={{fontSize: '24px'}}>Voting Markets: Historical Overview</Typography>
                         </Grid>
                         <Grid item xs={11} sm={9}>
-                            <Typography sx={{fontSize: '15px'}}>Vote Market: Historical Performance</Typography>
+                            <Typography sx={{fontSize: '15px'}}>Votemarket: Historical Performance</Typography>
                         </Grid>
                         {voteMarketHistoricalData && voteMarketHistoricalData.xAxisData.length > 0 &&
                             <Grid item xs={11} sm={9}>
@@ -597,7 +597,7 @@ export default function VotingIncentives() {
                         }
                         <Grid item xs={11} sm={9} mt={1}>
                             <Typography sx={{fontSize: '24px'}} mb={1}>
-                                {currentRoundNew === 0 ? 'Vote Market: Current Round Metrics' : 'Historical Round Metrics'}
+                                {currentRoundNew === 0 ? 'Votemarket: Current Round Metrics' : 'Historical Round Metrics'}
                             </Typography>
                         </Grid>
                         <Grid item xs={11} sm={9}>
