@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { SupportedChainId, WETH9 } from '@uniswap/sdk-core';
+import { ChainId, WETH9 } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json';
 import ENS_ABI from '../constants/abis/ens-registrar.json';
@@ -39,9 +39,9 @@ export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contrac
     let address: string | undefined;
     if (chainId) {
         switch (chainId) {
-            case SupportedChainId.MAINNET:
-            case SupportedChainId.ROPSTEN:
-            case SupportedChainId.RINKEBY:
+            case ChainId.MAINNET:
+            case ChainId.ROPSTEN:
+            case ChainId.RINKEBY:
                 address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
                 break;
         }

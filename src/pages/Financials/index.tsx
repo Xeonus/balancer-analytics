@@ -12,7 +12,9 @@ import {
     FEE_STREAMER,
     FEE_STREAMER_2,
     getTreasuryConfig,
-    KARPATKEY_SAFE
+    MANAGED_TREASURY_SAFE,
+    BALANCER_ONCHAIN_LTD_SAFE,
+    PROTOCOL_FEE_FLOW_CHANGE_DATE
 } from '../../constants/wallets';
 import GenericAreaChart from '../../components/Echarts/GenericAreaChart';
 import TreasuryTransactionTable from '../../components/Tables/TreasuryTransactionTable';
@@ -62,7 +64,10 @@ export default function Financials() {
         txnHistory.token_dict = txnHistoryFromFile.token_dict
     }
     const { transactions } = useGetTransactions(TREASURY_CONFIG.treasury, Math.floor(Date.now() / 1000))
-    const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
+    const managedTreasuryBalances = useGetTotalBalances(MANAGED_TREASURY_SAFE);
+    const onchainLtdBalances = useGetTotalBalances(BALANCER_ONCHAIN_LTD_SAFE);
+    // Fetch transactions for Balancer OnChain Ltd Safe (for income since 2025-11-07)
+    const onchainLtdTxnHistory = useGetAddressTransactionsHistorically(BALANCER_ONCHAIN_LTD_SAFE);
 
     //Transaction checker
     // const { transactions } = useGetLocalTransactions(TREASURY_CONFIG.treasury, 1683381620)
@@ -89,19 +94,25 @@ export default function Financials() {
     const walletTokenNetworth = totalBalances ? totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0;
     let netWorth = portfolio ? portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0;
     netWorth += walletTokenNetworth;
-    const usdcReserves = totalBalances && karpatkeyBalances.totalBalances ? totalBalances.find(el => {
+    const usdcReserves = totalBalances ? totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
         }
     })?.amount : 0;
 
-    const karpatkeyusdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => {
+    const managedTreasuryUsdcReserves = managedTreasuryBalances.totalBalances ? managedTreasuryBalances.totalBalances.find(el => {
         if (el.symbol === 'USDC') {
             return el
         }
     })?.amount : 0;
 
-    const totalUSDCReserves = usdcReserves && karpatkeyusdcReserves !== undefined ? usdcReserves + karpatkeyusdcReserves : usdcReserves;
+    const onchainLtdUsdcReserves = onchainLtdBalances.totalBalances ? onchainLtdBalances.totalBalances.find(el => {
+        if (el.symbol === 'USDC') {
+            return el
+        }
+    })?.amount : 0;
+
+    const totalUSDCReserves = (usdcReserves || 0) + (managedTreasuryUsdcReserves || 0) + (onchainLtdUsdcReserves || 0);
 
     console.log("totalUSDCReserves", totalUSDCReserves)
 
@@ -115,13 +126,23 @@ export default function Financials() {
 
 
     //---USDC: SEND and RECEIVE---
+    // Legacy income from DAO treasury (before 2025-11-07)
     let usdcReceived =  extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER);
     const usdcReceived2 = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', FEE_STREAMER_2);
     const usdcReceivedCantina = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', CANTINA_CONTEST);
-    //const usdcReceivedFjord = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'receive', '0xA5033A6BDb31E52Ce6ba9c67Bff7331aC2686e72'.toLowerCase());
     usdcReceived = usdcReceived.concat(usdcReceived2).concat(usdcReceivedCantina);
-    //USDC Send
-    const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send');
+
+    // New income from Balancer OnChain Ltd Safe (since 2025-11-07)
+    // Protocol fees now flow to this address
+    const usdcReceivedOnchainLtd = extractTransactionsByTokenAndType(onchainLtdTxnHistory, usdc.toLowerCase(), 'receive');
+    // Filter to only include transactions after the protocol fee flow change date
+    const usdcReceivedOnchainLtdFiltered = usdcReceivedOnchainLtd.filter(tx =>
+        new Date(tx.time) >= PROTOCOL_FEE_FLOW_CHANGE_DATE
+    );
+    usdcReceived = usdcReceived.concat(usdcReceivedOnchainLtdFiltered);
+
+    //USDC Send - exclude transfers to managed treasury (internal reallocation)
+    const usdcSend = extractTransactionsByTokenAndType(txnHistory, usdc.toLowerCase(), 'send', undefined, [MANAGED_TREASURY_SAFE]);
     //temporary fix: exclude tribe tx:
     if (usdcSend.length > 2) {
         usdcSend[1].value = 0
@@ -131,7 +152,8 @@ export default function Financials() {
 
     //---BAL---
     const balReceive = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'receive');
-    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send');
+    // Exclude BAL transfers to managed treasury (internal reallocation, not actual spend/burn)
+    const balSend = extractTransactionsByTokenAndType(txnHistory, bal.toLowerCase(), 'send', undefined, [MANAGED_TREASURY_SAFE]);
 
     //---USDC: Cumulative in- and outflows---
     // FIX: receive and send start and end dates need to be considered!
@@ -317,7 +339,7 @@ export default function Financials() {
                                 metricName='Liquid Treasury USDC'
                                 mainMetricChange={0}
                                 MetricIcon={CurrencyExchangeIcon}
-                                toolTipText={'Liquid USDC in the DAO treasury excluding other wallets (e.g. OpCo or Karpatkey)'}
+                                toolTipText={'Total liquid USDC across DAO treasury, Managed Treasury Safe, and Balancer OnChain Ltd Safe'}
                             />
                         </Box>
                         <Box m={1}>

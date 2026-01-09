@@ -109,24 +109,47 @@ export function extractVoteMarketPoolRewards(
         const matchingGauge = gauges.find(g => g.address.toLowerCase() === gaugeAddress);
         const poolName = matchingGauge?.pool?.symbol || gaugeAddress.slice(0, 10) + '...';
 
-        if (gaugeAnalytics.incentiveDirectedUSD > 0) {
+        // Use incentiveDirectedUSD from analytics as the source of truth
+        const totalUSD = gaugeAnalytics.incentiveDirectedUSD;
+
+        if (totalUSD > 0) {
             const poolReward: PoolReward = { pool: poolName };
 
-            // Add each campaign's reward token
-            gaugeCampaigns.forEach(campaign => {
-                const tokenKey = campaign.rewardToken.symbol.toUpperCase();
-                const tokenValue = parseFloat(campaign.totalDistributed) * campaign.rewardTokenPrice;
+            if (gaugeCampaigns.length > 0) {
+                // Calculate raw token amounts for proportional distribution
+                const tokenAmounts: { symbol: string; rawAmount: number }[] = [];
+                let totalRawValue = 0;
 
-                if (!poolReward[tokenKey]) {
-                    poolReward[tokenKey] = tokenValue;
+                gaugeCampaigns.forEach(campaign => {
+                    const decimals = campaign.rewardToken.decimals || 18;
+                    const rawAmount = parseFloat(campaign.totalDistributed) / Math.pow(10, decimals);
+                    const rawValue = rawAmount * campaign.rewardTokenPrice;
+                    tokenAmounts.push({
+                        symbol: campaign.rewardToken.symbol.toUpperCase(),
+                        rawAmount: rawValue
+                    });
+                    totalRawValue += rawValue;
+                });
+
+                // Distribute the correct total USD proportionally to each token
+                if (totalRawValue > 0) {
+                    tokenAmounts.forEach(({ symbol, rawAmount }) => {
+                        const proportion = rawAmount / totalRawValue;
+                        const tokenValueUSD = totalUSD * proportion;
+
+                        if (!poolReward[symbol]) {
+                            poolReward[symbol] = tokenValueUSD;
+                        } else {
+                            poolReward[symbol] = (poolReward[symbol] as number) + tokenValueUSD;
+                        }
+                    });
                 } else {
-                    poolReward[tokenKey] = (poolReward[tokenKey] as number) + tokenValue;
+                    // Fallback: if raw calculation fails, just show total
+                    poolReward['INCENTIVES'] = totalUSD;
                 }
-            });
-
-            // If no campaigns found but analytics shows incentives, add as "Other"
-            if (gaugeCampaigns.length === 0 && gaugeAnalytics.incentiveDirectedUSD > 0) {
-                poolReward['OTHER'] = gaugeAnalytics.incentiveDirectedUSD;
+            } else {
+                // No campaigns found but analytics shows incentives
+                poolReward['INCENTIVES'] = totalUSD;
             }
 
             poolRewards.push(poolReward);

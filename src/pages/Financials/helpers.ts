@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { KARPATKEY_SAFE, SERVICE_PROVIDER_WALLETS } from '../../constants/wallets';
+import { MANAGED_TREASURY_SAFE, SERVICE_PROVIDER_WALLETS } from '../../constants/wallets';
 import { BalancerChartDataItem } from '../../data/balancer/balancerTypes';
 import { TransactionHistory } from '../../data/debank/debankTypes';
 
@@ -7,7 +7,8 @@ export function extractTransactionsByTokenAndType(
     txnHistory: TransactionHistory | null,
     tokenAddress: string,
     type: string,
-    sender?: string
+    sender?: string,
+    excludeAddresses?: string[]
 ): BalancerChartDataItem[] {
     if (txnHistory === null) {
         return []; // Return an empty array if txnHistory is null
@@ -37,6 +38,11 @@ export function extractTransactionsByTokenAndType(
         if (type === 'send') {
             el.sends.forEach(
                 send => {
+                    // Skip if recipient is in the exclude list (internal treasury transfers)
+                    if (excludeAddresses && excludeAddresses.some(addr => addr.toLowerCase() === send.to_addr?.toLowerCase())) {
+                        return;
+                    }
+
                     // Only list taxations that happened between the DAO and SP wallets
                     const wallet = SERVICE_PROVIDER_WALLETS.find(el => el.walletId.toLowerCase() === send.to_addr);
                     let to_addr = wallet?.walletId ? wallet.walletId : '';

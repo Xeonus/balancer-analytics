@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { SupportedChainId, Token, WETH9 } from '@uniswap/sdk-core';
+import { ChainId, Token, WETH9 } from '@uniswap/sdk-core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import process from "process";
 import { TokenFilters } from '../data/balancer/balancerTypes'
@@ -168,19 +168,19 @@ export const STABLE_POOLS = ['Stable', 'ComposableStable', 'ComposableMetaStable
 export const WETH_ADDRESSES = [WETH_ADDRESS, '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'];
 
 export const DAI = new Token(
-    SupportedChainId.MAINNET,
+    ChainId.MAINNET,
     '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     18,
     'DAI',
     'Dai Stablecoin',
 );
-export const USDC = new Token(SupportedChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C');
-export const USDT = new Token(SupportedChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD');
-export const COMP = new Token(SupportedChainId.MAINNET, '0xc00e94Cb662C3520282E6f5717214004A7f26888', 18, 'COMP', 'Compound');
-export const MKR = new Token(SupportedChainId.MAINNET, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2', 18, 'MKR', 'Maker');
+export const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C');
+export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD');
+export const COMP = new Token(ChainId.MAINNET, '0xc00e94Cb662C3520282E6f5717214004A7f26888', 18, 'COMP', 'Compound');
+export const MKR = new Token(ChainId.MAINNET, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2', 18, 'MKR', 'Maker');
 export const SWAPR = new Token(42161, '0x2e9a6Df78E42a30712c10a9Dc4b1C8656f8F2879', 18, 'SWAPR', 'Swapr');
-export const AMPL = new Token(SupportedChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth');
-export const WBTC = new Token(SupportedChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC');
+export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth');
+export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC');
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 12;
@@ -188,8 +188,8 @@ export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320;
 export const PROPOSAL_LENGTH_IN_SECS = AVERAGE_BLOCK_TIME_IN_SECS * PROPOSAL_LENGTH_IN_BLOCKS;
 
 // TODO: specify merkle distributor for mainnet
-export const MERKLE_DISTRIBUTOR_ADDRESS: { [chainId in SupportedChainId]?: string } = {
-    [SupportedChainId.MAINNET]: '0x090D4613473dEE047c3f2706764f49E0821D256e',
+export const MERKLE_DISTRIBUTOR_ADDRESS: { [chainId in ChainId]?: string } = {
+    [ChainId.MAINNET]: '0x090D4613473dEE047c3f2706764f49E0821D256e',
 };
 
 
@@ -197,9 +197,9 @@ export const MERKLE_DISTRIBUTOR_ADDRESS: { [chainId in SupportedChainId]?: strin
  * Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these
  * tokens.
  */
-export const CUSTOM_BASES: { [chainId in SupportedChainId]?: { [tokenAddress: string]: Token[] } } = {
-    [SupportedChainId.MAINNET]: {
-        [AMPL.address]: [DAI, WETH9[SupportedChainId.MAINNET]],
+export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
+    [ChainId.MAINNET]: {
+        [AMPL.address]: [DAI, WETH9[ChainId.MAINNET]],
     },
 };
 
@@ -221,11 +221,11 @@ export const POOL_HIDE = [
 
 ];
 
-export const PINNED_PAIRS: { readonly [chainId in SupportedChainId]?: [Token, Token][] } = {
-    [SupportedChainId.MAINNET]: [
+export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
+    [ChainId.MAINNET]: [
         [
-            new Token(SupportedChainId.MAINNET, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
-            new Token(SupportedChainId.MAINNET, '0x39AA39c021dfbaE8faC545936693aC917d5E7563', 8, 'cUSDC', 'Compound USD Coin'),
+            new Token(ChainId.MAINNET, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
+            new Token(ChainId.MAINNET, '0x39AA39c021dfbaE8faC545936693aC917d5E7563', 8, 'cUSDC', 'Compound USD Coin'),
         ],
         [USDC, USDT],
         [DAI, USDT],

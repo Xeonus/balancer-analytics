@@ -83,9 +83,18 @@ const COPPER_LAUNCH_PROXY_MAINNET = '0x9a74cbff3f36ff1e433ef88d0ec1cdcd1eb79afa'
 const COPPER_LAUNCH_PROXY_ARBITRUM = '0x22D15E202538e90d6fDaE5044A4D6a28453aA4C5';
 const COPPER_LAUNCH_PROXY_POLYGON ='0x7388feB5a04990bb4c7570e68F1b37aB06C1aafD';
 export const DAO_FEE_MULTISIG  = '0xe649b71783d5008d10a96b6871e3840a398d4f06';
-export const KARPATKEY_SAFE = '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89';
+// Karpatkey managed treasury - funds transferred here from DAO multisig
+export const MANAGED_TREASURY_SAFE = '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89';
+// Legacy alias for backward compatibility
+export const KARPATKEY_SAFE = MANAGED_TREASURY_SAFE;
 
 export const OPCO_SAFE = '0x3B8910F378034FD6E103Df958863e5c684072693';
+
+// Balancer OnChain Ltd Safe - receives protocol fees since 2025-11-07
+export const BALANCER_ONCHAIN_LTD_SAFE = '0x16b0056636Fcc85f92C49cD49a24bc519d4A1941';
+
+// Date when protocol fee flow changed to Balancer OnChain Ltd Safe
+export const PROTOCOL_FEE_FLOW_CHANGE_DATE = new Date('2025-11-07');
 
 export const TREASURY_ADDRESS_CONFIG = [
     {
