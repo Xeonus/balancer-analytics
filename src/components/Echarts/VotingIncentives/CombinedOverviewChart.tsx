@@ -9,6 +9,8 @@ export interface BribesProps {
     height: string,
     isCombinedData?: boolean,
     paladinIncentivesData?: number[], // Optional Paladin specific data
+    voteMarketIncentivesData?: number[], // Optional Vote Market specific data
+    hiddenHandIncentivesData?: number[], // Optional Hidden Hand specific data (for stacked view)
 }
 
 interface TooltipParam {
@@ -23,9 +25,14 @@ export default function CombinedOverviewChart({
                                                    xAxisData,
                                                    height,
                                                    isCombinedData = false,
-                                                   paladinIncentivesData
+                                                   paladinIncentivesData,
+                                                   voteMarketIncentivesData,
+                                                   hiddenHandIncentivesData
                                                }: BribesProps) {
-    const theme = useTheme()
+    const theme = useTheme();
+
+    // Determine if we have 3-way stacked data
+    const hasThreeWayStack = isCombinedData && voteMarketIncentivesData && hiddenHandIncentivesData;
 
     const option = {
         tooltip: {
@@ -39,23 +46,31 @@ export default function CombinedOverviewChart({
             formatter: function (params: TooltipParam[]) {
                 let res = params[0].name;
                 params.forEach(param => {
-                    if (param.seriesName === '$/veBAL') {
-                        res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value, 3)}`
-                    } else if (param.seriesName === 'Hidden Hand Incentives') {
-                        res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
-                    } else if (param.seriesName === 'Paladin Incentives') {
-                        res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
-                    } else if (param.seriesName === 'Total Incentives') {
-                        res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                    if (param.value > 0 || param.seriesName === '$/veBAL') {
+                        if (param.seriesName === '$/veBAL') {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value, 3)}`
+                        } else if (param.seriesName === 'Hidden Hand (Historical)') {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                        } else if (param.seriesName === 'Vote Market') {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                        } else if (param.seriesName === 'Paladin Quests') {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                        } else if (param.seriesName === 'Total Incentives') {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                        } else {
+                            res += `<br/>${param.seriesName}: ${formatDollarAmount(param.value)}`
+                        }
                     }
                 })
                 return res;
             }
         },
         legend: {
-            data: isCombinedData ?
-                ['$/veBAL', 'Hidden Hand Incentives', 'Paladin Incentives', 'Total Incentives'] :
-                ['$/veBAL', 'Voting Incentives'],
+            data: hasThreeWayStack
+                ? ['$/veBAL', 'Hidden Hand (Historical)', 'Vote Market', 'Paladin Quests', 'Total Incentives']
+                : isCombinedData
+                    ? ['$/veBAL', 'Hidden Hand Incentives', 'Paladin Incentives', 'Total Incentives']
+                    : ['$/veBAL', 'Voting Incentives'],
             textStyle: {
                 color: theme.palette.secondary
             }
@@ -109,7 +124,58 @@ export default function CombinedOverviewChart({
                 }
             },
         ],
-        series: isCombinedData ? [
+        series: hasThreeWayStack ? [
+            {
+                name: '$/veBAL',
+                type: 'line',
+                itemStyle: {
+                    color: 'rgb(255, 204, 0)'
+                },
+                data: dollarPerVlAssetData,
+                yAxisIndex: 0,
+            },
+            {
+                name: 'Hidden Hand (Historical)',
+                type: 'bar',
+                stack: 'total',
+                data: hiddenHandIncentivesData,
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: 'rgb(32, 129, 240)' // Blue for HH
+                },
+            },
+            {
+                name: 'Vote Market',
+                type: 'bar',
+                stack: 'total',
+                data: voteMarketIncentivesData,
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: 'rgb(138, 43, 226)' // Purple for Vote Market
+                },
+            },
+            {
+                name: 'Paladin Quests',
+                type: 'bar',
+                stack: 'total',
+                data: paladinIncentivesData || new Array(totalAmountDollarsData.length).fill(0),
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: 'rgb(75, 192, 192)' // Teal for Paladin
+                },
+            },
+            {
+                name: 'Total Incentives',
+                type: 'line',
+                data: totalAmountDollarsData,
+                yAxisIndex: 1,
+                lineStyle: {
+                    type: 'dashed',
+                    color: '#FFFFFF'
+                },
+                symbol: 'none'
+            }
+        ] : isCombinedData ? [
             {
                 name: '$/veBAL',
                 type: 'line',
