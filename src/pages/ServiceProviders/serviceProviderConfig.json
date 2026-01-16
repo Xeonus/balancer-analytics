@@ -41,7 +41,7 @@
     },
     {
       "name": "MAXYZ",
-      "short_description": "MAXYZ is a professional legal entity providing comprehensive EVM blockchain services to the Balancer ecosystem. Building upon the foundation established by the former Balancer Maxis, MAXYZ delivers reliable onchain operations, strategic partner management, operational tooling, and white-glove technical services. Our core mission focuses on flawless onchain execution.",
+      "short_description": "MAXYZ is a professional legal entity providing comprehensive EVM blockchain services to the Balancer ecosystem. Building upon the foundation established by the former Balancer Maxis, MAXYZ delivers reliable onchain operations, strategic partner management, operational tooling, and white-glove technical services.",
       "site_url": "https://maxyz.xyz",
       "img_ref": "default.png",
       "sunset": false,

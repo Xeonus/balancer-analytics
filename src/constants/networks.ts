@@ -208,7 +208,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
   gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'E7XyutxXVLrp8njmjF16Hh38PCJuHm12RRyMt5ma4ctX',
-  blockClientUri: '',
+  blockClientUri: DECENTRALIZED_ENDPOINT + '8k66QCiBQGaTE4Vg62UpQL9Umhr5JQ3V6KcPNy1vvBaT',
   rpcUrl: 'https://base.publicnode.com',
   bgColor: '#0030a6',
   primaryColor: '#0027a2',
