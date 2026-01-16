@@ -265,7 +265,7 @@ export const avalancheClient = new ApolloClient({
 })
 
 export const baseBlockClient = new ApolloClient({
-    uri: 'https://api.studio.thegraph.com/query/48427/bleu-base-blocks/version/latest',
+    uri: BaseNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {

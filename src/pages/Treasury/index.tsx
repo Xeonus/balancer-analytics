@@ -6,7 +6,7 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NavCrumbs, {NavElement} from '../../components/NavCrumbs';
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {getTreasuryConfig, KARPATKEY_SAFE, OPCO_SAFE} from "../../constants/wallets";
+import {getTreasuryConfig, KARPATKEY_SAFE, OPCO_SAFE, BALANCER_ONCHAIN_LTD_SAFE} from "../../constants/wallets";
 import {useGetTotalBalances} from "../../data/debank/useGetTotalBalances";
 import {useGetPortfolio} from '../../data/debank/useGetPortfolio';
 import StyledExternalLink from '../../components/StyledExternalLink';
@@ -50,9 +50,11 @@ export default function Treasury() {
     const {portfolio} = useGetPortfolio(TREASURY_CONFIG.treasury);
     const karpatkeyPortfolio = useGetPortfolio(KARPATKEY_SAFE);
     const opcoPortfolio = useGetPortfolio(OPCO_SAFE);
+    const onchainLtdPortfolio = useGetPortfolio(BALANCER_ONCHAIN_LTD_SAFE);
     const {totalBalances} = useGetTotalBalances(TREASURY_CONFIG.treasury);
     const karpatkeyBalances = useGetTotalBalances(KARPATKEY_SAFE);
     const opcoBalances = useGetTotalBalances(OPCO_SAFE);
+    const onchainLtdBalances = useGetTotalBalances(BALANCER_ONCHAIN_LTD_SAFE);
 
     // Function to classify tokens into groups
     const classifyToken = (symbol: string): string => {
@@ -79,10 +81,11 @@ export default function Treasury() {
     let totalStablecoinValue = 0
     if (portfolio &&  totalBalances &&
         karpatkeyPortfolio && karpatkeyPortfolio.portfolio  && karpatkeyBalances && karpatkeyBalances.totalBalances &&
-        opcoPortfolio && opcoPortfolio.portfolio && opcoBalances && opcoBalances.totalBalances
+        opcoPortfolio && opcoPortfolio.portfolio && opcoBalances && opcoBalances.totalBalances &&
+        onchainLtdPortfolio && onchainLtdPortfolio.portfolio && onchainLtdBalances && onchainLtdBalances.totalBalances
     ) {
-        const portfolioValue = calculatePortfolioStablecoinValue([...portfolio, ...karpatkeyPortfolio.portfolio, ...opcoPortfolio.portfolio]);
-        const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances, ...opcoBalances.totalBalances]);
+        const portfolioValue = calculatePortfolioStablecoinValue([...portfolio, ...karpatkeyPortfolio.portfolio, ...opcoPortfolio.portfolio, ...onchainLtdPortfolio.portfolio]);
+        const balancesValue = calculateTokenBalancesStablecoinValue([...totalBalances, ...karpatkeyBalances.totalBalances, ...opcoBalances.totalBalances, ...onchainLtdBalances.totalBalances]);
         totalStablecoinValue = portfolioValue + balancesValue;
     }
 
@@ -96,6 +99,9 @@ export default function Treasury() {
     const opcoTokenBalances = opcoBalances && opcoBalances.totalBalances ?
         opcoBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0
 
+    const onchainLtdTokenBalances = onchainLtdBalances && onchainLtdBalances.totalBalances ?
+        onchainLtdBalances.totalBalances.reduce((acc, el) => acc + el.amount * el.price, 0) : 0
+
     //Obtain per wallet Portfolio (LP) value
     const treasuryPortfolioValue = portfolio ?
         portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
@@ -106,17 +112,20 @@ export default function Treasury() {
     const opcoPortfolioValue = opcoPortfolio && opcoPortfolio.portfolio ?
         opcoPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
+    const onchainLtdPortfolioValue = onchainLtdPortfolio && onchainLtdPortfolio.portfolio ?
+        onchainLtdPortfolio.portfolio.reduce((acc, el) => el.portfolio_item_list.reduce((p, pel) => p + pel.stats.net_usd_value, 0) + acc, 0) : 0
 
     const usdcReserves = totalBalances ? totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
     const karpatkeyUsdcReserves = karpatkeyBalances.totalBalances ? karpatkeyBalances.totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
     const opcoUsdcReserves = opcoBalances.totalBalances ? opcoBalances.totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
+    const onchainLtdUsdcReserves = onchainLtdBalances.totalBalances ? onchainLtdBalances.totalBalances.find(el => el.symbol === 'USDC')?.amount ?? 0 : 0;
 
-    const totalUSDCReserves = usdcReserves + karpatkeyUsdcReserves + opcoUsdcReserves
+    const totalUSDCReserves = usdcReserves + karpatkeyUsdcReserves + opcoUsdcReserves + onchainLtdUsdcReserves
 
     //BAL insurance fund
     const BALinsuranceAmount = activeNetwork === EthereumNetworkInfo ? 1250000 : 0;
     // Sum up all the values
-    const totalAssetValue = treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances + treasuryPortfolioValue + karpatkeyPortfolioValue + opcoPortfolioValue;
+    const totalAssetValue = treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances + onchainLtdTokenBalances + treasuryPortfolioValue + karpatkeyPortfolioValue + opcoPortfolioValue + onchainLtdPortfolioValue;
 
 
     //Treasury Token Balances Pie Chart
@@ -151,13 +160,24 @@ export default function Treasury() {
         }
     ) : null;
 
+    const tokenPieChartDataOnchainLtd: BalancerPieChartDataItem[] | null = onchainLtdBalances.totalBalances ? onchainLtdBalances.totalBalances.filter(
+        x => x.chain === activeNetwork.debankId &&
+            x.amount * x.price > 10).map((balance) => {
+            return {
+                value: balance.amount * balance.price,
+                name: balance.symbol
+            }
+        }
+    ) : null;
+
     const ratioPieChartData = [];
 
     let overallTokenDistro : BalancerPieChartDataItem[] = []
 
-    if (tokenPieChartData && tokenPieChartDataKarpatkey && tokenPieChartDataOpco) {
+    if (tokenPieChartData && tokenPieChartDataKarpatkey && tokenPieChartDataOpco && tokenPieChartDataOnchainLtd) {
         const mergedAssets = mergeArrays(tokenPieChartData, tokenPieChartDataKarpatkey);
-        overallTokenDistro = mergeArrays(mergedAssets, tokenPieChartDataOpco);
+        const mergedAssets2 = mergeArrays(mergedAssets, tokenPieChartDataOpco);
+        overallTokenDistro = mergeArrays(mergedAssets2, tokenPieChartDataOnchainLtd);
     }
 
 
@@ -181,6 +201,14 @@ export default function Treasury() {
         ratioPieChartData.push({
             value: opcoTokenBalances,
             name: 'OpCo Treasury Tokens'
+        });
+    }
+
+    // Add Onchain Ltd token value
+    if (onchainLtdTokenBalances > 0) {
+        ratioPieChartData.push({
+            value: onchainLtdTokenBalances,
+            name: 'Onchain Ltd Tokens'
         });
     }
 
@@ -215,6 +243,14 @@ export default function Treasury() {
         });
     }
 
+    //Onchain Ltd Portfolio
+    if (onchainLtdPortfolioValue > 0) {
+        ratioPieChartData.push({
+            value: onchainLtdPortfolioValue,
+            name: 'Onchain Ltd Portfolio Liquidity'
+        });
+    }
+
     // Aggregate token balances
     const aggregateBalances = (balances: TokenBalance[]) => {
         if (!balances) return;
@@ -227,6 +263,7 @@ export default function Treasury() {
     if (totalBalances) aggregateBalances(totalBalances);
     if (karpatkeyBalances && karpatkeyBalances.totalBalances) aggregateBalances(karpatkeyBalances.totalBalances);
     if (opcoBalances && opcoBalances.totalBalances) aggregateBalances(opcoBalances.totalBalances);
+    if (onchainLtdBalances && onchainLtdBalances.totalBalances) aggregateBalances(onchainLtdBalances.totalBalances);
 
     // Aggregate portfolio values
     const aggregatePortfolioValues = (portfolios: ChainPortfolio[]) => {
@@ -248,6 +285,7 @@ export default function Treasury() {
     if (portfolio) aggregatePortfolioValues(portfolio);
     if (karpatkeyPortfolio && karpatkeyPortfolio.portfolio) aggregatePortfolioValues(karpatkeyPortfolio.portfolio);
     if (opcoPortfolio && opcoPortfolio.portfolio) aggregatePortfolioValues(opcoPortfolio.portfolio);
+    if (onchainLtdPortfolio && onchainLtdPortfolio.portfolio) aggregatePortfolioValues(onchainLtdPortfolio.portfolio);
 
     // Create pie chart data
     const groupedPieChart = Object.keys(aggregatedValues).map(group => ({
@@ -304,12 +342,12 @@ export default function Treasury() {
                                 </Box>
                                 <Box mr={1} mb={1}>
                                     <MetricsCard
-                                        mainMetric={treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances}
+                                        mainMetric={treasuryTokenBalances + karpatkeyTokenBalances + opcoTokenBalances + onchainLtdTokenBalances}
                                         mainMetricInUSD={true}
                                         metricName='Tokens in Wallets'
                                         mainMetricChange={0}
                                         MetricIcon={WalletIcon}
-                                        toolTipText={'Combined net worth of tokens in the treasury, Karpatkey and OpCo wallets unless otherwise specified.'}
+                                        toolTipText={'Combined net worth of tokens in the treasury, Karpatkey, OpCo and Onchain Ltd wallets unless otherwise specified.'}
                                     />
                                 </Box>
                                 <Box mr={1} mb={1}>
@@ -319,7 +357,7 @@ export default function Treasury() {
                                         metricName='Liquid USDC'
                                         mainMetricChange={0}
                                         MetricIcon={CurrencyExchangeIcon}
-                                        toolTipText={'Combined net worth of USDC in the treasury, Karpatkey and OpCo wallets unless otherwise specified.'}
+                                        toolTipText={'Combined net worth of USDC in the treasury, Karpatkey, OpCo and Onchain Ltd wallets unless otherwise specified.'}
                                     />
                                 </Box>
                                 <Box mr={1}>
@@ -597,6 +635,85 @@ export default function Treasury() {
                                 </Box>
                                 {opcoBalances.totalBalances && opcoBalances.totalBalances.length > 0 ?
                                     <FeeCollectorTokenTable tokenBalances={opcoBalances.totalBalances}/> : null}
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid> : null }
+                    {activeNetwork === EthereumNetworkInfo ?
+                    <Grid
+                        item
+                        mt={2}
+                        xs={11}>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Balancer Onchain Ltd</Typography>
+                                            <Box ml={1}>
+                                                <StyledExternalLink address={BALANCER_ONCHAIN_LTD_SAFE} type={'debank'} activeNetwork={activeNetwork}/>
+                                            </Box>
+                                        </Box>
+
+                                        {/* Description */}
+                                        <Typography variant="caption">
+                                            This safe receives protocol fees since November 2025. Funds are used for protocol operations and service provider payments.
+                                        </Typography>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(onchainLtdTokenBalances + onchainLtdPortfolioValue)}</Typography>
+                                    </Box>
+                                </Box>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Tokens</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(onchainLtdTokenBalances)}</Typography>
+                                    </Box>
+                                </Box>
+                                {onchainLtdBalances.totalBalances && onchainLtdBalances.totalBalances.length > 0 ?
+                                    <FeeCollectorTokenTable tokenBalances={onchainLtdBalances.totalBalances}/> : null}
+                                {onchainLtdPortfolioValue > 0 ?
+                                <>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" mt={3}>
+                                    {/* Left side content */}
+                                    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="start">
+                                        {/* First Row: Title and External Link */}
+                                        <Box display="flex" justifyContent="flex-start" alignItems="center">
+                                            <Typography variant="h6">Liquidity Provisions</Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box mr={2}>
+                                        <Typography variant="h6" align="right">{formatDollarAmount(onchainLtdPortfolioValue)}</Typography>
+                                    </Box>
+                                </Box>
+                                <Card
+                                    sx={{boxShadow: 3}}
+                                >
+                                    <Box p={2}>
+                                        {onchainLtdPortfolio.portfolio && onchainLtdPortfolio.portfolio.length > 0 ?
+                                            onchainLtdPortfolio.portfolio.map(pos =>
+                                                pos.chain === activeNetwork.debankId ?
+                                                    <Box key={pos.id + "box"} mb={1}>
+                                                        <LiquidityPosition key={'onchainltd'} position={pos}/>
+                                                    </Box> : <Typography>none</Typography>
+                                            )
+                                            : <Typography>none</Typography>}
+                                    </Box>
+                                </Card>
+                                </> : null}
                             </AccordionDetails>
                         </Accordion>
                     </Grid> : null }
