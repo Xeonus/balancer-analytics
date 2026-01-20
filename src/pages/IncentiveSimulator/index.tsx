@@ -171,7 +171,8 @@ export default function IncentiveSimulator() {
         { parameter: 'Voting incentive cost per veBAL', value: '$' + formatNumber(incentivePerVote, 3) },
         { parameter: 'veBAL votes', value: formatNumber(bribeValue / incentivePerVote) },
         { parameter: 'Emission per veBAL', value: formatDollarAmount(emissionValuePerVote) },
-        { parameter: 'Total BAL Emission (weekly)', value: formatDollarAmount(emissionValuePerVote * bribeValue / incentivePerVote) },
+        // Divide by 4: /2 for bi-weekly voting periods, /2 for veBAL emission distribution
+        { parameter: 'Total BAL Emission (weekly)', value: formatDollarAmount(emissionValuePerVote * bribeValue / incentivePerVote / 4) },
         { parameter: 'Target APR', value: targetAPR.toString() + '%' },
     ];
 

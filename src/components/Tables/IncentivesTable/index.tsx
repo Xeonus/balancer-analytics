@@ -40,7 +40,8 @@ interface DownloadData {
     poolName: string,
     votes: number,
     $vlAura: string,
-    rewards: number,
+    totalDeposited: number,
+    directedRewards: number,
 }
 interface Data {
     gaugeAddress: string;
@@ -49,6 +50,7 @@ interface Data {
     poolData: SimplePoolData,
     totalVotes: number,
     votingIncentives: number,
+    totalDeposited: number,
     totalRewards: number,
 }
 
@@ -59,6 +61,7 @@ function createData(
     poolData: SimplePoolData,
     totalVotes: number,
     votingIncentives: number,
+    totalDeposited: number,
     totalRewards: number,
 ): Data {
     return {
@@ -68,6 +71,7 @@ function createData(
         poolData,
         totalVotes,
         votingIncentives,
+        totalDeposited,
         totalRewards,
     };
 }
@@ -133,10 +137,17 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
+        id: 'totalDeposited',
+        numeric: true,
+        disablePadding: false,
+        label: 'Total Deposited',
+        isMobileVisible: false,
+    },
+    {
         id: 'totalRewards',
         numeric: true,
         disablePadding: false,
-        label: 'Rewards',
+        label: 'Directed',
         isMobileVisible: true,
     },
     {
@@ -232,6 +243,7 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
             el.pool,
             el.voteCount ? el.voteCount : 0,
             el.valuePerVote ? el.valuePerVote : 0,
+            el.totalDeposited ? el.totalDeposited : 0,
             el.totalRewards ? el.totalRewards : 0,
         )
     )
@@ -256,6 +268,7 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
                 el.pool,
                 el.voteCount ? el.voteCount : 0,
                 el.valuePerVote ? el.valuePerVote : 0,
+                el.totalDeposited ? el.totalDeposited : 0,
                 el.totalRewards ? el.totalRewards : 0,
             )
         )
@@ -264,8 +277,9 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
 
         const downloadRows= originalRows.map(data => ({
             poolName: data.poolData.symbol,
-            network: networkStringMap[Number(data.network)],
-            rewards: parseFloat(data.totalRewards.toFixed(3)),
+            network: networkStringMap[data.network],
+            totalDeposited: parseFloat(data.totalDeposited.toFixed(3)),
+            directedRewards: parseFloat(data.totalRewards.toFixed(3)),
             votes: parseFloat(data.totalVotes.toFixed(3)),
             $vlAura: "$" + parseFloat(data.votingIncentives.toFixed(3))
         }));
@@ -432,10 +446,13 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
                                                     </Box>
                                                 </Box>
                                             </TableCell>
+                                            <TableCell align="right" sx={{display: {xs: 'none', md: 'table-cell'}}}>
+                                                {formatDollarAmount(Number(row.totalDeposited ? row.totalDeposited : 0), 3)}
+                                            </TableCell>
                                             <TableCell align="right">
                                                 {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0), 3)}
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell align="right" sx={{display: {xs: 'none', md: 'table-cell'}}}>
                                                 {formatNumber(Number(row.totalVotes ? row.totalVotes : 0), 3)}
                                             </TableCell>
                                             <TableCell align="right">
@@ -450,7 +467,7 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
                                         height: (dense ? 33 : 53) * emptyRows,
                                     }}
                                 >
-                                    <TableCell colSpan={6}/>
+                                    <TableCell colSpan={7}/>
                                 </TableRow>
                             )}
                         </TableBody>

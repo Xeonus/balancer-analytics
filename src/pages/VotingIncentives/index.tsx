@@ -241,11 +241,13 @@ export default function VotingIncentives() {
         // Current round (0) uses Vote Market data
         if (currentRoundNew === 0 && voteMarketAnalytics && !voteMarketLoading) {
             // Extract pool rewards from Vote Market campaigns
+            // Note: incentiveDirectedUSD from analytics already accounts for Aura's veBAL share
             const vmPoolRewards = extractVoteMarketPoolRewards(voteMarketCampaigns, voteMarketAnalytics, gaugeData);
             setBribeRewardsNew(vmPoolRewards);
             setXAxisDataRoundNew(vmPoolRewards.map((el) => el.pool));
 
             // Calculate metrics from Vote Market analytics
+            // incentiveDirectedUSD already accounts for Aura's share
             const totalVotes = getTotalVotesFromAnalytics(voteMarketAnalytics);
             const totalIncentives = getTotalIncentivesUSD(voteMarketAnalytics);
 

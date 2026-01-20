@@ -19,6 +19,11 @@ export interface VoteMarketHistoricalResult {
     error: string | null;
 }
 
+/**
+ * Hook to fetch Vote Market historical incentives data.
+ * Note: Historical data from Votemarket already accounts for Aura's veBAL share
+ * in the incentiveDirectedUSD values.
+ */
 export const useGetVoteMarketHistoricalIncentives = (): VoteMarketHistoricalResult => {
     const [data, setData] = useState<VoteMarketHistoricalData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
