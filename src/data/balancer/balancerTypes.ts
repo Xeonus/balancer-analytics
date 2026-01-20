@@ -219,7 +219,8 @@ export interface BalancerStakingGauges {
     min_VeBAL: string;
     voteCount: number;
     valuePerVote: number;
-    totalRewards: number;
+    totalRewards: number;       // Incentive Directed USD (effective for Balancer voters)
+    totalDeposited: number;     // Total Deposited USD (raw amount before Aura split)
     userValue: number;
 }
 

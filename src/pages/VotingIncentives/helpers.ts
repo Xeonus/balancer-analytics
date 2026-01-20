@@ -37,6 +37,7 @@ export function decorateGaugesWithIncentives(
 }
 
 // Decorate gauges with Vote Market analytics data
+// Note: Votemarket's incentiveDirectedUSD already accounts for Aura's veBAL share
 export function decorateGaugesWithVoteMarketIncentives(
     balancerGauges: BalancerStakingGauges[],
     analytics: VoteMarketAnalytics | null
@@ -61,11 +62,19 @@ export function decorateGaugesWithVoteMarketIncentives(
         processedAddresses.add(gaugeAddressLower);
 
         if (matchingAnalytics) {
+            // Use analytics values directly - Votemarket's incentiveDirectedUSD already accounts for
+            // Aura's veBAL share in their calculation
+            const totalRewards = matchingAnalytics.incentiveDirectedUSD || 0;
+            const totalDeposited = matchingAnalytics.totalDeposited || 0;
+            const voteCount = parseFloat(matchingAnalytics.nonBlacklistedVotes) || 0;
+            const valuePerVote = matchingAnalytics.dollarPerVote || 0;
+
             return {
                 ...gauge,
-                voteCount: parseFloat(matchingAnalytics.nonBlacklistedVotes) || 0,
-                valuePerVote: matchingAnalytics.dollarPerVote || 0,
-                totalRewards: matchingAnalytics.incentiveDirectedUSD || 0,
+                voteCount: voteCount,
+                valuePerVote: valuePerVote,
+                totalRewards: totalRewards,
+                totalDeposited: totalDeposited,
             };
         }
 
@@ -109,46 +118,39 @@ export function extractVoteMarketPoolRewards(
         const matchingGauge = gauges.find(g => g.address.toLowerCase() === gaugeAddress);
         const poolName = matchingGauge?.pool?.symbol || gaugeAddress.slice(0, 10) + '...';
 
-        // Use incentiveDirectedUSD from analytics as the source of truth
+        // Use incentiveDirectedUSD from analytics - this already accounts for Aura's share
         const totalUSD = gaugeAnalytics.incentiveDirectedUSD;
 
         if (totalUSD > 0) {
             const poolReward: PoolReward = { pool: poolName };
 
             if (gaugeCampaigns.length > 0) {
-                // Calculate raw token amounts for proportional distribution
-                const tokenAmounts: { symbol: string; rawAmount: number }[] = [];
+                // Calculate raw token proportions from campaigns (for breakdown display)
+                const tokenRawValues = new Map<string, number>();
                 let totalRawValue = 0;
 
                 gaugeCampaigns.forEach(campaign => {
-                    const decimals = campaign.rewardToken.decimals || 18;
-                    const rawAmount = parseFloat(campaign.totalDistributed) / Math.pow(10, decimals);
-                    const rawValue = rawAmount * campaign.rewardTokenPrice;
-                    tokenAmounts.push({
-                        symbol: campaign.rewardToken.symbol.toUpperCase(),
-                        rawAmount: rawValue
-                    });
+                    if (!campaign.currentPeriod) return;
+
+                    const rewardPerPeriod = parseFloat(campaign.currentPeriod.rewardPerPeriod);
+                    const rawValue = rewardPerPeriod * campaign.rewardTokenPrice;
+
+                    const symbol = campaign.rewardToken.symbol.toUpperCase();
+                    const currentTotal = tokenRawValues.get(symbol) || 0;
+                    tokenRawValues.set(symbol, currentTotal + rawValue);
                     totalRawValue += rawValue;
                 });
 
-                // Distribute the correct total USD proportionally to each token
+                // Distribute the analytics totalUSD proportionally by token
                 if (totalRawValue > 0) {
-                    tokenAmounts.forEach(({ symbol, rawAmount }) => {
-                        const proportion = rawAmount / totalRawValue;
-                        const tokenValueUSD = totalUSD * proportion;
-
-                        if (!poolReward[symbol]) {
-                            poolReward[symbol] = tokenValueUSD;
-                        } else {
-                            poolReward[symbol] = (poolReward[symbol] as number) + tokenValueUSD;
-                        }
+                    tokenRawValues.forEach((rawValue, symbol) => {
+                        const proportion = rawValue / totalRawValue;
+                        poolReward[symbol] = totalUSD * proportion;
                     });
                 } else {
-                    // Fallback: if raw calculation fails, just show total
                     poolReward['INCENTIVES'] = totalUSD;
                 }
             } else {
-                // No campaigns found but analytics shows incentives
                 poolReward['INCENTIVES'] = totalUSD;
             }
 

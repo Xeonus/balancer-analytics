@@ -3,6 +3,7 @@ import erc20Abi from '../../constants/abis/erc20.json';
 import { ethers } from 'ethers';
 import useGetCurrentTokenPrices from '../balancer-api-v3/useGetCurrentTokenPrices';
 import { useGetVoteMarketIncentives, getTotalVotesFromAnalytics, getTotalIncentivesUSD } from './useGetVoteMarketIncentives';
+import { AURA_VOTER_PROXY } from './constants';
 
 const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
 
@@ -15,6 +16,7 @@ export interface EmissionPerVoteResult {
 // Cache for veBAL data to avoid repeated RPC calls
 interface VeBALCache {
     veBALShare: number;
+    auraVeBALShare: number;
     nonAuraVeBAL: number;
     timestamp: number;
 }
@@ -33,24 +35,28 @@ const getProvider = () => {
 };
 
 // Get veBAL data with caching
-interface VeBALData {
-    veBALShare: number;
+export interface VeBALData {
+    veBALShare: number;      // Non-Aura share (e.g., 0.35 for 35%)
+    auraVeBALShare: number;  // Aura's share (e.g., 0.65 for 65%)
     nonAuraVeBAL: number;
 }
 
-const getVeBALData = async (): Promise<VeBALData> => {
+export const getVeBALData = async (): Promise<VeBALData> => {
     const now = Date.now();
     if (veBALCache && (now - veBALCache.timestamp) < CACHE_DURATION) {
-        return { veBALShare: veBALCache.veBALShare, nonAuraVeBAL: veBALCache.nonAuraVeBAL };
+        return {
+            veBALShare: veBALCache.veBALShare,
+            auraVeBALShare: veBALCache.auraVeBALShare,
+            nonAuraVeBAL: veBALCache.nonAuraVeBAL
+        };
     }
 
     const provider = getProvider();
     const veBalAddress = '0xc128a9954e6c874ea3d62ce62b468ba073093f25';
     const veBal = new ethers.Contract(veBalAddress, erc20Abi, provider);
-    const auraVoterProxy = '0xaf52695e1bb01a16d33d7194c28c42b10e0dbec2';
 
     const [auraVotingPower, totalVotingPower] = await Promise.all([
-        veBal.balanceOf(auraVoterProxy),
+        veBal.balanceOf(AURA_VOTER_PROXY),
         veBal.totalSupply()
     ]);
 
@@ -59,9 +65,39 @@ const getVeBALData = async (): Promise<VeBALData> => {
     const nonAuraVeBAL = totalVeBAL - auraVeBAL;
 
     const veBALShare = nonAuraVeBAL / totalVeBAL;
+    const auraVeBALShare = auraVeBAL / totalVeBAL;
 
-    veBALCache = { veBALShare, nonAuraVeBAL, timestamp: now };
-    return { veBALShare, nonAuraVeBAL };
+    veBALCache = { veBALShare, auraVeBALShare, nonAuraVeBAL, timestamp: now };
+    return { veBALShare, auraVeBALShare, nonAuraVeBAL };
+};
+
+// Hook to get Aura's veBAL share for use in components
+export const useGetAuraVeBALShare = () => {
+    const [auraVeBALShare, setAuraVeBALShare] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const hasFetched = useRef(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (hasFetched.current) return;
+            hasFetched.current = true;
+
+            try {
+                const data = await getVeBALData();
+                setAuraVeBALShare(data.auraVeBALShare);
+            } catch (error) {
+                console.error('Error fetching Aura veBAL share:', error);
+                // Default to ~65% if fetch fails (typical Aura dominance)
+                setAuraVeBALShare(0.65);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    return { auraVeBALShare, loading };
 };
 
 // Get weekly BAL emission based on governance schedule

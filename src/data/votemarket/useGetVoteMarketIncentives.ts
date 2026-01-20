@@ -6,7 +6,12 @@ import {
     VoteMarketAnalytics,
     VoteMarketGaugeAnalytics
 } from './voteMarketTypes';
-import { VOTEMARKET_API_URL, VOTEMARKET_API_URL_FALLBACK } from './constants';
+import {
+    VOTEMARKET_API_URL,
+    VOTEMARKET_API_URL_FALLBACK,
+    isAuraBlacklistedForCampaign,
+    getEffectiveBalancerIncentive
+} from './constants';
 
 export interface VoteMarketIncentivesResult {
     campaigns: VoteMarketCampaign[];
@@ -72,14 +77,39 @@ export const getTotalVotesFromAnalytics = (analytics: VoteMarketAnalytics | null
     }, 0);
 };
 
-// Helper function to get total incentives USD from analytics
+// Helper function to get total incentives USD from analytics (raw, unadjusted)
 export const getTotalIncentivesUSD = (analytics: VoteMarketAnalytics | null): number => {
     if (!analytics) return 0;
     return analytics.totalDepositedUSD;
 };
 
-// Helper function to aggregate campaigns by gauge for display
-export const aggregateCampaignsByGauge = (campaigns: VoteMarketCampaign[]): Map<string, {
+/**
+ * Get total incentives USD adjusted for Aura's veBAL share.
+ * For campaigns where Aura is NOT blacklisted, only the non-Aura portion goes to Balancer voters.
+ * Uses currentPeriod.rewardPerPeriod for current round rewards (not totalDistributed).
+ */
+export const getAdjustedTotalIncentivesUSD = (
+    campaigns: VoteMarketCampaign[],
+    auraVeBALShare: number
+): number => {
+    return campaigns.reduce((sum, campaign) => {
+        // Only include campaigns with an active current period
+        if (!campaign.currentPeriod) return sum;
+
+        const rewardPerPeriod = parseFloat(campaign.currentPeriod.rewardPerPeriod);
+        const rawValue = rewardPerPeriod * campaign.rewardTokenPrice;
+        const isAuraBlacklisted = isAuraBlacklistedForCampaign(campaign);
+        const adjustedValue = getEffectiveBalancerIncentive(rawValue, auraVeBALShare, isAuraBlacklisted);
+        return sum + adjustedValue;
+    }, 0);
+};
+
+// Helper function to aggregate campaigns by gauge for display (with Aura adjustment)
+// Uses currentPeriod.rewardPerPeriod for current round rewards
+export const aggregateCampaignsByGauge = (
+    campaigns: VoteMarketCampaign[],
+    auraVeBALShare: number = 0
+): Map<string, {
     gauge: string;
     totalValue: number;
     rewards: { symbol: string; value: number; amount: string }[];
@@ -91,8 +121,16 @@ export const aggregateCampaignsByGauge = (campaigns: VoteMarketCampaign[]): Map<
     }>();
 
     campaigns.forEach(campaign => {
+        // Only include campaigns with an active current period
+        if (!campaign.currentPeriod) return;
+
         const gaugeAddress = campaign.gauge.toLowerCase();
-        const rewardValue = parseFloat(campaign.totalDistributed) * campaign.rewardTokenPrice;
+        const rewardPerPeriod = parseFloat(campaign.currentPeriod.rewardPerPeriod);
+        const rawRewardValue = rewardPerPeriod * campaign.rewardTokenPrice;
+
+        // Apply Aura adjustment based on whether Aura is blacklisted for this campaign
+        const isAuraBlacklisted = isAuraBlacklistedForCampaign(campaign);
+        const rewardValue = getEffectiveBalancerIncentive(rawRewardValue, auraVeBALShare, isAuraBlacklisted);
 
         if (gaugeMap.has(gaugeAddress)) {
             const existing = gaugeMap.get(gaugeAddress)!;
@@ -100,7 +138,7 @@ export const aggregateCampaignsByGauge = (campaigns: VoteMarketCampaign[]): Map<
             existing.rewards.push({
                 symbol: campaign.rewardToken.symbol,
                 value: rewardValue,
-                amount: campaign.totalDistributed
+                amount: campaign.currentPeriod.rewardPerPeriod
             });
         } else {
             gaugeMap.set(gaugeAddress, {
@@ -109,7 +147,7 @@ export const aggregateCampaignsByGauge = (campaigns: VoteMarketCampaign[]): Map<
                 rewards: [{
                     symbol: campaign.rewardToken.symbol,
                     value: rewardValue,
-                    amount: campaign.totalDistributed
+                    amount: campaign.currentPeriod.rewardPerPeriod
                 }]
             });
         }
