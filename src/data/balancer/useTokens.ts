@@ -13,6 +13,8 @@ import { BalancerChartDataItem, TokenData } from './balancerTypes';
 import { useActiveNetworkVersion } from '../../state/application/hooks';
 import { useState } from 'react';
 import useGetCurrentTokenPrices from "../balancer-api-v3/useGetCurrentTokenPrices";
+import { useGetDynamicTokenPricesQuery } from "../../apollo/generated/graphql-codegen-generated";
+import { balancerV3APIClient } from "../../apollo/client";
 import {CG_KEY} from "./constants";
 import { sanitizeChartData, sanitizeScalarValue } from '../../utils/dataValidation';
 
@@ -81,16 +83,43 @@ export function useBalancerTokens(first = 100) {
     const [getTokenData, { data }] = useGetTokenDataLazyQuery();
     const { data: currentPrices, loading: pricesLoading } = useGetCurrentTokenPrices(["MAINNET"]);
 
-    // Transform array to object format for backward compatibility
+    // Extract addresses from v2 subgraph data for dynamic price lookup
+    const tokenAddresses = useMemo(() => {
+        if (!data?.tokens) return [];
+        return data.tokens.map(t => t.address);
+    }, [data]);
+
+    // Fetch dynamic price data (priceChange24h) for only the displayed tokens
+    const { data: dynamicPriceData, loading: dynamicLoading } = useGetDynamicTokenPricesQuery({
+        client: balancerV3APIClient,
+        variables: {
+            addresses: tokenAddresses,
+            chain: "MAINNET",
+        },
+        skip: tokenAddresses.length === 0,
+    });
+
+    // Build price lookup from currentPrices
     const tokenPrices = useMemo(() => {
         if (!currentPrices) return null;
         return Object.fromEntries(
             currentPrices.map(token => [
                 token.address.toLowerCase(),
-                { price: token.price, priceChange24h: 0 }
+                { price: token.price }
             ])
         );
     }, [currentPrices]);
+
+    // Build price change lookup from dynamic data
+    const priceChangeLookup = useMemo(() => {
+        if (!dynamicPriceData?.tokenGetTokensDynamicData) return {};
+        return Object.fromEntries(
+            dynamicPriceData.tokenGetTokensDynamicData.map(d => [
+                d.tokenAddress.toLowerCase(),
+                { priceChange24h: d.priceChange24h }
+            ])
+        );
+    }, [dynamicPriceData]);
 
     useEffect(() => {
         if (block24) {
@@ -117,22 +146,17 @@ export function useBalancerTokens(first = 100) {
         let tokenData24 = getTokenValues(token.address, tokens24);
 
         let priceData = { price: token.latestUSDPrice ? Number(token.latestUSDPrice) : 0 };
-        let priceData24 = getTokenPriceValues(token.address, tokens24);
-        // Override with new API data if available
+        // Override with v3 API price if available
         const tokenAddressLower = token.address.toLowerCase();
         if (tokenPrices && tokenPrices[tokenAddressLower]) {
-            const { price, priceChange24h } = tokenPrices[tokenAddressLower];
-            priceData.price = price;
-            // Assuming you adjust getTokenPriceValues or similar to handle the new data structure
-            //priceData24 = { ...priceData24, priceChange24h };
+            priceData.price = tokenPrices[tokenAddressLower].price;
         }
 
-        // Relative price change in percentage terms:
-        const currentPrice = tokenPrices?.[tokenAddressLower]?.price ?? 0;
-        const absolutePriceChange = tokenPrices?.[tokenAddressLower]?.priceChange24h ?? 0;
+        // Get price change from dynamic data
+        const absolutePriceChange = priceChangeLookup[tokenAddressLower]?.priceChange24h ?? 0;
+        const currentPrice = priceData.price;
         const price24hAgo = currentPrice - absolutePriceChange;
         const priceChangePercentage = price24hAgo !== 0 ? (absolutePriceChange / price24hAgo) * 100 : 0;
-
 
         // Sanitize token metrics (hack data corruption fix)
         const sanitizedTvl = token.symbol?.includes('bb-') ? 0 : sanitizeScalarValue(tokenData.tvl, 0, 'tvl');
@@ -159,7 +183,7 @@ export function useBalancerTokens(first = 100) {
             tvlUSDChange: sanitizeScalarValue(tvlChange, 0),
             priceUSD: priceData.price,
             priceUSDChange: priceChangePercentage,
-            isCoingeckoPriceSource: false, // Update this as needed based on your logic
+            isCoingeckoPriceSource: false,
         };
     });
 }
@@ -177,8 +201,15 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24, block48, blockWeek] = blocks ?? [];
     const [getTokenData, { data }] = useGetTokenSingleDataLazyQuery();
-    const tokenAddresses: Array<string> = [];
-    const [coingeckoData, setCoingeckoData] = useState<CoingeckoRawData>();
+
+    // Fetch dynamic price data from Balancer v3 API
+    const { data: dynamicPriceData } = useGetDynamicTokenPricesQuery({
+        client: balancerV3APIClient,
+        variables: {
+            addresses: [address],
+            chain: "MAINNET",
+        },
+    });
 
     useEffect(() => {
         if (block24) {
@@ -194,70 +225,26 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
         }
     }, [block24]);
 
-    useEffect(() => {
-        //V2: repopulate formatted token data with coingecko data
-        if (data && data.tokens.length === 1) {
-            data.tokens.forEach(token => {
-                tokenAddresses.push(token.address);
-            })
-
-            const getTokenPrices = async (addresses: string) => {
-                const baseURI = 'https://api.coingecko.com/api/v3/simple/token_price/';
-                const queryParams = activeNetwork.coingeckoId + '?contract_addresses=' + addresses + '&vs_currencies=usd&include_24hr_change=true'  + '&x_cg_demo_api_key=' + CG_KEY;
-                try {
-                    const coingeckoResponse = await fetch(baseURI + queryParams);
-                    const json = await coingeckoResponse.json();
-                    //TODO: find way to append to interface object?
-                    const spread = {
-                        ...coingeckoData,
-                        json
-                    }
-                    setCoingeckoData(json);
-                } catch {
-                    console.log("Coingecko: token_price API not reachable")
-                }
-            }
-            const tokenAddresses1 = tokenAddresses.slice(1, 150);
-            const tokenAddresses2 = tokenAddresses.slice(151, 300);
-            //raw batch call in hook:
-            let addressesString1 = '';
-            tokenAddresses1.forEach(el => {
-                addressesString1 = addressesString1 + el + ','
-            })
-
-            getTokenPrices(addressesString1);
-
-            let addressesString2 = '';
-            tokenAddresses2.forEach(el => {
-                addressesString2 = addressesString2 + el + ','
-            })
-
-            //getTokenPrices(addressesString2);
-        }
-    }, [data]);
-
     if (!data) {
         return null;
     }
 
     const { tokens, tokens24 } = data;
 
-    //const singleToken = tokens.find(t => t.address === address)
-    //const singleToken24 = tokens.find(t => t.address === address)
-
     let tokenData = getTokenValues(tokens[0].address, tokens);
     let tokenData24 = getTokenValues(tokens[0].address, tokens24);
 
     let priceData = { price: tokens[0].latestUSDPrice ? Number(tokens[0].latestUSDPrice) : 0 };
-    let priceData24 = getTokenPriceValues(tokens[0].address, tokens24);
-    //override:
-    let priceChange = 0
-    if (coingeckoData && coingeckoData[tokens[0].address]) {
-        tokenData = getTokenValues(tokens[0].address, tokens, coingeckoData);
-        tokenData24 = getTokenValues(tokens[0].address, tokens24, coingeckoData);
-        priceData = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
-        priceData24 = getTokenPriceValues(tokens[0].address, tokens24, coingeckoData);
-        priceChange = coingeckoData[tokens[0].address].usd_24h_change;
+
+    // Use v3 API dynamic data for price and price change
+    let priceChange = 0;
+    const dynamicToken = dynamicPriceData?.tokenGetTokensDynamicData?.find(
+        d => d.tokenAddress.toLowerCase() === address.toLowerCase()
+    );
+    if (dynamicToken) {
+        priceData.price = dynamicToken.price;
+        const price24hAgo = dynamicToken.price - dynamicToken.priceChange24h;
+        priceChange = price24hAgo !== 0 ? (dynamicToken.priceChange24h / price24hAgo) * 100 : 0;
     }
 
     const valueUSDCollected = 0;
@@ -287,7 +274,7 @@ export function useBalancerTokenSingleData(address: string): TokenData | null {
         tvlUSDChange: sanitizeScalarValue(tvlChangeCalc, 0),
         priceUSD: priceData.price,
         priceUSDChange: priceChange,
-        isCoingeckoPriceSource: priceChange !== 0 ? true : false,
+        isCoingeckoPriceSource: false,
     };
 }
 

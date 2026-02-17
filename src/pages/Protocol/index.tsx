@@ -49,6 +49,7 @@ import BaseLogo from '../../assets/svg/base.svg'
 import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 import {smoothData} from "../../utils/data";
 import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
+import useGetTokenPriceWithChange from "../../data/balancer-api-v3/useGetTokenPriceWithChange";
 import {getUnixTimestamp1000DaysAgo, unixToDate} from "../../utils/date";
 import CloseIcon from '@mui/icons-material/Close';
 import * as React from "react";
@@ -93,7 +94,7 @@ export default function Protocol() {
     //Data
     const aggregatedProtocolData = useAggregatedProtocolData();
     const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
-    const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
+    const balPriceData = useGetTokenPriceWithChange(balAddress);
 
     const protocolData = useBalancerChainProtocolData(EthereumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo());
     console.log("protocolData", protocolData)
@@ -354,7 +355,7 @@ export default function Protocol() {
                                         tokenAddress={balAddress}
                                         tokenName='BAL'
                                         tokenPrice={balPriceData.price}
-                                        tokenPriceChange={0}
+                                        tokenPriceChange={balPriceData.priceChange24h}
                                     />
                                     : <CircularProgress/>}
                             </Box>

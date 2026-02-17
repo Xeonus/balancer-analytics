@@ -21,9 +21,9 @@ export interface Scalars {
   Int: number;
   Float: number;
   AmountHumanReadable: any;
-  BigDecimal: string;
-  BigInt: string;
-  Bytes: string;
+  BigDecimal: any;
+  BigInt: any;
+  Bytes: any;
   Date: any;
   GqlBigNumber: any;
   /** 8 bytes signed integer */
@@ -33,10 +33,13 @@ export interface Scalars {
   Timestamp: any;
 }
 
-export type Aggregation_Interval = "day" | "hour";
+export enum Aggregation_Interval {
+  Day = "day",
+  Hour = "hour",
+}
 
 export interface AmpUpdate {
-  __typename: "AmpUpdate";
+  __typename?: "AmpUpdate";
   endAmp: Scalars["BigInt"];
   endTimestamp: Scalars["BigInt"];
   id: Scalars["ID"];
@@ -122,84 +125,85 @@ export interface AmpUpdate_Filter {
   startTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
 }
 
-export type AmpUpdate_OrderBy =
-  | "endAmp"
-  | "endTimestamp"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "scheduledTimestamp"
-  | "startAmp"
-  | "startTimestamp";
+export enum AmpUpdate_OrderBy {
+  EndAmp = "endAmp",
+  EndTimestamp = "endTimestamp",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  ScheduledTimestamp = "scheduledTimestamp",
+  StartAmp = "startAmp",
+  StartTimestamp = "startTimestamp",
+}
 
 export interface Balancer {
-  __typename: "Balancer";
+  __typename?: "Balancer";
   id: Scalars["ID"];
   poolCount: Scalars["Int"];
   pools?: Maybe<Array<Pool>>;
@@ -229,7 +233,7 @@ export interface BalancerSnapshotsArgs {
 }
 
 export interface BalancerSnapshot {
-  __typename: "BalancerSnapshot";
+  __typename?: "BalancerSnapshot";
   id: Scalars["ID"];
   poolCount: Scalars["Int"];
   timestamp: Scalars["Int"];
@@ -333,24 +337,25 @@ export interface BalancerSnapshot_Filter {
   vault_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type BalancerSnapshot_OrderBy =
-  | "id"
-  | "poolCount"
-  | "timestamp"
-  | "totalLiquidity"
-  | "totalProtocolFee"
-  | "totalSwapCount"
-  | "totalSwapFee"
-  | "totalSwapVolume"
-  | "vault"
-  | "vault__id"
-  | "vault__poolCount"
-  | "vault__protocolFeesCollector"
-  | "vault__totalLiquidity"
-  | "vault__totalProtocolFee"
-  | "vault__totalSwapCount"
-  | "vault__totalSwapFee"
-  | "vault__totalSwapVolume";
+export enum BalancerSnapshot_OrderBy {
+  Id = "id",
+  PoolCount = "poolCount",
+  Timestamp = "timestamp",
+  TotalLiquidity = "totalLiquidity",
+  TotalProtocolFee = "totalProtocolFee",
+  TotalSwapCount = "totalSwapCount",
+  TotalSwapFee = "totalSwapFee",
+  TotalSwapVolume = "totalSwapVolume",
+  Vault = "vault",
+  VaultId = "vault__id",
+  VaultPoolCount = "vault__poolCount",
+  VaultProtocolFeesCollector = "vault__protocolFeesCollector",
+  VaultTotalLiquidity = "vault__totalLiquidity",
+  VaultTotalProtocolFee = "vault__totalProtocolFee",
+  VaultTotalSwapCount = "vault__totalSwapCount",
+  VaultTotalSwapFee = "vault__totalSwapFee",
+  VaultTotalSwapVolume = "vault__totalSwapVolume",
+}
 
 export interface Balancer_Filter {
   /** Filter for the block changed event. */
@@ -427,20 +432,21 @@ export interface Balancer_Filter {
   totalSwapVolume_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type Balancer_OrderBy =
-  | "id"
-  | "poolCount"
-  | "pools"
-  | "protocolFeesCollector"
-  | "snapshots"
-  | "totalLiquidity"
-  | "totalProtocolFee"
-  | "totalSwapCount"
-  | "totalSwapFee"
-  | "totalSwapVolume";
+export enum Balancer_OrderBy {
+  Id = "id",
+  PoolCount = "poolCount",
+  Pools = "pools",
+  ProtocolFeesCollector = "protocolFeesCollector",
+  Snapshots = "snapshots",
+  TotalLiquidity = "totalLiquidity",
+  TotalProtocolFee = "totalProtocolFee",
+  TotalSwapCount = "totalSwapCount",
+  TotalSwapFee = "totalSwapFee",
+  TotalSwapVolume = "totalSwapVolume",
+}
 
 export interface Block {
-  __typename: "Block";
+  __typename?: "Block";
   author?: Maybe<Scalars["String"]>;
   difficulty?: Maybe<Scalars["BigInt"]>;
   gasLimit?: Maybe<Scalars["BigInt"]>;
@@ -658,34 +664,36 @@ export interface Block_Height {
   number_gte?: InputMaybe<Scalars["Int"]>;
 }
 
-export type Block_OrderBy =
-  | "author"
-  | "difficulty"
-  | "gasLimit"
-  | "gasUsed"
-  | "id"
-  | "number"
-  | "parentHash"
-  | "receiptsRoot"
-  | "size"
-  | "stateRoot"
-  | "timestamp"
-  | "totalDifficulty"
-  | "transactionsRoot"
-  | "unclesHash";
+export enum Block_OrderBy {
+  Author = "author",
+  Difficulty = "difficulty",
+  GasLimit = "gasLimit",
+  GasUsed = "gasUsed",
+  Id = "id",
+  Number = "number",
+  ParentHash = "parentHash",
+  ReceiptsRoot = "receiptsRoot",
+  Size = "size",
+  StateRoot = "stateRoot",
+  Timestamp = "timestamp",
+  TotalDifficulty = "totalDifficulty",
+  TransactionsRoot = "transactionsRoot",
+  UnclesHash = "unclesHash",
+}
 
-export type Chain =
-  | "Arbitrum"
-  | "Avalanche"
-  | "Base"
-  | "Fraxtal"
-  | "Gnosis"
-  | "Optimism"
-  | "Polygon"
-  | "PolygonZkEvm";
+export enum Chain {
+  Arbitrum = "Arbitrum",
+  Avalanche = "Avalanche",
+  Base = "Base",
+  Fraxtal = "Fraxtal",
+  Gnosis = "Gnosis",
+  Optimism = "Optimism",
+  Polygon = "Polygon",
+  PolygonZkEvm = "PolygonZkEvm",
+}
 
 export interface CircuitBreaker {
-  __typename: "CircuitBreaker";
+  __typename?: "CircuitBreaker";
   bptPrice: Scalars["BigDecimal"];
   id: Scalars["ID"];
   lowerBoundPercentage: Scalars["BigDecimal"];
@@ -775,95 +783,96 @@ export interface CircuitBreaker_Filter {
   upperBoundPercentage_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type CircuitBreaker_OrderBy =
-  | "bptPrice"
-  | "id"
-  | "lowerBoundPercentage"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z"
-  | "token"
-  | "token__address"
-  | "token__assetManager"
-  | "token__balance"
-  | "token__cashBalance"
-  | "token__decimals"
-  | "token__id"
-  | "token__index"
-  | "token__isExemptFromYieldProtocolFee"
-  | "token__managedBalance"
-  | "token__name"
-  | "token__oldPriceRate"
-  | "token__paidProtocolFees"
-  | "token__priceRate"
-  | "token__symbol"
-  | "token__weight"
-  | "upperBoundPercentage";
+export enum CircuitBreaker_OrderBy {
+  BptPrice = "bptPrice",
+  Id = "id",
+  LowerBoundPercentage = "lowerBoundPercentage",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+  Token = "token",
+  TokenAddress = "token__address",
+  TokenAssetManager = "token__assetManager",
+  TokenBalance = "token__balance",
+  TokenCashBalance = "token__cashBalance",
+  TokenDecimals = "token__decimals",
+  TokenId = "token__id",
+  TokenIndex = "token__index",
+  TokenIsExemptFromYieldProtocolFee = "token__isExemptFromYieldProtocolFee",
+  TokenManagedBalance = "token__managedBalance",
+  TokenName = "token__name",
+  TokenOldPriceRate = "token__oldPriceRate",
+  TokenPaidProtocolFees = "token__paidProtocolFees",
+  TokenPriceRate = "token__priceRate",
+  TokenSymbol = "token__symbol",
+  TokenWeight = "token__weight",
+  UpperBoundPercentage = "upperBoundPercentage",
+}
 
 export interface CreateLbpInput {
   metadata: LbpMetadataInput;
@@ -872,7 +881,7 @@ export interface CreateLbpInput {
 
 /** The review data for the ERC4626 token */
 export interface Erc4626ReviewData {
-  __typename: "Erc4626ReviewData";
+  __typename?: "Erc4626ReviewData";
   /** If it is an ERC4626 token, this defines whether we can use wrap/unwrap through the buffer in swap paths for this token. */
   canUseBufferForSwaps?: Maybe<Scalars["Boolean"]>;
   /** The filename of the review of the ERC4626 */
@@ -889,12 +898,12 @@ export interface Erc4626ReviewData {
 
 /** ExitFee hook specific params. Percentage format is 0.01 -> 0.01%. */
 export interface ExitFeeHookParams {
-  __typename: "ExitFeeHookParams";
+  __typename?: "ExitFeeHookParams";
   exitFeePercentage?: Maybe<Scalars["String"]>;
 }
 
 export interface FxOracle {
-  __typename: "FXOracle";
+  __typename?: "FXOracle";
   decimals?: Maybe<Scalars["Int"]>;
   divisor?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -950,18 +959,23 @@ export interface FxOracle_Filter {
   tokens_not_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
 }
 
-export type FxOracle_OrderBy = "decimals" | "divisor" | "id" | "tokens";
+export enum FxOracle_OrderBy {
+  Decimals = "decimals",
+  Divisor = "divisor",
+  Id = "id",
+  Tokens = "tokens",
+}
 
 /** FeeTaking hook specific params. Percentage format is 0.01 -> 0.01% */
 export interface FeeTakingHookParams {
-  __typename: "FeeTakingHookParams";
+  __typename?: "FeeTakingHookParams";
   addLiquidityFeePercentage?: Maybe<Scalars["String"]>;
   removeLiquidityFeePercentage?: Maybe<Scalars["String"]>;
   swapFeePercentage?: Maybe<Scalars["String"]>;
 }
 
 export interface Gauge {
-  __typename: "Gauge";
+  __typename?: "Gauge";
   /**  Timestamp at which Balancer DAO added the gauge to GaugeController [seconds]  */
   addedTimestamp: Scalars["Int"];
   /**  Address of the gauge  */
@@ -977,7 +991,7 @@ export interface Gauge {
 }
 
 export interface GaugeFactory {
-  __typename: "GaugeFactory";
+  __typename?: "GaugeFactory";
   /**  List of gauges created through the factory  */
   gauges?: Maybe<Array<LiquidityGauge>>;
   /**  Factory contract address  */
@@ -1018,10 +1032,14 @@ export interface GaugeFactory_Filter {
   or?: InputMaybe<Array<InputMaybe<GaugeFactory_Filter>>>;
 }
 
-export type GaugeFactory_OrderBy = "gauges" | "id" | "numGauges";
+export enum GaugeFactory_OrderBy {
+  Gauges = "gauges",
+  Id = "id",
+  NumGauges = "numGauges",
+}
 
 export interface GaugeInjector {
-  __typename: "GaugeInjector";
+  __typename?: "GaugeInjector";
   /**  GaugeInjector contract address  */
   id: Scalars["ID"];
 }
@@ -1041,10 +1059,12 @@ export interface GaugeInjector_Filter {
   or?: InputMaybe<Array<InputMaybe<GaugeInjector_Filter>>>;
 }
 
-export type GaugeInjector_OrderBy = "id";
+export enum GaugeInjector_OrderBy {
+  Id = "id",
+}
 
 export interface GaugeShare {
-  __typename: "GaugeShare";
+  __typename?: "GaugeShare";
   /**  User's balance of gauge deposit tokens  */
   balance: Scalars["BigDecimal"];
   /**  Reference to LiquidityGauge entity  */
@@ -1120,24 +1140,25 @@ export interface GaugeShare_Filter {
   user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type GaugeShare_OrderBy =
-  | "balance"
-  | "gauge"
-  | "gauge__id"
-  | "gauge__isKilled"
-  | "gauge__isPreferentialGauge"
-  | "gauge__poolAddress"
-  | "gauge__poolId"
-  | "gauge__relativeWeightCap"
-  | "gauge__streamer"
-  | "gauge__symbol"
-  | "gauge__totalSupply"
-  | "id"
-  | "user"
-  | "user__id";
+export enum GaugeShare_OrderBy {
+  Balance = "balance",
+  Gauge = "gauge",
+  GaugeId = "gauge__id",
+  GaugeIsKilled = "gauge__isKilled",
+  GaugeIsPreferentialGauge = "gauge__isPreferentialGauge",
+  GaugePoolAddress = "gauge__poolAddress",
+  GaugePoolId = "gauge__poolId",
+  GaugeRelativeWeightCap = "gauge__relativeWeightCap",
+  GaugeStreamer = "gauge__streamer",
+  GaugeSymbol = "gauge__symbol",
+  GaugeTotalSupply = "gauge__totalSupply",
+  Id = "id",
+  User = "user",
+  UserId = "user__id",
+}
 
 export interface GaugeType {
-  __typename: "GaugeType";
+  __typename?: "GaugeType";
   /**  Type ID  */
   id: Scalars["ID"];
   /**  Name of the type - empty string if call reverts  */
@@ -1179,10 +1200,13 @@ export interface GaugeType_Filter {
   or?: InputMaybe<Array<InputMaybe<GaugeType_Filter>>>;
 }
 
-export type GaugeType_OrderBy = "id" | "name";
+export enum GaugeType_OrderBy {
+  Id = "id",
+  Name = "name",
+}
 
 export interface GaugeVote {
-  __typename: "GaugeVote";
+  __typename?: "GaugeVote";
   /**  Reference to Gauge entity  */
   gauge: Gauge;
   /**  Equal to: <userAddress>-<gaugeAddress>  */
@@ -1268,16 +1292,17 @@ export interface GaugeVote_Filter {
   weight_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type GaugeVote_OrderBy =
-  | "gauge"
-  | "gauge__addedTimestamp"
-  | "gauge__address"
-  | "gauge__id"
-  | "id"
-  | "timestamp"
-  | "user"
-  | "user__id"
-  | "weight";
+export enum GaugeVote_OrderBy {
+  Gauge = "gauge",
+  GaugeAddedTimestamp = "gauge__addedTimestamp",
+  GaugeAddress = "gauge__address",
+  GaugeId = "gauge__id",
+  Id = "id",
+  Timestamp = "timestamp",
+  User = "user",
+  UserId = "user__id",
+  Weight = "weight",
+}
 
 export interface Gauge_Filter {
   /** Filter for the block changed event. */
@@ -1375,29 +1400,30 @@ export interface Gauge_Filter {
   type_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type Gauge_OrderBy =
-  | "addedTimestamp"
-  | "address"
-  | "id"
-  | "liquidityGauge"
-  | "liquidityGauge__id"
-  | "liquidityGauge__isKilled"
-  | "liquidityGauge__isPreferentialGauge"
-  | "liquidityGauge__poolAddress"
-  | "liquidityGauge__poolId"
-  | "liquidityGauge__relativeWeightCap"
-  | "liquidityGauge__streamer"
-  | "liquidityGauge__symbol"
-  | "liquidityGauge__totalSupply"
-  | "rootGauge"
-  | "rootGauge__chain"
-  | "rootGauge__id"
-  | "rootGauge__isKilled"
-  | "rootGauge__recipient"
-  | "rootGauge__relativeWeightCap"
-  | "type"
-  | "type__id"
-  | "type__name";
+export enum Gauge_OrderBy {
+  AddedTimestamp = "addedTimestamp",
+  Address = "address",
+  Id = "id",
+  LiquidityGauge = "liquidityGauge",
+  LiquidityGaugeId = "liquidityGauge__id",
+  LiquidityGaugeIsKilled = "liquidityGauge__isKilled",
+  LiquidityGaugeIsPreferentialGauge = "liquidityGauge__isPreferentialGauge",
+  LiquidityGaugePoolAddress = "liquidityGauge__poolAddress",
+  LiquidityGaugePoolId = "liquidityGauge__poolId",
+  LiquidityGaugeRelativeWeightCap = "liquidityGauge__relativeWeightCap",
+  LiquidityGaugeStreamer = "liquidityGauge__streamer",
+  LiquidityGaugeSymbol = "liquidityGauge__symbol",
+  LiquidityGaugeTotalSupply = "liquidityGauge__totalSupply",
+  RootGauge = "rootGauge",
+  RootGaugeChain = "rootGauge__chain",
+  RootGaugeId = "rootGauge__id",
+  RootGaugeIsKilled = "rootGauge__isKilled",
+  RootGaugeRecipient = "rootGauge__recipient",
+  RootGaugeRelativeWeightCap = "rootGauge__relativeWeightCap",
+  Type = "type",
+  TypeId = "type__id",
+  TypeName = "type__name",
+}
 
 export interface GqlAggregatorPoolFilter {
   chainIn?: InputMaybe<Array<GqlChain>>;
@@ -1409,34 +1435,35 @@ export interface GqlAggregatorPoolFilter {
   tokensIn?: InputMaybe<Array<Scalars["String"]>>;
 }
 
-export type GqlChain =
-  | "ARBITRUM"
-  | "AVALANCHE"
-  | "BASE"
-  | "FANTOM"
-  | "FRAXTAL"
-  | "GNOSIS"
-  | "HYPEREVM"
-  | "MAINNET"
-  | "MODE"
-  | "MONAD"
-  | "OPTIMISM"
-  | "PLASMA"
-  | "POLYGON"
-  | "SEPOLIA"
-  | "SONIC"
-  | "XLAYER"
-  | "ZKEVM";
+export enum GqlChain {
+  Arbitrum = "ARBITRUM",
+  Avalanche = "AVALANCHE",
+  Base = "BASE",
+  Fantom = "FANTOM",
+  Fraxtal = "FRAXTAL",
+  Gnosis = "GNOSIS",
+  Hyperevm = "HYPEREVM",
+  Mainnet = "MAINNET",
+  Mode = "MODE",
+  Monad = "MONAD",
+  Optimism = "OPTIMISM",
+  Plasma = "PLASMA",
+  Polygon = "POLYGON",
+  Sepolia = "SEPOLIA",
+  Sonic = "SONIC",
+  Xlayer = "XLAYER",
+  Zkevm = "ZKEVM",
+}
 
 export interface GqlHistoricalTokenPrice {
-  __typename: "GqlHistoricalTokenPrice";
+  __typename?: "GqlHistoricalTokenPrice";
   address: Scalars["String"];
   chain: GqlChain;
   prices: Array<GqlHistoricalTokenPriceEntry>;
 }
 
 export interface GqlHistoricalTokenPriceEntry {
-  __typename: "GqlHistoricalTokenPriceEntry";
+  __typename?: "GqlHistoricalTokenPriceEntry";
   price: Scalars["Float"];
   timestamp: Scalars["String"];
   updatedAt: Scalars["Int"];
@@ -1445,7 +1472,7 @@ export interface GqlHistoricalTokenPriceEntry {
 
 /** Hook data */
 export interface GqlHook {
-  __typename: "GqlHook";
+  __typename?: "GqlHook";
   address: Scalars["String"];
   config?: Maybe<HookConfig>;
   /** @deprecated No longer supported */
@@ -1480,7 +1507,7 @@ export interface GqlHook {
 }
 
 export interface GqlHookData {
-  __typename: "GqlHookData";
+  __typename?: "GqlHookData";
   addLiquidityFeePercentage?: Maybe<Scalars["String"]>;
   maxSurgeFeePercentage?: Maybe<Scalars["String"]>;
   removeLiquidityFeePercentage?: Maybe<Scalars["String"]>;
@@ -1490,7 +1517,7 @@ export interface GqlHookData {
 
 /** Represents the review data for the hook */
 export interface GqlHookReviewData {
-  __typename: "GqlHookReviewData";
+  __typename?: "GqlHookReviewData";
   /** The filename of the review of the hook */
   reviewFile: Scalars["String"];
   /** A summary of the hook review, usually just says safe or unsafe */
@@ -1499,29 +1526,30 @@ export interface GqlHookReviewData {
   warnings: Array<Scalars["String"]>;
 }
 
-export type GqlHookType =
-  | "AKRON"
-  | "DIRECTIONAL_FEE"
-  | "EXIT_FEE"
-  | "FEE_TAKING"
-  | "LBP"
-  | "LOTTERY"
-  | "MEV_TAX"
-  | "NFTLIQUIDITY_POSITION"
-  | "RECLAMM"
-  | "STABLE_SURGE"
-  | "UNKNOWN"
-  | "VEBAL_DISCOUNT";
+export enum GqlHookType {
+  Akron = "AKRON",
+  DirectionalFee = "DIRECTIONAL_FEE",
+  ExitFee = "EXIT_FEE",
+  FeeTaking = "FEE_TAKING",
+  Lbp = "LBP",
+  Lottery = "LOTTERY",
+  MevTax = "MEV_TAX",
+  NftliquidityPosition = "NFTLIQUIDITY_POSITION",
+  Reclamm = "RECLAMM",
+  StableSurge = "STABLE_SURGE",
+  Unknown = "UNKNOWN",
+  VebalDiscount = "VEBAL_DISCOUNT",
+}
 
 export interface GqlLbpTopTrade {
-  __typename: "GqlLBPTopTrade";
+  __typename?: "GqlLBPTopTrade";
   address: Scalars["String"];
   timestamp: Scalars["String"];
   value: Scalars["String"];
 }
 
 export interface GqlLoopsData {
-  __typename: "GqlLoopsData";
+  __typename?: "GqlLoopsData";
   /** Actual TotalSupply of LoopS. */
   actualSupply: Scalars["String"];
   /** The total APR for LoopS */
@@ -1550,7 +1578,7 @@ export interface GqlLoopsData {
 
 /** All info on the nested pool if the token is a BPT. It will only support 1 level of nesting. */
 export interface GqlNestedPool {
-  __typename: "GqlNestedPool";
+  __typename?: "GqlNestedPool";
   /** Address of the pool. */
   address: Scalars["Bytes"];
   /** Price rate of this pool or the Balancer Pool Token (BPT). */
@@ -1602,7 +1630,7 @@ export interface GqlNestedPool {
 
 /** Represents an event that occurs when liquidity is added or removed from a pool. */
 export interface GqlPoolAddRemoveEventV3 extends GqlPoolEvent {
-  __typename: "GqlPoolAddRemoveEventV3";
+  __typename?: "GqlPoolAddRemoveEventV3";
   /** The block number of the event. */
   blockNumber: Scalars["Int"];
   /** The block timestamp of the event. */
@@ -1632,7 +1660,7 @@ export interface GqlPoolAddRemoveEventV3 extends GqlPoolEvent {
 }
 
 export interface GqlPoolAggregator {
-  __typename: "GqlPoolAggregator";
+  __typename?: "GqlPoolAggregator";
   /** The contract address of the pool. */
   address: Scalars["Bytes"];
   /** Data specific to gyro/fx pools */
@@ -1738,7 +1766,7 @@ export interface GqlPoolAggregator {
 
 /** All APRs for a pool */
 export interface GqlPoolAprItem {
-  __typename: "GqlPoolAprItem";
+  __typename?: "GqlPoolAprItem";
   /** The APR value in % -> 0.2 = 20% */
   apr: Scalars["Float"];
   /** The id of the APR item */
@@ -1757,47 +1785,54 @@ export interface GqlPoolAprItem {
 }
 
 /** Enum representing the different types of the APR in a pool. */
-export type GqlPoolAprItemType =
+export enum GqlPoolAprItemType {
   /** APR that pools earns when BPT is staked on AURA. */
-  | "AURA"
+  Aura = "AURA",
   /** Dynamic swap fee APR based on data from the last 24h */
-  | "DYNAMIC_SWAP_FEE_24H"
+  DynamicSwapFee_24H = "DYNAMIC_SWAP_FEE_24H",
   /** Represents the yield from an IB (Interest-Bearing) asset APR in a pool. */
-  | "IB_YIELD"
+  IbYield = "IB_YIELD",
   /** APR in a pool that can be earned through locking, i.e. veBAL */
-  | "LOCKING"
+  Locking = "LOCKING",
   /** Reward APR in a pool from maBEETS emissions allocated by gauge votes. Emitted in BEETS. */
-  | "MABEETS_EMISSIONS"
+  MabeetsEmissions = "MABEETS_EMISSIONS",
   /** Rewards distributed by merkl.xyz */
-  | "MERKL"
+  Merkl = "MERKL",
   /** Represents if the APR items comes from a nested pool. */
-  | "NESTED"
+  Nested = "NESTED",
   /** APR calculated for QUANT-AMM pools based on performance measurements over a month */
-  | "QUANT_AMM_UPLIFT"
+  QuantAmmUplift = "QUANT_AMM_UPLIFT",
   /** Staking reward APR in a pool from a reward token. */
-  | "STAKING"
+  Staking = "STAKING",
   /** APR boost that can be earned, i.e. via veBAL or maBEETS. */
-  | "STAKING_BOOST"
-  /** Cow AMM specific APR */
-  | "SURPLUS"
+  StakingBoost = "STAKING_BOOST",
+  /**
+   * Cow AMM specific APR
+   * @deprecated Use SURPLUS_24H instead
+   */
+  Surplus = "SURPLUS",
   /** Surplus APR based on data from the last 7d */
-  | "SURPLUS_7D"
+  Surplus_7D = "SURPLUS_7D",
   /** Surplus APR based on data from the last 24h */
-  | "SURPLUS_24H"
+  Surplus_24H = "SURPLUS_24H",
   /** Surplus APR based on data from the last 30d */
-  | "SURPLUS_30D"
-  /** Represents the swap fee APR in a pool. */
-  | "SWAP_FEE"
+  Surplus_30D = "SURPLUS_30D",
+  /**
+   * Represents the swap fee APR in a pool.
+   * @deprecated Use SWAP_FEE_24H instead
+   */
+  SwapFee = "SWAP_FEE",
   /** Swap fee APR based on data from the last 7d */
-  | "SWAP_FEE_7D"
+  SwapFee_7D = "SWAP_FEE_7D",
   /** Swap fee APR based on data from the last 24h */
-  | "SWAP_FEE_24H"
+  SwapFee_24H = "SWAP_FEE_24H",
   /** Swap fee APR based on data from the last 30d */
-  | "SWAP_FEE_30D"
+  SwapFee_30D = "SWAP_FEE_30D",
   /** Reward APR in a pool from veBAL emissions allocated by gauge votes. Emitted in BAL. */
-  | "VEBAL_EMISSIONS"
+  VebalEmissions = "VEBAL_EMISSIONS",
   /** APR that can be earned thourgh voting, i.e. gauge votes */
-  | "VOTING";
+  Voting = "VOTING",
+}
 
 /** The base type as returned by poolGetPool (specific pool query) */
 export interface GqlPoolBase {
@@ -1864,7 +1899,7 @@ export interface GqlPoolBase {
 }
 
 export interface GqlPoolComposableStable extends GqlPoolBase {
-  __typename: "GqlPoolComposableStable";
+  __typename?: "GqlPoolComposableStable";
   address: Scalars["Bytes"];
   amp: Scalars["BigInt"];
   bptPriceRate: Scalars["BigDecimal"];
@@ -1905,7 +1940,7 @@ export interface GqlPoolComposableStable extends GqlPoolBase {
 }
 
 export interface GqlPoolDynamicData {
-  __typename: "GqlPoolDynamicData";
+  __typename?: "GqlPoolDynamicData";
   /** Protocol and pool creator fees combined */
   aggregateSwapFee: Scalars["BigDecimal"];
   /** Protocol and pool creator fees combined */
@@ -1977,7 +2012,7 @@ export interface GqlPoolDynamicData {
 }
 
 export interface GqlPoolElement extends GqlPoolBase {
-  __typename: "GqlPoolElement";
+  __typename?: "GqlPoolElement";
   address: Scalars["Bytes"];
   baseToken: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
@@ -2047,13 +2082,17 @@ export interface GqlPoolEvent {
 }
 
 export interface GqlPoolEventAmount {
-  __typename: "GqlPoolEventAmount";
+  __typename?: "GqlPoolEventAmount";
   address: Scalars["String"];
   amount: Scalars["String"];
   valueUSD: Scalars["Float"];
 }
 
-export type GqlPoolEventType = "ADD" | "REMOVE" | "SWAP";
+export enum GqlPoolEventType {
+  Add = "ADD",
+  Remove = "REMOVE",
+  Swap = "SWAP",
+}
 
 export interface GqlPoolEventsFilter {
   chainIn?: InputMaybe<Array<InputMaybe<GqlChain>>>;
@@ -2063,7 +2102,7 @@ export interface GqlPoolEventsFilter {
 }
 
 export interface GqlPoolFeaturedPool {
-  __typename: "GqlPoolFeaturedPool";
+  __typename?: "GqlPoolFeaturedPool";
   description: Scalars["String"];
   pool: GqlPoolBase;
   poolId: Scalars["ID"];
@@ -2095,20 +2134,21 @@ export interface GqlPoolFilter {
   userAddress?: InputMaybe<Scalars["String"]>;
 }
 
-export type GqlPoolFilterCategory =
-  | "BLACK_LISTED"
-  | "INCENTIVIZED"
-  | "LRT"
-  | "POINTS"
-  | "POINTS_EIGENLAYER"
-  | "POINTS_GYRO"
-  | "POINTS_KELP"
-  | "POINTS_RENZO"
-  | "POINTS_SWELL"
-  | "SUPERFEST";
+export enum GqlPoolFilterCategory {
+  BlackListed = "BLACK_LISTED",
+  Incentivized = "INCENTIVIZED",
+  Lrt = "LRT",
+  Points = "POINTS",
+  PointsEigenlayer = "POINTS_EIGENLAYER",
+  PointsGyro = "POINTS_GYRO",
+  PointsKelp = "POINTS_KELP",
+  PointsRenzo = "POINTS_RENZO",
+  PointsSwell = "POINTS_SWELL",
+  Superfest = "SUPERFEST",
+}
 
 export interface GqlPoolFixedPriceLbp extends GqlPoolBase {
-  __typename: "GqlPoolFixedPriceLBP";
+  __typename?: "GqlPoolFixedPriceLBP";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   chain: GqlChain;
@@ -2163,7 +2203,7 @@ export interface GqlPoolFixedPriceLbp extends GqlPoolBase {
 }
 
 export interface GqlPoolFx extends GqlPoolBase {
-  __typename: "GqlPoolFx";
+  __typename?: "GqlPoolFx";
   address: Scalars["Bytes"];
   alpha: Scalars["String"];
   beta: Scalars["String"];
@@ -2207,7 +2247,7 @@ export interface GqlPoolFx extends GqlPoolBase {
 }
 
 export interface GqlPoolGyro extends GqlPoolBase {
-  __typename: "GqlPoolGyro";
+  __typename?: "GqlPoolGyro";
   address: Scalars["Bytes"];
   alpha: Scalars["String"];
   beta: Scalars["String"];
@@ -2263,7 +2303,7 @@ export interface GqlPoolGyro extends GqlPoolBase {
 }
 
 export interface GqlPoolLiquidityBootstrapping extends GqlPoolBase {
-  __typename: "GqlPoolLiquidityBootstrapping";
+  __typename?: "GqlPoolLiquidityBootstrapping";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   chain: GqlChain;
@@ -2302,7 +2342,7 @@ export interface GqlPoolLiquidityBootstrapping extends GqlPoolBase {
 }
 
 export interface GqlPoolLiquidityBootstrappingV3 extends GqlPoolBase {
-  __typename: "GqlPoolLiquidityBootstrappingV3";
+  __typename?: "GqlPoolLiquidityBootstrappingV3";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   chain: GqlChain;
@@ -2363,7 +2403,7 @@ export interface GqlPoolLiquidityBootstrappingV3 extends GqlPoolBase {
 }
 
 export interface GqlPoolMetaStable extends GqlPoolBase {
-  __typename: "GqlPoolMetaStable";
+  __typename?: "GqlPoolMetaStable";
   address: Scalars["Bytes"];
   amp: Scalars["BigInt"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
@@ -2404,7 +2444,7 @@ export interface GqlPoolMetaStable extends GqlPoolBase {
 
 /** The pool schema returned for poolGetPools (pool list query) */
 export interface GqlPoolMinimal {
-  __typename: "GqlPoolMinimal";
+  __typename?: "GqlPoolMinimal";
   /** The contract address of the pool. */
   address: Scalars["Bytes"];
   /** List of categories assigned by the team based on external factors */
@@ -2473,7 +2513,7 @@ export interface GqlPoolMinimal {
 
 /** Result of the poolReloadPools mutation */
 export interface GqlPoolMutationResult {
-  __typename: "GqlPoolMutationResult";
+  __typename?: "GqlPoolMutationResult";
   /** The chain that was reloaded. */
   chain: GqlChain;
   /** The error message */
@@ -2484,18 +2524,22 @@ export interface GqlPoolMutationResult {
   type: Scalars["String"];
 }
 
-export type GqlPoolOrderBy =
-  | "apr"
-  | "fees24h"
-  | "totalLiquidity"
-  | "totalShares"
-  | "userbalanceUsd"
-  | "volume24h";
+export enum GqlPoolOrderBy {
+  Apr = "apr",
+  Fees24h = "fees24h",
+  TotalLiquidity = "totalLiquidity",
+  TotalShares = "totalShares",
+  UserbalanceUsd = "userbalanceUsd",
+  Volume24h = "volume24h",
+}
 
-export type GqlPoolOrderDirection = "asc" | "desc";
+export enum GqlPoolOrderDirection {
+  Asc = "asc",
+  Desc = "desc",
+}
 
 export interface GqlPoolQuantAmmWeighted extends GqlPoolBase {
-  __typename: "GqlPoolQuantAmmWeighted";
+  __typename?: "GqlPoolQuantAmmWeighted";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   chain: GqlChain;
@@ -2536,7 +2580,7 @@ export interface GqlPoolQuantAmmWeighted extends GqlPoolBase {
 }
 
 export interface GqlPoolReClamm extends GqlPoolBase {
-  __typename: "GqlPoolReClamm";
+  __typename?: "GqlPoolReClamm";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   /** The centeredness margin of the pool */
@@ -2593,7 +2637,7 @@ export interface GqlPoolReClamm extends GqlPoolBase {
 }
 
 export interface GqlPoolSnapshot {
-  __typename: "GqlPoolSnapshot";
+  __typename?: "GqlPoolSnapshot";
   amounts: Array<Scalars["String"]>;
   chain: GqlChain;
   fees24h: Scalars["String"];
@@ -2616,15 +2660,16 @@ export interface GqlPoolSnapshot {
   volume24h: Scalars["String"];
 }
 
-export type GqlPoolSnapshotDataRange =
-  | "ALL_TIME"
-  | "NINETY_DAYS"
-  | "ONE_HUNDRED_EIGHTY_DAYS"
-  | "ONE_YEAR"
-  | "THIRTY_DAYS";
+export enum GqlPoolSnapshotDataRange {
+  AllTime = "ALL_TIME",
+  NinetyDays = "NINETY_DAYS",
+  OneHundredEightyDays = "ONE_HUNDRED_EIGHTY_DAYS",
+  OneYear = "ONE_YEAR",
+  ThirtyDays = "THIRTY_DAYS",
+}
 
 export interface GqlPoolStable extends GqlPoolBase {
-  __typename: "GqlPoolStable";
+  __typename?: "GqlPoolStable";
   address: Scalars["Bytes"];
   amp: Scalars["BigInt"];
   bptPriceRate: Scalars["BigDecimal"];
@@ -2665,7 +2710,7 @@ export interface GqlPoolStable extends GqlPoolBase {
 }
 
 export interface GqlPoolStaking {
-  __typename: "GqlPoolStaking";
+  __typename?: "GqlPoolStaking";
   address: Scalars["String"];
   aura?: Maybe<GqlPoolStakingAura>;
   chain: GqlChain;
@@ -2678,7 +2723,7 @@ export interface GqlPoolStaking {
 }
 
 export interface GqlPoolStakingAura {
-  __typename: "GqlPoolStakingAura";
+  __typename?: "GqlPoolStakingAura";
   apr: Scalars["Float"];
   auraPoolAddress: Scalars["String"];
   auraPoolId: Scalars["String"];
@@ -2687,7 +2732,7 @@ export interface GqlPoolStakingAura {
 }
 
 export interface GqlPoolStakingFarmRewarder {
-  __typename: "GqlPoolStakingFarmRewarder";
+  __typename?: "GqlPoolStakingFarmRewarder";
   address: Scalars["String"];
   id: Scalars["ID"];
   rewardPerSecond: Scalars["String"];
@@ -2695,7 +2740,7 @@ export interface GqlPoolStakingFarmRewarder {
 }
 
 export interface GqlPoolStakingGauge {
-  __typename: "GqlPoolStakingGauge";
+  __typename?: "GqlPoolStakingGauge";
   gaugeAddress: Scalars["String"];
   id: Scalars["ID"];
   otherGauges?: Maybe<Array<GqlPoolStakingOtherGauge>>;
@@ -2706,23 +2751,27 @@ export interface GqlPoolStakingGauge {
 }
 
 export interface GqlPoolStakingGaugeReward {
-  __typename: "GqlPoolStakingGaugeReward";
+  __typename?: "GqlPoolStakingGaugeReward";
   id: Scalars["ID"];
   rewardPerSecond: Scalars["String"];
   tokenAddress: Scalars["String"];
 }
 
-export type GqlPoolStakingGaugeStatus = "ACTIVE" | "KILLED" | "PREFERRED";
+export enum GqlPoolStakingGaugeStatus {
+  Active = "ACTIVE",
+  Killed = "KILLED",
+  Preferred = "PREFERRED",
+}
 
 export interface GqlPoolStakingMasterChefFarm {
-  __typename: "GqlPoolStakingMasterChefFarm";
+  __typename?: "GqlPoolStakingMasterChefFarm";
   beetsPerBlock: Scalars["String"];
   id: Scalars["ID"];
   rewarders?: Maybe<Array<GqlPoolStakingFarmRewarder>>;
 }
 
 export interface GqlPoolStakingOtherGauge {
-  __typename: "GqlPoolStakingOtherGauge";
+  __typename?: "GqlPoolStakingOtherGauge";
   gaugeAddress: Scalars["String"];
   id: Scalars["ID"];
   rewards: Array<GqlPoolStakingGaugeReward>;
@@ -2731,7 +2780,7 @@ export interface GqlPoolStakingOtherGauge {
 }
 
 export interface GqlPoolStakingReliquaryFarm {
-  __typename: "GqlPoolStakingReliquaryFarm";
+  __typename?: "GqlPoolStakingReliquaryFarm";
   beetsPerSecond: Scalars["String"];
   id: Scalars["ID"];
   levels?: Maybe<Array<GqlPoolStakingReliquaryFarmLevel>>;
@@ -2740,7 +2789,7 @@ export interface GqlPoolStakingReliquaryFarm {
 }
 
 export interface GqlPoolStakingReliquaryFarmLevel {
-  __typename: "GqlPoolStakingReliquaryFarmLevel";
+  __typename?: "GqlPoolStakingReliquaryFarmLevel";
   allocationPoints: Scalars["Int"];
   apr: Scalars["BigDecimal"];
   balance: Scalars["BigDecimal"];
@@ -2749,23 +2798,24 @@ export interface GqlPoolStakingReliquaryFarmLevel {
   requiredMaturity: Scalars["Int"];
 }
 
-export type GqlPoolStakingType =
-  | "AURA"
-  | "FRESH_BEETS"
-  | "GAUGE"
-  | "MASTER_CHEF"
-  | "RELIQUARY"
-  | "VEBAL";
+export enum GqlPoolStakingType {
+  Aura = "AURA",
+  FreshBeets = "FRESH_BEETS",
+  Gauge = "GAUGE",
+  MasterChef = "MASTER_CHEF",
+  Reliquary = "RELIQUARY",
+  Vebal = "VEBAL",
+}
 
 export interface GqlPoolStakingVebal {
-  __typename: "GqlPoolStakingVebal";
+  __typename?: "GqlPoolStakingVebal";
   id: Scalars["ID"];
   vebalAddress: Scalars["String"];
 }
 
 /** Represents an event that occurs when a swap is made in a pool using the CowAmm protocol. */
 export interface GqlPoolSwapEventCowAmm extends GqlPoolEvent {
-  __typename: "GqlPoolSwapEventCowAmm";
+  __typename?: "GqlPoolSwapEventCowAmm";
   /** The block number of the event. */
   blockNumber: Scalars["Int"];
   /** The block timestamp of the event. */
@@ -2802,7 +2852,7 @@ export interface GqlPoolSwapEventCowAmm extends GqlPoolEvent {
 
 /** Represents an event that occurs when a swap is made in a pool. */
 export interface GqlPoolSwapEventV3 extends GqlPoolEvent {
-  __typename: "GqlPoolSwapEventV3";
+  __typename?: "GqlPoolSwapEventV3";
   /** The block number of the event. */
   blockNumber: Scalars["Int"];
   /** The block timestamp of the event. */
@@ -2845,7 +2895,7 @@ export interface GqlPoolTimePeriod {
  * A second (unsupported) level of nesting is shown by having hasNestedPool = true but nestedPool = null.
  */
 export interface GqlPoolTokenDetail {
-  __typename: "GqlPoolTokenDetail";
+  __typename?: "GqlPoolTokenDetail";
   /** Address of the pool token. */
   address: Scalars["String"];
   /** Balance of the pool token inside the pool. */
@@ -2920,24 +2970,25 @@ export interface GqlPoolTokenDetail {
 }
 
 /** Supported pool types */
-export type GqlPoolType =
-  | "COMPOSABLE_STABLE"
-  | "COW_AMM"
-  | "ELEMENT"
-  | "FIXED_LBP"
-  | "FX"
-  | "GYRO"
-  | "GYRO3"
-  | "GYROE"
-  | "INVESTMENT"
-  | "LIQUIDITY_BOOTSTRAPPING"
-  | "META_STABLE"
-  | "PHANTOM_STABLE"
-  | "QUANT_AMM_WEIGHTED"
-  | "RECLAMM"
-  | "STABLE"
-  | "UNKNOWN"
-  | "WEIGHTED";
+export enum GqlPoolType {
+  ComposableStable = "COMPOSABLE_STABLE",
+  CowAmm = "COW_AMM",
+  Element = "ELEMENT",
+  FixedLbp = "FIXED_LBP",
+  Fx = "FX",
+  Gyro = "GYRO",
+  Gyro3 = "GYRO3",
+  Gyroe = "GYROE",
+  Investment = "INVESTMENT",
+  LiquidityBootstrapping = "LIQUIDITY_BOOTSTRAPPING",
+  MetaStable = "META_STABLE",
+  PhantomStable = "PHANTOM_STABLE",
+  QuantAmmWeighted = "QUANT_AMM_WEIGHTED",
+  Reclamm = "RECLAMM",
+  Stable = "STABLE",
+  Unknown = "UNKNOWN",
+  Weighted = "WEIGHTED",
+}
 
 export type GqlPoolUnion =
   | GqlPoolComposableStable
@@ -2955,7 +3006,7 @@ export type GqlPoolUnion =
 
 /** If a user address was provided in the query, the user balance is populated here */
 export interface GqlPoolUserBalance {
-  __typename: "GqlPoolUserBalance";
+  __typename?: "GqlPoolUserBalance";
   /** The staked BPT balances of the user. */
   stakedBalances: Array<GqlUserStakedBalance>;
   /** Total balance (wallet + staked) as float */
@@ -2969,7 +3020,7 @@ export interface GqlPoolUserBalance {
 }
 
 export interface GqlPoolWeighted extends GqlPoolBase {
-  __typename: "GqlPoolWeighted";
+  __typename?: "GqlPoolWeighted";
   address: Scalars["Bytes"];
   categories?: Maybe<Array<Maybe<GqlPoolFilterCategory>>>;
   chain: GqlChain;
@@ -3009,7 +3060,7 @@ export interface GqlPoolWeighted extends GqlPoolBase {
 
 /** Returns the price impact of the path. If there is an error in the price impact calculation, priceImpact will be undefined but the error string is populated. */
 export interface GqlPriceImpact {
-  __typename: "GqlPriceImpact";
+  __typename?: "GqlPriceImpact";
   /** If priceImpact cant be calculated and is returned as undefined, the error string will be populated. */
   error?: Maybe<Scalars["String"]>;
   /** Price impact in percent 0.01 -> 0.01%; undefined if an error happened. */
@@ -3018,7 +3069,7 @@ export interface GqlPriceImpact {
 
 /** Represents the data of a price rate provider */
 export interface GqlPriceRateProviderData {
-  __typename: "GqlPriceRateProviderData";
+  __typename?: "GqlPriceRateProviderData";
   /** The address of the price rate provider */
   address: Scalars["String"];
   /** The factory used to create the price rate provider, if applicable */
@@ -3041,7 +3092,7 @@ export interface GqlPriceRateProviderData {
 
 /** Represents an upgradeable component of a price rate provider */
 export interface GqlPriceRateProviderUpgradeableComponent {
-  __typename: "GqlPriceRateProviderUpgradeableComponent";
+  __typename?: "GqlPriceRateProviderUpgradeableComponent";
   /** The entry point / proxy of the upgradeable component */
   entryPoint: Scalars["String"];
   /** Indicates if the implementation of the component has been reviewed */
@@ -3049,7 +3100,7 @@ export interface GqlPriceRateProviderUpgradeableComponent {
 }
 
 export interface GqlProtocolMetricsAggregated {
-  __typename: "GqlProtocolMetricsAggregated";
+  __typename?: "GqlProtocolMetricsAggregated";
   chains: Array<GqlProtocolMetricsChain>;
   numLiquidityProviders: Scalars["BigInt"];
   poolCount: Scalars["BigInt"];
@@ -3065,7 +3116,7 @@ export interface GqlProtocolMetricsAggregated {
 }
 
 export interface GqlProtocolMetricsChain {
-  __typename: "GqlProtocolMetricsChain";
+  __typename?: "GqlProtocolMetricsChain";
   chainId: Scalars["String"];
   numLiquidityProviders: Scalars["BigInt"];
   poolCount: Scalars["BigInt"];
@@ -3081,7 +3132,7 @@ export interface GqlProtocolMetricsChain {
 }
 
 export interface GqlRelicSnapshot {
-  __typename: "GqlRelicSnapshot";
+  __typename?: "GqlRelicSnapshot";
   balance: Scalars["String"];
   entryTimestamp: Scalars["Int"];
   farmId: Scalars["String"];
@@ -3090,14 +3141,14 @@ export interface GqlRelicSnapshot {
 }
 
 export interface GqlReliquaryFarmLevelSnapshot {
-  __typename: "GqlReliquaryFarmLevelSnapshot";
+  __typename?: "GqlReliquaryFarmLevelSnapshot";
   balance: Scalars["String"];
   id: Scalars["ID"];
   level: Scalars["String"];
 }
 
 export interface GqlReliquaryFarmSnapshot {
-  __typename: "GqlReliquaryFarmSnapshot";
+  __typename?: "GqlReliquaryFarmSnapshot";
   dailyDeposited: Scalars["String"];
   dailyWithdrawn: Scalars["String"];
   farmId: Scalars["String"];
@@ -3111,7 +3162,7 @@ export interface GqlReliquaryFarmSnapshot {
 }
 
 export interface GqlSorCallData {
-  __typename: "GqlSorCallData";
+  __typename?: "GqlSorCallData";
   /** The call data that needs to be sent to the RPC */
   callData: Scalars["String"];
   /** Maximum amount to be sent for exact out orders */
@@ -3126,7 +3177,7 @@ export interface GqlSorCallData {
 
 /** The swap paths for a swap */
 export interface GqlSorGetSwapPaths {
-  __typename: "GqlSorGetSwapPaths";
+  __typename?: "GqlSorGetSwapPaths";
   /**
    * Transaction data that can be posted to an RPC to execute the swap.
    * @deprecated Use Balancer SDK to build swap callData from SOR response
@@ -3175,7 +3226,7 @@ export interface GqlSorGetSwapPaths {
 
 /** A path of a swap. A swap can have multiple paths. Used as input to execute the swap via b-sdk */
 export interface GqlSorPath {
-  __typename: "GqlSorPath";
+  __typename?: "GqlSorPath";
   /** Input amount of this path in scaled form */
   inputAmountRaw: Scalars["String"];
   /** A sorted list of booleans that indicate if the respective pool is a buffer */
@@ -3197,7 +3248,7 @@ export interface GqlSorPath {
 
 /** A single swap step as used for input to the vault to execute a swap */
 export interface GqlSorSwap {
-  __typename: "GqlSorSwap";
+  __typename?: "GqlSorSwap";
   /** Amount to be swapped in this step. 0 for chained swap. */
   amount: Scalars["String"];
   /** Index of the asset used in the tokenAddress array. */
@@ -3212,7 +3263,7 @@ export interface GqlSorSwap {
 
 /** The swap routes including pool information. Used to display by the UI */
 export interface GqlSorSwapRoute {
-  __typename: "GqlSorSwapRoute";
+  __typename?: "GqlSorSwapRoute";
   /** The hops this route takes */
   hops: Array<GqlSorSwapRouteHop>;
   /** Share of this route of the total swap */
@@ -3229,7 +3280,7 @@ export interface GqlSorSwapRoute {
 
 /** A hop of a route. A route can have many hops meaning it traverses more than one pool. */
 export interface GqlSorSwapRouteHop {
-  __typename: "GqlSorSwapRouteHop";
+  __typename?: "GqlSorSwapRouteHop";
   /**
    * The pool entity of this hop.
    * @deprecated No longer supported
@@ -3247,10 +3298,13 @@ export interface GqlSorSwapRouteHop {
   tokenOutAmount: Scalars["AmountHumanReadable"];
 }
 
-export type GqlSorSwapType = "EXACT_IN" | "EXACT_OUT";
+export enum GqlSorSwapType {
+  ExactIn = "EXACT_IN",
+  ExactOut = "EXACT_OUT",
+}
 
 export interface GqlStakedSonicData {
-  __typename: "GqlStakedSonicData";
+  __typename?: "GqlStakedSonicData";
   /** A list of all the delegated validators. */
   delegatedValidators: Array<GqlStakedSonicDelegatedValidator>;
   /** Current exchange rate for stS -> S */
@@ -3270,7 +3324,7 @@ export interface GqlStakedSonicData {
 }
 
 export interface GqlStakedSonicDelegatedValidator {
-  __typename: "GqlStakedSonicDelegatedValidator";
+  __typename?: "GqlStakedSonicDelegatedValidator";
   /** The amount of S that has been delegated to this validator. */
   assetsDelegated: Scalars["AmountHumanReadable"];
   /** The id of the validator. */
@@ -3278,7 +3332,7 @@ export interface GqlStakedSonicDelegatedValidator {
 }
 
 export interface GqlStakedSonicSnapshot {
-  __typename: "GqlStakedSonicSnapshot";
+  __typename?: "GqlStakedSonicSnapshot";
   /** Current exchange rate for stS -> S */
   exchangeRate: Scalars["String"];
   id: Scalars["ID"];
@@ -3296,12 +3350,13 @@ export interface GqlStakedSonicSnapshot {
   totalAssetsPool: Scalars["AmountHumanReadable"];
 }
 
-export type GqlStakedSonicSnapshotDataRange =
-  | "ALL_TIME"
-  | "NINETY_DAYS"
-  | "ONE_HUNDRED_EIGHTY_DAYS"
-  | "ONE_YEAR"
-  | "THIRTY_DAYS";
+export enum GqlStakedSonicSnapshotDataRange {
+  AllTime = "ALL_TIME",
+  NinetyDays = "NINETY_DAYS",
+  OneHundredEightyDays = "ONE_HUNDRED_EIGHTY_DAYS",
+  OneYear = "ONE_YEAR",
+  ThirtyDays = "THIRTY_DAYS",
+}
 
 /** Inputs for the call data to create the swap transaction. If this input is given, call data is added to the response. */
 export interface GqlSwapCallDataInput {
@@ -3317,7 +3372,7 @@ export interface GqlSwapCallDataInput {
 
 /** Represents a token in the system */
 export interface GqlToken {
-  __typename: "GqlToken";
+  __typename?: "GqlToken";
   /** The address of the token */
   address: Scalars["String"];
   /** The chain of the token */
@@ -3373,17 +3428,18 @@ export interface GqlTokenAmountHumanReadable {
   amount: Scalars["AmountHumanReadable"];
 }
 
-export type GqlTokenChartDataRange =
-  | "ALL"
-  | "NINETY_DAY"
-  | "ONE_HUNDRED_EIGHTY_DAY"
-  | "ONE_YEAR"
-  | "SEVEN_DAY"
-  | "THIRTY_DAY";
+export enum GqlTokenChartDataRange {
+  All = "ALL",
+  NinetyDay = "NINETY_DAY",
+  OneHundredEightyDay = "ONE_HUNDRED_EIGHTY_DAY",
+  OneYear = "ONE_YEAR",
+  SevenDay = "SEVEN_DAY",
+  ThirtyDay = "THIRTY_DAY",
+}
 
 /** Represents additional data for a token */
 export interface GqlTokenDynamicData {
-  __typename: "GqlTokenDynamicData";
+  __typename?: "GqlTokenDynamicData";
   /** The all-time high price of the token */
   ath: Scalars["Float"];
   /** The all-time low price of the token */
@@ -3426,7 +3482,7 @@ export interface GqlTokenFilter {
 
 /** Result of the poolReloadPools mutation */
 export interface GqlTokenMutationResult {
-  __typename: "GqlTokenMutationResult";
+  __typename?: "GqlTokenMutationResult";
   /** The chain that was reloaded. */
   chain: GqlChain;
   /** The error message */
@@ -3436,7 +3492,7 @@ export interface GqlTokenMutationResult {
 }
 
 export interface GqlTokenPrice {
-  __typename: "GqlTokenPrice";
+  __typename?: "GqlTokenPrice";
   address: Scalars["String"];
   chain: GqlChain;
   price: Scalars["Float"];
@@ -3445,22 +3501,24 @@ export interface GqlTokenPrice {
 }
 
 export interface GqlTokenPriceChartDataItem {
-  __typename: "GqlTokenPriceChartDataItem";
+  __typename?: "GqlTokenPriceChartDataItem";
   id: Scalars["ID"];
   price: Scalars["AmountHumanReadable"];
   timestamp: Scalars["Int"];
 }
 
-export type GqlTokenType =
-  | "BLOCKED_V2"
-  | "BLOCKED_V3"
-  | "BPT"
-  | "ERC4626"
-  | "PHANTOM_BPT"
-  | "WHITE_LISTED";
+export enum GqlTokenType {
+  BlockedV2 = "BLOCKED_V2",
+  BlockedV3 = "BLOCKED_V3",
+  Bpt = "BPT",
+  Erc4626 = "ERC4626",
+  PhantomBpt = "PHANTOM_BPT",
+  /** @deprecated Use BLOCKED instead */
+  WhiteListed = "WHITE_LISTED",
+}
 
 export interface GqlUserStakedBalance {
-  __typename: "GqlUserStakedBalance";
+  __typename?: "GqlUserStakedBalance";
   /** The staked BPT balance as float. */
   balance: Scalars["AmountHumanReadable"];
   /** The steaked BPT balance in USD as float. */
@@ -3472,7 +3530,7 @@ export interface GqlUserStakedBalance {
 }
 
 export interface GqlVeBalBalance {
-  __typename: "GqlVeBalBalance";
+  __typename?: "GqlVeBalBalance";
   balance: Scalars["AmountHumanReadable"];
   chain: GqlChain;
   locked: Scalars["AmountHumanReadable"];
@@ -3481,7 +3539,7 @@ export interface GqlVeBalBalance {
 
 /** Represents a snapshot of a VeBal lock at a specific point in time. */
 export interface GqlVeBalLockSnapshot {
-  __typename: "GqlVeBalLockSnapshot";
+  __typename?: "GqlVeBalLockSnapshot";
   /** The locked balance at that time. */
   balance: Scalars["AmountHumanReadable"];
   bias: Scalars["String"];
@@ -3491,7 +3549,7 @@ export interface GqlVeBalLockSnapshot {
 }
 
 export interface GqlVeBalUserData {
-  __typename: "GqlVeBalUserData";
+  __typename?: "GqlVeBalUserData";
   balance: Scalars["AmountHumanReadable"];
   lockSnapshots: Array<GqlVeBalLockSnapshot>;
   locked: Scalars["AmountHumanReadable"];
@@ -3501,7 +3559,7 @@ export interface GqlVeBalUserData {
 
 /** The Gauge that can be voted on through veBAL and that will ultimately receive the rewards. */
 export interface GqlVotingGauge {
-  __typename: "GqlVotingGauge";
+  __typename?: "GqlVotingGauge";
   /** The timestamp the gauge was added. */
   addedTimestamp?: Maybe<Scalars["Int"]>;
   /** The address of the root gauge on Ethereum mainnet. */
@@ -3518,7 +3576,7 @@ export interface GqlVotingGauge {
 
 /** A token inside of a pool with a voting gauge. */
 export interface GqlVotingGaugeToken {
-  __typename: "GqlVotingGaugeToken";
+  __typename?: "GqlVotingGaugeToken";
   /** The address of the token. */
   address: Scalars["String"];
   /** The URL to the token logo. */
@@ -3533,7 +3591,7 @@ export interface GqlVotingGaugeToken {
 
 /** The pool that can be voted on through veBAL */
 export interface GqlVotingPool {
-  __typename: "GqlVotingPool";
+  __typename?: "GqlVotingPool";
   /** The address of the pool. */
   address: Scalars["Bytes"];
   /** The chain this pool is on. */
@@ -3556,7 +3614,7 @@ export interface GqlVotingPool {
 }
 
 export interface GradualWeightUpdate {
-  __typename: "GradualWeightUpdate";
+  __typename?: "GradualWeightUpdate";
   endTimestamp: Scalars["BigInt"];
   endWeights: Array<Scalars["BigInt"]>;
   id: Scalars["ID"];
@@ -3638,84 +3696,85 @@ export interface GradualWeightUpdate_Filter {
   startWeights_not_contains_nocase?: InputMaybe<Array<Scalars["BigInt"]>>;
 }
 
-export type GradualWeightUpdate_OrderBy =
-  | "endTimestamp"
-  | "endWeights"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "scheduledTimestamp"
-  | "startTimestamp"
-  | "startWeights";
+export enum GradualWeightUpdate_OrderBy {
+  EndTimestamp = "endTimestamp",
+  EndWeights = "endWeights",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  ScheduledTimestamp = "scheduledTimestamp",
+  StartTimestamp = "startTimestamp",
+  StartWeights = "startWeights",
+}
 
 export interface HookConfig {
-  __typename: "HookConfig";
+  __typename?: "HookConfig";
   /** True when hook can change the amounts send to the vault. Necessary to deduct the fees. */
   enableHookAdjustedAmounts: Scalars["Boolean"];
   shouldCallAfterAddLiquidity: Scalars["Boolean"];
@@ -3735,10 +3794,13 @@ export type HookParams =
   | MevTaxHookParams
   | StableSurgeHookParams;
 
-export type InvestType = "Exit" | "Join";
+export enum InvestType {
+  Exit = "Exit",
+  Join = "Join",
+}
 
 export interface JoinExit {
-  __typename: "JoinExit";
+  __typename?: "JoinExit";
   amounts: Array<Scalars["BigDecimal"]>;
   block?: Maybe<Scalars["BigInt"]>;
   id: Scalars["ID"];
@@ -3862,85 +3924,86 @@ export interface JoinExit_Filter {
   valueUSD_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type JoinExit_OrderBy =
-  | "amounts"
-  | "block"
-  | "id"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z"
-  | "sender"
-  | "timestamp"
-  | "tx"
-  | "type"
-  | "user"
-  | "user__id"
-  | "valueUSD";
+export enum JoinExit_OrderBy {
+  Amounts = "amounts",
+  Block = "block",
+  Id = "id",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+  Sender = "sender",
+  Timestamp = "timestamp",
+  Tx = "tx",
+  Type = "type",
+  User = "user",
+  UserId = "user__id",
+  ValueUsd = "valueUSD",
+}
 
 export interface LbpMetadataInput {
   description: Scalars["String"];
@@ -3954,7 +4017,7 @@ export interface LbpMetadataInput {
 }
 
 export interface LbpPriceChartData {
-  __typename: "LBPPriceChartData";
+  __typename?: "LBPPriceChartData";
   buyVolume: Scalars["Float"];
   cumulativeFees: Scalars["Float"];
   cumulativeVolume: Scalars["Float"];
@@ -3978,7 +4041,7 @@ export interface LbPoolInput {
 }
 
 export interface LatestPrice {
-  __typename: "LatestPrice";
+  __typename?: "LatestPrice";
   asset: Scalars["Bytes"];
   block: Scalars["BigInt"];
   id: Scalars["ID"];
@@ -4059,90 +4122,91 @@ export interface LatestPrice_Filter {
   pricingAsset_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
 }
 
-export type LatestPrice_OrderBy =
-  | "asset"
-  | "block"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "price"
-  | "pricingAsset";
+export enum LatestPrice_OrderBy {
+  Asset = "asset",
+  Block = "block",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  Price = "price",
+  PricingAsset = "pricingAsset",
+}
 
 /** LBP specific params for v3 pools only. */
 export interface LiquidityBootstrappingPoolV3Params {
-  __typename: "LiquidityBootstrappingPoolV3Params";
+  __typename?: "LiquidityBootstrappingPoolV3Params";
   endTime: Scalars["Int"];
   startTime: Scalars["Int"];
 }
 
 export interface LiquidityGauge {
-  __typename: "LiquidityGauge";
+  __typename?: "LiquidityGauge";
   /**  Factory contract address  */
   factory: GaugeFactory;
   /**  Reference to Gauge entity - created when LiquidityGauge is added to GaugeController */
@@ -4351,34 +4415,35 @@ export interface LiquidityGauge_Filter {
   totalSupply_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type LiquidityGauge_OrderBy =
-  | "factory"
-  | "factory__id"
-  | "factory__numGauges"
-  | "gauge"
-  | "gauge__addedTimestamp"
-  | "gauge__address"
-  | "gauge__id"
-  | "id"
-  | "isKilled"
-  | "isPreferentialGauge"
-  | "pool"
-  | "poolAddress"
-  | "poolId"
-  | "pool__address"
-  | "pool__id"
-  | "pool__poolId"
-  | "relativeWeightCap"
-  | "rewardTokensList"
-  | "shares"
-  | "streamer"
-  | "symbol"
-  | "tokens"
-  | "totalSupply";
+export enum LiquidityGauge_OrderBy {
+  Factory = "factory",
+  FactoryId = "factory__id",
+  FactoryNumGauges = "factory__numGauges",
+  Gauge = "gauge",
+  GaugeAddedTimestamp = "gauge__addedTimestamp",
+  GaugeAddress = "gauge__address",
+  GaugeId = "gauge__id",
+  Id = "id",
+  IsKilled = "isKilled",
+  IsPreferentialGauge = "isPreferentialGauge",
+  Pool = "pool",
+  PoolAddress = "poolAddress",
+  PoolId = "poolId",
+  PoolAddress = "pool__address",
+  PoolId = "pool__id",
+  PoolPoolId = "pool__poolId",
+  RelativeWeightCap = "relativeWeightCap",
+  RewardTokensList = "rewardTokensList",
+  Shares = "shares",
+  Streamer = "streamer",
+  Symbol = "symbol",
+  Tokens = "tokens",
+  TotalSupply = "totalSupply",
+}
 
 /** Liquidity management settings for v3 pools. */
 export interface LiquidityManagement {
-  __typename: "LiquidityManagement";
+  __typename?: "LiquidityManagement";
   /** Indicates whether this pool has disabled add and removes of unbalanced/non-proportional liquidity. Meaning it will only support proportional add and remove liquidity. */
   disableUnbalancedLiquidity?: Maybe<Scalars["Boolean"]>;
   /** Whether this pool support additional, custom add liquditiy operations apart from proportional, unbalanced and single asset. */
@@ -4390,7 +4455,7 @@ export interface LiquidityManagement {
 }
 
 export interface LockSnapshot {
-  __typename: "LockSnapshot";
+  __typename?: "LockSnapshot";
   /**  veBAL balance at the moment user locks  */
   bias: Scalars["BigDecimal"];
   /**  Equal to <userAddress>-<timestamp>  */
@@ -4463,16 +4528,17 @@ export interface LockSnapshot_Filter {
   user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type LockSnapshot_OrderBy =
-  | "bias"
-  | "id"
-  | "slope"
-  | "timestamp"
-  | "user"
-  | "user__id";
+export enum LockSnapshot_OrderBy {
+  Bias = "bias",
+  Id = "id",
+  Slope = "slope",
+  Timestamp = "timestamp",
+  User = "user",
+  UserId = "user__id",
+}
 
 export interface ManagementOperation {
-  __typename: "ManagementOperation";
+  __typename?: "ManagementOperation";
   cashDelta: Scalars["BigDecimal"];
   id: Scalars["ID"];
   managedDelta: Scalars["BigDecimal"];
@@ -4545,39 +4611,40 @@ export interface ManagementOperation_Filter {
   type_not_in?: InputMaybe<Array<OperationType>>;
 }
 
-export type ManagementOperation_OrderBy =
-  | "cashDelta"
-  | "id"
-  | "managedDelta"
-  | "poolTokenId"
-  | "poolTokenId__address"
-  | "poolTokenId__assetManager"
-  | "poolTokenId__balance"
-  | "poolTokenId__cashBalance"
-  | "poolTokenId__decimals"
-  | "poolTokenId__id"
-  | "poolTokenId__index"
-  | "poolTokenId__isExemptFromYieldProtocolFee"
-  | "poolTokenId__managedBalance"
-  | "poolTokenId__name"
-  | "poolTokenId__oldPriceRate"
-  | "poolTokenId__paidProtocolFees"
-  | "poolTokenId__priceRate"
-  | "poolTokenId__symbol"
-  | "poolTokenId__weight"
-  | "timestamp"
-  | "type";
+export enum ManagementOperation_OrderBy {
+  CashDelta = "cashDelta",
+  Id = "id",
+  ManagedDelta = "managedDelta",
+  PoolTokenId = "poolTokenId",
+  PoolTokenIdAddress = "poolTokenId__address",
+  PoolTokenIdAssetManager = "poolTokenId__assetManager",
+  PoolTokenIdBalance = "poolTokenId__balance",
+  PoolTokenIdCashBalance = "poolTokenId__cashBalance",
+  PoolTokenIdDecimals = "poolTokenId__decimals",
+  PoolTokenIdId = "poolTokenId__id",
+  PoolTokenIdIndex = "poolTokenId__index",
+  PoolTokenIdIsExemptFromYieldProtocolFee = "poolTokenId__isExemptFromYieldProtocolFee",
+  PoolTokenIdManagedBalance = "poolTokenId__managedBalance",
+  PoolTokenIdName = "poolTokenId__name",
+  PoolTokenIdOldPriceRate = "poolTokenId__oldPriceRate",
+  PoolTokenIdPaidProtocolFees = "poolTokenId__paidProtocolFees",
+  PoolTokenIdPriceRate = "poolTokenId__priceRate",
+  PoolTokenIdSymbol = "poolTokenId__symbol",
+  PoolTokenIdWeight = "poolTokenId__weight",
+  Timestamp = "timestamp",
+  Type = "type",
+}
 
 /** MevTax hook specific params. Percentage format is 0.01 -> 0.01%. */
 export interface MevTaxHookParams {
-  __typename: "MevTaxHookParams";
+  __typename?: "MevTaxHookParams";
   maxMevSwapFeePercentage?: Maybe<Scalars["String"]>;
   mevTaxMultiplier?: Maybe<Scalars["String"]>;
   mevTaxThreshold?: Maybe<Scalars["String"]>;
 }
 
 export interface Mutation {
-  __typename: "Mutation";
+  __typename?: "Mutation";
   beetsPoolLoadReliquarySnapshotsForAllFarms: Scalars["String"];
   createLBP: Scalars["Boolean"];
   poolLoadOnChainDataForAllPools: Array<GqlPoolMutationResult>;
@@ -4704,7 +4771,7 @@ export interface MutationVeBalSyncTotalSupplyArgs {
 }
 
 export interface OmniVotingEscrowLock {
-  __typename: "OmniVotingEscrowLock";
+  __typename?: "OmniVotingEscrowLock";
   /**  veBAL balance at the moment user locks  */
   bias: Scalars["BigDecimal"];
   /**  Chain where the lock was bridged to  */
@@ -4822,26 +4889,34 @@ export interface OmniVotingEscrowLock_Filter {
   votingEscrowID_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type OmniVotingEscrowLock_OrderBy =
-  | "bias"
-  | "dstChainId"
-  | "id"
-  | "localUser"
-  | "localUser__id"
-  | "remoteUser"
-  | "slope"
-  | "timestamp"
-  | "votingEscrowID"
-  | "votingEscrowID__id"
-  | "votingEscrowID__stakedSupply";
+export enum OmniVotingEscrowLock_OrderBy {
+  Bias = "bias",
+  DstChainId = "dstChainId",
+  Id = "id",
+  LocalUser = "localUser",
+  LocalUserId = "localUser__id",
+  RemoteUser = "remoteUser",
+  Slope = "slope",
+  Timestamp = "timestamp",
+  VotingEscrowId = "votingEscrowID",
+  VotingEscrowIdId = "votingEscrowID__id",
+  VotingEscrowIdStakedSupply = "votingEscrowID__stakedSupply",
+}
 
-export type OperationType = "Deposit" | "Update" | "Withdraw";
+export enum OperationType {
+  Deposit = "Deposit",
+  Update = "Update",
+  Withdraw = "Withdraw",
+}
 
 /** Defines the order direction, either ascending or descending */
-export type OrderDirection = "asc" | "desc";
+export enum OrderDirection {
+  Asc = "asc",
+  Desc = "desc",
+}
 
 export interface Pool {
-  __typename: "Pool";
+  __typename?: "Pool";
   /**  Address of the pool (lp_token of the gauge)  */
   address: Scalars["Bytes"];
   alpha?: Maybe<Scalars["BigDecimal"]>;
@@ -5027,7 +5102,7 @@ export interface PoolWeightUpdatesArgs {
 }
 
 export interface PoolContract {
-  __typename: "PoolContract";
+  __typename?: "PoolContract";
   id: Scalars["ID"];
   pool: Pool;
 }
@@ -5068,79 +5143,80 @@ export interface PoolContract_Filter {
   pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type PoolContract_OrderBy =
-  | "id"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z";
+export enum PoolContract_OrderBy {
+  Id = "id",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+}
 
 export interface PoolHistoricalLiquidity {
-  __typename: "PoolHistoricalLiquidity";
+  __typename?: "PoolHistoricalLiquidity";
   block: Scalars["BigInt"];
   id: Scalars["ID"];
   poolId: Pool;
@@ -5228,84 +5304,85 @@ export interface PoolHistoricalLiquidity_Filter {
   pricingAsset_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
 }
 
-export type PoolHistoricalLiquidity_OrderBy =
-  | "block"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "poolLiquidity"
-  | "poolShareValue"
-  | "poolTotalShares"
-  | "pricingAsset";
+export enum PoolHistoricalLiquidity_OrderBy {
+  Block = "block",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  PoolLiquidity = "poolLiquidity",
+  PoolShareValue = "poolShareValue",
+  PoolTotalShares = "poolTotalShares",
+  PricingAsset = "pricingAsset",
+}
 
 export interface PoolShare {
-  __typename: "PoolShare";
+  __typename?: "PoolShare";
   balance: Scalars["BigDecimal"];
   id: Scalars["ID"];
   poolId: Pool;
@@ -5377,82 +5454,83 @@ export interface PoolShare_Filter {
   userAddress_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type PoolShare_OrderBy =
-  | "balance"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "userAddress"
-  | "userAddress__id";
+export enum PoolShare_OrderBy {
+  Balance = "balance",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  UserAddress = "userAddress",
+  UserAddressId = "userAddress__id",
+}
 
 export interface PoolSnapshot {
-  __typename: "PoolSnapshot";
+  __typename?: "PoolSnapshot";
   amounts: Array<Scalars["BigDecimal"]>;
   holdersCount: Scalars["BigInt"];
   id: Scalars["ID"];
@@ -5572,88 +5650,89 @@ export interface PoolSnapshot_Filter {
   totalShares_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type PoolSnapshot_OrderBy =
-  | "amounts"
-  | "holdersCount"
-  | "id"
-  | "liquidity"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z"
-  | "protocolFee"
-  | "swapFees"
-  | "swapVolume"
-  | "swapsCount"
-  | "timestamp"
-  | "totalShares";
+export enum PoolSnapshot_OrderBy {
+  Amounts = "amounts",
+  HoldersCount = "holdersCount",
+  Id = "id",
+  Liquidity = "liquidity",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+  ProtocolFee = "protocolFee",
+  SwapFees = "swapFees",
+  SwapVolume = "swapVolume",
+  SwapsCount = "swapsCount",
+  Timestamp = "timestamp",
+  TotalShares = "totalShares",
+}
 
 export interface PoolToken {
-  __typename: "PoolToken";
+  __typename?: "PoolToken";
   address: Scalars["String"];
   assetManager: Scalars["Bytes"];
   balance: Scalars["BigDecimal"];
@@ -5908,111 +5987,112 @@ export interface PoolToken_Filter {
   weight_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type PoolToken_OrderBy =
-  | "address"
-  | "assetManager"
-  | "balance"
-  | "cashBalance"
-  | "circuitBreaker"
-  | "circuitBreaker__bptPrice"
-  | "circuitBreaker__id"
-  | "circuitBreaker__lowerBoundPercentage"
-  | "circuitBreaker__upperBoundPercentage"
-  | "decimals"
-  | "id"
-  | "index"
-  | "isExemptFromYieldProtocolFee"
-  | "managedBalance"
-  | "managements"
-  | "name"
-  | "oldPriceRate"
-  | "paidProtocolFees"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "priceRate"
-  | "symbol"
-  | "token"
-  | "token__address"
-  | "token__decimals"
-  | "token__fxOracleDecimals"
-  | "token__id"
-  | "token__latestFXPrice"
-  | "token__latestUSDPrice"
-  | "token__latestUSDPriceTimestamp"
-  | "token__name"
-  | "token__symbol"
-  | "token__totalBalanceNotional"
-  | "token__totalBalanceUSD"
-  | "token__totalSwapCount"
-  | "token__totalVolumeNotional"
-  | "token__totalVolumeUSD"
-  | "weight";
+export enum PoolToken_OrderBy {
+  Address = "address",
+  AssetManager = "assetManager",
+  Balance = "balance",
+  CashBalance = "cashBalance",
+  CircuitBreaker = "circuitBreaker",
+  CircuitBreakerBptPrice = "circuitBreaker__bptPrice",
+  CircuitBreakerId = "circuitBreaker__id",
+  CircuitBreakerLowerBoundPercentage = "circuitBreaker__lowerBoundPercentage",
+  CircuitBreakerUpperBoundPercentage = "circuitBreaker__upperBoundPercentage",
+  Decimals = "decimals",
+  Id = "id",
+  Index = "index",
+  IsExemptFromYieldProtocolFee = "isExemptFromYieldProtocolFee",
+  ManagedBalance = "managedBalance",
+  Managements = "managements",
+  Name = "name",
+  OldPriceRate = "oldPriceRate",
+  PaidProtocolFees = "paidProtocolFees",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  PriceRate = "priceRate",
+  Symbol = "symbol",
+  Token = "token",
+  TokenAddress = "token__address",
+  TokenDecimals = "token__decimals",
+  TokenFxOracleDecimals = "token__fxOracleDecimals",
+  TokenId = "token__id",
+  TokenLatestFxPrice = "token__latestFXPrice",
+  TokenLatestUsdPrice = "token__latestUSDPrice",
+  TokenLatestUsdPriceTimestamp = "token__latestUSDPriceTimestamp",
+  TokenName = "token__name",
+  TokenSymbol = "token__symbol",
+  TokenTotalBalanceNotional = "token__totalBalanceNotional",
+  TokenTotalBalanceUsd = "token__totalBalanceUSD",
+  TokenTotalSwapCount = "token__totalSwapCount",
+  TokenTotalVolumeNotional = "token__totalVolumeNotional",
+  TokenTotalVolumeUsd = "token__totalVolumeUSD",
+  Weight = "weight",
+}
 
 export interface Pool_Filter {
   /** Filter for the block changed event. */
@@ -6690,120 +6770,121 @@ export interface Pool_Filter {
   z_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type Pool_OrderBy =
-  | "address"
-  | "alpha"
-  | "amp"
-  | "ampUpdates"
-  | "baseToken"
-  | "beta"
-  | "c"
-  | "circuitBreakers"
-  | "createTime"
-  | "dSq"
-  | "delta"
-  | "epsilon"
-  | "expiryTime"
-  | "factory"
-  | "gauges"
-  | "gaugesList"
-  | "historicalValues"
-  | "holdersCount"
-  | "id"
-  | "isInRecoveryMode"
-  | "isPaused"
-  | "joinExitEnabled"
-  | "joinsExits"
-  | "lambda"
-  | "lastJoinExitAmp"
-  | "lastPostJoinExitInvariant"
-  | "latestAmpUpdate"
-  | "latestAmpUpdate__endAmp"
-  | "latestAmpUpdate__endTimestamp"
-  | "latestAmpUpdate__id"
-  | "latestAmpUpdate__scheduledTimestamp"
-  | "latestAmpUpdate__startAmp"
-  | "latestAmpUpdate__startTimestamp"
-  | "lowerTarget"
-  | "mainIndex"
-  | "managementAumFee"
-  | "managementFee"
-  | "mustAllowlistLPs"
-  | "name"
-  | "oracleEnabled"
-  | "owner"
-  | "poolId"
-  | "poolType"
-  | "poolTypeVersion"
-  | "preferentialGauge"
-  | "preferentialGauge__id"
-  | "preferentialGauge__isKilled"
-  | "preferentialGauge__isPreferentialGauge"
-  | "preferentialGauge__poolAddress"
-  | "preferentialGauge__poolId"
-  | "preferentialGauge__relativeWeightCap"
-  | "preferentialGauge__streamer"
-  | "preferentialGauge__symbol"
-  | "preferentialGauge__totalSupply"
-  | "priceRateProviders"
-  | "principalToken"
-  | "protocolAumFeeCache"
-  | "protocolId"
-  | "protocolIdData"
-  | "protocolIdData__id"
-  | "protocolIdData__name"
-  | "protocolSwapFeeCache"
-  | "protocolYieldFeeCache"
-  | "root3Alpha"
-  | "s"
-  | "shares"
-  | "snapshots"
-  | "sqrtAlpha"
-  | "sqrtBeta"
-  | "strategyType"
-  | "swapEnabled"
-  | "swapEnabledCurationSignal"
-  | "swapEnabledInternal"
-  | "swapFee"
-  | "swaps"
-  | "swapsCount"
-  | "symbol"
-  | "tauAlphaX"
-  | "tauAlphaY"
-  | "tauBetaX"
-  | "tauBetaY"
-  | "tokens"
-  | "tokensList"
-  | "totalAumFeeCollectedInBPT"
-  | "totalLiquidity"
-  | "totalLiquiditySansBPT"
-  | "totalProtocolFee"
-  | "totalProtocolFeePaidInBPT"
-  | "totalShares"
-  | "totalSwapFee"
-  | "totalSwapVolume"
-  | "totalWeight"
-  | "tx"
-  | "u"
-  | "unitSeconds"
-  | "upperTarget"
-  | "v"
-  | "vaultID"
-  | "vaultID__id"
-  | "vaultID__poolCount"
-  | "vaultID__protocolFeesCollector"
-  | "vaultID__totalLiquidity"
-  | "vaultID__totalProtocolFee"
-  | "vaultID__totalSwapCount"
-  | "vaultID__totalSwapFee"
-  | "vaultID__totalSwapVolume"
-  | "w"
-  | "weightUpdates"
-  | "wrappedIndex"
-  | "z";
+export enum Pool_OrderBy {
+  Address = "address",
+  Alpha = "alpha",
+  Amp = "amp",
+  AmpUpdates = "ampUpdates",
+  BaseToken = "baseToken",
+  Beta = "beta",
+  C = "c",
+  CircuitBreakers = "circuitBreakers",
+  CreateTime = "createTime",
+  DSq = "dSq",
+  Delta = "delta",
+  Epsilon = "epsilon",
+  ExpiryTime = "expiryTime",
+  Factory = "factory",
+  Gauges = "gauges",
+  GaugesList = "gaugesList",
+  HistoricalValues = "historicalValues",
+  HoldersCount = "holdersCount",
+  Id = "id",
+  IsInRecoveryMode = "isInRecoveryMode",
+  IsPaused = "isPaused",
+  JoinExitEnabled = "joinExitEnabled",
+  JoinsExits = "joinsExits",
+  Lambda = "lambda",
+  LastJoinExitAmp = "lastJoinExitAmp",
+  LastPostJoinExitInvariant = "lastPostJoinExitInvariant",
+  LatestAmpUpdate = "latestAmpUpdate",
+  LatestAmpUpdateEndAmp = "latestAmpUpdate__endAmp",
+  LatestAmpUpdateEndTimestamp = "latestAmpUpdate__endTimestamp",
+  LatestAmpUpdateId = "latestAmpUpdate__id",
+  LatestAmpUpdateScheduledTimestamp = "latestAmpUpdate__scheduledTimestamp",
+  LatestAmpUpdateStartAmp = "latestAmpUpdate__startAmp",
+  LatestAmpUpdateStartTimestamp = "latestAmpUpdate__startTimestamp",
+  LowerTarget = "lowerTarget",
+  MainIndex = "mainIndex",
+  ManagementAumFee = "managementAumFee",
+  ManagementFee = "managementFee",
+  MustAllowlistLPs = "mustAllowlistLPs",
+  Name = "name",
+  OracleEnabled = "oracleEnabled",
+  Owner = "owner",
+  PoolId = "poolId",
+  PoolType = "poolType",
+  PoolTypeVersion = "poolTypeVersion",
+  PreferentialGauge = "preferentialGauge",
+  PreferentialGaugeId = "preferentialGauge__id",
+  PreferentialGaugeIsKilled = "preferentialGauge__isKilled",
+  PreferentialGaugeIsPreferentialGauge = "preferentialGauge__isPreferentialGauge",
+  PreferentialGaugePoolAddress = "preferentialGauge__poolAddress",
+  PreferentialGaugePoolId = "preferentialGauge__poolId",
+  PreferentialGaugeRelativeWeightCap = "preferentialGauge__relativeWeightCap",
+  PreferentialGaugeStreamer = "preferentialGauge__streamer",
+  PreferentialGaugeSymbol = "preferentialGauge__symbol",
+  PreferentialGaugeTotalSupply = "preferentialGauge__totalSupply",
+  PriceRateProviders = "priceRateProviders",
+  PrincipalToken = "principalToken",
+  ProtocolAumFeeCache = "protocolAumFeeCache",
+  ProtocolId = "protocolId",
+  ProtocolIdData = "protocolIdData",
+  ProtocolIdDataId = "protocolIdData__id",
+  ProtocolIdDataName = "protocolIdData__name",
+  ProtocolSwapFeeCache = "protocolSwapFeeCache",
+  ProtocolYieldFeeCache = "protocolYieldFeeCache",
+  Root3Alpha = "root3Alpha",
+  S = "s",
+  Shares = "shares",
+  Snapshots = "snapshots",
+  SqrtAlpha = "sqrtAlpha",
+  SqrtBeta = "sqrtBeta",
+  StrategyType = "strategyType",
+  SwapEnabled = "swapEnabled",
+  SwapEnabledCurationSignal = "swapEnabledCurationSignal",
+  SwapEnabledInternal = "swapEnabledInternal",
+  SwapFee = "swapFee",
+  Swaps = "swaps",
+  SwapsCount = "swapsCount",
+  Symbol = "symbol",
+  TauAlphaX = "tauAlphaX",
+  TauAlphaY = "tauAlphaY",
+  TauBetaX = "tauBetaX",
+  TauBetaY = "tauBetaY",
+  Tokens = "tokens",
+  TokensList = "tokensList",
+  TotalAumFeeCollectedInBpt = "totalAumFeeCollectedInBPT",
+  TotalLiquidity = "totalLiquidity",
+  TotalLiquiditySansBpt = "totalLiquiditySansBPT",
+  TotalProtocolFee = "totalProtocolFee",
+  TotalProtocolFeePaidInBpt = "totalProtocolFeePaidInBPT",
+  TotalShares = "totalShares",
+  TotalSwapFee = "totalSwapFee",
+  TotalSwapVolume = "totalSwapVolume",
+  TotalWeight = "totalWeight",
+  Tx = "tx",
+  U = "u",
+  UnitSeconds = "unitSeconds",
+  UpperTarget = "upperTarget",
+  V = "v",
+  VaultId = "vaultID",
+  VaultIdId = "vaultID__id",
+  VaultIdPoolCount = "vaultID__poolCount",
+  VaultIdProtocolFeesCollector = "vaultID__protocolFeesCollector",
+  VaultIdTotalLiquidity = "vaultID__totalLiquidity",
+  VaultIdTotalProtocolFee = "vaultID__totalProtocolFee",
+  VaultIdTotalSwapCount = "vaultID__totalSwapCount",
+  VaultIdTotalSwapFee = "vaultID__totalSwapFee",
+  VaultIdTotalSwapVolume = "vaultID__totalSwapVolume",
+  W = "w",
+  WeightUpdates = "weightUpdates",
+  WrappedIndex = "wrappedIndex",
+  Z = "z",
+}
 
 export interface PriceRateProvider {
-  __typename: "PriceRateProvider";
+  __typename?: "PriceRateProvider";
   address: Scalars["Bytes"];
   cacheDuration?: Maybe<Scalars["Int"]>;
   cacheExpiry?: Maybe<Scalars["Int"]>;
@@ -6913,100 +6994,101 @@ export interface PriceRateProvider_Filter {
   token_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type PriceRateProvider_OrderBy =
-  | "address"
-  | "cacheDuration"
-  | "cacheExpiry"
-  | "id"
-  | "lastCached"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "rate"
-  | "token"
-  | "token__address"
-  | "token__assetManager"
-  | "token__balance"
-  | "token__cashBalance"
-  | "token__decimals"
-  | "token__id"
-  | "token__index"
-  | "token__isExemptFromYieldProtocolFee"
-  | "token__managedBalance"
-  | "token__name"
-  | "token__oldPriceRate"
-  | "token__paidProtocolFees"
-  | "token__priceRate"
-  | "token__symbol"
-  | "token__weight";
+export enum PriceRateProvider_OrderBy {
+  Address = "address",
+  CacheDuration = "cacheDuration",
+  CacheExpiry = "cacheExpiry",
+  Id = "id",
+  LastCached = "lastCached",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  Rate = "rate",
+  Token = "token",
+  TokenAddress = "token__address",
+  TokenAssetManager = "token__assetManager",
+  TokenBalance = "token__balance",
+  TokenCashBalance = "token__cashBalance",
+  TokenDecimals = "token__decimals",
+  TokenId = "token__id",
+  TokenIndex = "token__index",
+  TokenIsExemptFromYieldProtocolFee = "token__isExemptFromYieldProtocolFee",
+  TokenManagedBalance = "token__managedBalance",
+  TokenName = "token__name",
+  TokenOldPriceRate = "token__oldPriceRate",
+  TokenPaidProtocolFees = "token__paidProtocolFees",
+  TokenPriceRate = "token__priceRate",
+  TokenSymbol = "token__symbol",
+  TokenWeight = "token__weight",
+}
 
 export interface ProtocolIdData {
-  __typename: "ProtocolIdData";
+  __typename?: "ProtocolIdData";
   id: Scalars["ID"];
   name: Scalars["String"];
 }
@@ -7046,10 +7128,13 @@ export interface ProtocolIdData_Filter {
   or?: InputMaybe<Array<InputMaybe<ProtocolIdData_Filter>>>;
 }
 
-export type ProtocolIdData_OrderBy = "id" | "name";
+export enum ProtocolIdData_OrderBy {
+  Id = "id",
+  Name = "name",
+}
 
 export interface QuantAmmWeightedDetail {
-  __typename: "QuantAMMWeightedDetail";
+  __typename?: "QuantAMMWeightedDetail";
   category: Scalars["String"];
   name: Scalars["String"];
   type: Scalars["String"];
@@ -7057,13 +7142,13 @@ export interface QuantAmmWeightedDetail {
 }
 
 export interface QuantAmmWeightSnapshot {
-  __typename: "QuantAmmWeightSnapshot";
+  __typename?: "QuantAmmWeightSnapshot";
   timestamp: Scalars["Int"];
   weights?: Maybe<Array<Scalars["Float"]>>;
 }
 
 export interface QuantAmmWeightedParams {
-  __typename: "QuantAmmWeightedParams";
+  __typename?: "QuantAmmWeightedParams";
   absoluteWeightGuardRail: Scalars["String"];
   details: Array<QuantAmmWeightedDetail>;
   epsilonMax: Scalars["String"];
@@ -7079,7 +7164,7 @@ export interface QuantAmmWeightedParams {
 }
 
 export interface Query {
-  __typename: "Query";
+  __typename?: "Query";
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
   /** Returns all pools for a given filter, specific for aggregators */
@@ -8022,7 +8107,7 @@ export interface QueryVotingEscrowsArgs {
 }
 
 export interface RewardToken {
-  __typename: "RewardToken";
+  __typename?: "RewardToken";
   /**  ERC20 token decimals - zero if call to decimals() reverts  */
   decimals: Scalars["Int"];
   /**  Reference to LiquidityGauge entity  */
@@ -8127,26 +8212,27 @@ export interface RewardToken_Filter {
   totalDeposited_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type RewardToken_OrderBy =
-  | "decimals"
-  | "gauge"
-  | "gauge__id"
-  | "gauge__isKilled"
-  | "gauge__isPreferentialGauge"
-  | "gauge__poolAddress"
-  | "gauge__poolId"
-  | "gauge__relativeWeightCap"
-  | "gauge__streamer"
-  | "gauge__symbol"
-  | "gauge__totalSupply"
-  | "id"
-  | "periodFinish"
-  | "rate"
-  | "symbol"
-  | "totalDeposited";
+export enum RewardToken_OrderBy {
+  Decimals = "decimals",
+  Gauge = "gauge",
+  GaugeId = "gauge__id",
+  GaugeIsKilled = "gauge__isKilled",
+  GaugeIsPreferentialGauge = "gauge__isPreferentialGauge",
+  GaugePoolAddress = "gauge__poolAddress",
+  GaugePoolId = "gauge__poolId",
+  GaugeRelativeWeightCap = "gauge__relativeWeightCap",
+  GaugeStreamer = "gauge__streamer",
+  GaugeSymbol = "gauge__symbol",
+  GaugeTotalSupply = "gauge__totalSupply",
+  Id = "id",
+  PeriodFinish = "periodFinish",
+  Rate = "rate",
+  Symbol = "symbol",
+  TotalDeposited = "totalDeposited",
+}
 
 export interface RootGauge {
-  __typename: "RootGauge";
+  __typename?: "RootGauge";
   /**  Chain where emissions by this gauge will be bridged to  */
   chain: Chain;
   /**  Factory contract address  */
@@ -8246,22 +8332,23 @@ export interface RootGauge_Filter {
   relativeWeightCap_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type RootGauge_OrderBy =
-  | "chain"
-  | "factory"
-  | "factory__id"
-  | "factory__numGauges"
-  | "gauge"
-  | "gauge__addedTimestamp"
-  | "gauge__address"
-  | "gauge__id"
-  | "id"
-  | "isKilled"
-  | "recipient"
-  | "relativeWeightCap";
+export enum RootGauge_OrderBy {
+  Chain = "chain",
+  Factory = "factory",
+  FactoryId = "factory__id",
+  FactoryNumGauges = "factory__numGauges",
+  Gauge = "gauge",
+  GaugeAddedTimestamp = "gauge__addedTimestamp",
+  GaugeAddress = "gauge__address",
+  GaugeId = "gauge__id",
+  Id = "id",
+  IsKilled = "isKilled",
+  Recipient = "recipient",
+  RelativeWeightCap = "relativeWeightCap",
+}
 
 export interface SingleRecipientGauge {
-  __typename: "SingleRecipientGauge";
+  __typename?: "SingleRecipientGauge";
   /**  Factory contract address  */
   factory: GaugeFactory;
   /**  Reference to Gauge entity - created when SingleRecipientGauge is added to GaugeController */
@@ -8355,28 +8442,29 @@ export interface SingleRecipientGauge_Filter {
   relativeWeightCap_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type SingleRecipientGauge_OrderBy =
-  | "factory"
-  | "factory__id"
-  | "factory__numGauges"
-  | "gauge"
-  | "gauge__addedTimestamp"
-  | "gauge__address"
-  | "gauge__id"
-  | "id"
-  | "isKilled"
-  | "recipient"
-  | "relativeWeightCap";
+export enum SingleRecipientGauge_OrderBy {
+  Factory = "factory",
+  FactoryId = "factory__id",
+  FactoryNumGauges = "factory__numGauges",
+  Gauge = "gauge",
+  GaugeAddedTimestamp = "gauge__addedTimestamp",
+  GaugeAddress = "gauge__address",
+  GaugeId = "gauge__id",
+  Id = "id",
+  IsKilled = "isKilled",
+  Recipient = "recipient",
+  RelativeWeightCap = "relativeWeightCap",
+}
 
 /** StableSurge hook specific params. Percentage format is 0.01 -> 0.01%. */
 export interface StableSurgeHookParams {
-  __typename: "StableSurgeHookParams";
+  __typename?: "StableSurgeHookParams";
   maxSurgeFeePercentage?: Maybe<Scalars["String"]>;
   surgeThresholdPercentage?: Maybe<Scalars["String"]>;
 }
 
 export interface Swap {
-  __typename: "Swap";
+  __typename?: "Swap";
   block?: Maybe<Scalars["BigInt"]>;
   caller: Scalars["Bytes"];
   id: Scalars["ID"];
@@ -8394,7 +8482,7 @@ export interface Swap {
 }
 
 export interface SwapFeeUpdate {
-  __typename: "SwapFeeUpdate";
+  __typename?: "SwapFeeUpdate";
   endSwapFeePercentage: Scalars["BigDecimal"];
   endTimestamp: Scalars["BigInt"];
   id: Scalars["ID"];
@@ -8480,81 +8568,82 @@ export interface SwapFeeUpdate_Filter {
   startTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
 }
 
-export type SwapFeeUpdate_OrderBy =
-  | "endSwapFeePercentage"
-  | "endTimestamp"
-  | "id"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z"
-  | "scheduledTimestamp"
-  | "startSwapFeePercentage"
-  | "startTimestamp";
+export enum SwapFeeUpdate_OrderBy {
+  EndSwapFeePercentage = "endSwapFeePercentage",
+  EndTimestamp = "endTimestamp",
+  Id = "id",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+  ScheduledTimestamp = "scheduledTimestamp",
+  StartSwapFeePercentage = "startSwapFeePercentage",
+  StartTimestamp = "startTimestamp",
+}
 
 export interface Swap_Filter {
   /** Filter for the block changed event. */
@@ -8733,92 +8822,93 @@ export interface Swap_Filter {
   valueUSD_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type Swap_OrderBy =
-  | "block"
-  | "caller"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "timestamp"
-  | "tokenAmountIn"
-  | "tokenAmountOut"
-  | "tokenIn"
-  | "tokenInSym"
-  | "tokenOut"
-  | "tokenOutSym"
-  | "tx"
-  | "userAddress"
-  | "userAddress__id"
-  | "valueUSD";
+export enum Swap_OrderBy {
+  Block = "block",
+  Caller = "caller",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  Timestamp = "timestamp",
+  TokenAmountIn = "tokenAmountIn",
+  TokenAmountOut = "tokenAmountOut",
+  TokenIn = "tokenIn",
+  TokenInSym = "tokenInSym",
+  TokenOut = "tokenOut",
+  TokenOutSym = "tokenOutSym",
+  Tx = "tx",
+  UserAddress = "userAddress",
+  UserAddressId = "userAddress__id",
+  ValueUsd = "valueUSD",
+}
 
 export interface Token {
-  __typename: "Token";
+  __typename?: "Token";
   address: Scalars["String"];
   decimals: Scalars["Int"];
   fxOracleDecimals?: Maybe<Scalars["Int"]>;
@@ -8838,7 +8928,7 @@ export interface Token {
 }
 
 export interface TokenPrice {
-  __typename: "TokenPrice";
+  __typename?: "TokenPrice";
   amount: Scalars["BigDecimal"];
   asset: Scalars["Bytes"];
   block: Scalars["BigInt"];
@@ -8937,85 +9027,86 @@ export interface TokenPrice_Filter {
   timestamp_not_in?: InputMaybe<Array<Scalars["Int"]>>;
 }
 
-export type TokenPrice_OrderBy =
-  | "amount"
-  | "asset"
-  | "block"
-  | "id"
-  | "poolId"
-  | "poolId__address"
-  | "poolId__alpha"
-  | "poolId__amp"
-  | "poolId__baseToken"
-  | "poolId__beta"
-  | "poolId__c"
-  | "poolId__createTime"
-  | "poolId__dSq"
-  | "poolId__delta"
-  | "poolId__epsilon"
-  | "poolId__expiryTime"
-  | "poolId__factory"
-  | "poolId__holdersCount"
-  | "poolId__id"
-  | "poolId__isInRecoveryMode"
-  | "poolId__isPaused"
-  | "poolId__joinExitEnabled"
-  | "poolId__lambda"
-  | "poolId__lastJoinExitAmp"
-  | "poolId__lastPostJoinExitInvariant"
-  | "poolId__lowerTarget"
-  | "poolId__mainIndex"
-  | "poolId__managementAumFee"
-  | "poolId__managementFee"
-  | "poolId__mustAllowlistLPs"
-  | "poolId__name"
-  | "poolId__oracleEnabled"
-  | "poolId__owner"
-  | "poolId__poolType"
-  | "poolId__poolTypeVersion"
-  | "poolId__principalToken"
-  | "poolId__protocolAumFeeCache"
-  | "poolId__protocolId"
-  | "poolId__protocolSwapFeeCache"
-  | "poolId__protocolYieldFeeCache"
-  | "poolId__root3Alpha"
-  | "poolId__s"
-  | "poolId__sqrtAlpha"
-  | "poolId__sqrtBeta"
-  | "poolId__strategyType"
-  | "poolId__swapEnabled"
-  | "poolId__swapEnabledCurationSignal"
-  | "poolId__swapEnabledInternal"
-  | "poolId__swapFee"
-  | "poolId__swapsCount"
-  | "poolId__symbol"
-  | "poolId__tauAlphaX"
-  | "poolId__tauAlphaY"
-  | "poolId__tauBetaX"
-  | "poolId__tauBetaY"
-  | "poolId__totalAumFeeCollectedInBPT"
-  | "poolId__totalLiquidity"
-  | "poolId__totalLiquiditySansBPT"
-  | "poolId__totalProtocolFee"
-  | "poolId__totalProtocolFeePaidInBPT"
-  | "poolId__totalShares"
-  | "poolId__totalSwapFee"
-  | "poolId__totalSwapVolume"
-  | "poolId__totalWeight"
-  | "poolId__tx"
-  | "poolId__u"
-  | "poolId__unitSeconds"
-  | "poolId__upperTarget"
-  | "poolId__v"
-  | "poolId__w"
-  | "poolId__wrappedIndex"
-  | "poolId__z"
-  | "price"
-  | "pricingAsset"
-  | "timestamp";
+export enum TokenPrice_OrderBy {
+  Amount = "amount",
+  Asset = "asset",
+  Block = "block",
+  Id = "id",
+  PoolId = "poolId",
+  PoolIdAddress = "poolId__address",
+  PoolIdAlpha = "poolId__alpha",
+  PoolIdAmp = "poolId__amp",
+  PoolIdBaseToken = "poolId__baseToken",
+  PoolIdBeta = "poolId__beta",
+  PoolIdC = "poolId__c",
+  PoolIdCreateTime = "poolId__createTime",
+  PoolIdDSq = "poolId__dSq",
+  PoolIdDelta = "poolId__delta",
+  PoolIdEpsilon = "poolId__epsilon",
+  PoolIdExpiryTime = "poolId__expiryTime",
+  PoolIdFactory = "poolId__factory",
+  PoolIdHoldersCount = "poolId__holdersCount",
+  PoolIdId = "poolId__id",
+  PoolIdIsInRecoveryMode = "poolId__isInRecoveryMode",
+  PoolIdIsPaused = "poolId__isPaused",
+  PoolIdJoinExitEnabled = "poolId__joinExitEnabled",
+  PoolIdLambda = "poolId__lambda",
+  PoolIdLastJoinExitAmp = "poolId__lastJoinExitAmp",
+  PoolIdLastPostJoinExitInvariant = "poolId__lastPostJoinExitInvariant",
+  PoolIdLowerTarget = "poolId__lowerTarget",
+  PoolIdMainIndex = "poolId__mainIndex",
+  PoolIdManagementAumFee = "poolId__managementAumFee",
+  PoolIdManagementFee = "poolId__managementFee",
+  PoolIdMustAllowlistLPs = "poolId__mustAllowlistLPs",
+  PoolIdName = "poolId__name",
+  PoolIdOracleEnabled = "poolId__oracleEnabled",
+  PoolIdOwner = "poolId__owner",
+  PoolIdPoolType = "poolId__poolType",
+  PoolIdPoolTypeVersion = "poolId__poolTypeVersion",
+  PoolIdPrincipalToken = "poolId__principalToken",
+  PoolIdProtocolAumFeeCache = "poolId__protocolAumFeeCache",
+  PoolIdProtocolId = "poolId__protocolId",
+  PoolIdProtocolSwapFeeCache = "poolId__protocolSwapFeeCache",
+  PoolIdProtocolYieldFeeCache = "poolId__protocolYieldFeeCache",
+  PoolIdRoot3Alpha = "poolId__root3Alpha",
+  PoolIdS = "poolId__s",
+  PoolIdSqrtAlpha = "poolId__sqrtAlpha",
+  PoolIdSqrtBeta = "poolId__sqrtBeta",
+  PoolIdStrategyType = "poolId__strategyType",
+  PoolIdSwapEnabled = "poolId__swapEnabled",
+  PoolIdSwapEnabledCurationSignal = "poolId__swapEnabledCurationSignal",
+  PoolIdSwapEnabledInternal = "poolId__swapEnabledInternal",
+  PoolIdSwapFee = "poolId__swapFee",
+  PoolIdSwapsCount = "poolId__swapsCount",
+  PoolIdSymbol = "poolId__symbol",
+  PoolIdTauAlphaX = "poolId__tauAlphaX",
+  PoolIdTauAlphaY = "poolId__tauAlphaY",
+  PoolIdTauBetaX = "poolId__tauBetaX",
+  PoolIdTauBetaY = "poolId__tauBetaY",
+  PoolIdTotalAumFeeCollectedInBpt = "poolId__totalAumFeeCollectedInBPT",
+  PoolIdTotalLiquidity = "poolId__totalLiquidity",
+  PoolIdTotalLiquiditySansBpt = "poolId__totalLiquiditySansBPT",
+  PoolIdTotalProtocolFee = "poolId__totalProtocolFee",
+  PoolIdTotalProtocolFeePaidInBpt = "poolId__totalProtocolFeePaidInBPT",
+  PoolIdTotalShares = "poolId__totalShares",
+  PoolIdTotalSwapFee = "poolId__totalSwapFee",
+  PoolIdTotalSwapVolume = "poolId__totalSwapVolume",
+  PoolIdTotalWeight = "poolId__totalWeight",
+  PoolIdTx = "poolId__tx",
+  PoolIdU = "poolId__u",
+  PoolIdUnitSeconds = "poolId__unitSeconds",
+  PoolIdUpperTarget = "poolId__upperTarget",
+  PoolIdV = "poolId__v",
+  PoolIdW = "poolId__w",
+  PoolIdWrappedIndex = "poolId__wrappedIndex",
+  PoolIdZ = "poolId__z",
+  Price = "price",
+  PricingAsset = "pricingAsset",
+  Timestamp = "timestamp",
+}
 
 export interface TokenSnapshot {
-  __typename: "TokenSnapshot";
+  __typename?: "TokenSnapshot";
   id: Scalars["ID"];
   timestamp: Scalars["Int"];
   token: Token;
@@ -9110,29 +9201,30 @@ export interface TokenSnapshot_Filter {
   totalVolumeUSD_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type TokenSnapshot_OrderBy =
-  | "id"
-  | "timestamp"
-  | "token"
-  | "token__address"
-  | "token__decimals"
-  | "token__fxOracleDecimals"
-  | "token__id"
-  | "token__latestFXPrice"
-  | "token__latestUSDPrice"
-  | "token__latestUSDPriceTimestamp"
-  | "token__name"
-  | "token__symbol"
-  | "token__totalBalanceNotional"
-  | "token__totalBalanceUSD"
-  | "token__totalSwapCount"
-  | "token__totalVolumeNotional"
-  | "token__totalVolumeUSD"
-  | "totalBalanceNotional"
-  | "totalBalanceUSD"
-  | "totalSwapCount"
-  | "totalVolumeNotional"
-  | "totalVolumeUSD";
+export enum TokenSnapshot_OrderBy {
+  Id = "id",
+  Timestamp = "timestamp",
+  Token = "token",
+  TokenAddress = "token__address",
+  TokenDecimals = "token__decimals",
+  TokenFxOracleDecimals = "token__fxOracleDecimals",
+  TokenId = "token__id",
+  TokenLatestFxPrice = "token__latestFXPrice",
+  TokenLatestUsdPrice = "token__latestUSDPrice",
+  TokenLatestUsdPriceTimestamp = "token__latestUSDPriceTimestamp",
+  TokenName = "token__name",
+  TokenSymbol = "token__symbol",
+  TokenTotalBalanceNotional = "token__totalBalanceNotional",
+  TokenTotalBalanceUsd = "token__totalBalanceUSD",
+  TokenTotalSwapCount = "token__totalSwapCount",
+  TokenTotalVolumeNotional = "token__totalVolumeNotional",
+  TokenTotalVolumeUsd = "token__totalVolumeUSD",
+  TotalBalanceNotional = "totalBalanceNotional",
+  TotalBalanceUsd = "totalBalanceUSD",
+  TotalSwapCount = "totalSwapCount",
+  TotalVolumeNotional = "totalVolumeNotional",
+  TotalVolumeUsd = "totalVolumeUSD",
+}
 
 export interface Token_Filter {
   /** Filter for the block changed event. */
@@ -9331,98 +9423,99 @@ export interface Token_Filter {
   totalVolumeUSD_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type Token_OrderBy =
-  | "address"
-  | "decimals"
-  | "fxOracleDecimals"
-  | "id"
-  | "latestFXPrice"
-  | "latestPrice"
-  | "latestPrice__asset"
-  | "latestPrice__block"
-  | "latestPrice__id"
-  | "latestPrice__price"
-  | "latestPrice__pricingAsset"
-  | "latestUSDPrice"
-  | "latestUSDPriceTimestamp"
-  | "name"
-  | "pool"
-  | "pool__address"
-  | "pool__alpha"
-  | "pool__amp"
-  | "pool__baseToken"
-  | "pool__beta"
-  | "pool__c"
-  | "pool__createTime"
-  | "pool__dSq"
-  | "pool__delta"
-  | "pool__epsilon"
-  | "pool__expiryTime"
-  | "pool__factory"
-  | "pool__holdersCount"
-  | "pool__id"
-  | "pool__isInRecoveryMode"
-  | "pool__isPaused"
-  | "pool__joinExitEnabled"
-  | "pool__lambda"
-  | "pool__lastJoinExitAmp"
-  | "pool__lastPostJoinExitInvariant"
-  | "pool__lowerTarget"
-  | "pool__mainIndex"
-  | "pool__managementAumFee"
-  | "pool__managementFee"
-  | "pool__mustAllowlistLPs"
-  | "pool__name"
-  | "pool__oracleEnabled"
-  | "pool__owner"
-  | "pool__poolType"
-  | "pool__poolTypeVersion"
-  | "pool__principalToken"
-  | "pool__protocolAumFeeCache"
-  | "pool__protocolId"
-  | "pool__protocolSwapFeeCache"
-  | "pool__protocolYieldFeeCache"
-  | "pool__root3Alpha"
-  | "pool__s"
-  | "pool__sqrtAlpha"
-  | "pool__sqrtBeta"
-  | "pool__strategyType"
-  | "pool__swapEnabled"
-  | "pool__swapEnabledCurationSignal"
-  | "pool__swapEnabledInternal"
-  | "pool__swapFee"
-  | "pool__swapsCount"
-  | "pool__symbol"
-  | "pool__tauAlphaX"
-  | "pool__tauAlphaY"
-  | "pool__tauBetaX"
-  | "pool__tauBetaY"
-  | "pool__totalAumFeeCollectedInBPT"
-  | "pool__totalLiquidity"
-  | "pool__totalLiquiditySansBPT"
-  | "pool__totalProtocolFee"
-  | "pool__totalProtocolFeePaidInBPT"
-  | "pool__totalShares"
-  | "pool__totalSwapFee"
-  | "pool__totalSwapVolume"
-  | "pool__totalWeight"
-  | "pool__tx"
-  | "pool__u"
-  | "pool__unitSeconds"
-  | "pool__upperTarget"
-  | "pool__v"
-  | "pool__w"
-  | "pool__wrappedIndex"
-  | "pool__z"
-  | "symbol"
-  | "totalBalanceNotional"
-  | "totalBalanceUSD"
-  | "totalSwapCount"
-  | "totalVolumeNotional"
-  | "totalVolumeUSD";
+export enum Token_OrderBy {
+  Address = "address",
+  Decimals = "decimals",
+  FxOracleDecimals = "fxOracleDecimals",
+  Id = "id",
+  LatestFxPrice = "latestFXPrice",
+  LatestPrice = "latestPrice",
+  LatestPriceAsset = "latestPrice__asset",
+  LatestPriceBlock = "latestPrice__block",
+  LatestPriceId = "latestPrice__id",
+  LatestPricePrice = "latestPrice__price",
+  LatestPricePricingAsset = "latestPrice__pricingAsset",
+  LatestUsdPrice = "latestUSDPrice",
+  LatestUsdPriceTimestamp = "latestUSDPriceTimestamp",
+  Name = "name",
+  Pool = "pool",
+  PoolAddress = "pool__address",
+  PoolAlpha = "pool__alpha",
+  PoolAmp = "pool__amp",
+  PoolBaseToken = "pool__baseToken",
+  PoolBeta = "pool__beta",
+  PoolC = "pool__c",
+  PoolCreateTime = "pool__createTime",
+  PoolDSq = "pool__dSq",
+  PoolDelta = "pool__delta",
+  PoolEpsilon = "pool__epsilon",
+  PoolExpiryTime = "pool__expiryTime",
+  PoolFactory = "pool__factory",
+  PoolHoldersCount = "pool__holdersCount",
+  PoolId = "pool__id",
+  PoolIsInRecoveryMode = "pool__isInRecoveryMode",
+  PoolIsPaused = "pool__isPaused",
+  PoolJoinExitEnabled = "pool__joinExitEnabled",
+  PoolLambda = "pool__lambda",
+  PoolLastJoinExitAmp = "pool__lastJoinExitAmp",
+  PoolLastPostJoinExitInvariant = "pool__lastPostJoinExitInvariant",
+  PoolLowerTarget = "pool__lowerTarget",
+  PoolMainIndex = "pool__mainIndex",
+  PoolManagementAumFee = "pool__managementAumFee",
+  PoolManagementFee = "pool__managementFee",
+  PoolMustAllowlistLPs = "pool__mustAllowlistLPs",
+  PoolName = "pool__name",
+  PoolOracleEnabled = "pool__oracleEnabled",
+  PoolOwner = "pool__owner",
+  PoolPoolType = "pool__poolType",
+  PoolPoolTypeVersion = "pool__poolTypeVersion",
+  PoolPrincipalToken = "pool__principalToken",
+  PoolProtocolAumFeeCache = "pool__protocolAumFeeCache",
+  PoolProtocolId = "pool__protocolId",
+  PoolProtocolSwapFeeCache = "pool__protocolSwapFeeCache",
+  PoolProtocolYieldFeeCache = "pool__protocolYieldFeeCache",
+  PoolRoot3Alpha = "pool__root3Alpha",
+  PoolS = "pool__s",
+  PoolSqrtAlpha = "pool__sqrtAlpha",
+  PoolSqrtBeta = "pool__sqrtBeta",
+  PoolStrategyType = "pool__strategyType",
+  PoolSwapEnabled = "pool__swapEnabled",
+  PoolSwapEnabledCurationSignal = "pool__swapEnabledCurationSignal",
+  PoolSwapEnabledInternal = "pool__swapEnabledInternal",
+  PoolSwapFee = "pool__swapFee",
+  PoolSwapsCount = "pool__swapsCount",
+  PoolSymbol = "pool__symbol",
+  PoolTauAlphaX = "pool__tauAlphaX",
+  PoolTauAlphaY = "pool__tauAlphaY",
+  PoolTauBetaX = "pool__tauBetaX",
+  PoolTauBetaY = "pool__tauBetaY",
+  PoolTotalAumFeeCollectedInBpt = "pool__totalAumFeeCollectedInBPT",
+  PoolTotalLiquidity = "pool__totalLiquidity",
+  PoolTotalLiquiditySansBpt = "pool__totalLiquiditySansBPT",
+  PoolTotalProtocolFee = "pool__totalProtocolFee",
+  PoolTotalProtocolFeePaidInBpt = "pool__totalProtocolFeePaidInBPT",
+  PoolTotalShares = "pool__totalShares",
+  PoolTotalSwapFee = "pool__totalSwapFee",
+  PoolTotalSwapVolume = "pool__totalSwapVolume",
+  PoolTotalWeight = "pool__totalWeight",
+  PoolTx = "pool__tx",
+  PoolU = "pool__u",
+  PoolUnitSeconds = "pool__unitSeconds",
+  PoolUpperTarget = "pool__upperTarget",
+  PoolV = "pool__v",
+  PoolW = "pool__w",
+  PoolWrappedIndex = "pool__wrappedIndex",
+  PoolZ = "pool__z",
+  Symbol = "symbol",
+  TotalBalanceNotional = "totalBalanceNotional",
+  TotalBalanceUsd = "totalBalanceUSD",
+  TotalSwapCount = "totalSwapCount",
+  TotalVolumeNotional = "totalVolumeNotional",
+  TotalVolumeUsd = "totalVolumeUSD",
+}
 
 export interface TradePair {
-  __typename: "TradePair";
+  __typename?: "TradePair";
   /** Token Address - Token Address */
   id: Scalars["ID"];
   token0: Token;
@@ -9432,7 +9525,7 @@ export interface TradePair {
 }
 
 export interface TradePairSnapshot {
-  __typename: "TradePairSnapshot";
+  __typename?: "TradePairSnapshot";
   id: Scalars["ID"];
   pair: TradePair;
   timestamp: Scalars["Int"];
@@ -9500,15 +9593,16 @@ export interface TradePairSnapshot_Filter {
   totalSwapVolume_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type TradePairSnapshot_OrderBy =
-  | "id"
-  | "pair"
-  | "pair__id"
-  | "pair__totalSwapFee"
-  | "pair__totalSwapVolume"
-  | "timestamp"
-  | "totalSwapFee"
-  | "totalSwapVolume";
+export enum TradePairSnapshot_OrderBy {
+  Id = "id",
+  Pair = "pair",
+  PairId = "pair__id",
+  PairTotalSwapFee = "pair__totalSwapFee",
+  PairTotalSwapVolume = "pair__totalSwapVolume",
+  Timestamp = "timestamp",
+  TotalSwapFee = "totalSwapFee",
+  TotalSwapVolume = "totalSwapVolume",
+}
 
 export interface TradePair_Filter {
   /** Filter for the block changed event. */
@@ -9583,43 +9677,44 @@ export interface TradePair_Filter {
   totalSwapVolume_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type TradePair_OrderBy =
-  | "id"
-  | "token0"
-  | "token0__address"
-  | "token0__decimals"
-  | "token0__fxOracleDecimals"
-  | "token0__id"
-  | "token0__latestFXPrice"
-  | "token0__latestUSDPrice"
-  | "token0__latestUSDPriceTimestamp"
-  | "token0__name"
-  | "token0__symbol"
-  | "token0__totalBalanceNotional"
-  | "token0__totalBalanceUSD"
-  | "token0__totalSwapCount"
-  | "token0__totalVolumeNotional"
-  | "token0__totalVolumeUSD"
-  | "token1"
-  | "token1__address"
-  | "token1__decimals"
-  | "token1__fxOracleDecimals"
-  | "token1__id"
-  | "token1__latestFXPrice"
-  | "token1__latestUSDPrice"
-  | "token1__latestUSDPriceTimestamp"
-  | "token1__name"
-  | "token1__symbol"
-  | "token1__totalBalanceNotional"
-  | "token1__totalBalanceUSD"
-  | "token1__totalSwapCount"
-  | "token1__totalVolumeNotional"
-  | "token1__totalVolumeUSD"
-  | "totalSwapFee"
-  | "totalSwapVolume";
+export enum TradePair_OrderBy {
+  Id = "id",
+  Token0 = "token0",
+  Token0Address = "token0__address",
+  Token0Decimals = "token0__decimals",
+  Token0FxOracleDecimals = "token0__fxOracleDecimals",
+  Token0Id = "token0__id",
+  Token0LatestFxPrice = "token0__latestFXPrice",
+  Token0LatestUsdPrice = "token0__latestUSDPrice",
+  Token0LatestUsdPriceTimestamp = "token0__latestUSDPriceTimestamp",
+  Token0Name = "token0__name",
+  Token0Symbol = "token0__symbol",
+  Token0TotalBalanceNotional = "token0__totalBalanceNotional",
+  Token0TotalBalanceUsd = "token0__totalBalanceUSD",
+  Token0TotalSwapCount = "token0__totalSwapCount",
+  Token0TotalVolumeNotional = "token0__totalVolumeNotional",
+  Token0TotalVolumeUsd = "token0__totalVolumeUSD",
+  Token1 = "token1",
+  Token1Address = "token1__address",
+  Token1Decimals = "token1__decimals",
+  Token1FxOracleDecimals = "token1__fxOracleDecimals",
+  Token1Id = "token1__id",
+  Token1LatestFxPrice = "token1__latestFXPrice",
+  Token1LatestUsdPrice = "token1__latestUSDPrice",
+  Token1LatestUsdPriceTimestamp = "token1__latestUSDPriceTimestamp",
+  Token1Name = "token1__name",
+  Token1Symbol = "token1__symbol",
+  Token1TotalBalanceNotional = "token1__totalBalanceNotional",
+  Token1TotalBalanceUsd = "token1__totalBalanceUSD",
+  Token1TotalSwapCount = "token1__totalSwapCount",
+  Token1TotalVolumeNotional = "token1__totalVolumeNotional",
+  Token1TotalVolumeUsd = "token1__totalVolumeUSD",
+  TotalSwapFee = "totalSwapFee",
+  TotalSwapVolume = "totalSwapVolume",
+}
 
 export interface User {
-  __typename: "User";
+  __typename?: "User";
   /**  List of gauge the user has shares  */
   gaugeShares?: Maybe<Array<GaugeShare>>;
   /**  List of votes on gauges  */
@@ -9692,7 +9787,7 @@ export interface UserVotingLocksArgs {
 }
 
 export interface UserInternalBalance {
-  __typename: "UserInternalBalance";
+  __typename?: "UserInternalBalance";
   balance: Scalars["BigDecimal"];
   id: Scalars["ID"];
   token: Scalars["Bytes"];
@@ -9775,27 +9870,28 @@ export interface UserInternalBalance_Filter {
   userAddress_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type UserInternalBalance_OrderBy =
-  | "balance"
-  | "id"
-  | "token"
-  | "tokenInfo"
-  | "tokenInfo__address"
-  | "tokenInfo__decimals"
-  | "tokenInfo__fxOracleDecimals"
-  | "tokenInfo__id"
-  | "tokenInfo__latestFXPrice"
-  | "tokenInfo__latestUSDPrice"
-  | "tokenInfo__latestUSDPriceTimestamp"
-  | "tokenInfo__name"
-  | "tokenInfo__symbol"
-  | "tokenInfo__totalBalanceNotional"
-  | "tokenInfo__totalBalanceUSD"
-  | "tokenInfo__totalSwapCount"
-  | "tokenInfo__totalVolumeNotional"
-  | "tokenInfo__totalVolumeUSD"
-  | "userAddress"
-  | "userAddress__id";
+export enum UserInternalBalance_OrderBy {
+  Balance = "balance",
+  Id = "id",
+  Token = "token",
+  TokenInfo = "tokenInfo",
+  TokenInfoAddress = "tokenInfo__address",
+  TokenInfoDecimals = "tokenInfo__decimals",
+  TokenInfoFxOracleDecimals = "tokenInfo__fxOracleDecimals",
+  TokenInfoId = "tokenInfo__id",
+  TokenInfoLatestFxPrice = "tokenInfo__latestFXPrice",
+  TokenInfoLatestUsdPrice = "tokenInfo__latestUSDPrice",
+  TokenInfoLatestUsdPriceTimestamp = "tokenInfo__latestUSDPriceTimestamp",
+  TokenInfoName = "tokenInfo__name",
+  TokenInfoSymbol = "tokenInfo__symbol",
+  TokenInfoTotalBalanceNotional = "tokenInfo__totalBalanceNotional",
+  TokenInfoTotalBalanceUsd = "tokenInfo__totalBalanceUSD",
+  TokenInfoTotalSwapCount = "tokenInfo__totalSwapCount",
+  TokenInfoTotalVolumeNotional = "tokenInfo__totalVolumeNotional",
+  TokenInfoTotalVolumeUsd = "tokenInfo__totalVolumeUSD",
+  UserAddress = "userAddress",
+  UserAddressId = "userAddress__id",
+}
 
 export interface User_Filter {
   /** Filter for the block changed event. */
@@ -9819,18 +9915,19 @@ export interface User_Filter {
   votingLocks_?: InputMaybe<VotingEscrowLock_Filter>;
 }
 
-export type User_OrderBy =
-  | "gaugeShares"
-  | "gaugeVotes"
-  | "id"
-  | "omniVotingLocks"
-  | "sharesOwned"
-  | "swaps"
-  | "userInternalBalances"
-  | "votingLocks";
+export enum User_OrderBy {
+  GaugeShares = "gaugeShares",
+  GaugeVotes = "gaugeVotes",
+  Id = "id",
+  OmniVotingLocks = "omniVotingLocks",
+  SharesOwned = "sharesOwned",
+  Swaps = "swaps",
+  UserInternalBalances = "userInternalBalances",
+  VotingLocks = "votingLocks",
+}
 
 export interface VotingEscrow {
-  __typename: "VotingEscrow";
+  __typename?: "VotingEscrow";
   /**  VotingEscrow contract address  */
   id: Scalars["ID"];
   /**  List of veBAL locks created  */
@@ -9858,7 +9955,7 @@ export interface VotingEscrowOmniLocksArgs {
 }
 
 export interface VotingEscrowLock {
-  __typename: "VotingEscrowLock";
+  __typename?: "VotingEscrowLock";
   /**  veBAL balance at the moment user locks  */
   bias: Scalars["BigDecimal"];
   /**  Equal to: <userAdress>-<votingEscrow>  */
@@ -9984,19 +10081,20 @@ export interface VotingEscrowLock_Filter {
   votingEscrowID_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type VotingEscrowLock_OrderBy =
-  | "bias"
-  | "id"
-  | "lockedBalance"
-  | "slope"
-  | "timestamp"
-  | "unlockTime"
-  | "updatedAt"
-  | "user"
-  | "user__id"
-  | "votingEscrowID"
-  | "votingEscrowID__id"
-  | "votingEscrowID__stakedSupply";
+export enum VotingEscrowLock_OrderBy {
+  Bias = "bias",
+  Id = "id",
+  LockedBalance = "lockedBalance",
+  Slope = "slope",
+  Timestamp = "timestamp",
+  UnlockTime = "unlockTime",
+  UpdatedAt = "updatedAt",
+  User = "user",
+  UserId = "user__id",
+  VotingEscrowId = "votingEscrowID",
+  VotingEscrowIdId = "votingEscrowID__id",
+  VotingEscrowIdStakedSupply = "votingEscrowID__stakedSupply",
+}
 
 export interface VotingEscrow_Filter {
   /** Filter for the block changed event. */
@@ -10023,14 +10121,15 @@ export interface VotingEscrow_Filter {
   stakedSupply_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
 }
 
-export type VotingEscrow_OrderBy =
-  | "id"
-  | "locks"
-  | "omniLocks"
-  | "stakedSupply";
+export enum VotingEscrow_OrderBy {
+  Id = "id",
+  Locks = "locks",
+  OmniLocks = "omniLocks",
+  StakedSupply = "stakedSupply",
+}
 
 export interface _Block_ {
-  __typename: "_Block_";
+  __typename?: "_Block_";
   /** The hash of the block */
   hash?: Maybe<Scalars["Bytes"]>;
   /** The block number */
@@ -10043,7 +10142,7 @@ export interface _Block_ {
 
 /** The type for the top-level _meta field */
 export interface _Meta_ {
-  __typename: "_Meta_";
+  __typename?: "_Meta_";
   /**
    * Information about a specific subgraph block. The hash of the block
    * will be null if the _meta field has a block constraint that asks for
@@ -10057,11 +10156,12 @@ export interface _Meta_ {
   hasIndexingErrors: Scalars["Boolean"];
 }
 
-export type _SubgraphErrorPolicy_ =
+export enum _SubgraphErrorPolicy_ {
   /** Data will be returned even if the subgraph has indexing errors */
-  | "allow"
+  Allow = "allow",
   /** If the subgraph has indexing errors, data will be omitted. The default. */
-  | "deny";
+  Deny = "deny",
+}
 
 export type GetTokenSetHistoricalPricesQueryVariables = Exact<{
   addresses: Array<Scalars["String"]> | Scalars["String"];
@@ -10070,12 +10170,12 @@ export type GetTokenSetHistoricalPricesQueryVariables = Exact<{
 }>;
 
 export type GetTokenSetHistoricalPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokenGetHistoricalPrices: Array<{
-    __typename: "GqlHistoricalTokenPrice";
+    __typename?: "GqlHistoricalTokenPrice";
     address: string;
     prices: Array<{
-      __typename: "GqlHistoricalTokenPriceEntry";
+      __typename?: "GqlHistoricalTokenPriceEntry";
       price: number;
       timestamp: string;
     }>;
@@ -10087,9 +10187,9 @@ export type TokenGetCurrentPricesQueryVariables = Exact<{
 }>;
 
 export type TokenGetCurrentPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokenGetCurrentPrices: Array<{
-    __typename: "GqlTokenPrice";
+    __typename?: "GqlTokenPrice";
     address: string;
     chain: GqlChain;
     price: number;
@@ -10102,9 +10202,9 @@ export type GetDynamicTokenPricesQueryVariables = Exact<{
 }>;
 
 export type GetDynamicTokenPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokenGetTokensDynamicData: Array<{
-    __typename: "GqlTokenDynamicData";
+    __typename?: "GqlTokenDynamicData";
     price: number;
     tokenAddress: string;
     priceChange24h: number;
@@ -10116,23 +10216,23 @@ export type VeBalGetVotingGaugesQueryVariables = Exact<{
 }>;
 
 export type VeBalGetVotingGaugesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   veBalGetVotingList: Array<{
-    __typename: "GqlVotingPool";
+    __typename?: "GqlVotingPool";
     id: string;
-    address: string;
+    address: any;
     chain: GqlChain;
     type: GqlPoolType;
     symbol: string;
     gauge: {
-      __typename: "GqlVotingGauge";
-      address: string;
+      __typename?: "GqlVotingGauge";
+      address: any;
       isKilled: boolean;
       relativeWeightCap?: string | null;
       addedTimestamp?: number | null;
     };
     tokens: Array<{
-      __typename: "GqlVotingGaugeToken";
+      __typename?: "GqlVotingGaugeToken";
       address: string;
       logoURI: string;
       symbol: string;
@@ -10148,9 +10248,9 @@ export type GetPoolSnapshotsQueryVariables = Exact<{
 }>;
 
 export type GetPoolSnapshotsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   snapshots: Array<{
-    __typename: "GqlPoolSnapshot";
+    __typename?: "GqlPoolSnapshot";
     id: string;
     timestamp: number;
     totalLiquidity: string;
@@ -10166,34 +10266,34 @@ export type GetAllPoolsQueryVariables = Exact<{
 }>;
 
 export type GetAllPoolsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolGetPools: Array<{
-    __typename: "GqlPoolMinimal";
+    __typename?: "GqlPoolMinimal";
     chain: GqlChain;
-    address: string;
+    address: any;
     type: GqlPoolType;
     name: string;
     symbol: string;
     poolTokens: Array<{
-      __typename: "GqlPoolTokenDetail";
+      __typename?: "GqlPoolTokenDetail";
       address: string;
       name: string;
-      weight?: string | null;
+      weight?: any | null;
       symbol: string;
       decimals: number;
       id: string;
     }>;
     dynamicData: {
-      __typename: "GqlPoolDynamicData";
-      swapFee: string;
-      totalShares: string;
-      volume24h: string;
-      fees24h: string;
-      yieldCapture24h: string;
+      __typename?: "GqlPoolDynamicData";
+      swapFee: any;
+      totalShares: any;
+      volume24h: any;
+      fees24h: any;
+      yieldCapture24h: any;
       poolId: string;
-      totalLiquidity: string;
+      totalLiquidity: any;
       aprItems: Array<{
-        __typename: "GqlPoolAprItem";
+        __typename?: "GqlPoolAprItem";
         id: string;
         apr: number;
         type: GqlPoolAprItemType;
@@ -10209,12 +10309,12 @@ export type FetchGaugeSharesQueryVariables = Exact<{
 }>;
 
 export type FetchGaugeSharesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   gaugeShares: Array<{
-    __typename: "GaugeShare";
-    balance: string;
+    __typename?: "GaugeShare";
+    balance: any;
     id: string;
-    user: { __typename: "User"; id: string };
+    user: { __typename?: "User"; id: string };
   }>;
 };
 
@@ -10225,66 +10325,66 @@ export type GetProtocolDataQueryVariables = Exact<{
 }>;
 
 export type GetProtocolDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   balancers: Array<{
-    __typename: "Balancer";
-    totalLiquidity: string;
-    totalSwapCount: string;
-    totalSwapFee: string;
-    totalProtocolFee?: string | null;
-    totalSwapVolume: string;
+    __typename?: "Balancer";
+    totalLiquidity: any;
+    totalSwapCount: any;
+    totalSwapFee: any;
+    totalProtocolFee?: any | null;
+    totalSwapVolume: any;
     poolCount: number;
   }>;
   balancers24: Array<{
-    __typename: "Balancer";
-    totalLiquidity: string;
-    totalSwapCount: string;
-    totalSwapFee: string;
-    totalProtocolFee?: string | null;
-    totalSwapVolume: string;
+    __typename?: "Balancer";
+    totalLiquidity: any;
+    totalSwapCount: any;
+    totalSwapFee: any;
+    totalProtocolFee?: any | null;
+    totalSwapVolume: any;
     poolCount: number;
   }>;
   balancers48: Array<{
-    __typename: "Balancer";
-    totalLiquidity: string;
-    totalSwapCount: string;
-    totalSwapFee: string;
-    totalProtocolFee?: string | null;
-    totalSwapVolume: string;
+    __typename?: "Balancer";
+    totalLiquidity: any;
+    totalSwapCount: any;
+    totalSwapFee: any;
+    totalProtocolFee?: any | null;
+    totalSwapVolume: any;
     poolCount: number;
   }>;
   balancerSnapshots: Array<{
-    __typename: "BalancerSnapshot";
+    __typename?: "BalancerSnapshot";
     id: string;
     timestamp: number;
     poolCount: number;
-    totalLiquidity: string;
-    totalSwapCount: string;
-    totalProtocolFee?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
+    totalLiquidity: any;
+    totalSwapCount: any;
+    totalProtocolFee?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
   }>;
   whaleSwaps: Array<{
-    __typename: "Swap";
+    __typename?: "Swap";
     id: string;
-    caller: string;
-    tokenIn: string;
+    caller: any;
+    tokenIn: any;
     tokenInSym: string;
-    tokenOut: string;
+    tokenOut: any;
     tokenOutSym: string;
-    tokenAmountIn: string;
-    tokenAmountOut: string;
-    valueUSD: string;
+    tokenAmountIn: any;
+    tokenAmountOut: any;
+    valueUSD: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     poolId: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
       name?: string | null;
-      address: string;
-      swapFee: string;
+      address: any;
+      swapFee: any;
     };
-    userAddress: { __typename: "User"; id: string };
+    userAddress: { __typename?: "User"; id: string };
   }>;
 };
 
@@ -10294,34 +10394,34 @@ export type GetTokenDataQueryVariables = Exact<{
 }>;
 
 export type GetTokenDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokens: Array<{
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   }>;
   tokens24: Array<{
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   }>;
 };
 
@@ -10331,34 +10431,34 @@ export type GetTokenSingleDataQueryVariables = Exact<{
 }>;
 
 export type GetTokenSingleDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokens: Array<{
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   }>;
   tokens24: Array<{
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   }>;
 };
 
@@ -10368,16 +10468,16 @@ export type GetTokenPageDataQueryVariables = Exact<{
 }>;
 
 export type GetTokenPageDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokenSnapshots: Array<{
-    __typename: "TokenSnapshot";
+    __typename?: "TokenSnapshot";
     id: string;
     timestamp: number;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
   }>;
 };
 
@@ -10388,73 +10488,73 @@ export type GetTransactionDataQueryVariables = Exact<{
 }>;
 
 export type GetTransactionDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   swapsIn: Array<{
-    __typename: "Swap";
+    __typename?: "Swap";
     id: string;
-    caller: string;
-    tokenIn: string;
+    caller: any;
+    tokenIn: any;
     tokenInSym: string;
-    tokenOut: string;
+    tokenOut: any;
     tokenOutSym: string;
-    tokenAmountIn: string;
-    tokenAmountOut: string;
-    valueUSD: string;
+    tokenAmountIn: any;
+    tokenAmountOut: any;
+    valueUSD: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     poolId: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
       name?: string | null;
-      address: string;
-      swapFee: string;
+      address: any;
+      swapFee: any;
     };
-    userAddress: { __typename: "User"; id: string };
+    userAddress: { __typename?: "User"; id: string };
   }>;
   swapsOut: Array<{
-    __typename: "Swap";
+    __typename?: "Swap";
     id: string;
-    caller: string;
-    tokenIn: string;
+    caller: any;
+    tokenIn: any;
     tokenInSym: string;
-    tokenOut: string;
+    tokenOut: any;
     tokenOutSym: string;
-    tokenAmountIn: string;
-    tokenAmountOut: string;
-    valueUSD: string;
+    tokenAmountIn: any;
+    tokenAmountOut: any;
+    valueUSD: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     poolId: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
       name?: string | null;
-      address: string;
-      swapFee: string;
+      address: any;
+      swapFee: any;
     };
-    userAddress: { __typename: "User"; id: string };
+    userAddress: { __typename?: "User"; id: string };
   }>;
   joinExits: Array<{
-    __typename: "JoinExit";
-    amounts: Array<string>;
-    valueUSD?: string | null;
+    __typename?: "JoinExit";
+    amounts: Array<any>;
+    valueUSD?: any | null;
     id: string;
-    sender: string;
+    sender: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     type: InvestType;
-    pool: { __typename: "Pool"; id: string; tokensList: Array<string> };
+    pool: { __typename?: "Pool"; id: string; tokensList: Array<any> };
   }>;
 };
 
 export type TokenSnapshotFragment = {
-  __typename: "TokenSnapshot";
+  __typename?: "TokenSnapshot";
   id: string;
   timestamp: number;
-  totalBalanceUSD: string;
-  totalBalanceNotional: string;
-  totalVolumeUSD: string;
-  totalVolumeNotional: string;
-  totalSwapCount: string;
+  totalBalanceUSD: any;
+  totalBalanceNotional: any;
+  totalVolumeUSD: any;
+  totalVolumeNotional: any;
+  totalSwapCount: any;
 };
 
 export type GetPoolDataQueryVariables = Exact<{
@@ -10463,75 +10563,75 @@ export type GetPoolDataQueryVariables = Exact<{
 }>;
 
 export type GetPoolDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   pools: Array<{
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   }>;
   pools24: Array<{
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   }>;
 };
@@ -10542,15 +10642,15 @@ export type GetUserWalletPoolDataQueryVariables = Exact<{
 }>;
 
 export type GetUserWalletPoolDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolShares: Array<{
-    __typename: "PoolShare";
-    balance: string;
+    __typename?: "PoolShare";
+    balance: any;
     poolId: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
-      totalLiquidity: string;
-      totalShares: string;
+      totalLiquidity: any;
+      totalShares: any;
     };
   }>;
 };
@@ -10560,13 +10660,13 @@ export type GetUserPoolBalancesQueryVariables = Exact<{
 }>;
 
 export type GetUserPoolBalancesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   pool?: {
-    __typename: "Pool";
+    __typename?: "Pool";
     shares?: Array<{
-      __typename: "PoolShare";
-      balance: string;
-      userAddress: { __typename: "User"; id: string };
+      __typename?: "PoolShare";
+      balance: any;
+      userAddress: { __typename?: "User"; id: string };
     }> | null;
   } | null;
 };
@@ -10577,24 +10677,24 @@ export type GetPoolChartDataQueryVariables = Exact<{
 }>;
 
 export type GetPoolChartDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolSnapshots: Array<{
-    __typename: "PoolSnapshot";
+    __typename?: "PoolSnapshot";
     id: string;
-    amounts: Array<string>;
-    swapVolume: string;
-    swapFees: string;
-    protocolFee?: string | null;
+    amounts: Array<any>;
+    swapVolume: any;
+    swapFees: any;
+    protocolFee?: any | null;
     timestamp: number;
-    swapsCount: string;
-    holdersCount: string;
+    swapsCount: any;
+    holdersCount: any;
     pool: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
       tokens?: Array<{
-        __typename: "PoolToken";
+        __typename?: "PoolToken";
         address: string;
-        balance: string;
+        balance: any;
       }> | null;
     };
   }>;
@@ -10606,19 +10706,19 @@ export type BalancerPoolSwapFeeSnapshotQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolSwapFeeSnapshotQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolSnapshots: Array<{
-    __typename: "PoolSnapshot";
+    __typename?: "PoolSnapshot";
     id: string;
-    amounts: Array<string>;
-    totalShares: string;
-    protocolFee?: string | null;
-    swapVolume: string;
-    swapFees: string;
+    amounts: Array<any>;
+    totalShares: any;
+    protocolFee?: any | null;
+    swapVolume: any;
+    swapFees: any;
     timestamp: number;
-    swapsCount: string;
-    holdersCount: string;
-    pool: { __typename: "Pool"; id: string };
+    swapsCount: any;
+    holdersCount: any;
+    pool: { __typename?: "Pool"; id: string };
   }>;
 };
 
@@ -10628,41 +10728,41 @@ export type BalancerPoolFeeSnapshotsQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolFeeSnapshotsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolSnapshots: Array<{
-    __typename: "PoolSnapshot";
+    __typename?: "PoolSnapshot";
     timestamp: number;
-    protocolFee?: string | null;
-    swapFees: string;
-    swapVolume: string;
-    liquidity: string;
+    protocolFee?: any | null;
+    swapFees: any;
+    swapVolume: any;
+    liquidity: any;
     pool: {
-      __typename: "Pool";
-      address: string;
+      __typename?: "Pool";
+      address: any;
       id: string;
       symbol?: string | null;
       poolType?: string | null;
       name?: string | null;
-      totalAumFeeCollectedInBPT?: string | null;
-      totalProtocolFee?: string | null;
-      totalProtocolFeePaidInBPT?: string | null;
-      totalSwapFee: string;
+      totalAumFeeCollectedInBPT?: any | null;
+      totalProtocolFee?: any | null;
+      totalProtocolFeePaidInBPT?: any | null;
+      totalSwapFee: any;
       isInRecoveryMode?: boolean | null;
       createTime: number;
-      protocolAumFeeCache?: string | null;
-      protocolSwapFeeCache?: string | null;
-      protocolYieldFeeCache?: string | null;
-      swapFee: string;
-      joinsExits?: Array<{ __typename: "JoinExit"; timestamp: number }> | null;
+      protocolAumFeeCache?: any | null;
+      protocolSwapFeeCache?: any | null;
+      protocolYieldFeeCache?: any | null;
+      swapFee: any;
+      joinsExits?: Array<{ __typename?: "JoinExit"; timestamp: number }> | null;
       tokens?: Array<{
-        __typename: "PoolToken";
+        __typename?: "PoolToken";
         address: string;
         decimals: number;
         id: string;
         name: string;
         symbol: string;
-        weight?: string | null;
-        paidProtocolFees?: string | null;
+        weight?: any | null;
+        paidProtocolFees?: any | null;
       }> | null;
     };
   }>;
@@ -10674,39 +10774,39 @@ export type BalancerPoolProtocolFeeSnapshotsQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolProtocolFeeSnapshotsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolSnapshots: Array<{
-    __typename: "PoolSnapshot";
+    __typename?: "PoolSnapshot";
     id: string;
-    amounts: Array<string>;
-    totalShares: string;
-    protocolFee?: string | null;
-    swapVolume: string;
-    swapFees: string;
+    amounts: Array<any>;
+    totalShares: any;
+    protocolFee?: any | null;
+    swapVolume: any;
+    swapFees: any;
     timestamp: number;
-    swapsCount: string;
-    holdersCount: string;
+    swapsCount: any;
+    holdersCount: any;
     pool: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
-      address: string;
-      totalProtocolFeePaidInBPT?: string | null;
+      address: any;
+      totalProtocolFeePaidInBPT?: any | null;
       tokens?: Array<{
-        __typename: "PoolToken";
+        __typename?: "PoolToken";
         symbol: string;
         address: string;
-        paidProtocolFees?: string | null;
+        paidProtocolFees?: any | null;
       }> | null;
     };
   }>;
 };
 
 export type LatestPriceFragment = {
-  __typename: "LatestPrice";
-  asset: string;
-  pricingAsset: string;
-  price: string;
-  poolId: { __typename: "Pool"; id: string };
+  __typename?: "LatestPrice";
+  asset: any;
+  pricingAsset: any;
+  price: any;
+  poolId: { __typename?: "Pool"; id: string };
 };
 
 export type BalancerProtocolDataQueryVariables = Exact<{
@@ -10719,16 +10819,16 @@ export type BalancerProtocolDataQueryVariables = Exact<{
 }>;
 
 export type BalancerProtocolDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   balancers: Array<{
-    __typename: "Balancer";
+    __typename?: "Balancer";
     id: string;
-    totalLiquidity: string;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalProtocolFee?: string | null;
+    totalLiquidity: any;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalProtocolFee?: any | null;
     poolCount: number;
-    totalSwapCount: string;
+    totalSwapCount: any;
   }>;
 };
 
@@ -10738,14 +10838,14 @@ export type BalancerUserQueryVariables = Exact<{
 }>;
 
 export type BalancerUserQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   user?: {
-    __typename: "User";
+    __typename?: "User";
     id: string;
     sharesOwned?: Array<{
-      __typename: "PoolShare";
-      balance: string;
-      poolId: { __typename: "Pool"; id: string };
+      __typename?: "PoolShare";
+      balance: any;
+      poolId: { __typename?: "Pool"; id: string };
     }> | null;
   } | null;
 };
@@ -10760,25 +10860,25 @@ export type BalancerUsersQueryVariables = Exact<{
 }>;
 
 export type BalancerUsersQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   users: Array<{
-    __typename: "User";
+    __typename?: "User";
     id: string;
     sharesOwned?: Array<{
-      __typename: "PoolShare";
-      balance: string;
-      poolId: { __typename: "Pool"; id: string };
+      __typename?: "PoolShare";
+      balance: any;
+      poolId: { __typename?: "Pool"; id: string };
     }> | null;
   }>;
 };
 
 export type UserFragment = {
-  __typename: "User";
+  __typename?: "User";
   id: string;
   sharesOwned?: Array<{
-    __typename: "PoolShare";
-    balance: string;
-    poolId: { __typename: "Pool"; id: string };
+    __typename?: "PoolShare";
+    balance: any;
+    poolId: { __typename?: "Pool"; id: string };
   }> | null;
 };
 
@@ -10792,17 +10892,17 @@ export type BalancerTokenPricesQueryVariables = Exact<{
 }>;
 
 export type BalancerTokenPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokenPrices: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
-    asset: string;
-    amount: string;
-    pricingAsset: string;
-    price: string;
-    block: string;
+    asset: any;
+    amount: any;
+    pricingAsset: any;
+    price: any;
+    block: any;
     timestamp: number;
-    poolId: { __typename: "Pool"; id: string };
+    poolId: { __typename?: "Pool"; id: string };
   }>;
 };
 
@@ -10811,118 +10911,118 @@ export type BalancerChartTokenPricesQueryVariables = Exact<{
 }>;
 
 export type BalancerChartTokenPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   prices1: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
   prices2: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
   prices3: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
   prices4: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
   prices5: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
   prices6: Array<{
-    __typename: "TokenPrice";
+    __typename?: "TokenPrice";
     id: string;
     timestamp: number;
-    price: string;
-    amount: string;
+    price: any;
+    amount: any;
   }>;
 };
 
 export type BalancerChartTokenPriceFragment = {
-  __typename: "TokenPrice";
+  __typename?: "TokenPrice";
   id: string;
   timestamp: number;
-  price: string;
-  amount: string;
+  price: any;
+  amount: any;
 };
 
 export type BalancerTokenPriceFragment = {
-  __typename: "TokenPrice";
+  __typename?: "TokenPrice";
   id: string;
-  asset: string;
-  amount: string;
-  pricingAsset: string;
-  price: string;
-  block: string;
+  asset: any;
+  amount: any;
+  pricingAsset: any;
+  price: any;
+  block: any;
   timestamp: number;
-  poolId: { __typename: "Pool"; id: string };
+  poolId: { __typename?: "Pool"; id: string };
 };
 
 export type BalancerPoolFragment = {
-  __typename: "Pool";
+  __typename?: "Pool";
   id: string;
-  address: string;
+  address: any;
   poolType?: string | null;
   symbol?: string | null;
   name?: string | null;
-  swapFee: string;
-  totalWeight?: string | null;
-  totalSwapVolume: string;
-  totalSwapFee: string;
-  totalLiquidity: string;
-  totalProtocolFee?: string | null;
-  totalShares: string;
-  swapsCount: string;
-  holdersCount: string;
+  swapFee: any;
+  totalWeight?: any | null;
+  totalSwapVolume: any;
+  totalSwapFee: any;
+  totalLiquidity: any;
+  totalProtocolFee?: any | null;
+  totalShares: any;
+  swapsCount: any;
+  holdersCount: any;
   createTime: number;
-  owner?: string | null;
-  amp?: string | null;
-  factory?: string | null;
+  owner?: any | null;
+  amp?: any | null;
+  factory?: any | null;
   strategyType: number;
   swapEnabled: boolean;
   tokens?: Array<{
-    __typename: "PoolToken";
+    __typename?: "PoolToken";
     id: string;
     symbol: string;
     name: string;
     decimals: number;
     address: string;
-    balance: string;
-    weight?: string | null;
-    priceRate: string;
-    poolId?: { __typename: "Pool"; id: string; address: string } | null;
+    balance: any;
+    weight?: any | null;
+    priceRate: any;
+    poolId?: { __typename?: "Pool"; id: string; address: any } | null;
   }> | null;
 };
 
 export type BalancerPoolTokenFragment = {
-  __typename: "PoolToken";
+  __typename?: "PoolToken";
   id: string;
   symbol: string;
   name: string;
   decimals: number;
   address: string;
-  balance: string;
-  weight?: string | null;
-  priceRate: string;
-  poolId?: { __typename: "Pool"; id: string; address: string } | null;
+  balance: any;
+  weight?: any | null;
+  priceRate: any;
+  poolId?: { __typename?: "Pool"; id: string; address: any } | null;
 };
 
 export type GetBalancerPoolsQueryVariables = Exact<{
@@ -10935,40 +11035,40 @@ export type GetBalancerPoolsQueryVariables = Exact<{
 }>;
 
 export type GetBalancerPoolsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   pools: Array<{
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   }>;
 };
@@ -10979,75 +11079,75 @@ export type GetBalancerPoolQueryVariables = Exact<{
 }>;
 
 export type GetBalancerPoolQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   pool?: {
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   } | null;
   pool24?: {
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   } | null;
 };
@@ -11062,18 +11162,18 @@ export type BalancerPoolTokensQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolTokensQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolTokens: Array<{
-    __typename: "PoolToken";
+    __typename?: "PoolToken";
     id: string;
     symbol: string;
     name: string;
     decimals: number;
     address: string;
-    balance: string;
-    weight?: string | null;
-    priceRate: string;
-    poolId?: { __typename: "Pool"; id: string; address: string } | null;
+    balance: any;
+    weight?: any | null;
+    priceRate: any;
+    poolId?: { __typename?: "Pool"; id: string; address: any } | null;
   }>;
 };
 
@@ -11087,16 +11187,16 @@ export type BalancerPoolHistoricalLiquiditiesQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolHistoricalLiquiditiesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolHistoricalLiquidities: Array<{
-    __typename: "PoolHistoricalLiquidity";
+    __typename?: "PoolHistoricalLiquidity";
     id: string;
-    poolTotalShares: string;
-    poolLiquidity: string;
-    poolShareValue: string;
-    pricingAsset: string;
-    block: string;
-    poolId: { __typename: "Pool"; id: string };
+    poolTotalShares: any;
+    poolLiquidity: any;
+    poolShareValue: any;
+    pricingAsset: any;
+    block: any;
+    poolId: { __typename?: "Pool"; id: string };
   }>;
 };
 
@@ -11110,28 +11210,28 @@ export type BalancerPoolSnapshotsQueryVariables = Exact<{
 }>;
 
 export type BalancerPoolSnapshotsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   poolSnapshots: Array<{
-    __typename: "PoolSnapshot";
+    __typename?: "PoolSnapshot";
     id: string;
-    totalShares: string;
-    swapVolume: string;
-    swapFees: string;
-    protocolFee?: string | null;
+    totalShares: any;
+    swapVolume: any;
+    swapFees: any;
+    protocolFee?: any | null;
     timestamp: number;
-    pool: { __typename: "Pool"; id: string };
+    pool: { __typename?: "Pool"; id: string };
   }>;
 };
 
 export type BalancerPoolSnapshotFragment = {
-  __typename: "PoolSnapshot";
+  __typename?: "PoolSnapshot";
   id: string;
-  totalShares: string;
-  swapVolume: string;
-  swapFees: string;
-  protocolFee?: string | null;
+  totalShares: any;
+  swapVolume: any;
+  swapFees: any;
+  protocolFee?: any | null;
   timestamp: number;
-  pool: { __typename: "Pool"; id: string };
+  pool: { __typename?: "Pool"; id: string };
 };
 
 export type BalancerLatestPricesQueryVariables = Exact<{
@@ -11144,14 +11244,14 @@ export type BalancerLatestPricesQueryVariables = Exact<{
 }>;
 
 export type BalancerLatestPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   latestPrices: Array<{
-    __typename: "LatestPrice";
+    __typename?: "LatestPrice";
     id: string;
-    asset: string;
-    price: string;
-    pricingAsset: string;
-    poolId: { __typename: "Pool"; id: string };
+    asset: any;
+    price: any;
+    pricingAsset: any;
+    poolId: { __typename?: "Pool"; id: string };
   }>;
 };
 
@@ -11165,30 +11265,30 @@ export type BalancerJoinExitsQueryVariables = Exact<{
 }>;
 
 export type BalancerJoinExitsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   joinExits: Array<{
-    __typename: "JoinExit";
-    amounts: Array<string>;
-    valueUSD?: string | null;
+    __typename?: "JoinExit";
+    amounts: Array<any>;
+    valueUSD?: any | null;
     id: string;
-    sender: string;
+    sender: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     type: InvestType;
-    pool: { __typename: "Pool"; id: string; tokensList: Array<string> };
+    pool: { __typename?: "Pool"; id: string; tokensList: Array<any> };
   }>;
 };
 
 export type BalancerJoinExitFragment = {
-  __typename: "JoinExit";
-  amounts: Array<string>;
-  valueUSD?: string | null;
+  __typename?: "JoinExit";
+  amounts: Array<any>;
+  valueUSD?: any | null;
   id: string;
-  sender: string;
+  sender: any;
   timestamp: number;
-  tx: string;
+  tx: any;
   type: InvestType;
-  pool: { __typename: "Pool"; id: string; tokensList: Array<string> };
+  pool: { __typename?: "Pool"; id: string; tokensList: Array<any> };
 };
 
 export type BalancePortfolioDataQueryVariables = Exact<{
@@ -11197,93 +11297,93 @@ export type BalancePortfolioDataQueryVariables = Exact<{
 }>;
 
 export type BalancePortfolioDataQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   user?: {
-    __typename: "User";
+    __typename?: "User";
     id: string;
     sharesOwned?: Array<{
-      __typename: "PoolShare";
-      balance: string;
-      poolId: { __typename: "Pool"; id: string };
+      __typename?: "PoolShare";
+      balance: any;
+      poolId: { __typename?: "Pool"; id: string };
     }> | null;
   } | null;
   pools: Array<{
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   }>;
   previousUser?: {
-    __typename: "User";
+    __typename?: "User";
     id: string;
     sharesOwned?: Array<{
-      __typename: "PoolShare";
-      balance: string;
-      poolId: { __typename: "Pool"; id: string };
+      __typename?: "PoolShare";
+      balance: any;
+      poolId: { __typename?: "Pool"; id: string };
     }> | null;
   } | null;
   previousPools: Array<{
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
-    address: string;
+    address: any;
     poolType?: string | null;
     symbol?: string | null;
     name?: string | null;
-    swapFee: string;
-    totalWeight?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
-    totalLiquidity: string;
-    totalProtocolFee?: string | null;
-    totalShares: string;
-    swapsCount: string;
-    holdersCount: string;
+    swapFee: any;
+    totalWeight?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
+    totalLiquidity: any;
+    totalProtocolFee?: any | null;
+    totalShares: any;
+    swapsCount: any;
+    holdersCount: any;
     createTime: number;
-    owner?: string | null;
-    amp?: string | null;
-    factory?: string | null;
+    owner?: any | null;
+    amp?: any | null;
+    factory?: any | null;
     strategyType: number;
     swapEnabled: boolean;
     tokens?: Array<{
-      __typename: "PoolToken";
+      __typename?: "PoolToken";
       id: string;
       symbol: string;
       name: string;
       decimals: number;
       address: string;
-      balance: string;
-      weight?: string | null;
-      priceRate: string;
-      poolId?: { __typename: "Pool"; id: string; address: string } | null;
+      balance: any;
+      weight?: any | null;
+      priceRate: any;
+      poolId?: { __typename?: "Pool"; id: string; address: any } | null;
     }> | null;
   }>;
 };
@@ -11298,52 +11398,52 @@ export type BalancerSwapsQueryVariables = Exact<{
 }>;
 
 export type BalancerSwapsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   swaps: Array<{
-    __typename: "Swap";
+    __typename?: "Swap";
     id: string;
-    caller: string;
-    tokenIn: string;
+    caller: any;
+    tokenIn: any;
     tokenInSym: string;
-    tokenOut: string;
+    tokenOut: any;
     tokenOutSym: string;
-    tokenAmountIn: string;
-    tokenAmountOut: string;
-    valueUSD: string;
+    tokenAmountIn: any;
+    tokenAmountOut: any;
+    valueUSD: any;
     timestamp: number;
-    tx: string;
+    tx: any;
     poolId: {
-      __typename: "Pool";
+      __typename?: "Pool";
       id: string;
       name?: string | null;
-      address: string;
-      swapFee: string;
+      address: any;
+      swapFee: any;
     };
-    userAddress: { __typename: "User"; id: string };
+    userAddress: { __typename?: "User"; id: string };
   }>;
 };
 
 export type BalancerSwapFragment = {
-  __typename: "Swap";
+  __typename?: "Swap";
   id: string;
-  caller: string;
-  tokenIn: string;
+  caller: any;
+  tokenIn: any;
   tokenInSym: string;
-  tokenOut: string;
+  tokenOut: any;
   tokenOutSym: string;
-  tokenAmountIn: string;
-  tokenAmountOut: string;
-  valueUSD: string;
+  tokenAmountIn: any;
+  tokenAmountOut: any;
+  valueUSD: any;
   timestamp: number;
-  tx: string;
+  tx: any;
   poolId: {
-    __typename: "Pool";
+    __typename?: "Pool";
     id: string;
     name?: string | null;
-    address: string;
-    swapFee: string;
+    address: any;
+    swapFee: any;
   };
-  userAddress: { __typename: "User"; id: string };
+  userAddress: { __typename?: "User"; id: string };
 };
 
 export type GetBalancerTokensQueryVariables = Exact<{
@@ -11356,36 +11456,36 @@ export type GetBalancerTokensQueryVariables = Exact<{
 }>;
 
 export type GetBalancerTokensQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tokens: Array<{
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   }>;
 };
 
 export type BalancerTokenFragment = {
-  __typename: "Token";
+  __typename?: "Token";
   id: string;
   address: string;
   decimals: number;
   name?: string | null;
   symbol?: string | null;
-  totalBalanceUSD: string;
-  totalBalanceNotional: string;
-  totalVolumeUSD: string;
-  totalVolumeNotional: string;
-  totalSwapCount: string;
-  latestUSDPrice?: string | null;
+  totalBalanceUSD: any;
+  totalBalanceNotional: any;
+  totalVolumeUSD: any;
+  totalVolumeNotional: any;
+  totalSwapCount: any;
+  latestUSDPrice?: any | null;
 };
 
 export type BalancerTradePairsQueryVariables = Exact<{
@@ -11398,75 +11498,75 @@ export type BalancerTradePairsQueryVariables = Exact<{
 }>;
 
 export type BalancerTradePairsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   tradePairs: Array<{
-    __typename: "TradePair";
+    __typename?: "TradePair";
     id: string;
-    totalSwapVolume: string;
-    totalSwapFee: string;
+    totalSwapVolume: any;
+    totalSwapFee: any;
     token0: {
-      __typename: "Token";
+      __typename?: "Token";
       id: string;
       address: string;
       decimals: number;
       name?: string | null;
       symbol?: string | null;
-      totalBalanceUSD: string;
-      totalBalanceNotional: string;
-      totalVolumeUSD: string;
-      totalVolumeNotional: string;
-      totalSwapCount: string;
-      latestUSDPrice?: string | null;
+      totalBalanceUSD: any;
+      totalBalanceNotional: any;
+      totalVolumeUSD: any;
+      totalVolumeNotional: any;
+      totalSwapCount: any;
+      latestUSDPrice?: any | null;
     };
     token1: {
-      __typename: "Token";
+      __typename?: "Token";
       id: string;
       address: string;
       decimals: number;
       name?: string | null;
       symbol?: string | null;
-      totalBalanceUSD: string;
-      totalBalanceNotional: string;
-      totalVolumeUSD: string;
-      totalVolumeNotional: string;
-      totalSwapCount: string;
-      latestUSDPrice?: string | null;
+      totalBalanceUSD: any;
+      totalBalanceNotional: any;
+      totalVolumeUSD: any;
+      totalVolumeNotional: any;
+      totalSwapCount: any;
+      latestUSDPrice?: any | null;
     };
   }>;
 };
 
 export type BalancerTradePairFragment = {
-  __typename: "TradePair";
+  __typename?: "TradePair";
   id: string;
-  totalSwapVolume: string;
-  totalSwapFee: string;
+  totalSwapVolume: any;
+  totalSwapFee: any;
   token0: {
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   };
   token1: {
-    __typename: "Token";
+    __typename?: "Token";
     id: string;
     address: string;
     decimals: number;
     name?: string | null;
     symbol?: string | null;
-    totalBalanceUSD: string;
-    totalBalanceNotional: string;
-    totalVolumeUSD: string;
-    totalVolumeNotional: string;
-    totalSwapCount: string;
-    latestUSDPrice?: string | null;
+    totalBalanceUSD: any;
+    totalBalanceNotional: any;
+    totalVolumeUSD: any;
+    totalVolumeNotional: any;
+    totalSwapCount: any;
+    latestUSDPrice?: any | null;
   };
 };
 
@@ -11480,30 +11580,30 @@ export type GetBalancerSnapshotsQueryVariables = Exact<{
 }>;
 
 export type GetBalancerSnapshotsQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   balancerSnapshots: Array<{
-    __typename: "BalancerSnapshot";
+    __typename?: "BalancerSnapshot";
     id: string;
     timestamp: number;
     poolCount: number;
-    totalLiquidity: string;
-    totalSwapCount: string;
-    totalProtocolFee?: string | null;
-    totalSwapVolume: string;
-    totalSwapFee: string;
+    totalLiquidity: any;
+    totalSwapCount: any;
+    totalProtocolFee?: any | null;
+    totalSwapVolume: any;
+    totalSwapFee: any;
   }>;
 };
 
 export type BalancerSnapshotFragment = {
-  __typename: "BalancerSnapshot";
+  __typename?: "BalancerSnapshot";
   id: string;
   timestamp: number;
   poolCount: number;
-  totalLiquidity: string;
-  totalSwapCount: string;
-  totalProtocolFee?: string | null;
-  totalSwapVolume: string;
-  totalSwapFee: string;
+  totalLiquidity: any;
+  totalSwapCount: any;
+  totalProtocolFee?: any | null;
+  totalSwapVolume: any;
+  totalSwapFee: any;
 };
 
 export type GetLatestPricesQueryVariables = Exact<{
@@ -11516,25 +11616,25 @@ export type GetLatestPricesQueryVariables = Exact<{
 }>;
 
 export type GetLatestPricesQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   latestPrices: Array<{
-    __typename: "LatestPrice";
-    asset: string;
-    pricingAsset: string;
-    price: string;
-    poolId: { __typename: "Pool"; id: string };
+    __typename?: "LatestPrice";
+    asset: any;
+    pricingAsset: any;
+    price: any;
+    poolId: { __typename?: "Pool"; id: string };
   }>;
 };
 
 export type GetLatestBlockQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetLatestBlockQuery = {
-  __typename: "Query";
+  __typename?: "Query";
   blocks: Array<{
-    __typename: "Block";
+    __typename?: "Block";
     id: string;
-    number: string;
-    timestamp: string;
+    number: any;
+    timestamp: any;
   }>;
 };
 

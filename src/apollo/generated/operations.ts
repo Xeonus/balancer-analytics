@@ -190,20 +190,16 @@ export const BalancerSnapshot = gql`
     totalSwapFee
   }
 `;
-export const GetTokenPrice = gql`
-  query GetTokenPrice($address: String!, $chain: GqlChain!) {
-    tokenGetPriceChartData(address: $address, chain: $chain, range: ONE_YEAR) {
-      price
-      timestamp
-    }
-  }
-`;
 export const GetTokenSetHistoricalPrices = gql`
-  query GetTokenSetHistoricalPrices($addresses: [String!]!, $chain: GqlChain!) {
+  query GetTokenSetHistoricalPrices(
+    $addresses: [String!]!
+    $chain: GqlChain!
+    $range: GqlTokenChartDataRange!
+  ) {
     tokenGetHistoricalPrices(
       addresses: $addresses
       chain: $chain
-      range: ONE_YEAR
+      range: $range
     ) {
       address
       prices {
@@ -214,7 +210,7 @@ export const GetTokenSetHistoricalPrices = gql`
   }
 `;
 export const TokenGetCurrentPrices = gql`
-  query TokenGetCurrentPrices($chains: [GqlChain!]) {
+  query TokenGetCurrentPrices($chains: [GqlChain!]!) {
     tokenGetCurrentPrices(chains: $chains) {
       address
       chain
@@ -223,8 +219,8 @@ export const TokenGetCurrentPrices = gql`
   }
 `;
 export const GetDynamicTokenPrices = gql`
-  query GetDynamicTokenPrices($addresses: [String!]!) {
-    tokenGetTokensDynamicData(addresses: $addresses) {
+  query GetDynamicTokenPrices($addresses: [String!]!, $chain: GqlChain!) {
+    tokenGetTokensDynamicData(addresses: $addresses, chain: $chain) {
       price
       tokenAddress
       priceChange24h
@@ -254,92 +250,13 @@ export const VeBalGetVotingGauges = gql`
     }
   }
 `;
-export const GetPoolSwaps = gql`
-  query GetPoolSwaps($first: Int, $skip: Int, $where: GqlPoolSwapFilter) {
-    swaps: poolGetSwaps(first: $first, skip: $skip, where: $where) {
-      id
-      poolId
-      timestamp
-      tokenAmountIn
-      tokenAmountOut
-      tokenIn
-      tokenOut
-      tx
-      userAddress
-      valueUSD
-    }
-  }
-`;
-export const GetPoolJoinExits = gql`
-  query GetPoolJoinExits($first: Int, $skip: Int, $poolId: String!) {
-    joinExits: poolGetJoinExits(
-      first: $first
-      skip: $skip
-      where: { poolIdIn: [$poolId] }
-    ) {
-      id
-      timestamp
-      tx
-      type
-      poolId
-      valueUSD
-      amounts {
-        address
-        amount
-      }
-    }
-  }
-`;
-export const GetPoolBptPriceChartData = gql`
-  query GetPoolBptPriceChartData(
-    $address: String!
-    $range: GqlTokenChartDataRange!
-  ) {
-    prices: tokenGetPriceChartData(address: $address, range: $range) {
-      id
-      price
-      timestamp
-    }
-  }
-`;
-export const GetPoolUserJoinExits = gql`
-  query GetPoolUserJoinExits($first: Int, $skip: Int, $poolId: String!) {
-    joinExits: userGetPoolJoinExits(
-      poolId: $poolId
-      first: $first
-      skip: $skip
-    ) {
-      id
-      timestamp
-      tx
-      type
-      poolId
-      valueUSD
-      amounts {
-        address
-        amount
-      }
-    }
-  }
-`;
-export const GetUserSwaps = gql`
-  query GetUserSwaps($first: Int, $skip: Int, $poolId: String!) {
-    swaps: userGetSwaps(first: $first, skip: $skip, poolId: $poolId) {
-      id
-      poolId
-      timestamp
-      tokenAmountIn
-      tokenAmountOut
-      tokenIn
-      tokenOut
-      tx
-      valueUSD
-    }
-  }
-`;
 export const GetPoolSnapshots = gql`
-  query GetPoolSnapshots($poolId: String!, $range: GqlPoolSnapshotDataRange!) {
-    snapshots: poolGetSnapshots(id: $poolId, range: $range) {
+  query GetPoolSnapshots(
+    $poolId: String!
+    $chain: GqlChain!
+    $range: GqlPoolSnapshotDataRange!
+  ) {
+    snapshots: poolGetSnapshots(id: $poolId, chain: $chain, range: $range) {
       id
       timestamp
       totalLiquidity
@@ -361,11 +278,10 @@ export const GetAllPools = gql`
       type
       name
       symbol
-      allTokens {
+      poolTokens {
         address
         name
         weight
-        isMainToken
         symbol
         decimals
         id
@@ -378,57 +294,12 @@ export const GetAllPools = gql`
         yieldCapture24h
         poolId
         totalLiquidity
-        apr {
-          hasRewardApr
-          swapApr
-          nativeRewardApr {
-            __typename
-            ... on GqlPoolAprRange {
-              min
-              max
-            }
-            ... on GqlPoolAprTotal {
-              total
-            }
-          }
-          thirdPartyApr {
-            __typename
-            ... on GqlPoolAprRange {
-              min
-              max
-            }
-            ... on GqlPoolAprTotal {
-              total
-            }
-          }
-          items {
-            id
-            title
-            __typename
-            apr {
-              ... on GqlPoolAprRange {
-                min
-                max
-              }
-              ... on GqlPoolAprTotal {
-                total
-              }
-            }
-            subItems {
-              id
-              title
-              __typename
-              apr {
-                ... on GqlPoolAprRange {
-                  min
-                  max
-                }
-                ... on GqlPoolAprTotal {
-                  total
-                }
-              }
-            }
-          }
+        aprItems {
+          id
+          apr
+          type
+          rewardTokenAddress
+          rewardTokenSymbol
         }
       }
     }

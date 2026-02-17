@@ -25,6 +25,7 @@ export const useGetHistoricalTokenPricesAggregated = (
         variables: {
             addresses: normalizedAddresses,
             chain: "MAINNET" as GqlChain,
+            range: "ONE_YEAR",
         },
         skip: !normalizedAddresses.length,
     });

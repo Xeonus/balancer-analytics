@@ -1,6 +1,6 @@
 import {
     GqlChain,
-    useGetDynamicTokenPricesQuery, useTokenGetCurrentPricesQuery,
+    useTokenGetCurrentPricesQuery,
 } from "../../apollo/generated/graphql-codegen-generated";
 import {balancerV3APIClient} from "../../apollo/client";
 
@@ -12,12 +12,9 @@ export default function useGetCurrentTokenPrices(chainInIds: GqlChain[]) {
         }
     });
 
-
-    console.log("Mapped token prices data", data?.tokenGetCurrentPrices);
-
     return {
         loading,
         error,
-        data: data?.tokenGetCurrentPrices, // Return the mapped data
+        data: data?.tokenGetCurrentPrices,
     };
 }
