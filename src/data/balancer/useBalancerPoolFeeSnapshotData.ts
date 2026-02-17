@@ -68,7 +68,6 @@ export function useBalancerPoolFeeSnapshotData(clientUri: string, startTimestamp
                         address: token.address,
                         decimals: token.decimals,
                         id: token.id,
-                        isMainToken: false,
                         name: token.name,
                         symbol: token.symbol || '', // Provide a default value for symbol if it's null or undefined
                         weight: token.weight ? parseFloat(token.weight) : 0,

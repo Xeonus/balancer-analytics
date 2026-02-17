@@ -35,6 +35,7 @@ import { AddShoppingCart, ShoppingCartCheckout } from "@mui/icons-material";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
+import useGetTokenPriceWithChange from "../../data/balancer-api-v3/useGetTokenPriceWithChange";
 
 interface TableData {
     parameter: string;
@@ -64,6 +65,7 @@ export default function IncentiveSimulator() {
 
     const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
     const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
+    const balPriceWithChange = useGetTokenPriceWithChange(balAddress);
     const now = Math.round(new Date().getTime() / 1000);
     const weeklyEmissions = balEmissions.weekly(now);
 
@@ -228,7 +230,7 @@ export default function IncentiveSimulator() {
                                     tokenAddress={balAddress}
                                     tokenName="BAL"
                                     tokenPrice={balPriceData.price}
-                                    tokenPriceChange={0}
+                                    tokenPriceChange={balPriceWithChange?.priceChange24h ?? 0}
                                 />
                             </Box>
                         ) : (

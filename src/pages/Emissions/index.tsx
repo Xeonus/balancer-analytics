@@ -20,6 +20,7 @@ import useGetAllPools from "../../data/balancer-api-v3/useGetAllPools";
 import {GqlChain} from "../../apollo/generated/graphql-codegen-generated";
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
+import useGetTokenPriceWithChange from "../../data/balancer-api-v3/useGetTokenPriceWithChange";
 
 export default function Emissions() {
 
@@ -50,6 +51,7 @@ export default function Emissions() {
     const { data: currentPrices } = useGetCurrentTokenPrices(["MAINNET"]);
     const balPriceData = currentPrices?.find(token => token.address.toLowerCase() === balAddress.toLowerCase());
     const balPrice = balPriceData?.price ?? 0;
+    const balPriceWithChange = useGetTokenPriceWithChange(balAddress);
 
     //Init SDK - static for Mainnet
     const sdk = new BalancerSDK({
@@ -130,7 +132,7 @@ export default function Emissions() {
                                         tokenAddress={balAddress}
                                         tokenName='BAL'
                                         tokenPrice={balPriceData.price}
-                                        tokenPriceChange={0}
+                                        tokenPriceChange={balPriceWithChange?.priceChange24h ?? 0}
                                     />
                                     : <CircularProgress/>}
                             </Box>

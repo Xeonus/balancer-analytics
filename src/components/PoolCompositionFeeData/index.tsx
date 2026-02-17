@@ -13,7 +13,7 @@ export default function PoolCompositionFeeData({ poolData, size = 24 }: PoolComp
 
     const theme = useTheme();
 
-    poolData.tokens = poolData.tokens.filter((token) => ! token.symbol.includes('BPT') && ! token.symbol.includes('/') || token.isMainToken)
+    poolData.tokens = poolData.tokens.filter((token) => ! token.symbol.includes('BPT') && ! token.symbol.includes('/'))
     return (
         <Box position={"relative"} display="flex" alignItems={"center"}>
             <AvatarGroup max={4}

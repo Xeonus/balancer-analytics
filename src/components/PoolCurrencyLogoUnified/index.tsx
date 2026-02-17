@@ -10,7 +10,7 @@ interface PoolCurrencyLogoProps {
 }
 
 export default function PoolCurrencyLogoUnified({ tokens, size = '25px'}: PoolCurrencyLogoProps) {
-    const filteredTokens = tokens.filter((token) => (! token.symbol.includes('BSP') && ! token.symbol.includes('bb-') && ! token.symbol.includes('BPT') && ! token.symbol.includes('-Stable') && ! token.symbol.includes('/')) || token.isMainToken)
+    const filteredTokens = tokens.filter((token) => ! token.symbol.includes('BSP') && ! token.symbol.includes('bb-') && ! token.symbol.includes('BPT') && ! token.symbol.includes('-Stable') && ! token.symbol.includes('/'))
     return(
         <Box position={"relative"} display="flex">
             <AvatarGroup max={8}>

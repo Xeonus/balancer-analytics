@@ -868,12 +868,22 @@ enum CircuitBreaker_orderBy {
   upperBoundPercentage
 }
 
+input CreateLBPInput {
+  metadata: LBPMetadataInput!
+  poolContract: LBPoolInput!
+}
+
 scalar Date
 
 """
 The review data for the ERC4626 token
 """
 type Erc4626ReviewData {
+  """
+  If it is an ERC4626 token, this defines whether we can use wrap/unwrap through the buffer in swap paths for this token.
+  """
+  canUseBufferForSwaps: Boolean
+
   """
   The filename of the review of the ERC4626
   """
@@ -885,9 +895,26 @@ type Erc4626ReviewData {
   summary: String!
 
   """
+  If it is an ERC4626 token, this defines whether we allow underlying tokens to be used for add/remove operations.
+  """
+  useUnderlyingForAddRemove: Boolean
+
+  """
+  If it is an ERC4626 token, this defines whether we allow the wrapped tokens to be used for add/remove operations.
+  """
+  useWrappedForAddRemove: Boolean
+
+  """
   Warnings associated with the ERC4626
   """
   warnings: [String!]!
+}
+
+"""
+ExitFee hook specific params. Percentage format is 0.01 -> 0.01%.
+"""
+type ExitFeeHookParams {
+  exitFeePercentage: String
 }
 
 type FXOracle {
@@ -953,6 +980,15 @@ enum FXOracle_orderBy {
   divisor
   id
   tokens
+}
+
+"""
+FeeTaking hook specific params. Percentage format is 0.01 -> 0.01%
+"""
+type FeeTakingHookParams {
+  addLiquidityFeePercentage: String
+  removeLiquidityFeePercentage: String
+  swapFeePercentage: String
 }
 
 type Gauge {
@@ -1467,17 +1503,14 @@ enum Gauge_orderBy {
   type__name
 }
 
-type GqlBalancePoolAprItem {
-  apr: GqlPoolAprValue!
-  id: ID!
-  subItems: [GqlBalancePoolAprSubItem!]
-  title: String!
-}
-
-type GqlBalancePoolAprSubItem {
-  apr: GqlPoolAprValue!
-  id: ID!
-  title: String!
+input GqlAggregatorPoolFilter {
+  chainIn: [GqlChain!]
+  idIn: [String!]
+  includeHooks: [GqlHookType!]
+  minTvl: Float
+  poolTypeIn: [GqlPoolType!]
+  protocolVersionIn: [Int!]
+  tokensIn: [String!]
 }
 
 scalar GqlBigNumber
@@ -1489,70 +1522,17 @@ enum GqlChain {
   FANTOM
   FRAXTAL
   GNOSIS
+  HYPEREVM
   MAINNET
   MODE
+  MONAD
   OPTIMISM
+  PLASMA
   POLYGON
   SEPOLIA
   SONIC
+  XLAYER
   ZKEVM
-}
-
-type GqlContentNewsItem {
-  discussionUrl: String
-  id: ID!
-  image: String
-  source: GqlContentNewsItemSource!
-  text: String!
-  timestamp: String!
-  url: String!
-}
-
-enum GqlContentNewsItemSource {
-  discord
-  medium
-  twitter
-}
-
-type GqlFeaturePoolGroupItemExternalLink {
-  buttonText: String!
-  buttonUrl: String!
-  id: ID!
-  image: String!
-}
-
-"""
-Configuration options for SOR V2
-"""
-input GqlGraphTraversalConfigInput {
-  """
-  Max number of paths to return (can be less)
-
-  Default: 5
-  """
-  approxPathsToReturn: Int
-
-  """
-  The max hops in a path.
-
-  Default: 6
-  """
-  maxDepth: Int
-
-  """
-  Limit non boosted hop tokens in a boosted path.
-
-  Default: 2
-  """
-  maxNonBoostedHopTokensInBoostedPath: Int
-
-  """
-  Limit of "non-boosted" pools for efficiency.
-
-  Default: 6
-  """
-  maxNonBoostedPathDepth: Int
-  poolIdsToInclude: [String]
 }
 
 type GqlHistoricalTokenPrice {
@@ -1573,35 +1553,32 @@ Hook data
 """
 type GqlHook {
   address: String!
+  config: HookConfig
+  dynamicData: GqlHookData @deprecated
+  enableHookAdjustedAmounts: Boolean! @deprecated
+  name: String! @deprecated(reason: "unused")
 
   """
-  Data points changing over time
+  Hook type specific params
   """
-  dynamicData: GqlHookData
-
-  """
-  True when hook can change the amounts send to the vault. Necessary to deduct the fees.
-  """
-  enableHookAdjustedAmounts: Boolean!
+  params: HookParams
 
   """
   The review for this hook if applicable.
   """
   reviewData: GqlHookReviewData
-  shouldCallAfterAddLiquidity: Boolean!
-  shouldCallAfterInitialize: Boolean!
-  shouldCallAfterRemoveLiquidity: Boolean!
-  shouldCallAfterSwap: Boolean!
-  shouldCallBeforeAddLiquidity: Boolean!
-  shouldCallBeforeInitialize: Boolean!
-  shouldCallBeforeRemoveLiquidity: Boolean!
-  shouldCallBeforeSwap: Boolean!
-  shouldCallComputeDynamicSwapFee: Boolean!
+  shouldCallAfterAddLiquidity: Boolean! @deprecated
+  shouldCallAfterInitialize: Boolean! @deprecated
+  shouldCallAfterRemoveLiquidity: Boolean! @deprecated
+  shouldCallAfterSwap: Boolean! @deprecated
+  shouldCallBeforeAddLiquidity: Boolean! @deprecated
+  shouldCallBeforeInitialize: Boolean! @deprecated
+  shouldCallBeforeRemoveLiquidity: Boolean! @deprecated
+  shouldCallBeforeSwap: Boolean! @deprecated
+  shouldCallComputeDynamicSwapFee: Boolean! @deprecated
+  type: GqlHookType!
 }
 
-"""
-Collection of hook specific data. Percentage format is 0.01 -> 0.01%.
-"""
 type GqlHookData {
   addLiquidityFeePercentage: String
   maxSurgeFeePercentage: String
@@ -1630,10 +1607,87 @@ type GqlHookReviewData {
   warnings: [String!]!
 }
 
-type GqlLatestSyncedBlocks {
-  poolSyncBlock: BigInt!
-  userStakeSyncBlock: BigInt!
-  userWalletSyncBlock: BigInt!
+enum GqlHookType {
+  AKRON
+  DIRECTIONAL_FEE
+  EXIT_FEE
+  FEE_TAKING
+  LBP
+  LOTTERY
+  MEV_TAX
+  NFTLIQUIDITY_POSITION
+  RECLAMM
+  STABLE_SURGE
+  UNKNOWN
+  VEBAL_DISCOUNT
+}
+
+type GqlLBPTopTrade {
+  address: String!
+  timestamp: String!
+  value: String!
+}
+
+type GqlLoopsData {
+  """
+  Actual TotalSupply of LoopS.
+  """
+  actualSupply: String!
+
+  """
+  The total APR for LoopS
+  """
+  apr: Float!
+
+  """
+  The amount of stS provided to Aave.
+  """
+  collateralAmount: String!
+
+  """
+  The amount of stS provided to Aave in S.
+  """
+  collateralAmountInEth: String!
+
+  """
+  The total S debt amount of the position
+  """
+  debtAmount: String!
+
+  """
+  The health factor of the Aave position
+  """
+  healthFactor: String!
+
+  """
+  The amount of leverage the current position has.
+  """
+  leverage: Float!
+
+  """
+  Net Asset Value. The amount of collateral minus the amount of debt.
+  """
+  nav: String!
+
+  """
+  The current rate of LoopS against S.
+  """
+  rate: String!
+
+  """
+  The current amount of stS supplied to the Aave market
+  """
+  stSAaveMarketSupply: String!
+
+  """
+  The current cap on the stS market on Aave
+  """
+  stSAaveMarketSupplyCap: String!
+
+  """
+  Net Asset Value in USD.
+  """
+  tvl: String!
 }
 
 """
@@ -1848,6 +1902,11 @@ type GqlPoolAggregator {
   c: String
 
   """
+  ReClamm: The centeredness margin of the pool
+  """
+  centerednessMargin: BigDecimal
+
+  """
   The chain on which the pool is deployed
   """
   chain: GqlChain!
@@ -1858,9 +1917,19 @@ type GqlPoolAggregator {
   createTime: Int!
 
   """
+  ReClamm: The current fourth root price ratio, an interpolation of the price ratio state
+  """
+  currentFourthRootPriceRatio: BigDecimal
+
+  """
   Data specific to gyro pools
   """
   dSq: String
+
+  """
+  ReClamm: Represents how fast the pool can move the virtual balances per day
+  """
+  dailyPriceShiftBase: BigDecimal
 
   """
   The decimals of the BPT, usually 18
@@ -1876,6 +1945,11 @@ type GqlPoolAggregator {
   Dynamic data such as token balances, swap fees or volume
   """
   dynamicData: GqlPoolDynamicData!
+
+  """
+  ReClamm: The fourth root price ratio at the end of an update
+  """
+  endFourthRootPriceRatio: BigDecimal
 
   """
   Data specific to fx pools
@@ -1901,6 +1975,16 @@ type GqlPoolAggregator {
   Data specific to gyro/fx pools
   """
   lambda: String
+
+  """
+  The timestamp of the last user interaction
+  """
+  lastTimestamp: Int
+
+  """
+  ReClamm: The last virtual balances of the pool
+  """
+  lastVirtualBalances: [BigDecimal!]
 
   """
   Liquidity management settings for v3 pools.
@@ -1933,9 +2017,24 @@ type GqlPoolAggregator {
   poolTokens: [GqlPoolTokenDetail!]!
 
   """
+  ReClamm: The timestamp when the update ends
+  """
+  priceRatioUpdateEndTime: Int
+
+  """
+  ReClamm: The timestamp when the update begins
+  """
+  priceRatioUpdateStartTime: Int
+
+  """
   The protocol version on which the pool is deployed, 1, 2 or 3
   """
   protocolVersion: Int!
+
+  """
+  QuantAmmWeighted specific fields
+  """
+  quantAmmWeightedParams: QuantAmmWeightedParams
 
   """
   Data specific to gyro pools
@@ -1956,6 +2055,11 @@ type GqlPoolAggregator {
   Data specific to gyro pools
   """
   sqrtBeta: String
+
+  """
+  ReClamm: The fourth root price ratio at the start of an update
+  """
+  startFourthRootPriceRatio: BigDecimal
 
   """
   Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
@@ -2018,21 +2122,12 @@ type GqlPoolAggregator {
   z: String
 }
 
-type GqlPoolApr {
-  apr: GqlPoolAprValue!
-  hasRewardApr: Boolean!
-  items: [GqlBalancePoolAprItem!]!
-  nativeRewardApr: GqlPoolAprValue!
-  swapApr: BigDecimal!
-  thirdPartyApr: GqlPoolAprValue!
-}
-
 """
 All APRs for a pool
 """
 type GqlPoolAprItem {
   """
-  The APR value in % -> 0.2 = 0.2%
+  The APR value in % -> 0.2 = 20%
   """
   apr: Float!
 
@@ -2073,6 +2168,11 @@ enum GqlPoolAprItemType {
   AURA
 
   """
+  Dynamic swap fee APR based on data from the last 24h
+  """
+  DYNAMIC_SWAP_FEE_24H
+
+  """
   Represents the yield from an IB (Interest-Bearing) asset APR in a pool.
   """
   IB_YIELD
@@ -2096,6 +2196,11 @@ enum GqlPoolAprItemType {
   Represents if the APR items comes from a nested pool.
   """
   NESTED
+
+  """
+  APR calculated for QUANT-AMM pools based on performance measurements over a month
+  """
+  QUANT_AMM_UPLIFT
 
   """
   Staking reward APR in a pool from a reward token.
@@ -2158,17 +2263,6 @@ enum GqlPoolAprItemType {
   VOTING
 }
 
-type GqlPoolAprRange {
-  max: BigDecimal!
-  min: BigDecimal!
-}
-
-type GqlPoolAprTotal {
-  total: BigDecimal!
-}
-
-union GqlPoolAprValue = GqlPoolAprRange | GqlPoolAprTotal
-
 """
 The base type as returned by poolGetPool (specific pool query)
 """
@@ -2177,12 +2271,6 @@ interface GqlPoolBase {
   The contract address of the pool.
   """
   address: Bytes!
-
-  """
-  Returns all pool tokens, including any nested tokens and phantom BPTs as a flattened array.
-  """
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
 
   """
   List of categories assigned by the team based on external factors
@@ -2203,12 +2291,6 @@ interface GqlPoolBase {
   The decimals of the BPT, usually 18
   """
   decimals: Int!
-
-  """
-  Only returns main tokens, also known as leave tokens. Wont return any nested BPTs. Used for displaying the tokens that the pool consists of.
-  """
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
 
   """
   Dynamic data such as token balances, swap fees or volume
@@ -2244,12 +2326,6 @@ interface GqlPoolBase {
   The pool id. This is equal to the address for protocolVersion 3 pools
   """
   id: ID!
-
-  """
-  Deprecated
-  """
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
 
   """
   Liquidity management settings for v3 pools.
@@ -2325,60 +2401,16 @@ interface GqlPoolBase {
   The version of the pool type.
   """
   version: Int!
-
-  """
-  Deprecated
-  """
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
-}
-
-type GqlPoolBatchSwap {
-  chain: GqlChain!
-  id: ID!
-  swaps: [GqlPoolBatchSwapSwap!]!
-  timestamp: Int!
-  tokenAmountIn: String!
-  tokenAmountOut: String!
-  tokenIn: String!
-  tokenInPrice: Float!
-  tokenOut: String!
-  tokenOutPrice: Float!
-  tx: String!
-  userAddress: String!
-  valueUSD: Float!
-}
-
-type GqlPoolBatchSwapPool {
-  id: ID!
-  tokens: [String!]!
-}
-
-type GqlPoolBatchSwapSwap {
-  id: ID!
-  pool: PoolForBatchSwap!
-  timestamp: Int!
-  tokenAmountIn: String!
-  tokenAmountOut: String!
-  tokenIn: String!
-  tokenOut: String!
-  tx: String!
-  userAddress: String!
-  valueUSD: Float!
 }
 
 type GqlPoolComposableStable implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   amp: BigInt!
   bptPriceRate: BigDecimal!
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -2386,12 +2418,8 @@ type GqlPoolComposableStable implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
-  nestingType: GqlPoolNestingType!
-    @deprecated(reason: "Removed without replacement")
 
   """
   The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
@@ -2417,58 +2445,9 @@ type GqlPoolComposableStable implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-
-  """
-  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
-  """
-  tokens: [GqlPoolTokenUnion!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
-  version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
-}
-
-type GqlPoolComposableStableNested {
-  address: Bytes!
-  amp: BigInt!
-  bptPriceRate: BigDecimal!
-  categories: [GqlPoolFilterCategory]
-  createTime: Int!
-  factory: Bytes
-  id: ID!
-  name: String!
-  nestingType: GqlPoolNestingType!
-    @deprecated(reason: "Removed without replacement")
-
-  """
-  The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
-  """
-  owner: Bytes @deprecated(reason: "Use swapFeeManager instead")
-
-  """
-  Account empowered to pause/unpause the pool (or 0 to delegate to governance)
-  """
-  pauseManager: Bytes
-
-  """
-  Account empowered to set the pool creator fee percentage
-  """
-  poolCreator: Bytes
-  swapFee: BigDecimal!
-
-  """
-  Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
-  """
-  swapFeeManager: Bytes
-  symbol: String!
-  tags: [String]
-  tokens: [GqlPoolTokenComposableStableNestedUnion!]!
-    @deprecated(reason: "Use poolTokens instead")
-  totalLiquidity: BigDecimal!
-  totalShares: BigDecimal!
-  type: GqlPoolType!
   version: Int!
 }
 
@@ -2482,13 +2461,12 @@ type GqlPoolDynamicData {
   Protocol and pool creator fees combined
   """
   aggregateYieldFee: BigDecimal!
-  apr: GqlPoolApr! @deprecated(reason: "Use aprItems instead")
   aprItems: [GqlPoolAprItem!]!
   fees24h: BigDecimal!
-  fees24hAth: BigDecimal!
-  fees24hAthTimestamp: Int!
-  fees24hAtl: BigDecimal!
-  fees24hAtlTimestamp: Int!
+  fees24hAth: BigDecimal! @deprecated
+  fees24hAthTimestamp: Int! @deprecated
+  fees24hAtl: BigDecimal! @deprecated
+  fees24hAtlTimestamp: Int! @deprecated
   fees48h: BigDecimal!
   holdersCount: BigInt!
 
@@ -2500,10 +2478,14 @@ type GqlPoolDynamicData {
   lifetimeSwapFees: BigDecimal!
   lifetimeVolume: BigDecimal!
   poolId: ID!
-  sharePriceAth: BigDecimal!
-  sharePriceAthTimestamp: Int!
-  sharePriceAtl: BigDecimal!
-  sharePriceAtlTimestamp: Int!
+  protocolFees24h: BigDecimal!
+  protocolFees48h: BigDecimal!
+  protocolYieldCapture24h: BigDecimal!
+  protocolYieldCapture48h: BigDecimal!
+  sharePriceAth: BigDecimal! @deprecated
+  sharePriceAthTimestamp: Int! @deprecated
+  sharePriceAtl: BigDecimal! @deprecated
+  sharePriceAtlTimestamp: Int! @deprecated
 
   """
   CowAmm specific, equivalent of swap fees
@@ -2520,21 +2502,21 @@ type GqlPoolDynamicData {
   """
   swapEnabled: Boolean!
   swapFee: BigDecimal!
-  swapsCount: BigInt!
+  swapsCount: BigInt! @deprecated
   totalLiquidity: BigDecimal!
   totalLiquidity24hAgo: BigDecimal!
-  totalLiquidityAth: BigDecimal!
-  totalLiquidityAthTimestamp: Int!
-  totalLiquidityAtl: BigDecimal!
-  totalLiquidityAtlTimestamp: Int!
+  totalLiquidityAth: BigDecimal! @deprecated
+  totalLiquidityAthTimestamp: Int! @deprecated
+  totalLiquidityAtl: BigDecimal! @deprecated
+  totalLiquidityAtlTimestamp: Int! @deprecated
   totalShares: BigDecimal!
   totalShares24hAgo: BigDecimal!
   totalSupply: BigDecimal!
   volume24h: BigDecimal!
-  volume24hAth: BigDecimal!
-  volume24hAthTimestamp: Int!
-  volume24hAtl: BigDecimal!
-  volume24hAtlTimestamp: Int!
+  volume24hAth: BigDecimal! @deprecated
+  volume24hAthTimestamp: Int! @deprecated
+  volume24hAtl: BigDecimal! @deprecated
+  volume24hAtlTimestamp: Int! @deprecated
   volume48h: BigDecimal!
   yieldCapture24h: BigDecimal!
   yieldCapture48h: BigDecimal!
@@ -2542,15 +2524,11 @@ type GqlPoolDynamicData {
 
 type GqlPoolElement implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   baseToken: Bytes!
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -2558,8 +2536,6 @@ type GqlPoolElement implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
 
@@ -2588,14 +2564,11 @@ type GqlPoolElement implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-  tokens: [GqlPoolToken!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   unitSeconds: BigInt!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
 }
 
 """
@@ -2675,28 +2648,11 @@ enum GqlPoolEventType {
   SWAP
 }
 
-enum GqlPoolEventsDataRange {
-  NINETY_DAYS
-  SEVEN_DAYS
-  THIRTY_DAYS
-}
-
 input GqlPoolEventsFilter {
   chainIn: [GqlChain]
-  poolIdIn: [String]
-  range: GqlPoolEventsDataRange
-  typeIn: [GqlPoolEventType]
+  poolId: String
+  type: GqlPoolEventType
   userAddress: String
-
-  """
-  USD value of the event
-  """
-  valueUSD_gt: Float
-
-  """
-  USD value of the event
-  """
-  valueUSD_gte: Float
 }
 
 type GqlPoolFeaturedPool {
@@ -2706,24 +2662,10 @@ type GqlPoolFeaturedPool {
   primary: Boolean!
 }
 
-type GqlPoolFeaturedPoolGroup {
-  icon: String!
-  id: ID!
-  items: [GqlPoolFeaturedPoolGroupItem!]!
-  title: String!
-}
-
-union GqlPoolFeaturedPoolGroupItem =
-    GqlFeaturePoolGroupItemExternalLink
-  | GqlPoolMinimal
-
 input GqlPoolFilter {
   chainIn: [GqlChain!]
   chainNotIn: [GqlChain!]
   createTime: GqlPoolTimePeriod
-  filterIn: [String!]
-  filterNotIn: [String!]
-  hasHook: Boolean
   idIn: [String!]
   idNotIn: [String!]
   minTvl: Float
@@ -2760,10 +2702,73 @@ enum GqlPoolFilterCategory {
   SUPERFEST
 }
 
+type GqlPoolFixedPriceLBP implements GqlPoolBase {
+  address: Bytes!
+  categories: [GqlPoolFilterCategory]
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  description: String
+  discord: String
+  dynamicData: GqlPoolDynamicData!
+  endTime: Int!
+  factory: Bytes
+  farcaster: String
+  hasAnyAllowedBuffer: Boolean!
+  hasErc4626: Boolean!
+  hasNestedErc4626: Boolean!
+  hook: GqlHook
+  id: ID!
+  lbpName: String
+  lbpOwner: String!
+  liquidityManagement: LiquidityManagement
+  name: String!
+
+  """
+  The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
+  """
+  owner: Bytes @deprecated(reason: "Use swapFeeManager instead")
+
+  """
+  Account empowered to pause/unpause the pool (or 0 to delegate to governance)
+  """
+  pauseManager: Bytes
+
+  """
+  Account empowered to set the pool creator fee percentage
+  """
+  poolCreator: Bytes
+  poolTokens: [GqlPoolTokenDetail!]!
+  projectToken: String!
+  projectTokenIndex: Int!
+  protocolVersion: Int!
+  reserveToken: String!
+  reserveTokenIndex: Int!
+
+  """
+  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
+  """
+  staking: GqlPoolStaking
+  startTime: Int!
+
+  """
+  Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
+  """
+  swapFeeManager: Bytes
+  symbol: String!
+  tags: [String]
+  telegram: String
+  topTrades: [GqlLBPTopTrade!]
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
+  version: Int!
+  website: String
+  x: String
+}
+
 type GqlPoolFx implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   alpha: String!
   beta: String!
   categories: [GqlPoolFilterCategory]
@@ -2771,8 +2776,6 @@ type GqlPoolFx implements GqlPoolBase {
   createTime: Int!
   decimals: Int!
   delta: String!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   epsilon: String!
   factory: Bytes
@@ -2781,8 +2784,6 @@ type GqlPoolFx implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   lambda: String!
   liquidityManagement: LiquidityManagement
   name: String!
@@ -2811,23 +2812,14 @@ type GqlPoolFx implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-
-  """
-  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
-  """
-  tokens: [GqlPoolTokenUnion!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
 }
 
 type GqlPoolGyro implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   alpha: String!
   beta: String!
   c: String!
@@ -2836,8 +2828,6 @@ type GqlPoolGyro implements GqlPoolBase {
   createTime: Int!
   dSq: String!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -2845,13 +2835,9 @@ type GqlPoolGyro implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   lambda: String!
   liquidityManagement: LiquidityManagement
   name: String!
-  nestingType: GqlPoolNestingType!
-    @deprecated(reason: "Removed without replacement")
 
   """
   The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
@@ -2885,11 +2871,6 @@ type GqlPoolGyro implements GqlPoolBase {
   tauAlphaY: String!
   tauBetaX: String!
   tauBetaY: String!
-
-  """
-  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
-  """
-  tokens: [GqlPoolTokenUnion!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   u: String!
   userBalance: GqlPoolUserBalance
@@ -2897,60 +2878,15 @@ type GqlPoolGyro implements GqlPoolBase {
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
   w: String!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
   z: String!
-}
-
-type GqlPoolInvestConfig {
-  options: [GqlPoolInvestOption!]!
-  proportionalEnabled: Boolean!
-  singleAssetEnabled: Boolean!
-}
-
-type GqlPoolInvestOption {
-  poolTokenAddress: String!
-  poolTokenIndex: Int!
-  tokenOptions: [GqlPoolToken!]!
-}
-
-type GqlPoolJoinExit {
-  amounts: [GqlPoolJoinExitAmount!]!
-  chain: GqlChain!
-  id: ID!
-  poolId: String!
-  sender: String!
-  timestamp: Int!
-  tx: String!
-  type: GqlPoolJoinExitType!
-  valueUSD: String
-}
-
-type GqlPoolJoinExitAmount {
-  address: String!
-  amount: String!
-}
-
-input GqlPoolJoinExitFilter {
-  chainIn: [GqlChain!]
-  poolIdIn: [String!]
-}
-
-enum GqlPoolJoinExitType {
-  Exit
-  Join
 }
 
 type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -2958,12 +2894,8 @@ type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
-  nestingType: GqlPoolNestingType!
-    @deprecated(reason: "Removed without replacement")
 
   """
   The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
@@ -2989,30 +2921,90 @@ type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-
-  """
-  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
-  """
-  tokens: [GqlPoolTokenUnion!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
+}
+
+type GqlPoolLiquidityBootstrappingV3 implements GqlPoolBase {
+  address: Bytes!
+  categories: [GqlPoolFilterCategory]
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  description: String
+  discord: String
+  dynamicData: GqlPoolDynamicData!
+  endTime: Int!
+  factory: Bytes
+  farcaster: String
+  hasAnyAllowedBuffer: Boolean!
+  hasErc4626: Boolean!
+  hasNestedErc4626: Boolean!
+  hook: GqlHook
+  id: ID!
+  isProjectTokenSwapInBlocked: Boolean!
+  isSeedless: Boolean!
+  lbpName: String
+  lbpOwner: String!
+  liquidityManagement: LiquidityManagement
+  name: String!
+
+  """
+  The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
+  """
+  owner: Bytes @deprecated(reason: "Use swapFeeManager instead")
+
+  """
+  Account empowered to pause/unpause the pool (or 0 to delegate to governance)
+  """
+  pauseManager: Bytes
+
+  """
+  Account empowered to set the pool creator fee percentage
+  """
+  poolCreator: Bytes
+  poolTokens: [GqlPoolTokenDetail!]!
+  projectToken: String!
+  projectTokenEndWeight: Float!
+  projectTokenIndex: Int!
+  projectTokenStartWeight: Float!
+  protocolVersion: Int!
+  reserveToken: String!
+  reserveTokenEndWeight: Float!
+  reserveTokenIndex: Int!
+  reserveTokenStartWeight: Float!
+
+  """
+  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
+  """
+  staking: GqlPoolStaking
+  startTime: Int!
+
+  """
+  Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
+  """
+  swapFeeManager: Bytes
+  symbol: String!
+  tags: [String]
+  telegram: String
+  topTrades: [GqlLBPTopTrade!]
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
+  version: Int!
+  website: String
+  x: String
 }
 
 type GqlPoolMetaStable implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   amp: BigInt!
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -3020,8 +3012,6 @@ type GqlPoolMetaStable implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
 
@@ -3049,13 +3039,10 @@ type GqlPoolMetaStable implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-  tokens: [GqlPoolToken!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
 }
 
 """
@@ -3066,12 +3053,6 @@ type GqlPoolMinimal {
   The contract address of the pool.
   """
   address: Bytes!
-
-  """
-  Returns all pool tokens, including any nested tokens and phantom BPTs
-  """
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
 
   """
   List of categories assigned by the team based on external factors
@@ -3092,12 +3073,6 @@ type GqlPoolMinimal {
   The decimals of the BPT, usually 18
   """
   decimals: Int!
-
-  """
-  Only returns main or underlying tokens, also known as leave tokens. Wont return any nested BPTs. Used for displaying the tokens that the pool consists of.
-  """
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
 
   """
   Dynamic data such as token balances, swap fees or volume
@@ -3138,6 +3113,11 @@ type GqlPoolMinimal {
   Pool is receiving rewards when liquidity tokens are staked
   """
   incentivized: Boolean!
+
+  """
+  LBP specific params for v3 pools only.
+  """
+  lbpParams: LiquidityBootstrappingPoolV3Params
 
   """
   Liquidity management settings for v3 pools.
@@ -3240,14 +3220,6 @@ type GqlPoolMutationResult {
   type: String!
 }
 
-union GqlPoolNestedUnion = GqlPoolComposableStableNested
-
-enum GqlPoolNestingType {
-  HAS_ONLY_PHANTOM_BPT
-  HAS_SOME_PHANTOM_BPT
-  NO_NESTING
-}
-
 enum GqlPoolOrderBy {
   apr
   fees24h
@@ -3262,11 +3234,150 @@ enum GqlPoolOrderDirection {
   desc
 }
 
+type GqlPoolQuantAmmWeighted implements GqlPoolBase {
+  address: Bytes!
+  categories: [GqlPoolFilterCategory]
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  hasAnyAllowedBuffer: Boolean!
+  hasErc4626: Boolean!
+  hasNestedErc4626: Boolean!
+  hook: GqlHook
+  id: ID!
+  liquidityManagement: LiquidityManagement
+  name: String!
+
+  """
+  The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
+  """
+  owner: Bytes @deprecated(reason: "Use swapFeeManager instead")
+
+  """
+  Account empowered to pause/unpause the pool (or 0 to delegate to governance)
+  """
+  pauseManager: Bytes
+
+  """
+  Account empowered to set the pool creator fee percentage
+  """
+  poolCreator: Bytes
+  poolTokens: [GqlPoolTokenDetail!]!
+  protocolVersion: Int!
+  quantAmmWeightedParams: QuantAmmWeightedParams
+  staking: GqlPoolStaking
+
+  """
+  Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
+  """
+  swapFeeManager: Bytes
+  symbol: String!
+  tags: [String]
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
+  version: Int!
+  weightSnapshots: [QuantAmmWeightSnapshot!]
+}
+
+type GqlPoolReClamm implements GqlPoolBase {
+  address: Bytes!
+  categories: [GqlPoolFilterCategory]
+
+  """
+  The centeredness margin of the pool
+  """
+  centerednessMargin: BigDecimal!
+  chain: GqlChain!
+  createTime: Int!
+
+  """
+  The current fourth root price ratio, an interpolation of the price ratio state
+  """
+  currentFourthRootPriceRatio: BigDecimal!
+
+  """
+  Represents how fast the pool can move the virtual balances per day
+  """
+  dailyPriceShiftBase: BigDecimal!
+  decimals: Int!
+  dynamicData: GqlPoolDynamicData!
+
+  """
+  The fourth root price ratio at the end of an update
+  """
+  endFourthRootPriceRatio: BigDecimal!
+  factory: Bytes
+  hasAnyAllowedBuffer: Boolean!
+  hasErc4626: Boolean!
+  hasNestedErc4626: Boolean!
+  hook: GqlHook
+  id: ID!
+
+  """
+  The timestamp of the last user interaction
+  """
+  lastTimestamp: Int!
+
+  """
+  The last virtual balances of the pool
+  """
+  lastVirtualBalances: [BigDecimal!]!
+  liquidityManagement: LiquidityManagement
+  name: String!
+
+  """
+  The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
+  """
+  owner: Bytes @deprecated(reason: "Use swapFeeManager instead")
+
+  """
+  Account empowered to pause/unpause the pool (or 0 to delegate to governance)
+  """
+  pauseManager: Bytes
+
+  """
+  Account empowered to set the pool creator fee percentage
+  """
+  poolCreator: Bytes
+  poolTokens: [GqlPoolTokenDetail!]!
+
+  """
+  The timestamp when the update ends
+  """
+  priceRatioUpdateEndTime: Int!
+
+  """
+  The timestamp when the update begins
+  """
+  priceRatioUpdateStartTime: Int!
+  protocolVersion: Int!
+  staking: GqlPoolStaking
+
+  """
+  The fourth root price ratio at the start of an update
+  """
+  startFourthRootPriceRatio: BigDecimal!
+
+  """
+  Account empowered to set static swap fees for a pool (when 0 on V2 swap fees are immutable, on V3 delegate to governance)
+  """
+  swapFeeManager: Bytes
+  symbol: String!
+  tags: [String]
+  type: GqlPoolType!
+  userBalance: GqlPoolUserBalance
+  vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
+  version: Int!
+}
+
 type GqlPoolSnapshot {
   amounts: [String!]!
   chain: GqlChain!
   fees24h: String!
-  holdersCount: String!
+  holdersCount: String! @deprecated
   id: ID!
   poolId: String!
   sharePrice: String!
@@ -3275,9 +3386,9 @@ type GqlPoolSnapshot {
   timestamp: Int!
   totalLiquidity: String!
   totalShares: String!
-  totalSurplus: String!
-  totalSwapFee: String!
-  totalSwapVolume: String!
+  totalSurplus: String! @deprecated
+  totalSwapFee: String! @deprecated
+  totalSwapVolume: String! @deprecated
   volume24h: String!
 }
 
@@ -3291,16 +3402,12 @@ enum GqlPoolSnapshotDataRange {
 
 type GqlPoolStable implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   amp: BigInt!
   bptPriceRate: BigDecimal!
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -3308,8 +3415,6 @@ type GqlPoolStable implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
 
@@ -3337,13 +3442,10 @@ type GqlPoolStable implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-  tokens: [GqlPoolToken!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
 }
 
 type GqlPoolStaking {
@@ -3438,20 +3540,6 @@ enum GqlPoolStakingType {
 type GqlPoolStakingVebal {
   id: ID!
   vebalAddress: String!
-}
-
-type GqlPoolSwap {
-  chain: GqlChain!
-  id: ID!
-  poolId: String!
-  timestamp: Int!
-  tokenAmountIn: String!
-  tokenAmountOut: String!
-  tokenIn: String!
-  tokenOut: String!
-  tx: String!
-  userAddress: String!
-  valueUSD: Float!
 }
 
 """
@@ -3619,62 +3707,10 @@ type GqlPoolSwapEventV3 implements GqlPoolEvent {
   valueUSD: Float!
 }
 
-input GqlPoolSwapFilter {
-  chainIn: [GqlChain!]
-  poolIdIn: [String!]
-  tokenInIn: [String!]
-  tokenOutIn: [String!]
-}
-
 input GqlPoolTimePeriod {
   gt: Int
   lt: Int
 }
-
-type GqlPoolToken implements GqlPoolTokenBase {
-  address: String!
-  balance: BigDecimal!
-  decimals: Int!
-  id: ID!
-  index: Int!
-  name: String!
-  priceRate: BigDecimal!
-  priceRateProvider: String
-  symbol: String!
-  totalBalance: BigDecimal!
-  weight: BigDecimal
-}
-
-interface GqlPoolTokenBase {
-  address: String!
-  balance: BigDecimal!
-  decimals: Int!
-  id: ID!
-  index: Int!
-  name: String!
-  priceRate: BigDecimal!
-  priceRateProvider: String
-  symbol: String!
-  totalBalance: BigDecimal!
-  weight: BigDecimal
-}
-
-type GqlPoolTokenComposableStable implements GqlPoolTokenBase {
-  address: String!
-  balance: BigDecimal!
-  decimals: Int!
-  id: ID!
-  index: Int!
-  name: String!
-  pool: GqlPoolComposableStableNested!
-  priceRate: BigDecimal!
-  priceRateProvider: String
-  symbol: String!
-  totalBalance: BigDecimal!
-  weight: BigDecimal
-}
-
-union GqlPoolTokenComposableStableNestedUnion = GqlPoolToken
 
 """
 All info on the pool token. It will also include the nested pool if the token is a BPT. It will only support 1 level of nesting.
@@ -3695,6 +3731,11 @@ type GqlPoolTokenDetail {
   USD Balance of the pool token.
   """
   balanceUSD: BigDecimal!
+
+  """
+  If it is an ERC4626 token, this defines whether we can use wrap/unwrap through the buffer in swap paths for this token.
+  """
+  canUseBufferForSwaps: Boolean
   chain: GqlChain
   chainId: Int
 
@@ -3737,6 +3778,9 @@ type GqlPoolTokenDetail {
   If it is an ERC4626 token, this defines whether we allow it to use the buffer for pool operations.
   """
   isBufferAllowed: Boolean!
+    @deprecated(
+      reason: "Use useUnderlyingForAddRemove and useWrappedForAddRemove instead"
+    )
 
   """
   Whether the token is considered an ERC4626 token.
@@ -3752,6 +3796,16 @@ type GqlPoolTokenDetail {
   Token logo
   """
   logoURI: String
+
+  """
+  If it is an ERC4626 token, this  defines how much can be deposited into the ERC4626 vault.
+  """
+  maxDeposit: String
+
+  """
+  If it is an ERC4626 token, this  defines how much can be withdrawn from the ERC4626 vault.
+  """
+  maxWithdraw: String
 
   """
   Name of the pool token.
@@ -3781,7 +3835,7 @@ type GqlPoolTokenDetail {
   """
   The priority of the token, can be used for sorting.
   """
-  priority: Int
+  priority: Int @deprecated(reason: "Unused")
 
   """
   Conversion factor used to adjust for token decimals for uniform precision in calculations. V3 only.
@@ -3796,7 +3850,7 @@ type GqlPoolTokenDetail {
   """
   Is the token tradable
   """
-  tradable: Boolean
+  tradable: Boolean @deprecated(reason: "Unused")
 
   """
   If it is an ERC4626, this will be the underlying token if present in the API.
@@ -3804,34 +3858,20 @@ type GqlPoolTokenDetail {
   underlyingToken: GqlToken
 
   """
+  If it is an ERC4626 token, this defines whether we allow underlying tokens to be used for add/remove operations.
+  """
+  useUnderlyingForAddRemove: Boolean
+
+  """
+  If it is an ERC4626 token, this defines whether we allow the wrapped tokens to be used for add/remove operations.
+  """
+  useWrappedForAddRemove: Boolean
+
+  """
   The weight of the token in the pool if it is a weighted pool, null otherwise
   """
   weight: BigDecimal
 }
-
-type GqlPoolTokenDisplay {
-  address: String!
-  id: ID!
-  name: String!
-  nestedTokens: [GqlPoolTokenDisplay!]
-  symbol: String!
-  weight: BigDecimal
-}
-
-type GqlPoolTokenExpanded {
-  address: String!
-  decimals: Int!
-  id: ID!
-  isErc4626: Boolean!
-  isMainToken: Boolean!
-  isNested: Boolean!
-  isPhantomBpt: Boolean!
-  name: String!
-  symbol: String!
-  weight: String
-}
-
-union GqlPoolTokenUnion = GqlPoolToken | GqlPoolTokenComposableStable
 
 """
 Supported pool types
@@ -3840,6 +3880,7 @@ enum GqlPoolType {
   COMPOSABLE_STABLE
   COW_AMM
   ELEMENT
+  FIXED_LBP
   FX
   GYRO
   GYRO3
@@ -3848,18 +3889,24 @@ enum GqlPoolType {
   LIQUIDITY_BOOTSTRAPPING
   META_STABLE
   PHANTOM_STABLE
+  QUANT_AMM_WEIGHTED
+  RECLAMM
   STABLE
   UNKNOWN
   WEIGHTED
 }
 
 union GqlPoolUnion =
-    GqlPoolComposableStable
+  | GqlPoolComposableStable
   | GqlPoolElement
+  | GqlPoolFixedPriceLBP
   | GqlPoolFx
   | GqlPoolGyro
   | GqlPoolLiquidityBootstrapping
+  | GqlPoolLiquidityBootstrappingV3
   | GqlPoolMetaStable
+  | GqlPoolQuantAmmWeighted
+  | GqlPoolReClamm
   | GqlPoolStable
   | GqlPoolWeighted
 
@@ -3893,21 +3940,12 @@ type GqlPoolUserBalance {
   walletBalanceUsd: Float!
 }
 
-type GqlPoolUserSwapVolume {
-  swapVolumeUSD: BigDecimal!
-  userAddress: String!
-}
-
 type GqlPoolWeighted implements GqlPoolBase {
   address: Bytes!
-  allTokens: [GqlPoolTokenExpanded!]!
-    @deprecated(reason: "Use poolTokens instead")
   categories: [GqlPoolFilterCategory]
   chain: GqlChain!
   createTime: Int!
   decimals: Int!
-  displayTokens: [GqlPoolTokenDisplay!]!
-    @deprecated(reason: "Use poolTokens instead")
   dynamicData: GqlPoolDynamicData!
   factory: Bytes
   hasAnyAllowedBuffer: Boolean!
@@ -3915,12 +3953,8 @@ type GqlPoolWeighted implements GqlPoolBase {
   hasNestedErc4626: Boolean!
   hook: GqlHook
   id: ID!
-  investConfig: GqlPoolInvestConfig!
-    @deprecated(reason: "Removed without replacement")
   liquidityManagement: LiquidityManagement
   name: String!
-  nestingType: GqlPoolNestingType!
-    @deprecated(reason: "Removed without replacement")
 
   """
   The wallet address of the owner of the pool. Pool owners can set certain properties like swapFees or AMP.
@@ -3946,29 +3980,10 @@ type GqlPoolWeighted implements GqlPoolBase {
   swapFeeManager: Bytes
   symbol: String!
   tags: [String]
-
-  """
-  All tokens of the pool. If it is a nested pool, the nested pool is expanded with its own tokens again.
-  """
-  tokens: [GqlPoolTokenUnion!]! @deprecated(reason: "Use poolTokens instead")
   type: GqlPoolType!
   userBalance: GqlPoolUserBalance
   vaultVersion: Int! @deprecated(reason: "use protocolVersion instead")
   version: Int!
-  withdrawConfig: GqlPoolWithdrawConfig!
-    @deprecated(reason: "Removed without replacement")
-}
-
-type GqlPoolWithdrawConfig {
-  options: [GqlPoolWithdrawOption!]!
-  proportionalEnabled: Boolean!
-  singleAssetEnabled: Boolean!
-}
-
-type GqlPoolWithdrawOption {
-  poolTokenAddress: String!
-  poolTokenIndex: Int!
-  tokenOptions: [GqlPoolToken!]!
 }
 
 """
@@ -4050,6 +4065,7 @@ type GqlProtocolMetricsAggregated {
   chains: [GqlProtocolMetricsChain!]!
   numLiquidityProviders: BigInt!
   poolCount: BigInt!
+  surplus24h: BigDecimal!
   swapFee24h: BigDecimal!
   swapVolume24h: BigDecimal!
   totalLiquidity: BigDecimal!
@@ -4062,6 +4078,7 @@ type GqlProtocolMetricsChain {
   chainId: String!
   numLiquidityProviders: BigInt!
   poolCount: BigInt!
+  surplus24h: BigDecimal!
   swapFee24h: BigDecimal!
   swapVolume24h: BigDecimal!
   totalLiquidity: BigDecimal!
@@ -4092,186 +4109,9 @@ type GqlReliquaryFarmSnapshot {
   levelBalances: [GqlReliquaryFarmLevelSnapshot!]!
   relicCount: String!
   timestamp: Int!
-  tokenBalances: [GqlReliquaryTokenBalanceSnapshot!]!
   totalBalance: String!
   totalLiquidity: String!
   userCount: String!
-}
-
-type GqlReliquaryTokenBalanceSnapshot {
-  address: String!
-  balance: String!
-  decimals: Int!
-  id: ID!
-  name: String!
-  symbol: String!
-}
-
-type GqlSftmxStakingData {
-  """
-  Current exchange rate for sFTMx -> FTM
-  """
-  exchangeRate: String!
-
-  """
-  Whether maintenance is paused. This pauses reward claiming or harvesting and withdrawing from matured vaults.
-  """
-  maintenancePaused: Boolean!
-
-  """
-  The maximum FTM amount to depost.
-  """
-  maxDepositLimit: AmountHumanReadable!
-
-  """
-  The minimum FTM amount to deposit.
-  """
-  minDepositLimit: AmountHumanReadable!
-
-  """
-  Number of vaults that delegated to validators.
-  """
-  numberOfVaults: Int!
-
-  """
-  The current rebasing APR for sFTMx.
-  """
-  stakingApr: String!
-
-  """
-  Total amount of FTM in custody of sFTMx. Staked FTM plus free pool FTM.
-  """
-  totalFtmAmount: AmountHumanReadable!
-
-  """
-  Total amount of FTM in the free pool.
-  """
-  totalFtmAmountInPool: AmountHumanReadable!
-
-  """
-  Total amount of FTM staked/delegated to validators.
-  """
-  totalFtmAmountStaked: AmountHumanReadable!
-
-  """
-  Whether undelegation is paused. Undelegate is the first step to redeem sFTMx.
-  """
-  undelegatePaused: Boolean!
-
-  """
-  A list of all the vaults that delegated to validators.
-  """
-  vaults: [GqlSftmxStakingVault!]!
-
-  """
-  Whether withdrawals are paused. Withdraw is the second and final step to redeem sFTMx.
-  """
-  withdrawPaused: Boolean!
-
-  """
-  Delay to wait between undelegate (1st step) and withdraw (2nd step).
-  """
-  withdrawalDelay: Int!
-}
-
-type GqlSftmxStakingSnapshot {
-  """
-  Current exchange rate for sFTMx -> FTM
-  """
-  exchangeRate: String!
-  id: ID!
-
-  """
-  The timestamp of the snapshot. Timestamp is end of day midnight.
-  """
-  timestamp: Int!
-
-  """
-  Total amount of FTM in custody of sFTMx. Staked FTM plus free pool FTM.
-  """
-  totalFtmAmount: AmountHumanReadable!
-
-  """
-  Total amount of FTM in the free pool.
-  """
-  totalFtmAmountInPool: AmountHumanReadable!
-
-  """
-  Total amount of FTM staked/delegated to validators.
-  """
-  totalFtmAmountStaked: AmountHumanReadable!
-}
-
-enum GqlSftmxStakingSnapshotDataRange {
-  ALL_TIME
-  NINETY_DAYS
-  ONE_HUNDRED_EIGHTY_DAYS
-  ONE_YEAR
-  THIRTY_DAYS
-}
-
-type GqlSftmxStakingVault {
-  """
-  The amount of FTM that has been delegated via this vault.
-  """
-  ftmAmountStaked: AmountHumanReadable!
-
-  """
-  Whether the vault is matured, meaning whether unlock time has passed.
-  """
-  isMatured: Boolean!
-
-  """
-  Timestamp when the delegated FTM unlocks, matures.
-  """
-  unlockTimestamp: Int!
-
-  """
-  The address of the validator that the vault has delegated to.
-  """
-  validatorAddress: String!
-
-  """
-  The ID of the validator that the vault has delegated to.
-  """
-  validatorId: String!
-
-  """
-  The contract address of the vault.
-  """
-  vaultAddress: String!
-
-  """
-  The internal index of the vault.
-  """
-  vaultIndex: Int!
-}
-
-type GqlSftmxWithdrawalRequests {
-  """
-  Amount of sFTMx that is being redeemed.
-  """
-  amountSftmx: AmountHumanReadable!
-
-  """
-  The Withdrawal ID, used for interactions.
-  """
-  id: String!
-
-  """
-  Whether the requests is finished and the user has withdrawn.
-  """
-  isWithdrawn: Boolean!
-
-  """
-  The timestamp when the request was placed. There is a delay until the user can withdraw. See withdrawalDelay.
-  """
-  requestTimestamp: Int!
-
-  """
-  The user address that this request belongs to.
-  """
-  user: String!
 }
 
 type GqlSorCallData {
@@ -4404,28 +4244,6 @@ type GqlSorGetSwapPaths {
   vaultVersion: Int! @deprecated(reason: "Use protocolVersion instead")
 }
 
-type GqlSorGetSwapsResponse {
-  effectivePrice: AmountHumanReadable!
-  effectivePriceReversed: AmountHumanReadable!
-  marketSp: String!
-  priceImpact: AmountHumanReadable!
-  returnAmount: AmountHumanReadable!
-  returnAmountConsideringFees: BigDecimal!
-  returnAmountFromSwaps: BigDecimal
-  returnAmountScaled: BigDecimal!
-  routes: [GqlSorSwapRoute!]!
-  swapAmount: AmountHumanReadable!
-  swapAmountForSwaps: BigDecimal
-  swapAmountScaled: BigDecimal!
-  swapType: GqlSorSwapType!
-  swaps: [GqlSorSwap!]!
-  tokenAddresses: [String!]!
-  tokenIn: String!
-  tokenInAmount: AmountHumanReadable!
-  tokenOut: String!
-  tokenOutAmount: AmountHumanReadable!
-}
-
 """
 A path of a swap. A swap can have multiple paths. Used as input to execute the swap via b-sdk
 """
@@ -4496,13 +4314,6 @@ type GqlSorSwap {
   userData: String!
 }
 
-input GqlSorSwapOptionsInput {
-  forceRefresh: Boolean
-  maxPools: Int
-  queryBatchSwap: Boolean
-  timestamp: Int
-}
-
 """
 The swap routes including pool information. Used to display by the UI
 """
@@ -4545,7 +4356,7 @@ type GqlSorSwapRouteHop {
   """
   The pool entity of this hop.
   """
-  pool: GqlPoolMinimal!
+  pool: GqlPoolMinimal! @deprecated
 
   """
   The pool id of this hop.
@@ -4590,6 +4401,16 @@ type GqlStakedSonicData {
   exchangeRate: String!
 
   """
+  The total protocol fee collected in the last 24 hours.
+  """
+  protocolFee24h: String!
+
+  """
+  The total rewards claimed in the last 24 hours.
+  """
+  rewardsClaimed24h: String!
+
+  """
   The current rebasing APR for stS.
   """
   stakingApr: String!
@@ -4628,6 +4449,16 @@ type GqlStakedSonicSnapshot {
   """
   exchangeRate: String!
   id: ID!
+
+  """
+  The total protocol fee collected during that day.
+  """
+  protocolFee24h: String!
+
+  """
+  The total rewards claimed during that day.
+  """
+  rewardsClaimed24h: String!
 
   """
   The timestamp of the snapshot. Timestamp is end of day midnight.
@@ -4743,6 +4574,11 @@ type GqlToken {
   logoURI: String
 
   """
+  If it is an ERC4626 token, this  defines how much can be deposited into the ERC4626 vault.
+  """
+  maxDeposit: String
+
+  """
   The name of the token
   """
   name: String!
@@ -4782,6 +4618,7 @@ type GqlToken {
   The Twitter username of the token
   """
   twitterUsername: String
+  types: [GqlTokenType!]
 
   """
   The ERC4626 underlying token address, if applicable.
@@ -4799,31 +4636,13 @@ input GqlTokenAmountHumanReadable {
   amount: AmountHumanReadable!
 }
 
-type GqlTokenCandlestickChartDataItem {
-  close: AmountHumanReadable!
-  high: AmountHumanReadable!
-  id: ID!
-  low: AmountHumanReadable!
-  open: AmountHumanReadable!
-  timestamp: Int!
-}
-
 enum GqlTokenChartDataRange {
+  ALL
   NINETY_DAY
   ONE_HUNDRED_EIGHTY_DAY
   ONE_YEAR
   SEVEN_DAY
   THIRTY_DAY
-}
-
-type GqlTokenData {
-  description: String
-  discordUrl: String
-  id: ID!
-  telegramUrl: String
-  tokenAddress: String!
-  twitterUsername: String
-  websiteUrl: String
 }
 
 """
@@ -4914,6 +4733,11 @@ input GqlTokenFilter {
   Only return tokens with these addresses
   """
   tokensIn: [String!]
+
+  """
+  Filter by token type
+  """
+  typeIn: [GqlTokenType!]
 }
 
 """
@@ -4951,26 +4775,12 @@ type GqlTokenPriceChartDataItem {
 }
 
 enum GqlTokenType {
+  BLOCKED_V2
+  BLOCKED_V3
   BPT
+  ERC4626
   PHANTOM_BPT
-  WHITE_LISTED
-}
-
-type GqlUserFbeetsBalance {
-  id: String!
-  stakedBalance: AmountHumanReadable!
-  totalBalance: AmountHumanReadable!
-  walletBalance: AmountHumanReadable!
-}
-
-type GqlUserPoolBalance {
-  chain: GqlChain!
-  poolId: String!
-  stakedBalance: AmountHumanReadable!
-  tokenAddress: String!
-  tokenPrice: Float!
-  totalBalance: AmountHumanReadable!
-  walletBalance: AmountHumanReadable!
+  WHITE_LISTED @deprecated(reason: "Use BLOCKED instead")
 }
 
 type GqlUserStakedBalance {
@@ -4993,12 +4803,6 @@ type GqlUserStakedBalance {
   The staking type (Gauge, farm, aura, etc.) in which this balance is staked.
   """
   stakingType: GqlPoolStakingType!
-}
-
-input GqlUserSwapVolumeFilter {
-  poolIdIn: [String!]
-  tokenInIn: [String!]
-  tokenOutIn: [String!]
 }
 
 type GqlVeBalBalance {
@@ -5088,6 +4892,11 @@ type GqlVotingGaugeToken {
   symbol: String!
 
   """
+  Underlying token address
+  """
+  underlyingTokenAddress: String
+
+  """
   If it is a weighted pool, the weigh of the token is shown here in %. 0.5 = 50%.
   """
   weight: String
@@ -5118,9 +4927,20 @@ type GqlVotingPool {
   id: ID!
 
   """
+  Returns all pool tokens, including BPTs and nested pools if there are any. Only one nested level deep.
+  """
+  poolTokens: [GqlPoolTokenDetail!]!
+  protocolVersion: Int!
+
+  """
   The symbol of the pool.
   """
   symbol: String!
+
+  """
+  List of tags assigned by the team based on external factors
+  """
+  tags: [String]
 
   """
   The tokens inside the pool.
@@ -5293,6 +5113,28 @@ enum GradualWeightUpdate_orderBy {
   startTimestamp
   startWeights
 }
+
+type HookConfig {
+  """
+  True when hook can change the amounts send to the vault. Necessary to deduct the fees.
+  """
+  enableHookAdjustedAmounts: Boolean!
+  shouldCallAfterAddLiquidity: Boolean!
+  shouldCallAfterInitialize: Boolean!
+  shouldCallAfterRemoveLiquidity: Boolean!
+  shouldCallAfterSwap: Boolean!
+  shouldCallBeforeAddLiquidity: Boolean!
+  shouldCallBeforeInitialize: Boolean!
+  shouldCallBeforeRemoveLiquidity: Boolean!
+  shouldCallBeforeSwap: Boolean!
+  shouldCallComputeDynamicSwapFee: Boolean!
+}
+
+union HookParams =
+  | ExitFeeHookParams
+  | FeeTakingHookParams
+  | MevTaxHookParams
+  | StableSurgeHookParams
 
 """
 8 bytes signed integer
@@ -5513,6 +5355,39 @@ enum JoinExit_orderBy {
   valueUSD
 }
 
+input LBPMetadataInput {
+  description: String!
+  discord: String
+  farcaster: String
+  lbpName: String!
+  telegram: String
+  tokenLogo: String!
+  website: String!
+  x: String
+}
+
+type LBPPriceChartData {
+  buyVolume: Float!
+  cumulativeFees: Float!
+  cumulativeVolume: Float!
+  fees: Float!
+  intervalTimestamp: Int! @deprecated
+  projectTokenBalance: Float!
+  projectTokenPrice: Float!
+  reservePrice: Float!
+  reserveTokenBalance: Float!
+  sellVolume: Float!
+  swapCount: Int!
+  timestamp: Int!
+  tvl: Float!
+  volume: Float!
+}
+
+input LBPoolInput {
+  address: String!
+  chain: GqlChain!
+}
+
 type LatestPrice {
   asset: Bytes!
   block: BigInt!
@@ -5670,6 +5545,14 @@ enum LatestPrice_orderBy {
   poolId__z
   price
   pricingAsset
+}
+
+"""
+LBP specific params for v3 pools only.
+"""
+type LiquidityBootstrappingPoolV3Params {
+  endTime: Int!
+  startTime: Int!
 }
 
 type LiquidityGauge {
@@ -6171,40 +6054,52 @@ enum ManagementOperation_orderBy {
   type
 }
 
+"""
+MevTax hook specific params. Percentage format is 0.01 -> 0.01%.
+"""
+type MevTaxHookParams {
+  maxMevSwapFeePercentage: String
+  mevTaxMultiplier: String
+  mevTaxThreshold: String
+}
+
 type Mutation {
-  beetsPoolLoadReliquarySnapshotsForAllFarms: String!
-  beetsSyncFbeetsRatio: String!
-  cacheAverageBlockTime: String!
+  beetsPoolLoadReliquarySnapshotsForAllFarms(chain: GqlChain!): String!
+  createLBP(input: CreateLBPInput!, type: GqlPoolType): Boolean!
   poolLoadOnChainDataForAllPools(
     chains: [GqlChain!]!
   ): [GqlPoolMutationResult!]!
-  poolLoadSnapshotsForPools(poolIds: [String!]!, reload: Boolean): String!
+  poolLoadSnapshotsForPools(chain: GqlChain!, poolId: String!): String!
   poolReloadAllPoolAprs(chain: GqlChain!): String!
   poolReloadPools(chains: [GqlChain!]!): [GqlPoolMutationResult!]!
-  poolReloadStakingForAllPools(stakingTypes: [GqlPoolStakingType!]!): String!
-  poolSyncAllCowSnapshots(chains: [GqlChain!]!): [GqlPoolMutationResult!]!
-  poolSyncAllPoolsFromSubgraph: [String!]!
+  poolReloadStakingForAllPools(
+    chain: GqlChain!
+    stakingTypes: [GqlPoolStakingType!]!
+  ): String!
+  poolReloadSwaps(chain: GqlChain!, poolId: String!): String!
+  poolSyncAllPoolsFromSubgraph(chain: GqlChain!): [String!]!
   poolSyncFxQuoteTokens(chains: [GqlChain!]!): [GqlPoolMutationResult!]!
-  poolUpdateLifetimeValuesForAllPools: String!
-  poolUpdateLiquidityValuesForAllPools: String!
-  protocolCacheMetrics: String!
-  sftmxSyncStakingData: String!
-  sftmxSyncWithdrawalRequests: String!
-  tokenDeleteTokenType(tokenAddress: String!, type: GqlTokenType!): String!
-  tokenReloadAllTokenTypes: String!
+  poolUpdateLiquidityValuesForAllPools(chain: GqlChain!): String!
+  protocolCacheMetrics(chain: GqlChain!): String!
+  tokenDeleteTokenType(
+    chain: GqlChain!
+    tokenAddress: String!
+    type: GqlTokenType!
+  ): String!
+  tokenReloadAllTokenTypes(chain: GqlChain!): String!
   tokenReloadErc4626Tokens(chains: [GqlChain!]!): [GqlTokenMutationResult!]!
   tokenReloadTokenPrices(chains: [GqlChain!]!): Boolean
   tokenSyncLatestFxPrices(chain: GqlChain!): String!
   tokenSyncTokenDefinitions: String!
-  userInitStakedBalances(stakingTypes: [GqlPoolStakingType!]!): String!
-  userInitWalletBalancesForAllPools(chain: GqlChain): String!
-  userInitWalletBalancesForPool(poolId: String!): String!
-  userSyncBalance(poolId: String!): String!
-  userSyncBalanceAllPools: String!
-  userSyncChangedStakedBalances: String!
-  userSyncChangedWalletBalancesForAllPools: String!
-  veBalSyncAllUserBalances: String!
-  veBalSyncTotalSupply: String!
+  userInitStakedBalances(
+    chain: GqlChain!
+    stakingTypes: [GqlPoolStakingType!]!
+  ): String!
+  userInitWalletBalancesForAllPools(chain: GqlChain!): String!
+  userSyncChangedStakedBalances(chain: GqlChain!): String!
+  userSyncChangedWalletBalancesForAllPools(chain: GqlChain!): String!
+  veBalSyncAllUserBalances(chain: GqlChain!): String!
+  veBalSyncTotalSupply(chain: GqlChain!): String!
 }
 
 type OmniVotingEscrowLock {
@@ -6680,14 +6575,6 @@ enum PoolContract_orderBy {
   pool__w
   pool__wrappedIndex
   pool__z
-}
-
-type PoolForBatchSwap {
-  allTokens: [TokenForBatchSwapPool!]
-  id: String!
-  name: String!
-  symbol: String!
-  type: GqlPoolType!
 }
 
 type PoolHistoricalLiquidity {
@@ -8614,11 +8501,49 @@ enum ProtocolIdData_orderBy {
   name
 }
 
+type QuantAMMWeightedDetail {
+  category: String!
+  name: String!
+  type: String!
+  value: String!
+}
+
+type QuantAmmWeightSnapshot {
+  timestamp: Int!
+  weights: [Float!]
+}
+
+type QuantAmmWeightedParams {
+  absoluteWeightGuardRail: String!
+  details: [QuantAMMWeightedDetail!]!
+  epsilonMax: String!
+  lambda: [String!]!
+  lastInterpolationTimePossible: String!
+  lastUpdateIntervalTime: String!
+  maxTradeSizeRatio: String!
+  oracleStalenessThreshold: String!
+  poolRegistry: String!
+  updateInterval: String!
+  weightBlockMultipliers: [String!]!
+  weightsAtLastUpdateInterval: [String!]!
+}
+
 type Query {
   """
   Access to subgraph metadata
   """
   _meta(block: Block_height): _Meta_
+
+  """
+  Returns all pools for a given filter, specific for aggregators
+  """
+  aggregatorPools(
+    first: Int
+    orderBy: GqlPoolOrderBy
+    orderDirection: GqlPoolOrderDirection
+    skip: Int
+    where: GqlAggregatorPoolFilter
+  ): [GqlPoolAggregator!]!
   ampUpdate(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -8703,8 +8628,8 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Balancer_filter
   ): [Balancer!]!
-  beetsGetFbeetsRatio: String!
   beetsPoolGetReliquaryFarmSnapshots(
+    chain: GqlChain!
     id: String!
     range: GqlPoolSnapshotDataRange!
   ): [GqlReliquaryFarmSnapshot!]!
@@ -8736,10 +8661,6 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Block_filter
   ): [Block!]!
-  blocksGetAverageBlockTime: Float!
-  blocksGetBlocksPerDay: Float!
-  blocksGetBlocksPerSecond: Float!
-  blocksGetBlocksPerYear: Float!
   circuitBreaker(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -8768,7 +8689,6 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: CircuitBreaker_filter
   ): [CircuitBreaker!]!
-  contentGetNewsItems(chain: GqlChain): [GqlContentNewsItem!]!
   fxoracle(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9049,7 +8969,11 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: LatestPrice_filter
   ): [LatestPrice!]!
-  latestSyncedBlocks: GqlLatestSyncedBlocks!
+  lbpPriceChart(
+    chain: GqlChain!
+    dataPoints: Int
+    id: String!
+  ): [LBPPriceChartData!]
   liquidityGauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9106,6 +9030,11 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: LockSnapshot_filter
   ): [LockSnapshot!]!
+
+  """
+  Get the LoopS data
+  """
+  loopsGetData: GqlLoopsData!
   managementOperation(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9221,33 +9150,7 @@ type Query {
     orderDirection: GqlPoolOrderDirection
     skip: Int
     where: GqlPoolFilter
-  ): [GqlPoolAggregator!]!
-
-  """
-  Will de deprecated in favor of poolEvents
-  """
-  poolGetBatchSwaps(
-    first: Int
-    skip: Int
-    where: GqlPoolSwapFilter
-  ): [GqlPoolBatchSwap!]! @deprecated(reason: "Use poolEvents instead")
-
-  """
-  Getting swap, add and remove events with range
-  """
-  poolGetEvents(
-    chain: GqlChain!
-    poolId: String!
-    range: GqlPoolEventsDataRange!
-    typeIn: [GqlPoolEventType!]!
-    userAddress: String
-  ): [GqlPoolEvent!]!
-
-  """
-  Will de deprecated in favor of poolGetFeaturedPools
-  """
-  poolGetFeaturedPoolGroups(chains: [GqlChain!]): [GqlPoolFeaturedPoolGroup!]!
-    @deprecated(reason: "Use poolGetFeaturedPools instead")
+  ): [GqlPoolAggregator!]! @deprecated(reason: "Use aggregatorPools instead")
 
   """
   Returns the list of featured pools for chains
@@ -9255,18 +9158,9 @@ type Query {
   poolGetFeaturedPools(chains: [GqlChain!]!): [GqlPoolFeaturedPool!]!
 
   """
-  Will de deprecated in favor of poolEvents
-  """
-  poolGetJoinExits(
-    first: Int
-    skip: Int
-    where: GqlPoolJoinExitFilter
-  ): [GqlPoolJoinExit!]! @deprecated(reason: "Use poolEvents instead")
-
-  """
   Returns one pool. If a user address is provided, the user balances for the given pool will also be returned.
   """
-  poolGetPool(chain: GqlChain, id: String!, userAddress: String): GqlPoolBase!
+  poolGetPool(chain: GqlChain!, id: String!, userAddress: String): GqlPoolBase!
 
   """
   Returns all pools for a given filter
@@ -9296,19 +9190,10 @@ type Query {
   Gets all the snapshots for a given pool on a chain for a certain range
   """
   poolGetSnapshots(
-    chain: GqlChain
+    chain: GqlChain!
     id: String!
     range: GqlPoolSnapshotDataRange!
   ): [GqlPoolSnapshot!]!
-
-  """
-  Will de deprecated in favor of poolEvents
-  """
-  poolGetSwaps(
-    first: Int
-    skip: Int
-    where: GqlPoolSwapFilter
-  ): [GqlPoolSwap!]! @deprecated(reason: "Use poolEvents instead")
   poolHistoricalLiquidities(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9493,8 +9378,8 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: ProtocolIdData_filter
   ): [ProtocolIdData!]!
-  protocolMetricsAggregated(chains: [GqlChain!]): GqlProtocolMetricsAggregated!
-  protocolMetricsChain(chain: GqlChain): GqlProtocolMetricsChain!
+  protocolMetricsAggregated(chains: [GqlChain!]!): GqlProtocolMetricsAggregated!
+  protocolMetricsChain(chain: GqlChain!): GqlProtocolMetricsChain!
   rewardToken(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9551,23 +9436,6 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: RootGauge_filter
   ): [RootGauge!]!
-
-  """
-  Get the staking data and status for sFTMx
-  """
-  sftmxGetStakingData: GqlSftmxStakingData!
-
-  """
-  Get snapshots for sftmx staking for a specific range
-  """
-  sftmxGetStakingSnapshots(
-    range: GqlSftmxStakingSnapshotDataRange!
-  ): [GqlSftmxStakingSnapshot!]!
-
-  """
-  Retrieve the withdrawalrequests from a user
-  """
-  sftmxGetWithdrawalRequests(user: String!): [GqlSftmxWithdrawalRequests!]!
   singleRecipientGauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -9598,7 +9466,7 @@ type Query {
   ): [SingleRecipientGauge!]!
 
   """
-  Get swap quote from the SOR v2 for the V2 vault
+  Get swap quote from the SOR v2
   """
   sorGetSwapPaths(
     """
@@ -9641,41 +9509,6 @@ type Query {
     """
     useProtocolVersion: Int
   ): GqlSorGetSwapPaths!
-
-  """
-  Get swap quote from the SOR, queries both the old and new SOR
-  """
-  sorGetSwaps(
-    """
-    The Chain to query
-    """
-    chain: GqlChain
-
-    """
-    The amount to swap, in human form.
-    """
-    swapAmount: BigDecimal!
-
-    """
-    Options for the swap
-    """
-    swapOptions: GqlSorSwapOptionsInput!
-
-    """
-    SwapType either exact_in or exact_out (also givenIn or givenOut)
-    """
-    swapType: GqlSorSwapType!
-
-    """
-    Token address of the tokenIn
-    """
-    tokenIn: String!
-
-    """
-    Token address of the tokenOut
-    """
-    tokenOut: String!
-  ): GqlSorGetSwapsResponse!
 
   """
   Get the staking data and status for stS
@@ -9758,19 +9591,9 @@ type Query {
   ): Token
 
   """
-  Returns the candlestick chart data for a token for a given range.
-  """
-  tokenGetCandlestickChartData(
-    address: String!
-    chain: GqlChain
-    range: GqlTokenChartDataRange!
-  ): [GqlTokenCandlestickChartDataItem!]!
-    @deprecated(reason: "Use tokenGetHistoricalPrices instead")
-
-  """
   Returns all current prices for allowed tokens for a given chain or chains
   """
-  tokenGetCurrentPrices(chains: [GqlChain!]): [GqlTokenPrice!]!
+  tokenGetCurrentPrices(chains: [GqlChain!]!): [GqlTokenPrice!]!
 
   """
   Returns the historical prices for a given set of tokens for a given chain and range
@@ -9782,62 +9605,34 @@ type Query {
   ): [GqlHistoricalTokenPrice!]!
 
   """
-  DEPRECATED: Returns pricing data for a given token for a given range
-  """
-  tokenGetPriceChartData(
-    address: String!
-    chain: GqlChain
-    range: GqlTokenChartDataRange!
-  ): [GqlTokenPriceChartDataItem!]!
-    @deprecated(reason: "Use tokenGetHistoricalPrices instead")
-
-  """
-  Returns the price of either BAL or BEETS depending on chain
-  """
-  tokenGetProtocolTokenPrice(chain: GqlChain): AmountHumanReadable!
-    @deprecated(reason: "Use tokenGetTokensDynamicData instead")
-
-  """
   Returns the price of a token priced in another token for a given range.
   """
   tokenGetRelativePriceChartData(
-    chain: GqlChain
+    chain: GqlChain!
     range: GqlTokenChartDataRange!
     tokenIn: String!
     tokenOut: String!
   ): [GqlTokenPriceChartDataItem!]!
 
   """
-  Returns meta data for a given token such as description, website, etc.
-  """
-  tokenGetTokenData(address: String!, chain: GqlChain): GqlTokenData
-    @deprecated(reason: "Use tokenGetTokens instead")
-
-  """
   Returns dynamic data of a token such as price, market cap, etc.
   """
   tokenGetTokenDynamicData(
     address: String!
-    chain: GqlChain
+    chain: GqlChain!
   ): GqlTokenDynamicData
 
   """
   Returns all allowed tokens for a given chain or chains
   """
-  tokenGetTokens(chains: [GqlChain!], where: GqlTokenFilter): [GqlToken!]!
-
-  """
-  Returns meta data for a given set of tokens such as description, website, etc.
-  """
-  tokenGetTokensData(addresses: [String!]!): [GqlTokenData!]!
-    @deprecated(reason: "Use tokenGetTokens instead")
+  tokenGetTokens(chains: [GqlChain!]!, where: GqlTokenFilter): [GqlToken!]!
 
   """
   Returns dynamic data of a set of tokens such as price, market cap, etc.
   """
   tokenGetTokensDynamicData(
     addresses: [String!]!
-    chain: GqlChain
+    chain: GqlChain!
   ): [GqlTokenDynamicData!]!
   tokenPrice(
     """
@@ -9979,34 +9774,6 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): User
-  userGetFbeetsBalance: GqlUserFbeetsBalance!
-  userGetPoolBalances(
-    address: String
-    chains: [GqlChain!]
-  ): [GqlUserPoolBalance!]!
-
-  """
-  Will de deprecated in favor of poolGetEvents
-  """
-  userGetPoolJoinExits(
-    address: String
-    chain: GqlChain
-    first: Int = 10
-    poolId: String!
-    skip: Int = 0
-  ): [GqlPoolJoinExit!]!
-  userGetStaking(address: String, chains: [GqlChain!]): [GqlPoolStaking!]!
-
-  """
-  Will de deprecated in favor of poolGetEvents
-  """
-  userGetSwaps(
-    address: String
-    chain: GqlChain
-    first: Int = 10
-    poolId: String!
-    skip: Int = 0
-  ): [GqlPoolSwap!]!
   userInternalBalance(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -10051,18 +9818,18 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: User_filter
   ): [User!]!
-  veBalGetTotalSupply(chain: GqlChain): AmountHumanReadable!
-  veBalGetUser(address: String!, chain: GqlChain): GqlVeBalUserData!
-  veBalGetUserBalance(address: String, chain: GqlChain): AmountHumanReadable!
+  veBalGetTotalSupply(chain: GqlChain!): AmountHumanReadable!
+  veBalGetUser(address: String!, chain: GqlChain!): GqlVeBalUserData!
+  veBalGetUserBalance(address: String!, chain: GqlChain!): AmountHumanReadable!
   veBalGetUserBalances(
     address: String!
-    chains: [GqlChain!]
+    chains: [GqlChain!]!
   ): [GqlVeBalBalance!]!
 
   """
   Returns all pools with veBAL gauges that can be voted on.
   """
-  veBalGetVotingList: [GqlVotingPool!]!
+  veBalGetVotingList(includeKilled: Boolean): [GqlVotingPool!]!
   votingEscrow(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -10531,1159 +10298,12 @@ enum SingleRecipientGauge_orderBy {
   relativeWeightCap
 }
 
-type Subscription {
-  """
-  Access to subgraph metadata
-  """
-  _meta(block: Block_height): _Meta_
-  ampUpdate(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): AmpUpdate
-  ampUpdates(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: AmpUpdate_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: AmpUpdate_filter
-  ): [AmpUpdate!]!
-  balancer(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Balancer
-  balancerSnapshot(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): BalancerSnapshot
-  balancerSnapshots(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: BalancerSnapshot_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: BalancerSnapshot_filter
-  ): [BalancerSnapshot!]!
-  balancers(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Balancer_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Balancer_filter
-  ): [Balancer!]!
-  block(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Block
-  blocks(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Block_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Block_filter
-  ): [Block!]!
-  circuitBreaker(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): CircuitBreaker
-  circuitBreakers(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: CircuitBreaker_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: CircuitBreaker_filter
-  ): [CircuitBreaker!]!
-  fxoracle(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): FXOracle
-  fxoracles(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: FXOracle_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: FXOracle_filter
-  ): [FXOracle!]!
-  gauge(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Gauge
-  gaugeFactories(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GaugeFactory_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GaugeFactory_filter
-  ): [GaugeFactory!]!
-  gaugeFactory(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GaugeFactory
-  gaugeInjector(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GaugeInjector
-  gaugeInjectors(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GaugeInjector_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GaugeInjector_filter
-  ): [GaugeInjector!]!
-  gaugeShare(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GaugeShare
-  gaugeShares(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GaugeShare_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GaugeShare_filter
-  ): [GaugeShare!]!
-  gaugeType(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GaugeType
-  gaugeTypes(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GaugeType_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GaugeType_filter
-  ): [GaugeType!]!
-  gaugeVote(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GaugeVote
-  gaugeVotes(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GaugeVote_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GaugeVote_filter
-  ): [GaugeVote!]!
-  gauges(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Gauge_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Gauge_filter
-  ): [Gauge!]!
-  gradualWeightUpdate(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): GradualWeightUpdate
-  gradualWeightUpdates(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: GradualWeightUpdate_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: GradualWeightUpdate_filter
-  ): [GradualWeightUpdate!]!
-  joinExit(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): JoinExit
-  joinExits(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: JoinExit_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: JoinExit_filter
-  ): [JoinExit!]!
-  latestPrice(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): LatestPrice
-  latestPrices(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: LatestPrice_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: LatestPrice_filter
-  ): [LatestPrice!]!
-  liquidityGauge(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): LiquidityGauge
-  liquidityGauges(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: LiquidityGauge_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: LiquidityGauge_filter
-  ): [LiquidityGauge!]!
-  lockSnapshot(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): LockSnapshot
-  lockSnapshots(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: LockSnapshot_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: LockSnapshot_filter
-  ): [LockSnapshot!]!
-  managementOperation(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): ManagementOperation
-  managementOperations(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: ManagementOperation_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: ManagementOperation_filter
-  ): [ManagementOperation!]!
-  omniVotingEscrowLock(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): OmniVotingEscrowLock
-  omniVotingEscrowLocks(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: OmniVotingEscrowLock_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: OmniVotingEscrowLock_filter
-  ): [OmniVotingEscrowLock!]!
-  pool(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Pool
-  poolContract(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PoolContract
-  poolContracts(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PoolContract_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PoolContract_filter
-  ): [PoolContract!]!
-  poolHistoricalLiquidities(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PoolHistoricalLiquidity_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PoolHistoricalLiquidity_filter
-  ): [PoolHistoricalLiquidity!]!
-  poolHistoricalLiquidity(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PoolHistoricalLiquidity
-  poolShare(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PoolShare
-  poolShares(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PoolShare_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PoolShare_filter
-  ): [PoolShare!]!
-  poolSnapshot(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PoolSnapshot
-  poolSnapshots(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PoolSnapshot_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PoolSnapshot_filter
-  ): [PoolSnapshot!]!
-  poolToken(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PoolToken
-  poolTokens(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PoolToken_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PoolToken_filter
-  ): [PoolToken!]!
-  pools(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Pool_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Pool_filter
-  ): [Pool!]!
-  priceRateProvider(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): PriceRateProvider
-  priceRateProviders(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: PriceRateProvider_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: PriceRateProvider_filter
-  ): [PriceRateProvider!]!
-  protocolIdData(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): ProtocolIdData
-  protocolIdDatas(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: ProtocolIdData_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: ProtocolIdData_filter
-  ): [ProtocolIdData!]!
-  rewardToken(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): RewardToken
-  rewardTokens(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: RewardToken_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: RewardToken_filter
-  ): [RewardToken!]!
-  rootGauge(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): RootGauge
-  rootGauges(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: RootGauge_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: RootGauge_filter
-  ): [RootGauge!]!
-  singleRecipientGauge(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): SingleRecipientGauge
-  singleRecipientGauges(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: SingleRecipientGauge_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: SingleRecipientGauge_filter
-  ): [SingleRecipientGauge!]!
-  swap(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Swap
-  swapFeeUpdate(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): SwapFeeUpdate
-  swapFeeUpdates(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: SwapFeeUpdate_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: SwapFeeUpdate_filter
-  ): [SwapFeeUpdate!]!
-  swaps(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Swap_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Swap_filter
-  ): [Swap!]!
-  token(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Token
-  tokenPrice(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TokenPrice
-  tokenPrices(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: TokenPrice_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: TokenPrice_filter
-  ): [TokenPrice!]!
-  tokenSnapshot(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TokenSnapshot
-  tokenSnapshots(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: TokenSnapshot_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: TokenSnapshot_filter
-  ): [TokenSnapshot!]!
-  tokens(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: Token_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: Token_filter
-  ): [Token!]!
-  tradePair(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TradePair
-  tradePairSnapshot(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TradePairSnapshot
-  tradePairSnapshots(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: TradePairSnapshot_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: TradePairSnapshot_filter
-  ): [TradePairSnapshot!]!
-  tradePairs(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: TradePair_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: TradePair_filter
-  ): [TradePair!]!
-  user(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): User
-  userInternalBalance(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): UserInternalBalance
-  userInternalBalances(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: UserInternalBalance_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: UserInternalBalance_filter
-  ): [UserInternalBalance!]!
-  users(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: User_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: User_filter
-  ): [User!]!
-  votingEscrow(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VotingEscrow
-  votingEscrowLock(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    id: ID!
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VotingEscrowLock
-  votingEscrowLocks(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: VotingEscrowLock_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: VotingEscrowLock_filter
-  ): [VotingEscrowLock!]!
-  votingEscrows(
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    first: Int = 100
-    orderBy: VotingEscrow_orderBy
-    orderDirection: OrderDirection
-    skip: Int = 0
-
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-    where: VotingEscrow_filter
-  ): [VotingEscrow!]!
+"""
+StableSurge hook specific params. Percentage format is 0.01 -> 0.01%.
+"""
+type StableSurgeHookParams {
+  maxSurgeFeePercentage: String
+  surgeThresholdPercentage: String
 }
 
 type Swap {
@@ -12154,13 +10774,6 @@ type Token {
   totalSwapCount: BigInt!
   totalVolumeNotional: BigDecimal!
   totalVolumeUSD: BigDecimal!
-}
-
-type TokenForBatchSwapPool {
-  address: String!
-  isNested: Boolean!
-  isPhantomBpt: Boolean!
-  weight: BigDecimal
 }
 
 type TokenPrice {

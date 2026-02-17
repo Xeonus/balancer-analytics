@@ -40,7 +40,6 @@ export interface PoolTokenDataUnified {
     address: string;
     decimals: number;
     id: string;
-    isMainToken: boolean;
     name: string;
     symbol: string;
     weight: number;

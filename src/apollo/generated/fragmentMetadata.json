@@ -1,13 +1,16 @@
 {
   "possibleTypes": {
-    "GqlPoolAprValue": ["GqlPoolAprRange", "GqlPoolAprTotal"],
     "GqlPoolBase": [
       "GqlPoolComposableStable",
       "GqlPoolElement",
+      "GqlPoolFixedPriceLBP",
       "GqlPoolFx",
       "GqlPoolGyro",
       "GqlPoolLiquidityBootstrapping",
+      "GqlPoolLiquidityBootstrappingV3",
       "GqlPoolMetaStable",
+      "GqlPoolQuantAmmWeighted",
+      "GqlPoolReClamm",
       "GqlPoolStable",
       "GqlPoolWeighted"
     ],
@@ -16,23 +19,25 @@
       "GqlPoolSwapEventCowAmm",
       "GqlPoolSwapEventV3"
     ],
-    "GqlPoolFeaturedPoolGroupItem": [
-      "GqlFeaturePoolGroupItemExternalLink",
-      "GqlPoolMinimal"
-    ],
-    "GqlPoolNestedUnion": ["GqlPoolComposableStableNested"],
-    "GqlPoolTokenBase": ["GqlPoolToken", "GqlPoolTokenComposableStable"],
-    "GqlPoolTokenComposableStableNestedUnion": ["GqlPoolToken"],
-    "GqlPoolTokenUnion": ["GqlPoolToken", "GqlPoolTokenComposableStable"],
     "GqlPoolUnion": [
       "GqlPoolComposableStable",
       "GqlPoolElement",
+      "GqlPoolFixedPriceLBP",
       "GqlPoolFx",
       "GqlPoolGyro",
       "GqlPoolLiquidityBootstrapping",
+      "GqlPoolLiquidityBootstrappingV3",
       "GqlPoolMetaStable",
+      "GqlPoolQuantAmmWeighted",
+      "GqlPoolReClamm",
       "GqlPoolStable",
       "GqlPoolWeighted"
+    ],
+    "HookParams": [
+      "ExitFeeHookParams",
+      "FeeTakingHookParams",
+      "MevTaxHookParams",
+      "StableSurgeHookParams"
     ]
   }
 }

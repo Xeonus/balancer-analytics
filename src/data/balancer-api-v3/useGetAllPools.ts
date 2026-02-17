@@ -15,31 +15,29 @@ export default function useGetAllPools(chainInIds: GqlChain[], poolInIDs: string
 
     if (error) {
         console.error("Error fetching gauges:", error);
-        return undefined; // Return undefined in case of loading or error
+        return undefined;
     }
 
     if (data && data.poolGetPools.length > 0) {
         return data.poolGetPools.map((pool) => {
-            const nativeRewardApr = pool.dynamicData.apr.nativeRewardApr;
-            const thirdPartyApr = pool.dynamicData.apr.thirdPartyApr;
+            const aprItems = pool.dynamicData.aprItems;
 
-            let nativeRewardAPRs;
-            if (nativeRewardApr.__typename === "GqlPoolAprTotal") {
-                nativeRewardAPRs = {
-                    min: parseFloat(nativeRewardApr.total),
-                    max: parseFloat(nativeRewardApr.total),
-                };
-            } else {
-                nativeRewardAPRs = {
-                    min: parseFloat(nativeRewardApr.min),
-                    max: parseFloat(nativeRewardApr.max),
-                };
-            }
+            // Native reward types: VEBAL_EMISSIONS, STAKING, STAKING_BOOST, MABEETS_EMISSIONS
+            const nativeRewardTypes = ['VEBAL_EMISSIONS', 'STAKING', 'STAKING_BOOST', 'MABEETS_EMISSIONS'];
+            const nativeRewardItems = aprItems.filter(item => nativeRewardTypes.includes(item.type));
+            const totalNativeRewardApr = nativeRewardItems.reduce((sum, item) => sum + item.apr, 0);
 
-            let thirdPartyAPR = 0;
-            if (thirdPartyApr.__typename === "GqlPoolAprTotal") {
-                thirdPartyAPR = parseFloat(thirdPartyApr.total);
-            }
+            // Third party reward types: AURA, MERKL
+            const thirdPartyTypes = ['AURA', 'MERKL'];
+            const thirdPartyItems = aprItems.filter(item => thirdPartyTypes.includes(item.type));
+            const thirdPartyAPR = thirdPartyItems.reduce((sum, item) => sum + item.apr, 0);
+
+            // Swap fee APR
+            const swapFeeTypes = ['SWAP_FEE', 'SWAP_FEE_24H', 'SWAP_FEE_7D', 'SWAP_FEE_30D', 'DYNAMIC_SWAP_FEE_24H'];
+            const swapItems = aprItems.filter(item => swapFeeTypes.includes(item.type));
+            const swapAPR = swapItems.reduce((sum, item) => sum + item.apr, 0);
+
+            const hasRewardAPR = nativeRewardItems.length > 0 || thirdPartyItems.length > 0;
 
             return {
                 chain: pool.chain,
@@ -48,11 +46,10 @@ export default function useGetAllPools(chainInIds: GqlChain[], poolInIDs: string
                 name: pool.name,
                 poolType: pool.type,
                 symbol: pool.symbol,
-                tokens: pool.allTokens.map((token) => ({
+                tokens: pool.poolTokens.map((token) => ({
                     address: token.address,
                     decimals: token.decimals,
                     id: token.id,
-                    isMainToken: token.isMainToken,
                     name: token.name,
                     symbol: token.symbol,
                     weight: parseFloat(token.weight || '0'),
@@ -64,15 +61,18 @@ export default function useGetAllPools(chainInIds: GqlChain[], poolInIDs: string
                 yieldCapture24h: parseFloat(pool.dynamicData.yieldCapture24h),
                 totalLiquidity: parseFloat(pool.dynamicData.totalLiquidity),
                 globalAPRStats: {
-                    hasRewardAPR: pool.dynamicData.apr.hasRewardApr,
-                    nativeRewardAPRs: nativeRewardAPRs,
-                    nativeTotalRewardAPR: nativeRewardAPRs.max,
+                    hasRewardAPR: hasRewardAPR,
+                    nativeRewardAPRs: {
+                        min: totalNativeRewardApr,
+                        max: totalNativeRewardApr,
+                    },
+                    nativeTotalRewardAPR: totalNativeRewardApr,
                     thirdPartyAPR: thirdPartyAPR,
-                    swapAPR: parseFloat(pool.dynamicData.apr.swapApr),
+                    swapAPR: swapAPR,
                 },
             };
         });
     }
 
-    return []; // Return an empty array if there's no data
+    return [];
 }
