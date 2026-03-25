@@ -15,12 +15,12 @@ jobs:
   fix-vulnerabilities:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -46,7 +46,8 @@ jobs:
           python3 << 'PYEOF'
           import json, os
 
-          MIN_SEVERITIES = {"medium", "high", "critical"}
+          # "medium" = Dependabot terminology, "moderate" = yarn audit terminology
+          MIN_SEVERITIES = {"moderate", "medium", "high", "critical"}
           advisories = {}
 
           # --- Source 1: Dependabot alerts ---
@@ -92,7 +93,7 @@ jobs:
           except Exception as e:
               print(f"  Warning: Could not parse yarn audit: {e}")
 
-          print(f"\nFound {len(advisories)} vulnerable packages (medium/high/critical)")
+          print(f"\nFound {len(advisories)} vulnerable packages (moderate/high/critical)")
 
           output_file = os.environ.get("GITHUB_OUTPUT", "/dev/null")
 
@@ -182,12 +183,6 @@ jobs:
 
             ### Changes
             ${{ steps.audit.outputs.summary }}
-
-            ### How this works
-            - Dependabot alerts were fetched via GitHub API (medium, high, critical only)
-            - `yarn audit` was also run as a secondary source
-            - `resolutions` entries were added/updated in `package.json` to force safe versions
-            - `yarn install` was re-run to update `yarn.lock`
 
             > **Note:** This only updates transitive dependencies via resolutions. Direct dependency upgrades should be done manually to avoid breaking changes.
 
