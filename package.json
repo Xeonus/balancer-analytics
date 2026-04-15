@@ -104,7 +104,7 @@
     "sha.js": "^2.4.12",
     "elliptic": "^6.6.1",
     "@babel/traverse": "^7.23.2",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "ws": "^8.17.1",
     "braces": "^3.0.3",
     "webpack-dev-middleware": "^5.3.4",
