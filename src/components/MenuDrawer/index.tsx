@@ -21,7 +21,6 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import ListItemButton from '@mui/material/ListItemButton';
-import HubIcon from '@mui/icons-material/Hub';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
@@ -170,12 +169,6 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'BAL Emissions'} />
                 </ListItemButton>*/}
-                <ListItemButton key={'Core Pools'} component={NavLink} to={'/' + route + 'corePools'}>
-                    <ListItemIcon>
-                        <HubIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Core Pools'} />
-                </ListItemButton>
                 <ListItemButton key={'Voting Incentives'} component={NavLink} to={'/' + route + 'voting-incentives'}>
                     <ListItemIcon>
                         <Handshake />

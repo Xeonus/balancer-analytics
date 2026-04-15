@@ -34,9 +34,7 @@ import { isMobile } from 'react-device-detect';
 import Emissions from '../../pages/Emissions';
 import VotingIncentives from '../../pages/VotingIncentives';
 import Reports from "../../pages/Reports";
-import CorePools from "../../pages/CorePools";
 import ProtocolFees from "../../pages/ProtocolFees";
-import CorePool from "../../pages/CorePool";
 import IncentiveSimulator from "../../pages/IncentiveSimulator";
 
 
@@ -236,8 +234,6 @@ function Dashboard() {
                                    element={<VotingIncentives/>}/>
                             <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                    element={<IncentiveSimulator/>}/>
-                            <Route path={networkPrefix(activeNetwork) + 'corePools'}
-                                   element={<CorePools/>}/>
                             {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                             <Route path={"/:networkID/pools/:poolId"} element={<PoolPage />} />
                             <Route path={"/pools/:poolId"} element={<PoolPage />} />
@@ -253,8 +249,6 @@ function Dashboard() {
                             <Route path={"/financials"} element={<Financials />} />
                             <Route path={"/protocolFees"} element={<ProtocolFees />} />
                             <Route path={"/:networkID/protocolFees"} element={<ProtocolFees />} />
-                            <Route path={"/corePool/:poolId"} element={<CorePool />} />
-                            <Route path={"/:networkID/corePool/:poolId"} element={<CorePool />} />
                         </Routes>
                     </MainContent>
                 </Box>
