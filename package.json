@@ -141,7 +141,7 @@
     "on-headers": "^1.1.0",
     "compression": "^1.8.1",
     "phin": "^3.7.1",
-    "postcss": "^8.4.31",
+    "postcss": "^8.5.10",
     "tmp": "^0.2.4",
     "ua-parser-js": "^0.7.33",
     "word-wrap": "^1.2.4",
@@ -163,7 +163,8 @@
     "file-type": "^21.3.1",
     "picomatch": "^4.0.4",
     "yaml": "^1.10.3",
-    "defu": "^6.1.5"
+    "defu": "^6.1.5",
+    "uuid": "^14.0.0"
   },
   "overrides": {
     "h3": "^1.15.6",
