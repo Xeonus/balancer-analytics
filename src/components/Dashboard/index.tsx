@@ -6,6 +6,7 @@ import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
 import MoonIcon from '../../assets/svg/MoonIcon.svg';
 import SunIcon from '../../assets/svg/SunIcon.svg';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -214,6 +215,9 @@ function Dashboard() {
                                 </Box>
                             </Box>
                         </Toolbar>
+                        <Alert severity="warning" square sx={{ borderRadius: 0 }}>
+                            Balancer v2 subgraph data has been corrupted since the November 5, 2025 hack. This dashboard will be decommissioned or replaced in the coming weeks.
+                        </Alert>
                     </AppBar>
                     <MenuDrawer
                         open={open}
@@ -223,6 +227,7 @@ function Dashboard() {
                     />
                     <MainContent open={open} >
                         <DrawerHeader />
+                        <Box sx={{ height: 48 }} />
                         <Routes>
                             <Route path="/" element={<Protocol />} />
                             <Route path={networkPrefix(activeNetwork) + 'chain'} element={<Chain />} />

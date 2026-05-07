@@ -15,10 +15,9 @@ import {
     ArbitrumNetworkInfo,
     AvalancheNetworkInfo,
     BaseNetworkInfo,
-    EthereumNetworkInfo, FraxtalNetworkInfo,
+    EthereumNetworkInfo,
     GnosisNetworkInfo,
     PolygonNetworkInfo,
-    PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
 import {
     arbitrumBlockClient,
@@ -26,13 +25,11 @@ import {
     avalancheBlockClient,
     avalancheClient,
     baseBlockClient,
-    baseClient, fraxtalBlockClient, fraxtalClient,
+    baseClient,
     gnosisBlockClient,
     gnosisClient,
     polygonBlockClient,
     polygonClient,
-    polygonZKEVMBlockClient,
-    polygonZKEVMClient
 } from '../../apollo/client';
 
 import ProtocolMultipleBarChart from '../../components/Echarts/ProtocolCharts/ProtocolMultiBarChart';
@@ -42,11 +39,9 @@ import ExploreCard from '../../components/Cards/ExploreCard';
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
-import PolygonZkEVMLogo from '../../assets/svg/zkevm.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
-import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 import {smoothData} from "../../utils/data";
 import useGetCurrentTokenPrices from "../../data/balancer-api-v3/useGetCurrentTokenPrices";
 import useGetTokenPriceWithChange from "../../data/balancer-api-v3/useGetTokenPriceWithChange";
@@ -87,7 +82,7 @@ export default function Protocol() {
     const [showMultiAreaProtocolFeeChart, setShowMultiAreaProtocolFeeChart] = React.useState(false);
     const [showMultiAreaFeeChart, setShowMultiAreaFeeChart] = React.useState(false);
     const [showMultiAreaSwapChart, setShowMultiSwapChart] = React.useState(false);
-    const protocolAlertMessage = 'Polygon zkEVM Subgraph issues - Protocol TVL stats affected!'
+    const protocolAlertMessage = ''
 
     //Data
     const balAddress = '0xba100000625a3754423978a60c9317c58a424e3d';
@@ -100,11 +95,9 @@ export default function Protocol() {
     console.log("protocolData", protocolData)
     const arbitrumProtocolData = useBalancerChainProtocolData(ArbitrumNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), arbitrumBlockClient, arbitrumClient);
     const polygonProtocolData = useBalancerChainProtocolData(PolygonNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), polygonBlockClient, polygonClient);
-    const polygonZkEVMProtocolData = useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.decentralicedClientUri, getUnixTimestamp1000DaysAgo(), polygonZKEVMBlockClient, polygonZKEVMClient);
     const gnosisProtocolData = useBalancerChainProtocolData(GnosisNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), gnosisBlockClient, gnosisClient);
     const avalancheProtocolData = useBalancerChainProtocolData(AvalancheNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), avalancheBlockClient, avalancheClient);
     const baseProtocolData = useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, 1706015447, baseBlockClient, baseClient);
-    const fraxtalProtocolData = useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, getUnixTimestamp1000DaysAgo(), fraxtalBlockClient, fraxtalClient);
     //Mainnet dominance
     const mainnetTVL = protocolData.tvl ? protocolData.tvl : 0
     const mainnetTVLChange = protocolData.tvlChange ? protocolData.tvlChange : 0
@@ -266,12 +259,9 @@ export default function Protocol() {
         {name: 'Ethereum', linkTarget: 'chain', svgPath: EtherLogo},
         {name: 'Arbitrum', linkTarget: 'arbitrum/chain', svgPath: ArbitrumLogo},
         {name: 'Polygon', linkTarget: 'polygon/chain', svgPath: PolygonLogo},
-        {name: 'zkEVM', linkTarget: 'zkevm/chain', svgPath: PolygonZkEVMLogo},
         {name: 'Gnosis', linkTarget: 'gnosis/chain', svgPath: GnosisLogo},
         {name: 'Avalanche', linkTarget: 'avalanche/chain', svgPath: AvalancheLogo},
         {name: 'Base', linkTarget: 'base/chain', svgPath: BaseLogo},
-        {name: 'Fraxtal', linkTarget: 'fraxtal/chain', svgPath: FraxtalLogo},
-
     ];
 
 
@@ -332,7 +322,6 @@ export default function Protocol() {
                 && polygonProtocolData.feeData.length > 10
                 && baseProtocolData.feeData.length > 10
                 && avalancheProtocolData.feeData.length > 10
-                && fraxtalProtocolData.feeData.length > 10
                 && gnosisProtocolData.feeData.length > 10 ?
                 <Grid
                     container
@@ -437,11 +426,9 @@ export default function Protocol() {
                                 mainnetProtocolData={protocolData}
                                 arbitrumProtocolData={arbitrumProtocolData}
                                 polygonProtocolData={polygonProtocolData}
-                                polygonZkEVMProtocolData={polygonZkEVMProtocolData}
                                 gnosisProtocolData={gnosisProtocolData}
                                 avalancheProtocolData={avalancheProtocolData}
                                 baseProtocolData={baseProtocolData}
-                                fraxtalProtocolData={fraxtalProtocolData}
                             />
                         </Grid>
                     ) : (
@@ -542,11 +529,9 @@ export default function Protocol() {
                             mainnetProtocolData={smoothData(protocolData.volumeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.volumeData, 100000000)}
                             polygonProtocolData={smoothData(polygonProtocolData.volumeData, 100000000)}
-                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.volumeData, 100000000)}
                             gnosisProtocolData={smoothData(gnosisProtocolData.volumeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.volumeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.volumeData, 100000000)}
-                            fraxtalProtocolData={smoothData(fraxtalProtocolData.volumeData, 100000000)}
                             isUSD={true}
                         />
                         </Grid>
@@ -643,11 +628,9 @@ export default function Protocol() {
                             mainnetProtocolData={smoothData(protocolData.protocolFeeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.protocolFeeData, 100000000)}
                             polygonProtocolData={smoothData(polygonProtocolData.protocolFeeData, 100000000)}
-                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.protocolFeeData, 100000000)}
                             gnosisProtocolData={smoothData(gnosisProtocolData.protocolFeeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.protocolFeeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.protocolFeeData, 100000000)}
-                            fraxtalProtocolData={smoothData(fraxtalProtocolData.protocolFeeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid>) : (
@@ -744,11 +727,9 @@ export default function Protocol() {
                             mainnetProtocolData={smoothData(protocolData.feeData, 100000000)}
                             arbitrumProtocolData={smoothData(arbitrumProtocolData.feeData, 100000000)}
                             polygonProtocolData={smoothData(polygonProtocolData.feeData, 100000000)}
-                            polygonZkEVMProtocolData={smoothData(polygonZkEVMProtocolData.feeData, 100000000)}
                             gnosisProtocolData={smoothData(gnosisProtocolData.feeData, 100000000)}
                             avalancheProtocolData={smoothData(avalancheProtocolData.feeData, 100000000)}
                             baseProtocolData={smoothData(baseProtocolData.feeData, 100000000)}
-                            fraxtalProtocolData={smoothData(fraxtalProtocolData.feeData, 100000000)}
                             isUSD={true}
                         />
                     </Grid> ) : (
@@ -844,11 +825,9 @@ export default function Protocol() {
                             mainnetProtocolData={protocolData.swapData}
                             arbitrumProtocolData={arbitrumProtocolData.swapData}
                             polygonProtocolData={polygonProtocolData.swapData}
-                            polygonZkEVMProtocolData={polygonZkEVMProtocolData.swapData}
                             gnosisProtocolData={gnosisProtocolData.swapData}
                             avalancheProtocolData={avalancheProtocolData.swapData}
                             baseProtocolData={baseProtocolData.swapData}
-                            fraxtalProtocolData={fraxtalProtocolData.swapData}
                             isUSD={false}
                         />
                     </Grid> ) : (

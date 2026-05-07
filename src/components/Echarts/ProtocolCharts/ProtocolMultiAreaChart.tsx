@@ -10,11 +10,9 @@ interface ProtocolAreaChartProps {
     mainnetProtocolData: ProtocolData,
     arbitrumProtocolData: ProtocolData,
     polygonProtocolData: ProtocolData,
-    polygonZkEVMProtocolData: ProtocolData,
     gnosisProtocolData: ProtocolData,
     avalancheProtocolData: ProtocolData,
     baseProtocolData: ProtocolData,
-    fraxtalProtocolData: ProtocolData
 }
 
 const processData = (mainnetData: number[], protocolData: ProtocolData): number[] => {
@@ -28,7 +26,7 @@ const processData = (mainnetData: number[], protocolData: ProtocolData): number[
 };
 
 export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
-    const { mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData, fraxtalProtocolData } = props;
+    const { mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData } = props;
     const mainnetData = useMemo(() => mainnetProtocolData.tvlData.map(el => Number(el.value.toFixed(2))), [mainnetProtocolData]);
     const mainnetxAxisData = useMemo(() => mainnetProtocolData.tvlData.map(el => el.time), [mainnetProtocolData]);
 
@@ -37,11 +35,9 @@ export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
         mainnetData,
         arbitrumData: processData(mainnetData, arbitrumProtocolData),
         polygonData: processData(mainnetData, polygonProtocolData),
-        polygonZkEVMData: processData(mainnetData, polygonZkEVMProtocolData),
         gnosisData: processData(mainnetData, gnosisProtocolData),
         avalancheData: processData(mainnetData, avalancheProtocolData),
         baseData: processData(mainnetData, baseProtocolData),
-        fraxtalData: processData(mainnetData, fraxtalProtocolData),
         xAxis: mainnetxAxisData,
     });
 
@@ -50,11 +46,9 @@ export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
             mainnetData: processData(mainnetData, mainnetProtocolData),
             arbitrumData: processData(mainnetData, arbitrumProtocolData),
             polygonData: processData(mainnetData, polygonProtocolData),
-            polygonZkEVMData: processData(mainnetData, polygonZkEVMProtocolData),
             gnosisData: processData(mainnetData, gnosisProtocolData),
             avalancheData: processData(mainnetData, avalancheProtocolData),
             baseData: processData(mainnetData, baseProtocolData),
-            fraxtalData: processData(mainnetData, fraxtalProtocolData),
             xAxis: mainnetxAxisData,
         };
 
@@ -77,15 +71,13 @@ export default function ProtocolMultiAreaChart(props: ProtocolAreaChartProps) {
                 mainnetData: updateDataForRange(newData.mainnetData, timeRange),
                 arbitrumData: updateDataForRange(newData.arbitrumData, timeRange),
                 polygonData: updateDataForRange(newData.polygonData, timeRange),
-                polygonZkEVMData: updateDataForRange(newData.polygonZkEVMData, timeRange),
                 gnosisData: updateDataForRange(newData.gnosisData, timeRange),
                 avalancheData: updateDataForRange(newData.avalancheData, timeRange),
                 baseData: updateDataForRange(newData.baseData, timeRange),
-                fraxtalData: updateDataForRange(newData.fraxtalData, timeRange),
                 xAxis: updateXAxisForRange(newData.xAxis, timeRange),
             });
         }
-    }, [timeRange, mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, polygonZkEVMProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData, fraxtalProtocolData, mainnetData, mainnetxAxisData]);
+    }, [timeRange, mainnetProtocolData, arbitrumProtocolData, polygonProtocolData, gnosisProtocolData, avalancheProtocolData, baseProtocolData, mainnetData, mainnetxAxisData]);
 
     const handleChange = (event: SelectChangeEvent) => {
         setTimeRange(event.target.value);

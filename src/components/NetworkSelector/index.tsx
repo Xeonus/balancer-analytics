@@ -6,18 +6,15 @@ import {
     EthereumNetworkInfo,
     GnosisNetworkInfo, NetworkInfo,
     PolygonNetworkInfo,
-    PolygonZkEVMNetworkInfo,
-    AvalancheNetworkInfo, BaseNetworkInfo, FraxtalNetworkInfo
+    AvalancheNetworkInfo, BaseNetworkInfo
 } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
-import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
 import AvalancheLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
-import FraxtalLogo from '../../assets/svg/fraxtal.svg'
 
 import {useLocation, useNavigate} from "react-router-dom";
 
@@ -60,10 +57,6 @@ export default function NetworkSelector() {
             update(GnosisNetworkInfo)
             const newPath = updatePathForNetwork(GnosisNetworkInfo, location.pathname)
             navigate(newPath)
-        } else if (chainId === PolygonZkEVMNetworkInfo.chainId) {
-            update(PolygonZkEVMNetworkInfo)
-            const newPath = updatePathForNetwork(PolygonZkEVMNetworkInfo, location.pathname)
-            navigate(newPath)
         } else if (chainId === AvalancheNetworkInfo.chainId) {
             update(AvalancheNetworkInfo)
             const newPath = updatePathForNetwork(AvalancheNetworkInfo, location.pathname)
@@ -71,10 +64,6 @@ export default function NetworkSelector() {
         } else if (chainId === BaseNetworkInfo.chainId) {
             update(BaseNetworkInfo)
             const newPath = updatePathForNetwork(BaseNetworkInfo, location.pathname)
-            navigate(newPath)
-        } else if (chainId === FraxtalNetworkInfo.chainId) {
-            update(FraxtalNetworkInfo)
-            const newPath = updatePathForNetwork(FraxtalNetworkInfo, location.pathname)
             navigate(newPath)
         }
 
@@ -130,22 +119,6 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Polygon
-                        </Box>
-                    </Box>
-                </MenuItem>
-                <MenuItem value={PolygonZkEVMNetworkInfo.chainId} key="zkevm">
-                    <Box display="flex" alignItems="center">
-                        <Box mr={0.5}>
-                            <Avatar
-                                sx={{
-                                    height: 20,
-                                    width: 20
-                                }}
-                                src={PolygonZkevmLogo}
-                            />
-                        </Box>
-                        <Box>
-                            Polygon zkEVM
                         </Box>
                     </Box>
                 </MenuItem>
@@ -210,22 +183,6 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Base
-                        </Box>
-                    </Box>
-                </MenuItem>
-                <MenuItem value={FraxtalNetworkInfo.chainId} key="fraxtal">
-                    <Box display="flex" alignItems="center">
-                        <Box mr={0.5}>
-                            <Avatar
-                                sx={{
-                                    height: 20,
-                                    width: 20
-                                }}
-                                src={FraxtalLogo}
-                            />
-                        </Box>
-                        <Box>
-                            Fraxtal
                         </Box>
                     </Box>
                 </MenuItem>

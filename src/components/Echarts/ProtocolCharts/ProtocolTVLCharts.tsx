@@ -28,11 +28,9 @@ interface ProtocolAreaChartProps {
     mainnetData: number[],
     arbitrumData: number[],
     polygonData: number[],
-    polygonZkEVMData: number[],
     gnosisData: number[],
     avalancheData: number[],
     baseData: number[],
-    fraxtalData: number[],
     xAxis: string[],
 }
 
@@ -41,11 +39,9 @@ export default function ProtocolTVLCharts({
                                               mainnetData,
                                               arbitrumData,
                                               polygonData,
-                                              polygonZkEVMData,
                                               gnosisData,
                                               avalancheData,
                                               baseData,
-                                              fraxtalData,
                                               xAxis }: ProtocolAreaChartProps) {
 
 
@@ -56,11 +52,9 @@ export default function ProtocolTVLCharts({
             '#0047AB',
             '#66CCCC',
             '#8B00FF',
-            '#3a0f5d',
             '#0d8e74',
             '#F01B36',
             '#0021a2',
-            '#8a8a8a'
         ],
         tooltip: {
             trigger: 'axis',
@@ -74,7 +68,7 @@ export default function ProtocolTVLCharts({
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Fraxtal'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Gnosis', 'Avalanche', 'Base'],
             inactiveColor: "red",
             icon: 'circle',
             textStyle: {
@@ -202,38 +196,6 @@ export default function ProtocolTVLCharts({
                 data: polygonData
             },
             {
-                name: 'Polygon zkEVM',
-                type: 'line',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: {
-                    width: 0
-                },
-                showSymbol: false,
-                areaStyle: {
-                    opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(64,4,129)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(58,15,93)'
-                        }
-                    ])
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                tooltip: {
-                    valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
-                    }
-                },
-                data: polygonZkEVMData
-            },
-            {
                 name: 'Gnosis',
                 type: 'line',
                 stack: 'Total',
@@ -328,38 +290,6 @@ export default function ProtocolTVLCharts({
                     }
                 },
                 data: baseData
-            },
-            {
-                name: 'Fraxtal',
-                type: 'line',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: {
-                    width: 0
-                },
-                showSymbol: false,
-                areaStyle: {
-                    opacity: 0.95,
-                    color: new graphic.LinearGradient(0, 0, 0, 1, [
-                        {
-                            offset: 0,
-                            color: 'rgb(138,138,138)'
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgb(101,101,101)'
-                        }
-                    ])
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                tooltip: {
-                    valueFormatter: function (value: number) {
-                        return formatDollarAmount(value)
-                    }
-                },
-                data: fraxtalData
             },
         ]
     };

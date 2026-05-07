@@ -3,13 +3,11 @@ import {
     arbitrumBlockClient,
     arbitrumClient, avalancheBlockClient, avalancheClient, baseBlockClient, baseClient,
     blockClient,
-    client, fraxtalBlockClient, fraxtalClient,
+    client,
     gnosisBlockClient,
     gnosisClient,
     polygonBlockClient,
     polygonClient,
-    polygonZKEVMBlockClient,
-    polygonZKEVMClient,
 } from '../../apollo/client'
 import {NetworkInfo, SupportedNetwork} from '../../constants/networks'
 import {useCallback} from 'react'
@@ -69,16 +67,12 @@ export function useDataClient(): ApolloClient<NormalizedCacheObject> {
             return arbitrumClient
         case SupportedNetwork.POLYGON:
             return polygonClient
-        case SupportedNetwork.ZKEVM:
-            return polygonZKEVMClient
         case SupportedNetwork.GNOSIS:
             return gnosisClient
         case SupportedNetwork.AVALANCHE:
             return avalancheClient
         case SupportedNetwork.BASE:
             return baseClient
-        case SupportedNetwork.FRAXTAL:
-            return fraxtalClient
         default:
             return client
     }
@@ -94,16 +88,12 @@ export function useBlockClient(): ApolloClient<NormalizedCacheObject> {
             return arbitrumBlockClient
         case SupportedNetwork.POLYGON:
             return polygonBlockClient
-        case SupportedNetwork.ZKEVM:
-            return polygonZKEVMBlockClient
         case SupportedNetwork.GNOSIS:
             return gnosisBlockClient
         case SupportedNetwork.AVALANCHE:
             return avalancheBlockClient
         case SupportedNetwork.BASE:
             return baseBlockClient
-        case SupportedNetwork.FRAXTAL:
-            return fraxtalBlockClient
         default:
             return blockClient
     }
