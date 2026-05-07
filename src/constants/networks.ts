@@ -3,10 +3,8 @@ import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
 import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
-import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
 import AVALANCHE_LOGO_URL from '../assets/svg/avalancheLogo.svg'
 import BASE_LOGO_URL from '../assets/svg/base.svg'
-import FRAXTAL_LOGO_URL from '../assets/svg/fraxtal.svg'
 
 import {
   BALANCER_PRIMARY_COLOR,
@@ -18,10 +16,8 @@ export enum SupportedNetwork {
   ARBITRUM,
   POLYGON,
   GNOSIS,
-  ZKEVM,
   AVALANCHE,
   BASE,
-  FRAXTAL
 }
 
 export type NetworkInfo = {
@@ -49,6 +45,7 @@ export type NetworkInfo = {
 }
 
 const DECENTRALIZED_ENDPOINT = 'https://gateway-arbitrum.network.thegraph.com/api/' + PERSONAL_GRAPH_KEY + '/subgraphs/id/'
+const ORMILABS_ENDPOINT = 'https://api.subgraph.ormilabs.com/api/public/717cf785-de57-4761-94dd-9ac51b019902/subgraphs/'
 
 export const EthereumNetworkInfo: NetworkInfo = {
   id: SupportedNetwork.ETHEREUM,
@@ -63,7 +60,7 @@ export const EthereumNetworkInfo: NetworkInfo = {
   startTimeStamp: 1620712698,
   appUri: 'https://app.balancer.fi/#/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-mainnet/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV',
   blockClientUri: DECENTRALIZED_ENDPOINT + '9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC',
   rpcUrl: 'https://eth.llamarpc.com',
@@ -86,7 +83,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   startTimeStamp: 1619874000,
   appUri: 'https://app.balancer.fi/#/arbitrum/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-arbitrum-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-arbitrum/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-arbitrum/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
   blockClientUri: DECENTRALIZED_ENDPOINT + '64DCU8nq48qdDABnobpDafsg7RF75Rx5soKrHiGA8mqp',
   rpcUrl: 'https://arb1.arbitrum.io/rpc',
@@ -110,7 +107,7 @@ export const PolygonNetworkInfo: NetworkInfo = {
   startTimeStamp: 1619874000,
   appUri: 'https://app.balancer.fi/#/polygon/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-polygon-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-polygon/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-polygon/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp',
   blockClientUri: DECENTRALIZED_ENDPOINT + 'DMnXZnphMTkcFiK5NHm6LzwhJ7yUy7seVnZuNkNsXLHp',
   rpcUrl: 'https://polygon-rpc.com',
@@ -118,30 +115,6 @@ export const PolygonNetworkInfo: NetworkInfo = {
   primaryColor: '#8247e5',
   secondaryColor: '#FB7876',
   imageURL: POLYGON_LOGO_URL,
-  blurb: 'Beta',
-}
-
-export const PolygonZkEVMNetworkInfo: NetworkInfo = {
-  id: SupportedNetwork.ZKEVM,
-  chainId: '1101',
-  v3NetworkID: 'ZKEVM',
-  coingeckoId: 'polygon-zkevm',
-  debankId: 'pze',
-  balAddress: '0x120eF59b80774F02211563834d8E3b72cb1649d6',
-  feeCollectorThreshold: 5000,
-  route: 'zkevm',
-  name: 'Polygon zkEVM',
-  startTimeStamp: 1685990897,
-  appUri: 'https://app.balancer.fi/#/zkevm/',
-  clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest',
-  decentralicedClientUri: DECENTRALIZED_ENDPOINT + '2Pn2rKmJdkKs9b4wK7CXQN9z5jHXkY4HbBuTVAEo4aoS',
-  blockClientUri: DECENTRALIZED_ENDPOINT + 'EPWJiod7hQ7yy4QhXihL9ssw82NosmRnu8txcf5D9Duo',
-  rpcUrl: 'https://zkevm-rpc.com',
-  bgColor: '#a176e8',
-  primaryColor: '#620df3',
-  secondaryColor: '#FB7876',
-  imageURL: ZKEVM_LOGO_URL,
   blurb: 'Beta',
 }
 
@@ -158,7 +131,7 @@ export const GnosisNetworkInfo: NetworkInfo = {
   startTimeStamp: 1673807871,
   appUri: 'https://app.balancer.fi/#/gnosis-chain/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gnosis-chain-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-gnosis-chain/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-gnosis/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg',
   blockClientUri: DECENTRALIZED_ENDPOINT + '8ZD25Ff1efVjqHkGmPdgn7oevwe3FkSB7WFygyNEsAco',
   rpcUrl: 'https://rpc.gnosis.gateway.fm',
@@ -182,7 +155,7 @@ export const AvalancheNetworkInfo: NetworkInfo = {
   startTimeStamp: 1688229198,
   appUri: 'https://app.balancer.fi/#/avalanche/',
   clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-avalanche-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges-avalanche/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-avalanche/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + '7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu',
   blockClientUri: DECENTRALIZED_ENDPOINT + '97YH6dMhGcXoTvVwDAML6GxYm9hBh7PCz6WPscUkrFhv',
   rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
@@ -206,7 +179,7 @@ export const BaseNetworkInfo: NetworkInfo = {
   startTimeStamp: 1690495200,
   appUri: 'https://app.balancer.fi/#/base/',
   clientUri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
-  gaugeClientUri: 'https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest',
+  gaugeClientUri: ORMILABS_ENDPOINT + 'balancer-gauges-base/latest/gn',
   decentralicedClientUri: DECENTRALIZED_ENDPOINT + 'E7XyutxXVLrp8njmjF16Hh38PCJuHm12RRyMt5ma4ctX',
   blockClientUri: DECENTRALIZED_ENDPOINT + '8k66QCiBQGaTE4Vg62UpQL9Umhr5JQ3V6KcPNy1vvBaT',
   rpcUrl: 'https://base.publicnode.com',
@@ -217,37 +190,11 @@ export const BaseNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
-export const FraxtalNetworkInfo: NetworkInfo = {
-  id: SupportedNetwork.FRAXTAL,
-  chainId: '252',
-  v3NetworkID: 'FRAXTAL',
-  coingeckoId: 'fraxtal',
-  debankId: 'fraxtal',
-  balAddress: '0x2fc7447f6cf71f9aa9e7ff8814b37e55b268ec91',
-  feeCollectorThreshold: 5000,
-  route: 'fraxtal',
-  name: 'Fraxtal',
-  startTimeStamp: 1718834400,
-  appUri: 'https://app.balancer.fi/#/fraxtal/',
-  clientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-fraxtal-v2/latest/gn',
-  gaugeClientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-gauges-fraxtal/latest/gn',
-  decentralicedClientUri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/balancer-fraxtal-v2/latest/gn',
-  blockClientUri: '',
-  rpcUrl: 'https://rpc.frax.com',
-  bgColor: '#8a8a8a',
-  primaryColor: '#656565',
-  secondaryColor: '#3c3c3c',
-  imageURL: FRAXTAL_LOGO_URL,
-  blurb: 'Beta',
-}
-
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
   PolygonNetworkInfo,
-  PolygonZkEVMNetworkInfo,
   GnosisNetworkInfo,
   AvalancheNetworkInfo,
   BaseNetworkInfo,
-  FraxtalNetworkInfo
 ]

@@ -31,11 +31,9 @@ interface ProtocolAreaChartProps {
     mainnetProtocolData: BalancerChartDataItem[],
     arbitrumProtocolData: BalancerChartDataItem[],
     polygonProtocolData: BalancerChartDataItem[],
-    polygonZkEVMProtocolData: BalancerChartDataItem[],
     gnosisProtocolData: BalancerChartDataItem[],
     avalancheProtocolData: BalancerChartDataItem[],
     baseProtocolData: BalancerChartDataItem[],
-    fraxtalProtocolData: BalancerChartDataItem[],
     isUSD : boolean
 }
 
@@ -44,11 +42,9 @@ interface ProtocolAreaChartProps {
 export default function ProtocolMultiBarChart({mainnetProtocolData,
                                                   arbitrumProtocolData,
                                                   polygonProtocolData,
-                                                  polygonZkEVMProtocolData,
                                                   gnosisProtocolData,
                                                   avalancheProtocolData,
                                                   baseProtocolData,
-                                                  fraxtalProtocolData,
                                                   isUSD}: ProtocolAreaChartProps) {
 
     const mainnetData = mainnetProtocolData.map(el => Number(el.value.toFixed(2)));
@@ -68,14 +64,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
         const diffSize = mainnetData.length - polygonData.length;
         const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
         polygonData = zeroArray.concat(polygonData);
-    }
-
-    let polygonZkEVMData = polygonZkEVMProtocolData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && polygonZkEVMData) {
-        const diffSize = mainnetData.length - polygonZkEVMData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        polygonZkEVMData = zeroArray.concat(polygonZkEVMData);
     }
 
     let gnosisData = gnosisProtocolData.map(el => Number(el.value.toFixed(2)));
@@ -102,14 +90,6 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
         baseData = zeroArray.concat(baseData);
     }
 
-    let fraxtalData = fraxtalProtocolData.map(el => Number(el.value.toFixed(2)));
-
-    if (mainnetData && fraxtalData) {
-        const diffSize = mainnetData.length - fraxtalData.length;
-        const zeroArray = mainnetData.slice(0, diffSize).map(el => 0);
-        fraxtalData = zeroArray.concat(fraxtalData);
-    }
-
     //Generic x-Axis
     const mainnetxAxisData = mainnetProtocolData.map(el => el.time);
 
@@ -119,11 +99,9 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
     const [rangedMainnetData, setrangedMainnetData] = React.useState(mainnetData)
     const [rangedArbitrumData, setrangedArbitrumData] = React.useState(arbitrumData);
     const [rangedPolygonData, setrangedPolygonData] = React.useState(polygonData);
-    const [rangedPolygonZkEVMData, setrangedPolygonZkEVMData] = React.useState(polygonZkEVMData);
     const [rangedGnosisData, setrangedGnosisnData] = React.useState(gnosisData);
     const [rangedAvalancheData, setrangedAvalanchenData] = React.useState(avalancheData);
     const [rangedBaseData, setRangedBasenData] = React.useState(baseData);
-    const [rangedFraxtalData, setRangedFraxtalData] = React.useState(fraxtalData);
     const [rangedxAxis, setRangedxAxis] = React.useState(mainnetxAxisData);
 
     React.useEffect(() => {
@@ -131,21 +109,17 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
-            setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisnData(gnosisData)
             setrangedAvalanchenData(avalancheData)
             setRangedBasenData(baseData)
-            setRangedFraxtalData(fraxtalData)
             setRangedxAxis(mainnetxAxisData)
         } else {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(timeRange)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(timeRange)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(timeRange)))
-            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(timeRange)))
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(timeRange)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(timeRange)))
             setRangedBasenData(baseData.slice(baseData.length - Number(timeRange)))
-            setRangedFraxtalData(fraxtalData.slice(fraxtalData.length - Number(timeRange)))
             setRangedxAxis(mainnetxAxisData.slice(mainnetxAxisData.length - Number(timeRange)))
         }
     }, [timeRange, rangedxAxis.length]);
@@ -156,20 +130,16 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
             setrangedMainnetData(mainnetData);
             setrangedArbitrumData(arbitrumData);
             setrangedPolygonData(polygonData);
-            setrangedPolygonZkEVMData(polygonZkEVMData)
             setrangedGnosisnData(gnosisData);
             setRangedBasenData(baseData)
-            setRangedFraxtalData(fraxtalData)
             setrangedAvalanchenData(avalancheData)
         } else if (mainnetData.length >= Number(event.target.value)) {
             setrangedMainnetData(mainnetData.slice(mainnetData.length - Number(event.target.value)))
             setrangedArbitrumData(arbitrumData.slice(arbitrumData.length - Number(event.target.value)))
             setrangedPolygonData(polygonData.slice(polygonData.length - Number(event.target.value)))
-            setrangedPolygonZkEVMData(polygonZkEVMData.slice(polygonZkEVMData.length - Number(event.target.value)))
             setrangedGnosisnData(gnosisData.slice(gnosisData.length - Number(event.target.value)))
             setrangedAvalanchenData(avalancheData.slice(avalancheData.length - Number(event.target.value)))
             setRangedBasenData(baseData.slice(baseData.length - Number(event.target.value)))
-            setRangedFraxtalData(fraxtalData.slice(fraxtalData.length - Number(event.target.value)))
         }
     };
 
@@ -213,11 +183,9 @@ export default function ProtocolMultiBarChart({mainnetProtocolData,
                 mainnetData={rangedMainnetData}
                 arbitrumData={rangedArbitrumData}
                 polygonData={rangedPolygonData}
-                polygonZkEVMData={rangedPolygonZkEVMData}
                 gnosisData={rangedGnosisData}
                 avalancheData={rangedAvalancheData}
                 baseData={rangedBaseData}
-                fraxtalData={rangedFraxtalData}
                 xAxis={rangedxAxis}
                 isUSD={isUSD}
                 />

@@ -4,9 +4,8 @@ import {
     ArbitrumNetworkInfo,
     PolygonNetworkInfo,
     GnosisNetworkInfo,
-    PolygonZkEVMNetworkInfo,
     AvalancheNetworkInfo,
-    BaseNetworkInfo, FraxtalNetworkInfo
+    BaseNetworkInfo
 } from '../../constants/networks';
 import {
     blockClient,
@@ -15,14 +14,12 @@ import {
     arbitrumClient,
     polygonBlockClient,
     polygonClient,
-    polygonZKEVMBlockClient,
-    polygonZKEVMClient,
     gnosisBlockClient,
     gnosisClient,
     avalancheBlockClient,
     avalancheClient,
     baseBlockClient,
-    baseClient, fraxtalBlockClient, fraxtalClient,
+    baseClient,
 } from '../../apollo/client';
 import { ProtocolData } from './useProtocolDataWithClientOverride';
 import { getUnixTimestamp1000DaysAgo } from "../../utils/date";
@@ -33,11 +30,9 @@ export interface AggregatedProtocolData {
     mainnetData: ProtocolData,
     arbitrumData: ProtocolData,
     polygonData: ProtocolData,
-    polygonzkEVMData: ProtocolData,
     gnosisData: ProtocolData,
     avalancheData: ProtocolData,
     baseData: ProtocolData,
-    fraxtalData: ProtocolData,
     volume: number;
     volumeChange: number;
     fees24: number;
@@ -92,11 +87,9 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         useBalancerChainProtocolData(EthereumNetworkInfo.decentralicedClientUri, startDate, blockClient, client),
         useBalancerChainProtocolData(ArbitrumNetworkInfo.decentralicedClientUri, startDate, arbitrumBlockClient, arbitrumClient),
         useBalancerChainProtocolData(PolygonNetworkInfo.decentralicedClientUri, startDate, polygonBlockClient, polygonClient),
-        useBalancerChainProtocolData(PolygonZkEVMNetworkInfo.decentralicedClientUri, startDate, polygonZKEVMBlockClient, polygonZKEVMClient),
         useBalancerChainProtocolData(GnosisNetworkInfo.decentralicedClientUri, startDate, gnosisBlockClient, gnosisClient),
         useBalancerChainProtocolData(AvalancheNetworkInfo.decentralicedClientUri, startDate, avalancheBlockClient, avalancheClient),
         useBalancerChainProtocolData(BaseNetworkInfo.decentralicedClientUri, startDate, baseBlockClient, baseClient),
-        useBalancerChainProtocolData(FraxtalNetworkInfo.clientUri, startDate, fraxtalBlockClient, fraxtalClient),
     ];
 
     // Aggregate numeric metrics and sanitize (hack data corruption fix)
@@ -122,11 +115,9 @@ export default function useAggregatedProtocolData(): AggregatedProtocolData {
         mainnetData: protocolsData[0],
         arbitrumData: protocolsData[1],
         polygonData: protocolsData[2],
-        polygonzkEVMData: protocolsData[3],
-        gnosisData: protocolsData[4],
-        avalancheData: protocolsData[5],
-        baseData: protocolsData[6],
-        fraxtalData: protocolsData[7],
+        gnosisData: protocolsData[3],
+        avalancheData: protocolsData[4],
+        baseData: protocolsData[5],
         volume,
         volumeChange,
         fees24,

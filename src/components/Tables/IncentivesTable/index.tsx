@@ -26,7 +26,6 @@ import GnosisLogo from '../../../assets/svg/gnosis.svg'
 import OpLogo from '../../../assets/svg/optimism.svg'
 import AvalancheLogo from '../../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../../assets/svg/base.svg'
-import ZkEVMLogo from '../../../assets/svg/zkevm.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatDollarAmount, formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
@@ -341,7 +340,6 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
         GNOSIS: GnosisLogo,
         ARBITRUM: ArbitrumLogo,
         AVALANCHE: AvalancheLogo,
-        ZKEVM: ZkEVMLogo,
         BASE: BaseLogo,
     };
 
@@ -352,7 +350,6 @@ export default function IncentivesTable({gaugeDatas, currentRound}: {
         GNOSIS: "Gnosis",
         ARBITRUM: "Arbitrum",
         AVALANCHE: "Avalanche",
-        ZKEVM: "ZkEVM",
         BASE: "Base"
     };
 

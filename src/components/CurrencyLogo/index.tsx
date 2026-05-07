@@ -23,8 +23,6 @@ export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) =>
             } else {
                 return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/${address}/logo.png`
             }
-        case SupportedNetwork.ZKEVM:
-                return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygonzkevm/assets/${address}/logo.png`
         case SupportedNetwork.GNOSIS:
             if (address === '0x7eF541E2a22058048904fE5744f9c7E4C57AF717') {
                 return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png`

@@ -27,19 +27,17 @@ interface ProtocolBarChartProps {
     mainnetData: number[],
     arbitrumData: number[],
     polygonData: number[],
-    polygonZkEVMData: number [],
     avalancheData: number[],
     gnosisData: number[],
     baseData: number[],
-    fraxtalData: number[],
     xAxis: string[],
     isUSD: boolean,
 }
 
 
 
-export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, polygonZkEVMData, gnosisData,
-                                                   avalancheData, baseData, fraxtalData, xAxis, isUSD}: ProtocolBarChartProps) {
+export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polygonData, gnosisData,
+                                                   avalancheData, baseData, xAxis, isUSD}: ProtocolBarChartProps) {
 
     const theme = useTheme();
 
@@ -48,11 +46,9 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
             '#0047AB',
             '#66CCCC',
             '#8B00FF',
-            '#3a0f5d',
             '#0d8e74',
             '#F01B36',
-            '#0021a2',
-            '#8a8a8a'],
+            '#0021a2'],
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -65,7 +61,7 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
 
         },
         legend: {
-            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Polygon zkEVM', 'Gnosis', 'Avalanche', 'Base', 'Fraxtal'],
+            data: ['Mainnet', 'Arbitrum', 'Polygon', 'Gnosis', 'Avalanche', 'Base'],
             inactiveColor: "red",
             textStyle:{
                 color: theme.palette.mode === 'dark' ? 'white' : 'black'
@@ -167,29 +163,6 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                 data: polygonData
             },
             {
-                name: 'Polygon zkEVM',
-                type: 'bar',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: {
-                    width: 0
-                },
-                showSymbol: false,
-                itemStyle: {
-                    opacity: 0.95,
-                    color: 'rgb(58,15,93)'
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                tooltip: {
-                    valueFormatter: function (value: number) {
-                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
-                    }
-                },
-                data: polygonZkEVMData
-            },
-            {
                 name: 'Gnosis',
                 type: 'bar',
                 stack: 'Total',
@@ -257,29 +230,6 @@ export default function ProtocolMultiBarCharts({mainnetData, arbitrumData, polyg
                     }
                 },
                 data: baseData
-            },
-            {
-                name: 'Fraxtal',
-                type: 'bar',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: {
-                    width: 0
-                },
-                showSymbol: false,
-                itemStyle: {
-                    opacity: 0.95,
-                    color: 'rgb(138,138,138)'
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                tooltip: {
-                    valueFormatter: function (value: number) {
-                        return isUSD ? formatDollarAmount(value) : formatNumber(value);
-                    }
-                },
-                data: fraxtalData
             },
         ]
     };

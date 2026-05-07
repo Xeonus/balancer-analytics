@@ -33,7 +33,7 @@ import {
     EthereumNetworkInfo,
     GnosisNetworkInfo,
     NetworkInfo,
-    PolygonNetworkInfo, PolygonZkEVMNetworkInfo
+    PolygonNetworkInfo
 } from '../../../constants/networks';
 import {PoolDataUnified, PoolTokenDataUnified} from "../../../data/balancer-api-v3/balancerUnifiedTypes";
 import PoolCurrencyLogoUnified from "../../PoolCurrencyLogoUnified";
@@ -44,8 +44,6 @@ import GnosisLogo from "../../../assets/svg/gnosis.svg";
 import ArbitrumLogo from "../../../assets/svg/arbitrum.svg";
 import BaseLogo from  "../../../assets/svg/base.svg"
 import AvaxLogo from  "../../../assets/svg/avalancheLogo.svg"
-import ZkevmLogo from  "../../../assets/svg/zkevm.svg"
-import FraxtalLogo from  "../../../assets/svg/fraxtal.svg"
 import PoolCompositionFeeData from "../../PoolCompositionFeeData";
 import AvatarNew from "../../AvatarNew";
 import {unixToDate} from "../../../utils/date";
@@ -395,8 +393,6 @@ export default function ProtocolFeeTable({
         ARBITRUM: ArbitrumLogo,
         AVALANCHE: AvaxLogo,
         BASE: BaseLogo,
-        ZKEVM: ZkevmLogo,
-        FRAXTAL: FraxtalLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {
@@ -406,7 +402,6 @@ export default function ProtocolFeeTable({
         ARBITRUM: "Arbitrum",
         AVALANCHE: "Avalanche",
         BASE: "Base",
-        ZKEVM: "ZkEVM"
     };
 
     const networkInfos: NetworkInfoMap = {
@@ -416,7 +411,6 @@ export default function ProtocolFeeTable({
         ARBITRUM: ArbitrumNetworkInfo,
         AVALANCHE: AvalancheNetworkInfo,
         BASE: BaseNetworkInfo,
-        ZKEVM: PolygonZkEVMNetworkInfo,
     }
 
 

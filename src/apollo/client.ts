@@ -1,9 +1,8 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
-    EthereumNetworkInfo, FraxtalNetworkInfo, GnosisNetworkInfo,
+    EthereumNetworkInfo, GnosisNetworkInfo,
     PolygonNetworkInfo,
-    PolygonZkEVMNetworkInfo
 } from "../constants/networks";
 
 export const blockClient = new ApolloClient({
@@ -135,49 +134,6 @@ export const polygonBlockClient = new ApolloClient({
     },
 })
 
-export const polygonZKEVMClient = new ApolloClient({
-    uri: PolygonZkEVMNetworkInfo.decentralicedClientUri,
-    cache: new InMemoryCache({
-        typePolicies: {
-            Token: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-            Pool: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-        },
-    }),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
-export const polygonZKEVMBlockClient = new ApolloClient({
-    uri: PolygonZkEVMNetworkInfo.blockClientUri,
-    cache: new InMemoryCache(),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
   export const gnosisClient = new ApolloClient({
     uri: GnosisNetworkInfo.decentralicedClientUri,
     cache: new InMemoryCache({
@@ -281,49 +237,6 @@ export const baseBlockClient = new ApolloClient({
 
 export const baseClient = new ApolloClient({
     uri: BaseNetworkInfo.decentralicedClientUri,
-    cache: new InMemoryCache({
-        typePolicies: {
-            Token: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-            Pool: {
-                // Singleton types that have no identifying field can use an empty
-                // array for their keyFields.
-                keyFields: false,
-            },
-        },
-    }),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
-export const fraxtalBlockClient = new ApolloClient({
-    uri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/fraxtal-blocks/1.0.0/gn',
-    cache: new InMemoryCache(),
-    queryDeduplication: true,
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: 'cache-first',
-        },
-        query: {
-            fetchPolicy: 'cache-first',
-            errorPolicy: 'all',
-        },
-    },
-})
-
-export const fraxtalClient = new ApolloClient({
-    uri: FraxtalNetworkInfo.clientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
