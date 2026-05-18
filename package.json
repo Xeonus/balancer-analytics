@@ -104,7 +104,7 @@
     "sha.js": "^2.4.12",
     "elliptic": "^6.6.1",
     "@babel/traverse": "^7.23.2",
-    "axios": "^1.15.0",
+    "axios": "^1.15.2",
     "ws": "^8.17.1",
     "braces": "^3.0.3",
     "webpack-dev-middleware": "^5.3.4",
@@ -115,7 +115,7 @@
     "path-to-regexp": "^0.1.13",
     "cross-spawn": "^7.0.5",
     "form-data": "^4.0.0",
-    "protobufjs": "^7.5.5",
+    "protobufjs": "^7.5.6",
     "webpack": "^5.94.0",
     "http-proxy-middleware": "^2.0.9",
     "rollup": "^2.80.0",
@@ -141,7 +141,7 @@
     "on-headers": "^1.1.0",
     "compression": "^1.8.1",
     "phin": "^3.7.1",
-    "postcss": "^8.4.31",
+    "postcss": "^8.5.10",
     "tmp": "^0.2.4",
     "ua-parser-js": "^0.7.33",
     "word-wrap": "^1.2.4",
@@ -163,7 +163,10 @@
     "file-type": "^21.3.1",
     "picomatch": "^4.0.4",
     "yaml": "^1.10.3",
-    "defu": "^6.1.5"
+    "defu": "^6.1.5",
+    "fast-uri": "^3.1.2",
+    "@babel/plugin-transform-modules-systemjs": "^7.29.4",
+    "@protobufjs/utf8": "^1.1.1"
   },
   "overrides": {
     "h3": "^1.15.6",
